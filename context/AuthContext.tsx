@@ -1,0 +1,256 @@
+"use client";
+
+import {
+  FORGOT_PASSWORD_REQUEST_OTP,
+  FORGOT_PASSWORD_RESET,
+  FORGOT_PASSWORD_VERIFY_OTP,
+  LOGIN,
+  SIGNUP_REQUEST_OTP,
+  SIGNUP_VERIFY_OTP,
+} from "@/constants/config";
+import { useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
+import React, { createContext, useContext, useEffect, useState } from "react";
+
+type User = {
+  user_id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  group: string;
+};
+
+type AuthContextType = {
+  user: User | null;
+  userToken: string | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  registerRequestOtp: (
+    firstName: string,
+    lastName: string,
+    email: string,
+    group: string,
+    password: string
+  ) => Promise<void>;
+  registerVerifyOtp: (email: string, otp: string) => Promise<void>;
+  forgotRequestOtp: (email: string) => Promise<void>;
+  forgotVerifyOtp: (email: string, otp: string) => Promise<void>;
+  forgotResetPassword: (email: string, newPassword: string) => Promise<void>;
+  checkAuth: () => Promise<boolean>; // 👈 added
+  getToken: () => Promise<string | null>;
+};
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [userToken, setUserToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+
+
+  useEffect(() => {
+  const loadTokenAndUser = async () => {
+    const token = await SecureStore.getItemAsync("userToken");
+    const userData = await SecureStore.getItemAsync("userData");
+
+    if (token) setUserToken(token);
+    if (userData) setUser(JSON.parse(userData));
+
+    setLoading(false);
+  };
+  loadTokenAndUser();
+}, []);
+
+
+  const login = async (email: string, password: string) => {
+  try {
+    const response = await fetch(LOGIN, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Login failed");
+
+    if (data.token && data.user) {
+      await SecureStore.setItemAsync("userToken", data.token);
+      await SecureStore.setItemAsync("userData", JSON.stringify(data.user)); // 👈 save user
+      setUserToken(data.token);
+      setUser(data.user);
+
+      router.replace("/home");
+    } else {
+      throw new Error("No token or user data received");
+    }
+  } catch (err: any) {
+    throw new Error(err.message || "Login failed");
+  }
+};
+
+
+  const registerRequestOtp = async (
+    firstName: string,
+    lastName: string,
+    email: string,
+    group: string,
+    password: string
+  ) => {
+    const res = await fetch(SIGNUP_REQUEST_OTP, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        group,
+        password,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to send OTP");
+  };
+
+  const registerVerifyOtp = async (email: string, otp: string) => {
+    const res = await fetch(SIGNUP_VERIFY_OTP, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Invalid OTP");
+
+    if (data.token) {
+      await SecureStore.setItemAsync("userToken", data.token);
+      await SecureStore.setItemAsync("userData", JSON.stringify(data.user)); // 👈 save user
+      setUserToken(data.token);
+      setUser(data.user);
+    
+      router.replace("/home");
+    } else {
+      throw new Error("No token received");
+    }
+  };
+
+  const forgotRequestOtp = async (email: string) => {
+    try {
+      const res = await fetch(FORGOT_PASSWORD_REQUEST_OTP, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Throwing error to be caught below
+        throw new Error(data.message || "Failed to send OTP");
+      }
+
+      // Success
+      console.log("OTP sent:", data.message);
+      return data; // optional, you can return the message or any other data
+    } catch (error: any) {
+      console.error("Error sending OTP:", error.message);
+      throw error; // re-throw to handle in UI
+    }
+  };
+
+  const forgotVerifyOtp = async (email: string, otp: string) => {
+    try {
+      const res = await fetch(FORGOT_PASSWORD_VERIFY_OTP, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to verify OTP");
+      }
+
+      console.log("OTP verified:", data.message);
+      return data; // return success message
+    } catch (error: any) {
+      console.error("Error verifying OTP:", error.message);
+      throw error; // re-throw for UI handling
+    }
+  };
+
+  const forgotResetPassword = async (email: string, newPassword: string) => {
+    try {
+      const res = await fetch(FORGOT_PASSWORD_RESET, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, newPassword }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to reset password");
+      }
+
+      console.log("Password reset successful:", data.message);
+      return data; // return success message for UI
+    } catch (error: any) {
+      console.error("Error resetting password:", error.message);
+      throw error; // re-throw for UI to catch
+    }
+  };
+
+  const logout = async () => {
+    await SecureStore.deleteItemAsync("userToken");
+    setUserToken(null);
+    router.replace("/login-user");
+  };
+
+  const checkAuth = async (): Promise<boolean> => {
+    const token = await SecureStore.getItemAsync("userToken");
+    if (token) {
+      setUserToken(token);
+      return true; // ✅ signed in
+    } else {
+      setUserToken(null);
+      return false; // ❌ not signed in
+    }
+  };
+
+  const getToken = async (): Promise<string | null> => {
+    const token = await SecureStore.getItemAsync("userToken");
+    return token ?? null;
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        userToken,
+        loading,
+        login,
+        logout,
+        registerRequestOtp,
+        registerVerifyOtp,
+        forgotRequestOtp,
+        forgotVerifyOtp,
+        forgotResetPassword,
+        checkAuth,
+        getToken,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  return ctx;
+};
