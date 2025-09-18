@@ -1,5 +1,7 @@
+import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
+  Image,
   Linking,
   Share,
   StyleSheet,
@@ -7,8 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import BuildingIcon from "../assets/icons/BuildingIcon";
-import { ShareIcon } from "../assets/icons/ShareIcon";
 
 interface PostCardProps {
   news_heading: string;
@@ -51,45 +51,42 @@ export default function PostCard({
 
   return (
     <View style={styles.container}>
-      {/* Title with icon */}
-      <View style={styles.titleRow}>
-        <BuildingIcon size={22} />
-        <Text style={styles.title}>{news_heading}</Text>
+      {/* Row: Profile + Posted by + Time */}
+      <View style={styles.headerRow}>
+        <Image
+          source={require("./../assets/images/buildings.png")}
+          style={styles.profileIcon}
+        />
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.postedBy}>PrepAcademy Admin</Text>
+          <Text style={styles.postTime}>2 hours ago</Text>
+        </View>
       </View>
 
-      {/* Wrapped content with left border */}
-      <View style={styles.contentWrapper}>
-        {/* Post Text with inline View more / less */}
-        <Text style={styles.text}>
-          {displayText}
-          {isLongText && (
-            <Text
-              style={styles.viewMore}
-              onPress={() => setExpanded(!expanded)}
-            >
-              {expanded ? " View less" : " View more"}
-            </Text>
-          )}
-        </Text>
+      {/* Title */}
+      <Text style={styles.title}>{news_heading}</Text>
 
-        {/* Open URL Button */}
-      </View>
-      <View style={styles.endRow}>
-        <TouchableOpacity
-          onPress={handleShare}
-          style={styles.shareIconWrapper}
-          activeOpacity={0.7} // optional for better touch feedback
-        >
-          <ShareIcon size={28} focused={false} />
-        </TouchableOpacity>
-        {news_url && (
-          <Text style={styles.linkText} onPress={handleOpenLink}>
-            Open link
+      {/* Post Text with view more/less */}
+      <Text style={styles.text}>
+        {displayText}
+        {isLongText && (
+          <Text style={styles.viewMore} onPress={() => setExpanded(!expanded)}>
+            {expanded ? " View less" : " View more"}
           </Text>
         )}
+      </Text>
+
+      {/* Bottom row: Visit link (left) + Share icon (right) */}
+      <View style={styles.bottomRow}>
+        <TouchableOpacity style={styles.linkRow} onPress={handleOpenLink}>
+          <Text style={styles.linkText}>visit link</Text>
+          <Ionicons name="open-outline" size={16} color="#063866" />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleShare}>
+          <Ionicons name="share-social-outline" size={20} color="#063866" />
+        </TouchableOpacity>
       </View>
-      {/* Full-width gray line */}
-      <View style={styles.divider} />
     </View>
   );
 }
@@ -98,82 +95,71 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: 10,
     backgroundColor: "#fff",
-    paddingTop: 20,
+    padding: 16,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#d3d3d3",
   },
-  titleRow: {
+
+  headerRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    gap: 8,
+    marginBottom: 6,
   },
-  title: {
+  profileIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  headerTextContainer: {
+    flexDirection: "column",
+  },
+  postedBy: {
     fontSize: 16,
-    fontFamily: "BreeSerif",
+    fontFamily: "WixMadeforTextBold",
     color: "#000",
   },
-  contentWrapper: {
-    marginLeft: 30,
-    paddingLeft: 30,
-    paddingRight: 30,
-    borderLeftWidth: 1,
-    borderLeftColor: "#000000",
+  postTime: {
+    fontSize: 12,
+    fontFamily: "WixMadeforTextMedium",
+    color: "#7e7e7e",
+  },
+
+  title: {
+    fontSize: 16,
+    fontFamily: "WixMadeforTextBold",
+    color: "#000",
+    marginBottom: 6,
+    marginTop: 6,
   },
   text: {
     fontSize: 16,
-    fontFamily: "BreeSerif",
-    color: "#666666",
+    fontFamily: "WixMadeforTextMedium",
+    color: "#737373",
     marginBottom: 8,
   },
   viewMore: {
     fontSize: 14,
     color: "#063866",
-    fontFamily: "BreeSerif",
-  },
-  linkButton: {
-    marginTop: 6,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: "#063866",
-    borderRadius: 6,
-    alignSelf: "flex-start",
-  },
-  linkButtonText: {
-    color: "#fff",
-    fontFamily: "BreeSerif",
-    fontSize: 14,
-  },
-  shareIconWrapper: {
-    marginLeft: -10,
+    fontFamily: "WixMadeforTextMedium",
   },
 
-  endRow: {
+  bottomRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 6,
+  },
+  linkRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    gap: 10, // optional spacing between items
-    paddingHorizontal: 30, // match content padding
-    marginBottom: 10,
-    marginTop: 5,
   },
-
-  shareButtonText: {
-    color: "#fff",
-    fontFamily: "BreeSerif",
-    fontSize: 14,
-  },
-
   linkText: {
     color: "#063866",
-    fontFamily: "BreeSerif",
+    fontFamily: "WixMadeforTextMedium",
     fontSize: 14,
+    lineHeight: 18,
     textDecorationLine: "underline",
-  },
-
-  divider: {
-    height: 1,
-    backgroundColor: "#ccc",
-    width: "100%",
-    marginTop: 10,
+    marginLeft: 4,
   },
 });

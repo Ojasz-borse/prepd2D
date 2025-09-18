@@ -1,5 +1,6 @@
 import TopHeader from "@/components/TopHeader";
 import { colors } from "@/constants/theme";
+import { useNormalColleges } from "@/hooks/useNormalColleges";
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import AdvancedFindCollege from "./AdvancedFindCollege";
@@ -7,15 +8,22 @@ import NormalFindCollege from "./NormalFindCollege";
 
 export default function FindColleges() {
   const [activeTab, setActiveTab] = useState<"normal" | "advanced">("normal");
-
+  const { colleges, loading, error } = useNormalColleges();
   const renderContent = () => {
-    if (activeTab === "normal") return <NormalFindCollege />;
+    if (activeTab === "normal")
+      return (
+        <NormalFindCollege
+          colleges={colleges}
+          loading={loading}
+          error={error}
+        />
+      );
     return <AdvancedFindCollege />;
   };
 
   return (
     <View style={styles.container}>
-      <TopHeader title="Find Colleges" />
+      <TopHeader title="Find Colleges" showBackArrow={false} />
 
       {/* Tab Buttons */}
       <View style={styles.tabContainer}>
@@ -75,51 +83,12 @@ const styles = StyleSheet.create({
     borderBottomColor: "#fff",
   },
   activeTab: { borderBottomColor: colors.primary },
-  tabText: { fontSize: 16, color: colors.textDark, fontFamily: "BreeSerif" },
-  activeTabText: { color: colors.primary },
-
-  // Search + Filter Bar
-  filterBar: {
-    flexDirection: "row",
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 10,
-    margin: 12,
-    alignItems: "center",
-    elevation: 3,
-  },
-  searchInput: {
-    flex: 1,
-    backgroundColor: "#f2f2f2",
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+  tabText: {
     fontSize: 16,
-    fontFamily: "BreeSerif",
+    color: colors.textDark,
+    fontFamily: "WixMadeforTextMedium",
   },
-  filterButton: {
-    marginLeft: 10,
-    backgroundColor: colors.primary,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-  },
-  filterText: { color: "#fff", fontWeight: "600" },
-
-  // Picker
-  pickerContainer: {
-    marginHorizontal: 12,
-    marginBottom: 10,
-    backgroundColor: "#f2f2f2",
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-  },
-  picker: {
-    height: 48,
-    width: "100%",
-    color: "#000",
-  },
+  activeTabText: { color: colors.primary },
 
   // Content
   contentWrapper: { flex: 1, paddingHorizontal: 12, paddingTop: 8 },

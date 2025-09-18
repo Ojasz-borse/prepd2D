@@ -1,11 +1,10 @@
 "use client";
 
+import AuthStatusModal from "@/components/AuthStatusModal"; // 👈 Import modal
 import FloatingLabelInput from "@/components/FloatingLabelInput";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
   BackHandler,
   Keyboard,
   KeyboardAvoidingView,
@@ -35,7 +34,12 @@ const RegisterUserScreen: React.FC = () => {
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
   const otpRefs = useRef<(TextInput | null)[]>([]);
   const [countdown, setCountdown] = useState<number>(179);
-  const [loading, setLoading] = useState<boolean>(false);
+
+  // Modal states
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   // Countdown timer
   useEffect(() => {
@@ -66,29 +70,42 @@ const RegisterUserScreen: React.FC = () => {
 
   // --- Backend calls ---
   const requestOtp = async () => {
+    setModalVisible(true);
     setLoading(true);
+    setError(false);
+    setModalMessage("Sending OTP...");
+
     try {
       await registerRequestOtp(firstName, lastName, email, group, password);
-      Alert.alert("Success", "OTP sent to your email");
-      setStep(5); // move to OTP step
-    } catch (err: any) {
-      Alert.alert("Error", err.message);
-    } finally {
       setLoading(false);
+      setModalMessage("OTP sent to your email");
+      setTimeout(() => {
+        setModalVisible(false);
+        setStep(5);
+      }, 1000);
+    } catch (err: any) {
+      setLoading(false);
+      setError(true);
+      setModalMessage(err.message || "Failed to send OTP");
     }
   };
 
   const handleVerifyOtp = async () => {
-    console.log(otp.join(""));
+    setModalVisible(true);
     setLoading(true);
+    setError(false);
+    setModalMessage("Verifying OTP...");
+
     try {
       await registerVerifyOtp(email, otp.join(""));
-      Alert.alert("Success", "Account created successfully!");
-      // ✅ token is saved + navigated to /home by context
-    } catch (err: any) {
-      Alert.alert("Error", err.message);
-    } finally {
       setLoading(false);
+      setModalMessage("Account created successfully!");
+      // ✅ AuthContext will handle navigation after signup
+      setTimeout(() => setModalVisible(false), 1200);
+    } catch (err: any) {
+      setLoading(false);
+      setError(true);
+      setModalMessage(err.message || "Invalid OTP, please try again");
     }
   };
 
@@ -97,13 +114,22 @@ const RegisterUserScreen: React.FC = () => {
   const handleNameNext = () =>
     firstName.trim() && lastName.trim() && setStep(3);
   const handleGroupNext = () => {
-    if (!group) return Alert.alert("Error", "Please select a group");
+    if (!group) {
+      setError(true);
+      setModalMessage("Please select a group");
+      setModalVisible(true);
+      return;
+    }
     setStep(4);
   };
   const handlePasswordNext = () => {
     if (!password.trim() || !confirmPassword.trim()) return;
-    if (password !== confirmPassword)
-      return Alert.alert("Error", "Passwords do not match!");
+    if (password !== confirmPassword) {
+      setError(true);
+      setModalMessage("Passwords do not match!");
+      setModalVisible(true);
+      return;
+    }
     requestOtp();
   };
 
@@ -139,8 +165,6 @@ const RegisterUserScreen: React.FC = () => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <View style={styles.whiteCard}>
             <View style={styles.centerWrapper}>
-              {loading && <ActivityIndicator size="large" color="#063866" />}
-
               {/* STEP 1: Email */}
               {step === 1 && (
                 <>
@@ -386,11 +410,21 @@ const RegisterUserScreen: React.FC = () => {
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
+
+      {/* ✅ Status Modal */}
+      <AuthStatusModal
+        visible={modalVisible}
+        loading={loading}
+        message={modalMessage}
+        error={error}
+        showButton={error}
+        onClose={() => setModalVisible(false)}
+      />
     </SafeAreaView>
   );
 };
 
-// Styles (same as before)
+// Styles (unchanged)
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#063866" },
   whiteCard: {

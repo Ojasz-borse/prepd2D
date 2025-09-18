@@ -121,7 +121,7 @@ export default function EstimatorScreen() {
 
   return (
     <View style={styles.container}>
-      <TopHeader title="Estimator" />
+      <TopHeader title="Estimator" showBackArrow={false} />
 
       {/* ===== Tabs ===== */}
       <View style={styles.tabContainer}>

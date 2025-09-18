@@ -40,7 +40,18 @@ export default {
             [
                 "expo-font",
                 {
-                    fonts: ["./assets/fonts/BreeSerif-Regular.ttf"]
+                    fonts: [
+                        "./assets/fonts/BreeSerif-Regular.ttf",
+                        "./assets/fonts/NotoSansKR-Black.ttf",
+                        "./assets/fonts/NotoSansKR-Bold.ttf",
+                        "./assets/fonts/NotoSansKR-ExtraBold.ttf",
+                        "./assets/fonts/NotoSansKR-ExtraLight.ttf",
+                        "./assets/fonts/NotoSansKR-Light.ttf",
+                        "./assets/fonts/NotoSansKR-Medium.ttf",
+                        "./assets/fonts/NotoSansKR-Regular.ttf",
+                        "./assets/fonts/NotoSansKR-SemiBold.ttf",
+                        "./assets/fonts/NotoSansKR-Thin.ttf"
+                    ]
                 }
             ],
             "expo-secure-store"

@@ -1,9 +1,9 @@
 "use client";
 
+import AuthStatusModal from "@/components/AuthStatusModal";
 import FloatingLabelInput from "@/components/FloatingLabelInput";
 import { useAuth } from "@/context/AuthContext";
 import { router } from "expo-router";
-
 import React, { useState } from "react";
 import {
   Alert,
@@ -23,19 +23,33 @@ const LoginUserScreen: React.FC = () => {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
       return Alert.alert("Error", "Please enter email and password");
     }
+
+    setModalVisible(true);
     setLoading(true);
+    setError(false);
+    setModalMessage("Authenticating...");
+
     try {
       await login(email, password);
-    } catch (err: any) {
-      Alert.alert("Error", err.message || "Login failed");
-    } finally {
       setLoading(false);
+      setModalMessage("Login Successful!");
+      setTimeout(() => {
+        setModalVisible(false);
+        router.replace("/");
+      }, 1000);
+    } catch (err: any) {
+      setLoading(false);
+      setError(true);
+      setModalMessage(err.message || "Login failed");
     }
   };
 
@@ -73,9 +87,9 @@ const LoginUserScreen: React.FC = () => {
                   marginBottom: 10,
                 }}
               >
-                
-<TouchableOpacity onPress={() => router.push("../auth/forgot-password")}>
-                
+                <TouchableOpacity
+                  onPress={() => router.push("/forgot-password")}
+                >
                   <Text style={{ color: "#56aeff", fontFamily: "BreeSerif" }}>
                     Forgot Password?
                   </Text>
@@ -97,7 +111,7 @@ const LoginUserScreen: React.FC = () => {
                       email && password && styles.confirmButtonTextActive,
                     ]}
                   >
-                    {loading ? "Logging in..." : "Login"}
+                    Login
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -105,6 +119,16 @@ const LoginUserScreen: React.FC = () => {
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
+
+      {/* Popup Modal */}
+      <AuthStatusModal
+        visible={modalVisible}
+        loading={loading}
+        message={modalMessage}
+        error={error}
+        showButton={error}
+        onClose={() => setModalVisible(false)}
+      />
     </SafeAreaView>
   );
 };
@@ -118,7 +142,6 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: "5%",
   },
-
   headingText: {
     fontSize: 20,
     fontWeight: "600",
@@ -141,6 +164,27 @@ const styles = StyleSheet.create({
     fontFamily: "BreeSerif",
   },
   confirmButtonTextActive: { color: "#fff" },
+
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 20,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalMessage: {
+    marginTop: 15,
+    fontSize: 16,
+    fontFamily: "BreeSerif",
+    textAlign: "center",
+  },
 });
 
 export default LoginUserScreen;

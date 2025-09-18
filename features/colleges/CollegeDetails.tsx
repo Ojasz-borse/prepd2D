@@ -1,14 +1,13 @@
 import GovernmentCollegeIcon from "@/assets/icons/GovernmentCollegeIcon";
 import PrivateCollegeIcon from "@/assets/icons/PrivateCollegeIcon";
+import TopHeader from "@/components/TopHeader";
 import CollegeBranches from "@/features/colleges/CollegeBranches";
 import CollegeFees from "@/features/colleges/CollegeFees";
-import TopHeader from "@/components/TopHeader";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import React, { useRef, useState } from "react";
 import {
   Linking,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -149,7 +148,7 @@ export default function CollegeDetails() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <TopHeader title="View College" />
+      <TopHeader title="View College" showBackArrow={true} />
 
       <ScrollView
         contentContainerStyle={styles.container}
@@ -167,6 +166,7 @@ export default function CollegeDetails() {
           </View>
         </View>
         {/* Header */}
+
         <Text style={styles.title} numberOfLines={2}>
           {name}
         </Text>
@@ -185,8 +185,6 @@ export default function CollegeDetails() {
         <CollegeBranches />
 
         <View style={styles.separator} />
-
-   
       </ScrollView>
     </SafeAreaView>
   );

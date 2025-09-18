@@ -171,7 +171,8 @@ const styles = StyleSheet.create({
   },
   tabBarLabel: {
     fontSize: 12,
-    fontFamily: "BreeSerif",
+    fontFamily: "WixMadeforTextMedium",
+
     marginTop: 4,
   },
 });

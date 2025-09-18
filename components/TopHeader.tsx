@@ -1,5 +1,6 @@
 // components/TopHeader.tsx
 import { ProfileTabIcon } from "@/assets/icons/ProfileTabIcon";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -7,13 +8,19 @@ import { colors } from "../constants/theme";
 
 interface TopHeaderProps {
   title: string;
+  showBackArrow: boolean;
 }
 
-const TopHeader: React.FC<TopHeaderProps> = ({ title }) => {
+const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
   const router = useRouter();
 
   return (
     <View style={styles.topHeader}>
+      {showBackArrow && (
+        <TouchableOpacity onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={22} color={colors.textDark} />
+        </TouchableOpacity>
+      )}
       <Text style={styles.headerTitle}>{title}</Text>
 
       <TouchableOpacity
@@ -50,7 +57,7 @@ const styles = StyleSheet.create({
     color: colors.textDark,
     textAlign: "center",
     flex: 1,
-    fontFamily: "BreeSerif",
+    fontFamily: "WixMadeforTextMedium",
   },
   profileIconContainer: {
     justifyContent: "center",

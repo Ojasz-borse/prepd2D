@@ -1,10 +1,11 @@
 import PostCard from "@/components/PostCard";
+import PostCardSkeleton from "@/components/PostCardSkeleton";
 import TopHeader from "@/components/TopHeader";
 import { GET_NEWS } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Animated, StyleSheet, Text } from "react-native";
+import { Animated, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../constants/theme";
 
 export default function HomeScreen() {
@@ -28,14 +29,10 @@ export default function HomeScreen() {
   });
 
   useEffect(() => {
-    console.log(posts);
-  }, [posts]);
-
-  useEffect(() => {
     const fetchNews = async () => {
       console.log(GET_NEWS);
       try {
-        const token = await getToken(); // fetch saved token
+        const token = await getToken();
         console.log(token);
 
         const res = await fetch(GET_NEWS, {
@@ -67,7 +64,7 @@ export default function HomeScreen() {
 
   return (
     <>
-      <TopHeader title="Home" />
+      <TopHeader title="Home" showBackArrow={false} />
 
       <Animated.ScrollView
         style={styles.postsSection}
@@ -78,11 +75,11 @@ export default function HomeScreen() {
         scrollEventThrottle={16}
       >
         {loading ? (
-          <ActivityIndicator
-            size="large"
-            color={colors.primary}
-            style={{ marginTop: 100 }}
-          />
+          <View>
+            <PostCardSkeleton />
+            <PostCardSkeleton />
+            <PostCardSkeleton />
+          </View>
         ) : Array.isArray(posts) && posts.length > 0 ? (
           posts.map((post, index) => <PostCard key={index} {...post} />)
         ) : (
@@ -105,14 +102,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-  },
-
-  headerTitle: {
-    fontSize: 18,
-    color: colors.textDark,
-    textAlign: "center",
-    flex: 1,
-    fontFamily: "BreeSerif",
+    fontFamily: "NotoSansKRMedium",
   },
   postsSection: {
     flex: 1,

@@ -1,12 +1,11 @@
 "use client";
 
+import AuthStatusModal from "@/components/AuthStatusModal";
 import FloatingLabelInput from "@/components/FloatingLabelInput";
 import { useAuth } from "@/context/AuthContext";
 import { router } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
   BackHandler,
   Keyboard,
   KeyboardAvoidingView,
@@ -32,7 +31,12 @@ const ForgotPasswordScreen: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [countdown, setCountdown] = useState<number>(179);
-  const [loading, setLoading] = useState<boolean>(false);
+
+  // Modal state
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [modalMessage, setModalMessage] = useState<string>("");
+  const [modalLoading, setModalLoading] = useState<boolean>(false);
+  const [modalError, setModalError] = useState<boolean>(false);
 
   // Countdown timer
   useEffect(() => {
@@ -63,45 +67,68 @@ const ForgotPasswordScreen: React.FC = () => {
 
   // --- Backend calls ---
   const requestOtp = async () => {
-    setLoading(true);
+    setModalVisible(true);
+    setModalLoading(true);
+    setModalError(false);
+    setModalMessage("Sending OTP...");
     try {
       await forgotRequestOtp(email);
-      Alert.alert("Success", "OTP sent to your email");
-      setStep(2);
+      setModalLoading(false);
+      setModalMessage("OTP sent to your email");
+      setTimeout(() => {
+        setModalVisible(false);
+        setStep(2);
+      }, 1500);
     } catch (err: any) {
-      Alert.alert("Error", err.message);
-    } finally {
-      setLoading(false);
+      setModalLoading(false);
+      setModalError(true);
+      setModalMessage(err.message || "Failed to send OTP");
     }
   };
 
   const handleVerifyOtp = async () => {
-    setLoading(true);
+    setModalVisible(true);
+    setModalLoading(true);
+    setModalError(false);
+    setModalMessage("Verifying OTP...");
     try {
       await forgotVerifyOtp(email, otp.join(""));
-      Alert.alert("Success", "OTP verified! Now reset your password.");
-      setStep(3);
+      setModalLoading(false);
+      setModalMessage("OTP verified! Now reset your password.");
+      setTimeout(() => {
+        setModalVisible(false);
+        setStep(3);
+      }, 1500);
     } catch (err: any) {
-      Alert.alert("Error", err.message);
-    } finally {
-      setLoading(false);
+      setModalLoading(false);
+      setModalError(true);
+      setModalMessage(err.message || "OTP verification failed");
     }
   };
 
   const handleResetPassword = async () => {
     if (password !== confirmPassword) {
-      return Alert.alert("Error", "Passwords do not match!");
+      setModalVisible(true);
+      setModalError(true);
+      setModalMessage("Passwords do not match!");
+      return;
     }
-    setLoading(true);
+    setModalVisible(true);
+    setModalLoading(true);
+    setModalError(false);
+    setModalMessage("Resetting password...");
     try {
       await forgotResetPassword(email, password);
-      Alert.alert("Success", "Password reset successfully!");
-      // Navigate back to login
-      router.replace("/login-user");
+      setModalLoading(false);
+      setModalMessage("Password reset successfully!");
+      setTimeout(() => {
+        setModalVisible(false);
+        router.replace("/login-user");
+      }, 1500);
     } catch (err: any) {
-      Alert.alert("Error", err.message);
-    } finally {
-      setLoading(false);
+      setModalLoading(false);
+      setModalError(true);
+      setModalMessage(err.message || "Password reset failed");
     }
   };
 
@@ -137,8 +164,6 @@ const ForgotPasswordScreen: React.FC = () => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <View style={styles.whiteCard}>
             <View style={styles.centerWrapper}>
-              {loading && <ActivityIndicator size="large" color="#063866" />}
-
               {/* STEP 1: Email */}
               {step === 1 && (
                 <>
@@ -156,7 +181,7 @@ const ForgotPasswordScreen: React.FC = () => {
                         email && styles.confirmButtonActive,
                       ]}
                       onPress={requestOtp}
-                      disabled={!email || loading}
+                      disabled={!email}
                     >
                       <Text
                         style={[
@@ -203,7 +228,7 @@ const ForgotPasswordScreen: React.FC = () => {
                   <View style={styles.resendRow}>
                     <TouchableOpacity
                       onPress={handleResendOtp}
-                      disabled={countdown > 0 || loading}
+                      disabled={countdown > 0}
                     >
                       <Text
                         style={[
@@ -225,7 +250,7 @@ const ForgotPasswordScreen: React.FC = () => {
                           styles.confirmButtonActive,
                       ]}
                       onPress={handleVerifyOtp}
-                      disabled={!otp.every((d) => d !== "") || loading}
+                      disabled={!otp.every((d) => d !== "")}
                     >
                       <Text
                         style={[
@@ -266,7 +291,7 @@ const ForgotPasswordScreen: React.FC = () => {
                           styles.confirmButtonActive,
                       ]}
                       onPress={handleResetPassword}
-                      disabled={!password || !confirmPassword || loading}
+                      disabled={!password || !confirmPassword}
                     >
                       <Text
                         style={[
@@ -286,6 +311,16 @@ const ForgotPasswordScreen: React.FC = () => {
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
+
+      {/* AuthStatusModal */}
+      <AuthStatusModal
+        visible={modalVisible}
+        loading={modalLoading}
+        message={modalMessage}
+        error={modalError}
+        onClose={() => setModalVisible(false)}
+        showButton={modalError}
+      />
     </SafeAreaView>
   );
 };

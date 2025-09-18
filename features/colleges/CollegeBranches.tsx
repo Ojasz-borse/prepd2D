@@ -112,12 +112,12 @@ const styles = StyleSheet.create({
 
   card3D: {
     width: "100%",
-    backgroundColor: "#f0f4fb",
+    backgroundColor: "#fff",
     borderRadius: 16,
     padding: 12,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#d6e0f5",
+    borderColor: "#d9d9d9",
   },
 
   collegeName: {
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   cutoffBox: {
-    backgroundColor: "#d6e0f5",
+    backgroundColor: "#f0f4fb",
     borderRadius: 8,
     paddingVertical: 4,
     minWidth: 50,

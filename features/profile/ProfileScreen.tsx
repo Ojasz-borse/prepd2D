@@ -1,9 +1,8 @@
 import { ProfilePageIcon } from "@/assets/icons/ProfilePageIcon";
+import TopHeader from "@/components/TopHeader";
 import { useAuth } from "@/context/AuthContext";
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Circle, Defs, RadialGradient, Stop, Svg } from "react-native-svg";
 import { colors } from "../../constants/theme";
@@ -59,13 +58,7 @@ export default function ProfileView() {
       {/* 🔹 Profile content */}
       <View style={styles.container}>
         {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={26} color={colors.textDark} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Profile</Text>
-          <View style={{ width: 24 }} />
-        </View>
+        <TopHeader title="Profile" showBackArrow={true} />
 
         {/* Profile Section */}
         <View style={styles.profileSection}>
