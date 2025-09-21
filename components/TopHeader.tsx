@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     color: colors.textDark,
     textAlign: "center",
     flex: 1,
-    fontFamily: "WixMadeforTextMedium",
+    fontFamily: "SourceSans3Medium",
   },
   profileIconContainer: {
     justifyContent: "center",

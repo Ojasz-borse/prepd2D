@@ -1,10 +1,12 @@
 import GovernmentCollegeIcon from "@/assets/icons/GovernmentCollegeIcon";
 import PrivateCollegeIcon from "@/assets/icons/PrivateCollegeIcon";
 import TopHeader from "@/components/TopHeader";
+import { GET_COLLEGES } from "@/constants/config";
+import { useAuth } from "@/context/AuthContext";
 import CollegeBranches from "@/features/colleges/CollegeBranches";
 import CollegeFees from "@/features/colleges/CollegeFees";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Linking,
   Platform,
@@ -17,11 +19,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 type RootStackParamList = {
   CollegeDetails: {
-    id: string;
-    name: string;
-    code: string;
-    type: "Govt" | "Pvt";
-    district: string;
+    college_code: string;
   };
 };
 type DetailsRouteProp = RouteProp<RootStackParamList, "CollegeDetails">;
@@ -128,23 +126,68 @@ const fees = {
   },
 };
 
+interface CollegeDetails {
+  college_code: string;
+  name: string;
+  district: string;
+  is_government: boolean;
+  is_autonomous: boolean;
+  status: string;
+  address: string | null;
+  fees_structure: string | null;
+  naac_grade: string | null;
+  naac_score: number | null;
+  official_website_url: string | null;
+  placement_url: string | null;
+  total_intake: number | null;
+  tuition_fees_json: Record<string, any> | null; // can refine if you know structure
+  tuition_fees_url_exact: string | null;
+  tuition_fees_url_overall: string | null;
+}
+
 export default function CollegeDetails() {
   const { params } = useRoute<DetailsRouteProp>();
-  const { name, code, type, district } = params;
+  const { college_code } = params;
 
-  const mapsQuery = `${name}, ${IITB_DETAILS.address || district}`;
+  const [collegeDetails, setCollegeDetails] = useState<CollegeDetails | null>();
+  const [loading, setLoading] = useState(true);
 
-  const [active, setActive] = useState("Open");
-  const scrollRef = useRef<ScrollView>(null);
+  const { getToken } = useAuth();
 
-  const handlePress = (item: string, index: number) => {
-    setActive(item);
+  useEffect(() => {
+    const fetchCollegeDetails = async () => {
+      const GET_COLLEGE_DETAILS = `${GET_COLLEGES}/${college_code}`;
 
-    scrollRef.current?.scrollTo({
-      x: index * 70,
-      animated: true,
-    });
-  };
+      try {
+        const token = await getToken();
+        console.log(token);
+
+        const res = await fetch(GET_COLLEGE_DETAILS, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          setCollegeDetails(data.college);
+          console.log("data", data.college);
+        } else {
+          setCollegeDetails(null);
+        }
+      } catch (error) {
+        console.error("Error fetching news:", error);
+        setCollegeDetails(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCollegeDetails();
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -155,20 +198,24 @@ export default function CollegeDetails() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.subRow}>
-          <Text style={styles.subText}>CE20927172</Text>
+          <Text style={styles.subText}>{collegeDetails?.college_code}</Text>
+          <Text style={styles.subText}>
+            {collegeDetails?.is_government ? "Government" : "Private"}
+          </Text>
           <View style={styles.typeRow}>
-            {"Govt" === "Govt" ? (
+            {collegeDetails?.is_autonomous ? (
               <GovernmentCollegeIcon size={16} />
             ) : (
               <PrivateCollegeIcon size={16} />
             )}
-            <Text style={styles.subText}>Government</Text>
+            <Text style={styles.subText}>
+              {collegeDetails?.is_autonomous ? "Autonomous" : "Non-Autonomous"}
+            </Text>
           </View>
         </View>
-        {/* Header */}
 
         <Text style={styles.title} numberOfLines={2}>
-          {name}
+          {collegeDetails?.name}
         </Text>
 
         <View style={styles.separator} />
@@ -205,7 +252,7 @@ const styles = StyleSheet.create({
   typeRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: "space-around",
     width: 100,
     gap: 4,
   },
@@ -213,6 +260,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#063866",
     fontFamily: "BreeSerif",
+    textAlign: "center",
   },
 
   // Typography

@@ -9,19 +9,24 @@ import { View } from "react-native";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
- const [fontsLoaded] = useFonts({
-  WixMadeforTextBold: require("../assets/fonts/WixMadeforText-Bold.ttf"),
-  WixMadeforTextBoldItalic: require("../assets/fonts/WixMadeforText-BoldItalic.ttf"),
-  WixMadeforTextExtraBold: require("../assets/fonts/WixMadeforText-ExtraBold.ttf"),
-  WixMadeforTextExtraBoldItalic: require("../assets/fonts/WixMadeforText-ExtraBoldItalic.ttf"),
-  WixMadeforTextItalic: require("../assets/fonts/WixMadeforText-Italic.ttf"),
-  WixMadeforTextMedium: require("../assets/fonts/WixMadeforText-Medium.ttf"),
-  WixMadeforTextMediumItalic: require("../assets/fonts/WixMadeforText-MediumItalic.ttf"),
-  WixMadeforTextRegular: require("../assets/fonts/WixMadeforText-Regular.ttf"),
-  WixMadeforTextSemiBold: require("../assets/fonts/WixMadeforText-SemiBold.ttf"),
-  WixMadeforTextSemiBoldItalic: require("../assets/fonts/WixMadeforText-SemiBoldItalic.ttf"),
-});
-
+  const [fontsLoaded] = useFonts({
+    SourceSans3Black: require("../assets/fonts/SourceSans3-Black.ttf"),
+    SourceSans3BlackItalic: require("../assets/fonts/SourceSans3-BlackItalic.ttf"),
+    SourceSans3Bold: require("../assets/fonts/SourceSans3-Bold.ttf"),
+    SourceSans3BoldItalic: require("../assets/fonts/SourceSans3-BoldItalic.ttf"),
+    SourceSans3ExtraBold: require("../assets/fonts/SourceSans3-ExtraBold.ttf"),
+    SourceSans3ExtraBoldItalic: require("../assets/fonts/SourceSans3-ExtraBoldItalic.ttf"),
+    SourceSans3ExtraLight: require("../assets/fonts/SourceSans3-ExtraLight.ttf"),
+    SourceSans3ExtraLightItalic: require("../assets/fonts/SourceSans3-ExtraLightItalic.ttf"),
+    SourceSans3Italic: require("../assets/fonts/SourceSans3-Italic.ttf"),
+    SourceSans3Light: require("../assets/fonts/SourceSans3-Light.ttf"),
+    SourceSans3LightItalic: require("../assets/fonts/SourceSans3-LightItalic.ttf"),
+    SourceSans3Medium: require("../assets/fonts/SourceSans3-Medium.ttf"),
+    SourceSans3MediumItalic: require("../assets/fonts/SourceSans3-MediumItalic.ttf"),
+    SourceSans3Regular: require("../assets/fonts/SourceSans3-Regular.ttf"),
+    SourceSans3SemiBold: require("../assets/fonts/SourceSans3-SemiBold.ttf"),
+    SourceSans3SemiBoldItalic: require("../assets/fonts/SourceSans3-SemiBoldItalic.ttf"),
+  });
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {

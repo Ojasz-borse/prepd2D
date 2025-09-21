@@ -1,7 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
-  Image,
   Linking,
   Share,
   StyleSheet,
@@ -11,9 +10,10 @@ import {
 } from "react-native";
 
 interface PostCardProps {
-  news_heading: string;
+  created_at: string;
   news_desc: string;
-  news_url?: string;
+  news_heading: string;
+  news_url: string;
 }
 
 export default function PostCard({
@@ -53,10 +53,9 @@ export default function PostCard({
     <View style={styles.container}>
       {/* Row: Profile + Posted by + Time */}
       <View style={styles.headerRow}>
-        <Image
-          source={require("./../assets/images/buildings.png")}
-          style={styles.profileIcon}
-        />
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>Pa</Text>
+        </View>
         <View style={styles.headerTextContainer}>
           <Text style={styles.postedBy}>PrepAcademy Admin</Text>
           <Text style={styles.postTime}>2 hours ago</Text>
@@ -105,43 +104,50 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 6,
   },
-  profileIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  badge: {
+    backgroundColor: "#f0f4fb",
     marginRight: 10,
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    alignSelf: "flex-start",
+  },
+  badgeText: {
+   color: "#063866",
+    fontSize: 18,
+    fontFamily: "SourceSans3Medium",
   },
   headerTextContainer: {
     flexDirection: "column",
   },
   postedBy: {
     fontSize: 16,
-    fontFamily: "WixMadeforTextBold",
+    fontFamily: "SourceSans3SemiBold",
     color: "#000",
   },
   postTime: {
     fontSize: 12,
-    fontFamily: "WixMadeforTextMedium",
+    fontFamily: "SourceSans3Medium",
     color: "#7e7e7e",
   },
 
   title: {
     fontSize: 16,
-    fontFamily: "WixMadeforTextBold",
+    fontFamily: "SourceSans3SemiBold",
     color: "#000",
     marginBottom: 6,
     marginTop: 6,
   },
   text: {
     fontSize: 16,
-    fontFamily: "WixMadeforTextMedium",
+    fontFamily: "SourceSans3Medium",
     color: "#737373",
     marginBottom: 8,
   },
   viewMore: {
     fontSize: 14,
     color: "#063866",
-    fontFamily: "WixMadeforTextMedium",
+    fontFamily: "SourceSans3Medium",
   },
 
   bottomRow: {
@@ -156,7 +162,7 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: "#063866",
-    fontFamily: "WixMadeforTextMedium",
+    fontFamily: "SourceSans3Medium",
     fontSize: 14,
     lineHeight: 18,
     textDecorationLine: "underline",

@@ -1,16 +1,41 @@
 import TopHeader from "@/components/TopHeader";
 import { colors } from "@/constants/theme";
 import { useNormalColleges } from "@/hooks/useNormalColleges";
-import React, { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useRef, useState } from "react";
+import {
+  PanResponder,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import AdvancedFindCollege from "./AdvancedFindCollege";
 import NormalFindCollege from "./NormalFindCollege";
 
 export default function FindColleges() {
   const [activeTab, setActiveTab] = useState<"normal" | "advanced">("normal");
   const { colleges, loading, error } = useNormalColleges();
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        // only trigger if horizontal swipe
+        return Math.abs(gestureState.dx) > 20;
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        if (gestureState.dx > 50 && activeTab === "advanced") {
+          // swipe right → go back to normal
+          setActiveTab("normal");
+        } else if (gestureState.dx < -50 && activeTab === "normal") {
+          // swipe left → go to advanced
+          setActiveTab("advanced");
+        }
+      },
+    })
+  ).current;
+
   const renderContent = () => {
-    if (activeTab === "normal")
+    if (activeTab === "normal") {
       return (
         <NormalFindCollege
           colleges={colleges}
@@ -18,6 +43,7 @@ export default function FindColleges() {
           error={error}
         />
       );
+    }
     return <AdvancedFindCollege />;
   };
 
@@ -25,7 +51,7 @@ export default function FindColleges() {
     <View style={styles.container}>
       <TopHeader title="Find Colleges" showBackArrow={false} />
 
-      {/* Tab Buttons */}
+      {/* Custom Tabs */}
       <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tab, activeTab === "normal" && styles.activeTab]}
@@ -56,23 +82,43 @@ export default function FindColleges() {
         </TouchableOpacity>
       </View>
 
-      {/* Content */}
-      <View style={styles.contentWrapper}>{renderContent()}</View>
+      {/* Swipeable Content */}
+      <View style={styles.contentWrapper} {...panResponder.panHandlers}>
+        <View style={{ flex: 1 }}>
+          <View
+            style={{
+              flex: 1,
+              display: activeTab === "normal" ? "flex" : "none",
+            }}
+          >
+            <NormalFindCollege
+              colleges={colleges}
+              loading={loading}
+              error={error}
+            />
+          </View>
+          <View
+            style={{
+              flex: 1,
+              display: activeTab === "advanced" ? "flex" : "none",
+            }}
+          >
+            <AdvancedFindCollege />
+          </View>
+        </View>
+      </View>
     </View>
   );
 }
 
-// Styles
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
 
-  // Tabs
   tabContainer: {
     flexDirection: "row",
     borderBottomWidth: 1,
     borderBottomColor: "#d3d3d3",
     backgroundColor: "#fff",
-    elevation: 2,
   },
   tab: {
     flex: 1,
@@ -86,10 +132,9 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 16,
     color: colors.textDark,
-    fontFamily: "WixMadeforTextMedium",
+    fontFamily: "SourceSans3Medium",
   },
   activeTabText: { color: colors.primary },
 
-  // Content
   contentWrapper: { flex: 1, paddingHorizontal: 12, paddingTop: 8 },
 });

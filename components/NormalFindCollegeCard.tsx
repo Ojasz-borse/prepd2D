@@ -2,7 +2,7 @@ import GovernmentCollegeIcon from "@/assets/icons/GovernmentCollegeIcon";
 import PrivateCollegeIcon from "@/assets/icons/PrivateCollegeIcon";
 import { router } from "expo-router";
 import React from "react";
-import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export interface College {
   college_code: string;
@@ -27,11 +27,7 @@ const NormalFindCollegeCard: React.FC<NormalFindCollegeCardProps> = ({
         router.push({
           pathname: "../college-details",
           params: {
-            id: college.college_code,
-            name: college.name,
-            code: college.college_code,
-            type: college.is_government ? "Govt" : "Pvt",
-            district: college.district,
+            college_code: college.college_code,
           },
         })
       }
@@ -55,7 +51,7 @@ const NormalFindCollegeCard: React.FC<NormalFindCollegeCardProps> = ({
   );
 };
 
-export default NormalFindCollegeCard;
+export default React.memo(NormalFindCollegeCard);
 
 const styles = StyleSheet.create({
   card3D: {
@@ -67,21 +63,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#d9d9d9",
   },
-  cardPressed: {
-    transform: [{ translateY: Platform.OS === "ios" ? 1 : 0 }],
-    shadowOpacity: 0.08,
-    elevation: 2,
-  },
   collegeName: {
     fontSize: 16,
     color: "#000",
-    fontFamily: "BreeSerif",
-    marginTop: 6,
+    fontFamily: "SourceSans3Medium",
+    marginTop: 2,
   },
   statusText: {
     fontSize: 12,
     color: "#888",
-    fontFamily: "BreeSerif",
+    fontFamily: "SourceSans3Medium",
     marginTop: 2,
   },
   subRow: {
@@ -99,6 +90,6 @@ const styles = StyleSheet.create({
   subText: {
     fontSize: 14,
     color: "#063866",
-    fontFamily: "BreeSerif",
+    fontFamily: "SourceSans3Medium",
   },
 });

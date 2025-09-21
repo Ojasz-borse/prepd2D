@@ -3,30 +3,21 @@ import PostCardSkeleton from "@/components/PostCardSkeleton";
 import TopHeader from "@/components/TopHeader";
 import { GET_NEWS } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
-import { Animated, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../constants/theme";
 
+interface News {
+  created_at: string;
+  news_desc: string;
+  news_heading: string;
+  news_url: string;
+}
 export default function HomeScreen() {
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   const { getToken } = useAuth();
-
-  const headerHeight = scrollY.interpolate({
-    inputRange: [0, 80],
-    outputRange: [60, 0],
-    extrapolate: "clamp",
-  });
-
-  const headerOpacity = scrollY.interpolate({
-    inputRange: [0, 80],
-    outputRange: [1, 0],
-    extrapolate: "clamp",
-  });
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -66,34 +57,31 @@ export default function HomeScreen() {
     <>
       <TopHeader title="Home" showBackArrow={false} />
 
-      <Animated.ScrollView
-        style={styles.postsSection}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
-        )}
-        scrollEventThrottle={16}
-      >
-        {loading ? (
-          <View>
-            <PostCardSkeleton />
-            <PostCardSkeleton />
-            <PostCardSkeleton />
-          </View>
-        ) : Array.isArray(posts) && posts.length > 0 ? (
-          posts.map((post, index) => <PostCard key={index} {...post} />)
-        ) : (
-          <Text
-            style={{
-              textAlign: "center",
-              marginTop: 100,
-              color: colors.textDark,
-            }}
-          >
-            No news available
-          </Text>
-        )}
-      </Animated.ScrollView>
+      <FlatList
+        data={posts}
+        keyExtractor={(item) => item.created_at.toString()}
+        renderItem={({ item, index }) => <PostCard key={index} {...item} />}
+        ListEmptyComponent={
+          loading ? (
+            <View>
+              <PostCardSkeleton />
+              <PostCardSkeleton />
+              <PostCardSkeleton />
+            </View>
+          ) : (
+            <Text
+              style={{
+                textAlign: "center",
+                marginTop: 100,
+                color: colors.textDark,
+              }}
+            >
+              No news available
+            </Text>
+          )
+        }
+        showsVerticalScrollIndicator={false}
+      />
     </>
   );
 }
