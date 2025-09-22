@@ -1,10 +1,14 @@
 import SearchIcon from "@/assets/icons/SearchIcon";
 import AdvancedFindCollegeCard from "@/components/AdvancedFindCollegeCard";
+import AdvancedFindCollegeCardSkeleton from "@/components/AdvancedFindCollegeCardSkeleton";
+import FloatingLabelInput from "@/components/FloatingLabelInput";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   FlatList,
+  Modal,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -12,69 +16,28 @@ import {
 } from "react-native";
 import { MultiSelect } from "react-native-element-dropdown";
 
-// ----------------- TYPES -----------------
-interface CollegeItem {
-  id: string;
+interface CollegeBranch {
   branch_name: string;
   choice_code: string;
-  college_name: string;
-  college_type: "Govt" | "Pvt";
+  college_code: string;
   district: string;
-  cutoff: {
-    open: string;
-    obc: string;
-    nt_sc: string;
-  };
+  is_autonomous: boolean;
+  is_government: boolean;
+  name: string;
+  standard_cutoff_data: StandardCutoffData[];
 }
 
-// ----------------- DATA -----------------
-const DATA: CollegeItem[] = [
-  {
-    id: "1",
-    branch_name: "Computer Engineering",
-    choice_code: "COEP-CSE-001",
-    college_name: "College of Engineering Pune (COEP Tech University)",
-    college_type: "Govt",
-    district: "Pune",
-    cutoff: { open: "110", obc: "140", nt_sc: "52" },
-  },
-  {
-    id: "2",
-    branch_name: "Mechanical Engineering",
-    choice_code: "VJTI-MECH-002",
-    college_name: "Veermata Jijabai Technological Institute (VJTI), Mumbai",
-    college_type: "Govt",
-    district: "Mumbai",
-    cutoff: { open: "210", obc: "230", nt_sc: "96" },
-  },
-  {
-    id: "3",
-    branch_name: "Electronics and Telecommunication",
-    choice_code: "WCE-ENTC-003",
-    college_name: "Walchand College of Engineering, Sangli",
-    college_type: "Govt",
-    district: "Sangli",
-    cutoff: { open: "320", obc: "360", nt_sc: "141" },
-  },
-  {
-    id: "4",
-    branch_name: "Information Technology",
-    choice_code: "SPIT-IT-004",
-    college_name: "Sardar Patel Institute of Technology (SPIT), Mumbai",
-    college_type: "Pvt",
-    district: "Mumbai",
-    cutoff: { open: "540", obc: "590", nt_sc: "260" },
-  },
-  {
-    id: "5",
-    branch_name: "Computer Engineering",
-    choice_code: "PICT-CSE-005",
-    college_name: "Pune Institute of Computer Technology (PICT), Pune",
-    college_type: "Pvt",
-    district: "Pune",
-    cutoff: { open: "620", obc: "660", nt_sc: "300" },
-  },
-];
+interface StandardCutoffData {
+  rank: number;
+  category: string;
+  percentile: number;
+}
+
+interface AdvancedFindCollegeProps {
+  branches: CollegeBranch[];
+  loading: boolean;
+  error: string | null;
+}
 
 interface DropdownItemProps {
   label: string;
@@ -106,22 +69,32 @@ const renderDropdownItem = (
 };
 
 // ----------------- COMPONENT -----------------
-const AdvancedFindCollege = () => {
+const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
+  branches,
+  loading,
+  error,
+}) => {
   const [searchText, setSearchText] = useState("");
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
   const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
 
+  // Smart Match
+  const [smartMatchEnabled, setSmartMatchEnabled] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [percentile, setPercentile] = useState("");
+  const [rank, setRank] = useState("");
+
   // Unique values
-  const branches = [...new Set(DATA.map((d) => d.branch_name))];
-  const districts = [...new Set(DATA.map((d) => d.district))];
+  const collegeBranches = [...new Set(branches.map((d) => d.branch_name))];
+  const districts = [...new Set(branches.map((d) => d.district))];
 
   // Filtering
   const filteredData = useMemo(() => {
     const search = searchText.toLowerCase();
 
-    return DATA.filter((item) => {
+    return branches.filter((item) => {
       const matchesSearch =
-        item.college_name.toLowerCase().includes(search) ||
+        item.name.toLowerCase().includes(search) ||
         item.branch_name.toLowerCase().includes(search);
 
       const matchesBranch =
@@ -134,7 +107,11 @@ const AdvancedFindCollege = () => {
 
       return matchesSearch && matchesBranch && matchesDistrict;
     });
-  }, [searchText, selectedBranches, selectedDistricts]);
+  }, [branches, searchText, selectedBranches, selectedDistricts]);
+
+  useEffect(() => {
+    console.log(filteredData, "filteredData");
+  }, [filteredData]);
 
   const clearFilters = () => {
     setSearchText("");
@@ -142,15 +119,41 @@ const AdvancedFindCollege = () => {
     setSelectedBranches([]);
   };
 
+  const handleSmartMatchToggle = (value: boolean) => {
+    setSmartMatchEnabled(value);
+    if (value) setModalVisible(true);
+  };
+
+  const handleSubmitSmartMatch = () => {
+    setModalVisible(false);
+    // Later: calculate scores with percentile & rank
+  };
+
+  if (error) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text style={styles.errorText}>Error: {error}</Text>
+      </View>
+    );
+  }
+
   return (
     <FlatList
       data={filteredData}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item.choice_code}
       renderItem={({ item }) => (
-        <AdvancedFindCollegeCard key={item.id} item={item} />
+        <AdvancedFindCollegeCard key={item.choice_code} item={item} />
       )}
       ListEmptyComponent={
-        <Text style={styles.noResult}>No colleges found</Text>
+        loading ? (
+          <>
+            <AdvancedFindCollegeCardSkeleton />
+            <AdvancedFindCollegeCardSkeleton />
+            <AdvancedFindCollegeCardSkeleton />
+          </>
+        ) : (
+          <Text style={styles.noResult}>No colleges found</Text>
+        )
       }
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{
@@ -178,7 +181,7 @@ const AdvancedFindCollege = () => {
             <View style={[styles.pickerWrapper, { flex: 0.5 }]}>
               <MultiSelect
                 style={styles.dropdown}
-                data={branches.map((b) => ({ label: b, value: b }))}
+                data={collegeBranches.map((b) => ({ label: b, value: b }))}
                 labelField="label"
                 valueField="value"
                 placeholder="Branches"
@@ -234,6 +237,17 @@ const AdvancedFindCollege = () => {
             </View>
           </View>
 
+          {/* Smart Match */}
+          <View style={styles.smartMatchRow}>
+            <Text style={styles.smartMatchLabel}>Smart Match</Text>
+            <Switch
+              value={smartMatchEnabled}
+              onValueChange={handleSmartMatchToggle}
+              trackColor={{ false: "#ccc", true: "#99b3e6" }}
+              thumbColor={smartMatchEnabled ? "#063866" : "#f4f3f4"}
+            />
+          </View>
+
           {/* Result count + Clear filter */}
           <View style={styles.resultRow}>
             <Text style={styles.resultCount}>
@@ -252,6 +266,54 @@ const AdvancedFindCollege = () => {
               </TouchableOpacity>
             )}
           </View>
+
+          {/* Modal for Percentile & Rank */}
+          <Modal
+            visible={modalVisible}
+            transparent
+            animationType="slide"
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>
+                  To enable Smart Match mode, please enter your Percentile &
+                  Rank
+                </Text>
+
+                <View style={{ flexDirection: "row", gap: 10 }}>
+                  <FloatingLabelInput
+                    label="Percentile"
+                    value={percentile}
+                    onChangeText={setPercentile}
+                  />
+                  <FloatingLabelInput
+                    label="Rank"
+                    value={rank}
+                    onChangeText={setRank}
+                  />
+                </View>
+
+                <View style={styles.modalActions}>
+                  <TouchableOpacity
+                    style={styles.modalButtonCancel}
+                    onPress={() => {
+                      setModalVisible(false);
+                      setSmartMatchEnabled(false);
+                    }}
+                  >
+                    <Text style={styles.modalButtonTextCancel}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.modalButtonSubmit}
+                    onPress={handleSubmitSmartMatch}
+                  >
+                    <Text style={styles.modalButtonTextSubmit}>Enable</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
         </>
       }
     />
@@ -265,6 +327,25 @@ const styles = StyleSheet.create({
     padding: 4,
     paddingTop: 16,
     paddingBottom: 10,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    fontFamily: "SourceSans3Medium",
+    color: "#063866",
+  },
+  errorText: {
+    fontSize: 16,
+    fontFamily: "SourceSans3Medium",
+    color: "#ff3b30",
+    textAlign: "center",
+    marginBottom: 20,
   },
   searchContainer: {
     flexDirection: "row",
@@ -366,5 +447,74 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3Medium",
     textAlign: "center",
     marginTop: 20,
+  },
+  smartMatchRow: {
+    flexDirection: "row",
+    gap: 10,
+    alignItems: "center",
+    paddingHorizontal: 4,
+    marginTop: -15,
+    marginBottom: -10,
+  },
+  smartMatchLabel: {
+    fontSize: 16,
+    fontFamily: "SourceSans3Medium",
+    color: "#063866",
+  },
+
+  // Modal
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    width: "85%",
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 30,
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontFamily: "SourceSans3Medium",
+    marginBottom: 16,
+    color: "#063866",
+    textAlign: "center",
+  },
+
+  modalActions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
+  modalButtonCancel: {
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+    borderRadius: 14,
+  },
+  modalButtonSubmit: {
+    backgroundColor: "#063866",
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+    borderRadius: 14,
+  },
+  modalButtonTextCancel: {
+    fontSize: 15,
+    color: "#999",
+    fontFamily: "SourceSans3Medium",
+  },
+  modalButtonTextSubmit: {
+    fontSize: 15,
+    color: "#fff",
+    fontFamily: "SourceSans3Medium",
+  },
+  inputRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  flexInput: {
+    flex: 1,
   },
 });

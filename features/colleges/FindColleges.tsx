@@ -1,5 +1,6 @@
 import TopHeader from "@/components/TopHeader";
 import { colors } from "@/constants/theme";
+import { useAdvancedColleges } from "@/hooks/useAdvancedColleges";
 import { useNormalColleges } from "@/hooks/useNormalColleges";
 import React, { useRef, useState } from "react";
 import {
@@ -15,6 +16,7 @@ import NormalFindCollege from "./NormalFindCollege";
 export default function FindColleges() {
   const [activeTab, setActiveTab] = useState<"normal" | "advanced">("normal");
   const { colleges, loading, error } = useNormalColleges();
+  const { branches, branchesLoading, branchesError } = useAdvancedColleges();
 
   const panResponder = useRef(
     PanResponder.create({
@@ -33,19 +35,6 @@ export default function FindColleges() {
       },
     })
   ).current;
-
-  const renderContent = () => {
-    if (activeTab === "normal") {
-      return (
-        <NormalFindCollege
-          colleges={colleges}
-          loading={loading}
-          error={error}
-        />
-      );
-    }
-    return <AdvancedFindCollege />;
-  };
 
   return (
     <View style={styles.container}>
@@ -103,7 +92,11 @@ export default function FindColleges() {
               display: activeTab === "advanced" ? "flex" : "none",
             }}
           >
-            <AdvancedFindCollege />
+            <AdvancedFindCollege
+              branches={branches}
+              loading={branchesLoading}
+              error={branchesError}
+            />
           </View>
         </View>
       </View>

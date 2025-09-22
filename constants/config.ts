@@ -11,3 +11,4 @@ export const FORGOT_PASSWORD_RESET = `${extra.SERVER_URL}/api/auth/forgot-passwo
 export const GET_NEWS = `${extra.SERVER_URL}/api/news`;
 
 export const GET_COLLEGES = `${extra.SERVER_URL}/api/colleges/normal`;
+export const GET_COLLEGE_BRANCHES = `${extra.SERVER_URL}/api/colleges/advanced`;

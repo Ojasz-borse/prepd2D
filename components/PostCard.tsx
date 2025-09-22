@@ -77,12 +77,12 @@ export default function PostCard({
 
       {/* Bottom row: Visit link (left) + Share icon (right) */}
       <View style={styles.bottomRow}>
-        <TouchableOpacity style={styles.linkRow} onPress={handleOpenLink}>
-          <Text style={styles.linkText}>visit link</Text>
+        <TouchableOpacity style={styles.linkRow} onPress={handleOpenLink}>c
+          <Text style={styles.linkText}>visit </Text>
           <Ionicons name="open-outline" size={16} color="#063866" />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleShare}>
+        <TouchableOpacity style={styles.shareBadge} onPress={handleShare}>
           <Ionicons name="share-social-outline" size={20} color="#063866" />
         </TouchableOpacity>
       </View>
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   badgeText: {
-   color: "#063866",
+    color: "#063866",
     fontSize: 18,
     fontFamily: "SourceSans3Medium",
   },
@@ -149,16 +149,30 @@ const styles = StyleSheet.create({
     color: "#063866",
     fontFamily: "SourceSans3Medium",
   },
+  shareBadge: {
+    backgroundColor: "#f0f4fb",
+    paddingRight: 12,
+    borderRadius: 99,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    alignSelf: "flex-start",
+  },
 
   bottomRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 6,
+
   },
   linkRow: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "#f0f4fb",
+    paddingRight: 12,
+    borderRadius: 99,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    alignSelf: "flex-start",
   },
   linkText: {
     color: "#063866",

@@ -4,18 +4,21 @@ import { router } from "expo-router";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-interface CollegeItem {
-  id: string;
+interface CollegeBranch {
   branch_name: string;
   choice_code: string;
-  college_name: string;
-  college_type: "Govt" | "Pvt";
+  college_code: string;
   district: string;
-  cutoff: {
-    open: string;
-    obc: string;
-    nt_sc: string;
-  };
+  is_autonomous: boolean;
+  is_government: boolean;
+  name: string;
+  standard_cutoff_data: StandardCutoffData[];
+}
+
+interface StandardCutoffData {
+  rank: number;
+  category: string;
+  percentile: number;
 }
 
 // ----------------- META -----------------
@@ -28,16 +31,16 @@ const TYPE_META: Record<
 };
 
 interface Props {
-  item: CollegeItem;
+  item: CollegeBranch;
 }
 
 const AdvancedFindCollegeCard: React.FC<Props> = ({ item }) => {
-  const meta = TYPE_META[item.college_type] ?? TYPE_META.Pvt;
+  const meta = item.is_government ? TYPE_META.Govt : TYPE_META.Pvt;
   const TypeIcon = meta.Icon;
 
   return (
     <Pressable
-      key={item.id}
+      key={item.choice_code}
       style={styles.card3D}
       onPress={() =>
         router.push({
@@ -61,14 +64,16 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({ item }) => {
       <Text style={styles.collegeName}>{item.branch_name}</Text>
 
       {/* College */}
-      <Text style={styles.districtText}>{item.college_name}</Text>
+      <Text style={styles.districtText}>{item.name}</Text>
 
       {/* Cutoff Grid */}
       <View style={styles.cutoffWrapper}>
-        {Object.entries(item.cutoff).map(([key, value]) => (
-          <View key={key} style={styles.cutoffBox}>
-            <Text style={styles.cutoffCategory}>{key.toUpperCase()}</Text>
-            <Text style={styles.cutoffValue}>{value}</Text>
+        {item.standard_cutoff_data.map((cutoff, idx) => (
+          <View key={idx} style={styles.cutoffBox}>
+            <Text style={styles.cutoffCategory}>{cutoff.category}</Text>
+            <Text style={styles.cutoffValue}>
+              {cutoff.percentile.toFixed(2)}
+            </Text>
           </View>
         ))}
       </View>
@@ -130,16 +135,20 @@ const styles = StyleSheet.create({
   },
   cutoffCategory: {
     fontSize: 10,
-    fontWeight: "700",
     color: "#0A5BD3",
     letterSpacing: 0.4,
-    fontFamily: "SourceSans3Medium",
+    fontFamily: "SourceSans3SemiBold",
   },
   cutoffValue: {
     fontSize: 12,
-    fontWeight: "800",
     color: "#0F172A",
-    marginTop: 2,
-    fontFamily: "SourceSans3Medium",
+    fontFamily: "SourceSans3Bold",
+    marginTop: -2,
+  },
+  rankValue: {
+    fontSize: 10,
+    fontFamily: "SourceSans3SemiBold",
+    color: "#666",
+    marginTop: -2,
   },
 });

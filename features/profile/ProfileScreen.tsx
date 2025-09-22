@@ -1,8 +1,14 @@
 import { ProfilePageIcon } from "@/assets/icons/ProfilePageIcon";
 import TopHeader from "@/components/TopHeader";
 import { useAuth } from "@/context/AuthContext";
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useRef, useState } from "react";
+import {
+  PanResponder,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Circle, Defs, RadialGradient, Stop, Svg } from "react-native-svg";
 import { colors } from "../../constants/theme";
@@ -51,6 +57,26 @@ function GlowBall({
 export default function ProfileView() {
   const { user, loading } = useAuth();
 
+  const [activeTab, setActiveTab] = useState<"My List" | "">("My List");
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        // only trigger if horizontal swipe
+        return Math.abs(gestureState.dx) > 20;
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        if (gestureState.dx > 50 && activeTab === "My List") {
+          // swipe right → go back to normal
+          setActiveTab("My List");
+        } else if (gestureState.dx < -50 && activeTab === "") {
+          // swipe left → go to advanced
+          setActiveTab("");
+        }
+      },
+    })
+  ).current;
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <GlowBall bottom={-400} right={-400} />
@@ -60,25 +86,68 @@ export default function ProfileView() {
         {/* Header */}
         <TopHeader title="Profile" showBackArrow={true} />
 
-        {/* Profile Section */}
         <View style={styles.profileSection}>
+          {/* Profile Icon on Left */}
           <View style={styles.profileWrapper}>
-            <ProfilePageIcon size={150} focused={false} />
+            <ProfilePageIcon size={100} focused={false} />
           </View>
 
-          <Text style={styles.userName}>
-            {!loading && user?.first_name + " " + user?.last_name}
-          </Text>
-          <Text style={styles.userEmail}>{user?.email}</Text>
-        </View>
+          {/* User Info on Right */}
+          <View style={styles.profileInfo}>
+            <Text style={styles.userName}>
+              {!loading && user?.first_name + " " + user?.last_name}
+            </Text>
+            <Text style={styles.userEmail}>{user?.email}</Text>
 
-        <View style={styles.infoRow}>
-          <View style={styles.groupBadge}>
-            <Text style={styles.groupText}>{user?.group}</Text>
+            <View style={styles.groupBadge}>
+              <Text style={styles.groupText}>{user?.group}</Text>
+            </View>
           </View>
         </View>
 
-        <View style={styles.horizontalLine} />
+        {/* Custom Tabs */}
+        <View style={styles.tabContainer}>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === "My List" && styles.activeTab]}
+            onPress={() => setActiveTab("My List")}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === "My List" && styles.activeTabText,
+              ]}
+            >
+              My List
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.tab, activeTab === "" && styles.activeTab]}
+            onPress={() => setActiveTab("")}
+          >
+            <Text
+              style={[styles.tabText, activeTab === "" && styles.activeTabText]}
+            ></Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Swipeable Content */}
+        <View style={styles.contentWrapper} {...panResponder.panHandlers}>
+          <View style={{ flex: 1 }}>
+            <View
+              style={{
+                flex: 1,
+                display: activeTab === "My List" ? "flex" : "none",
+              }}
+            ></View>
+            <View
+              style={{
+                flex: 1,
+                display: activeTab === "" ? "flex" : "none",
+              }}
+            ></View>
+          </View>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -87,88 +156,69 @@ export default function ProfileView() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "" },
 
-  header: {
-    flexDirection: "row",
+  profileSection: {
+    flexDirection: "row", // side by side
     alignItems: "center",
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    justifyContent: "space-between",
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: colors.textDark,
-    fontFamily: "BreeSerif",
+    marginTop: 20,
+    paddingHorizontal: 20,
   },
 
-  profileSection: {
-    alignItems: "center",
-    marginTop: 30,
-  },
   profileWrapper: {
-    position: "relative",
+    marginRight: 16, // space between icon and text
   },
-  profilePic: {
-    width: 130,
-    height: 130,
-    borderRadius: 65,
-    borderWidth: 3,
-    borderColor: colors.primary,
+
+  profileInfo: {
+    flex: 1,
+    alignItems: "flex-start", // left aligned
   },
 
   userName: {
-    fontSize: 26,
+    fontSize: 18,
     color: colors.textDark,
-    marginTop: 12,
-    fontFamily: "BreeSerif",
+    fontFamily: "SourceSans3Medium",
   },
+
   userEmail: {
     fontSize: 16,
     color: colors.textLight,
-    marginTop: 4,
-    fontFamily: "BreeSerif",
+    fontFamily: "SourceSans3Medium",
   },
 
-  infoSection: {
-    marginTop: 40,
-    paddingHorizontal: 24,
-  },
-  infoRow: {
-    marginBottom: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    fontFamily: "BreeSerif",
-  },
-
-  label: {
-    fontSize: 14,
-    color: colors.textLight,
-    marginBottom: 4,
-    fontFamily: "BreeSerif",
-  },
-  value: {
-    fontSize: 16,
-    color: colors.textDark,
-    fontWeight: "500",
-    fontFamily: "BreeSerif",
-  },
   groupBadge: {
     backgroundColor: "#063866",
-    paddingVertical: 2,
-    paddingHorizontal: 12,
+    paddingVertical: 1,
+    paddingHorizontal: 10,
     borderRadius: 12,
-    marginTop: 10,
+    marginTop: 8,
+    alignSelf: "flex-start", // keeps badge left-aligned
   },
+
   groupText: {
     color: "#fff",
-    fontFamily: "BreeSerif",
-    fontSize: 14,
+    fontFamily: "SourceSans3Medium",
+    fontSize: 12,
   },
-  horizontalLine: {
-    height: 1.5,
-    backgroundColor: colors.border,
-    marginHorizontal: 30,
-    marginTop: 8,
+  tabContainer: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: "#d3d3d3",
+    backgroundColor: "#fff",
   },
+  tab: {
+    flex: 1,
+    paddingVertical: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    borderBottomWidth: 2,
+    borderBottomColor: "#fff",
+  },
+  activeTab: { borderBottomColor: colors.primary },
+  tabText: {
+    fontSize: 16,
+    color: colors.textDark,
+    fontFamily: "SourceSans3Medium",
+  },
+  activeTabText: { color: colors.primary },
+
+  contentWrapper: { flex: 1, paddingHorizontal: 12, paddingTop: 8 },
 });
