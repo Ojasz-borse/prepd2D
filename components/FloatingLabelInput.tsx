@@ -1,5 +1,13 @@
+import { Ionicons } from "@expo/vector-icons"; // ✅ import icon pack
 import { useEffect, useRef, useState } from "react";
-import { Animated, Easing, StyleSheet, TextInput, View } from "react-native";
+import {
+  Animated,
+  Easing,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface FloatingLabelInputProps {
   label: string;
@@ -17,6 +25,7 @@ const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
   keyboardType,
 }) => {
   const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false); // 👈 for toggle
   const labelAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -63,19 +72,29 @@ const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
           onChangeText={onChangeText}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          secureTextEntry={secureTextEntry}
+          secureTextEntry={secureTextEntry && !showPassword} // 👈 toggle visibility
           keyboardType={keyboardType}
           placeholder=""
           returnKeyType="done"
           blurOnSubmit
         />
+
+        {secureTextEntry && (
+          <TouchableOpacity onPress={() => setShowPassword((prev) => !prev)}>
+            <Ionicons
+              name={showPassword ? "eye-off" : "eye"}
+              size={22}
+              color="#666"
+            />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  inputWrapper: { position: "relative", flex: 1, marginBottom: 30 },
+  inputWrapper: { position: "relative", marginBottom: 30 },
   animatedLabel: {
     position: "absolute",
     left: 20,

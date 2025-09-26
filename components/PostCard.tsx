@@ -1,4 +1,5 @@
-import { Ionicons } from "@expo/vector-icons";
+import ExternalLinkIcon from "@/assets/icons/ExternalLinkIcon";
+import ShareIcon from "@/assets/icons/ShareIcon";
 import React, { useState } from "react";
 import {
   Linking,
@@ -67,7 +68,7 @@ export default function PostCard({
 
       {/* Post Text with view more/less */}
       <Text style={styles.text}>
-        {displayText}
+        <Text>{displayText}</Text>
         {isLongText && (
           <Text style={styles.viewMore} onPress={() => setExpanded(!expanded)}>
             {expanded ? " View less" : " View more"}
@@ -77,13 +78,13 @@ export default function PostCard({
 
       {/* Bottom row: Visit link (left) + Share icon (right) */}
       <View style={styles.bottomRow}>
-        <TouchableOpacity style={styles.linkRow} onPress={handleOpenLink}>c
+        <TouchableOpacity style={styles.linkRow} onPress={handleOpenLink}>
           <Text style={styles.linkText}>visit </Text>
-          <Ionicons name="open-outline" size={16} color="#063866" />
+          <ExternalLinkIcon size={14} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.shareBadge} onPress={handleShare}>
-          <Ionicons name="share-social-outline" size={20} color="#063866" />
+          <ShareIcon size={18} />
         </TouchableOpacity>
       </View>
     </View>
@@ -162,7 +163,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-
   },
   linkRow: {
     flexDirection: "row",

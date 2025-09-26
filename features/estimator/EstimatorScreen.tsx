@@ -1,4 +1,4 @@
-import FloatingLabelInput from "@/components/FloatingLabelInput"; // ✅ import your floating input
+import FloatingLabelInput from "@/components/FloatingLabelInput";
 import TopHeader from "@/components/TopHeader";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -9,7 +9,7 @@ export default function EstimatorScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"marks" | "rank">("marks");
 
-  // Local states
+  // --- Local states ---
   const [marks, setMarks] = useState("");
   const [percentile, setPercentile] = useState<string | null>(null);
 
@@ -28,7 +28,6 @@ export default function EstimatorScreen() {
 
   const handleCalculateRank = () => {
     if (inputPercentile) {
-      // Example: simple reverse calculation
       const totalCandidates = 200000; // example number
       const calc =
         ((100 - parseFloat(inputPercentile)) / 100) * totalCandidates;
@@ -36,87 +35,6 @@ export default function EstimatorScreen() {
     } else {
       setRank(null);
     }
-  };
-
-  // --- UI ---
-  const renderContent = () => {
-    if (activeTab === "marks") {
-      return (
-        <View style={styles.contentBox}>
-          <Text style={styles.headingText}>Enter your Marks</Text>
-
-          <FloatingLabelInput
-            label="Enter Marks"
-            value={marks}
-            onChangeText={setMarks}
-            keyboardType="number-pad"
-          />
-
-          <View style={styles.buttonWrapper}>
-            <TouchableOpacity
-              style={[
-                styles.confirmButton,
-                marks && styles.confirmButtonActive,
-              ]}
-              onPress={handleCalculatePercentile}
-              disabled={!marks}
-            >
-              <Text
-                style={[
-                  styles.confirmButtonText,
-                  marks && styles.confirmButtonTextActive,
-                ]}
-              >
-                Calculate
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {percentile && (
-            <Text style={styles.resultText}>
-              🎯 Estimated Percentile: {percentile}%
-            </Text>
-          )}
-        </View>
-      );
-    }
-
-    return (
-      <View style={styles.contentBox}>
-        <Text style={styles.headingText}>Percentile to Rank</Text>
-
-        <FloatingLabelInput
-          label="Enter Percentile"
-          value={inputPercentile}
-          onChangeText={setInputPercentile}
-          keyboardType="number-pad"
-        />
-
-        <View style={styles.buttonWrapper}>
-          <TouchableOpacity
-            style={[
-              styles.confirmButton,
-              inputPercentile && styles.confirmButtonActive,
-            ]}
-            onPress={handleCalculateRank}
-            disabled={!inputPercentile}
-          >
-            <Text
-              style={[
-                styles.confirmButtonText,
-                inputPercentile && styles.confirmButtonTextActive,
-              ]}
-            >
-              Calculate
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {rank && (
-          <Text style={styles.resultText}>📊 Estimated Rank: {rank}</Text>
-        )}
-      </View>
-    );
   };
 
   return (
@@ -155,7 +73,89 @@ export default function EstimatorScreen() {
       </View>
 
       {/* ===== Content ===== */}
-      <View style={styles.contentWrapper}>{renderContent()}</View>
+      <View style={styles.contentWrapper}>
+        {/* Marks → Percentile */}
+        <View
+          style={{ flex: 1, display: activeTab === "marks" ? "flex" : "none" }}
+        >
+          <View style={styles.contentBox}>
+            <Text style={styles.headingText}>Enter your Marks</Text>
+
+            <FloatingLabelInput
+              label="Enter Marks"
+              value={marks}
+              onChangeText={setMarks}
+              keyboardType="number-pad"
+            />
+
+            <View style={styles.buttonWrapper}>
+              <TouchableOpacity
+                style={[
+                  styles.confirmButton,
+                  marks && styles.confirmButtonActive,
+                ]}
+                onPress={handleCalculatePercentile}
+                disabled={!marks}
+              >
+                <Text
+                  style={[
+                    styles.confirmButtonText,
+                    marks && styles.confirmButtonTextActive,
+                  ]}
+                >
+                  Calculate
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {percentile && (
+              <Text style={styles.resultText}>
+                🎯 Estimated Percentile: {percentile}%
+              </Text>
+            )}
+          </View>
+        </View>
+
+        {/* Percentile → Rank */}
+        <View
+          style={{ flex: 1, display: activeTab === "rank" ? "flex" : "none" }}
+        >
+          <View style={styles.contentBox}>
+            <Text style={styles.headingText}>Percentile to Rank</Text>
+
+            <FloatingLabelInput
+              label="Enter Percentile"
+              value={inputPercentile}
+              onChangeText={setInputPercentile}
+              keyboardType="number-pad"
+            />
+
+            <View style={styles.buttonWrapper}>
+              <TouchableOpacity
+                style={[
+                  styles.confirmButton,
+                  inputPercentile && styles.confirmButtonActive,
+                ]}
+                onPress={handleCalculateRank}
+                disabled={!inputPercentile}
+              >
+                <Text
+                  style={[
+                    styles.confirmButtonText,
+                    inputPercentile && styles.confirmButtonTextActive,
+                  ]}
+                >
+                  Calculate
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {rank && (
+              <Text style={styles.resultText}>📊 Estimated Rank: {rank}</Text>
+            )}
+          </View>
+        </View>
+      </View>
     </View>
   );
 }
@@ -169,19 +169,22 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#d3d3d3",
     backgroundColor: "#fff",
-    elevation: 2,
   },
   tab: {
     flex: 1,
-    paddingVertical: 18,
+    paddingVertical: 14,
     alignItems: "center",
     justifyContent: "center",
     borderBottomWidth: 2,
     borderBottomColor: "#fff",
   },
-  activeTab: { borderBottomWidth: 2, borderBottomColor: colors.primary },
-  tabText: { fontSize: 16, color: colors.textDark, fontFamily: "BreeSerif" },
-  activeTabText: { color: colors.primary, fontFamily: "BreeSerif" },
+  activeTab: { borderBottomColor: colors.primary },
+  tabText: {
+    fontSize: 16,
+    color: colors.textDark,
+    fontFamily: "SourceSans3Medium",
+  },
+  activeTabText: { color: colors.primary },
 
   // --- Content ---
   contentWrapper: { flex: 1, padding: 16 },
@@ -194,10 +197,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: "left",
     width: "100%",
-    fontFamily: "BreeSerif",
+    fontFamily: "SourceSans3Medium",
   },
 
-  // --- Button (same style as Register screen) ---
+  // --- Button ---
   buttonWrapper: { width: "100%", alignItems: "flex-end" },
   confirmButton: {
     backgroundColor: "#e0e0e0",
@@ -210,15 +213,15 @@ const styles = StyleSheet.create({
     color: "#999",
     fontSize: 14,
     fontWeight: "600",
-    fontFamily: "BreeSerif",
+    fontFamily: "SourceSans3Medium",
   },
-  confirmButtonTextActive: { color: "#fff", fontFamily: "BreeSerif" },
+  confirmButtonTextActive: { color: "#fff", fontFamily: "SourceSans3Medium" },
 
   // --- Result ---
   resultText: {
     marginTop: 20,
     fontSize: 16,
-    fontFamily: "BreeSerif",
+    fontFamily: "SourceSans3Medium",
     color: colors.textDark,
     textAlign: "center",
   },

@@ -24,36 +24,20 @@ export default {
         web: {
             bundler: "metro",
             output: "static",
-            favicon: "./assets/images/favicon.png"
+            favicon: "./assets/images/icon.png"
         },
         plugins: [
             "expo-router",
             [
                 "expo-splash-screen",
                 {
-                    image: "./assets/images/splash-icon.png",
+                    image: "./assets/images/icon.png",
                     imageWidth: 200,
                     resizeMode: "contain",
                     backgroundColor: "#ffffff"
                 }
             ],
-            [
-                "expo-font",
-                {
-                    fonts: [
-                        "./assets/fonts/BreeSerif-Regular.ttf",
-                        "./assets/fonts/NotoSansKR-Black.ttf",
-                        "./assets/fonts/NotoSansKR-Bold.ttf",
-                        "./assets/fonts/NotoSansKR-ExtraBold.ttf",
-                        "./assets/fonts/NotoSansKR-ExtraLight.ttf",
-                        "./assets/fonts/NotoSansKR-Light.ttf",
-                        "./assets/fonts/NotoSansKR-Medium.ttf",
-                        "./assets/fonts/NotoSansKR-Regular.ttf",
-                        "./assets/fonts/NotoSansKR-SemiBold.ttf",
-                        "./assets/fonts/NotoSansKR-Thin.ttf"
-                    ]
-                }
-            ],
+
             "expo-secure-store"
         ],
         experiments: {

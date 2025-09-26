@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: "left",
     width: "100%",
-    fontFamily: "BreeSerif",
+    fontFamily: "SourceSans3Medium",
   },
   buttonWrapper: { width: "100%", alignItems: "flex-end" },
   confirmButton: {
@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
     color: "#999",
     fontSize: 14,
     fontWeight: "600",
-    fontFamily: "BreeSerif",
+    fontFamily: "SourceSans3Medium",
   },
   confirmButtonTextActive: { color: "#fff" },
   inputRow: {
@@ -379,7 +379,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     backgroundColor: "#fff",
     color: "#000",
-    fontFamily: "BreeSerif",
+    fontFamily: "SourceSans3Medium",
   },
   inputBoxActive: {
     borderColor: "#063866",
@@ -387,11 +387,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8fbff",
   },
   resendRow: { width: "100%", alignItems: "flex-end", marginBottom: 20 },
-  resendText: { fontSize: 14, color: "#777", fontFamily: "BreeSerif" },
+  resendText: { fontSize: 14, color: "#777", fontFamily: "SourceSans3Medium" },
   resendTextActive: {
     color: "#56aeff",
     fontWeight: "600",
-    fontFamily: "BreeSerif",
+    fontFamily: "SourceSans3Medium",
   },
 });
 

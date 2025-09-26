@@ -76,6 +76,12 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({ item }) => {
             </Text>
           </View>
         ))}
+
+        <View style={{ marginLeft: "auto" }}>
+          <View style={styles.chance}>
+            <Text style={styles.chanceText}>99%</Text>
+          </View>
+        </View>
       </View>
     </Pressable>
   );
@@ -125,6 +131,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 10,
     marginTop: 12,
+    alignItems: "center",
   },
   cutoffBox: {
     backgroundColor: "#f0f4fb",
@@ -150,5 +157,17 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3SemiBold",
     color: "#666",
     marginTop: -2,
+  },
+  chance: {
+    backgroundColor: "#e6b800",
+    borderRadius: 25,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+   
+  },
+  chanceText: {
+    color: "#fff",
+    fontSize: 9,
+    fontFamily: "SourceSans3SemiBold",
   },
 });

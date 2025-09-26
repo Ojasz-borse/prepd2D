@@ -90,7 +90,12 @@ const LoginUserScreen: React.FC = () => {
                 <TouchableOpacity
                   onPress={() => router.push("/forgot-password")}
                 >
-                  <Text style={{ color: "#56aeff", fontFamily: "BreeSerif" }}>
+                  <Text
+                    style={{
+                      color: "#56aeff",
+                      fontFamily: "SourceSans3Medium",
+                    }}
+                  >
                     Forgot Password?
                   </Text>
                 </TouchableOpacity>
@@ -148,7 +153,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#000",
     marginBottom: 20,
-    fontFamily: "BreeSerif",
+    fontFamily: "SourceSans3Medium",
   },
   buttonWrapper: { width: "100%", alignItems: "flex-end", marginTop: 10 },
   confirmButton: {
@@ -162,7 +167,7 @@ const styles = StyleSheet.create({
     color: "#999",
     fontSize: 14,
     fontWeight: "600",
-    fontFamily: "BreeSerif",
+    fontFamily: "SourceSans3Medium",
   },
   confirmButtonTextActive: { color: "#fff" },
 
@@ -183,7 +188,7 @@ const styles = StyleSheet.create({
   modalMessage: {
     marginTop: 15,
     fontSize: 16,
-    fontFamily: "BreeSerif",
+    fontFamily: "SourceSans3Medium",
     textAlign: "center",
   },
 });

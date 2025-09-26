@@ -80,12 +80,12 @@ const styles = StyleSheet.create({
   },
   modalMessage: {
     fontSize: 16,
-    fontFamily: "BreeSerif",
+    fontFamily: "SourceSans3Medium",
     textAlign: "center",
     marginTop: 20,
     width: "70%",
   },
-  gif: { width: 120, height: 100 },
+  gif: { width: 100, height: 80 },
   buttonWrapper: {
     width: "100%",
     alignItems: "flex-end",
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     color: "#999",
     fontSize: 14,
     fontWeight: "600",
-    fontFamily: "BreeSerif",
+    fontFamily: "SourceSans3Medium",
   },
   confirmButtonTextActive: { color: "#fff" },
 });

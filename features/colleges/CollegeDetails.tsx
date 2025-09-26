@@ -11,6 +11,7 @@ import { GET_COLLEGES } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import CollegeFees from "@/features/colleges/CollegeFees";
 import { RouteProp, useRoute } from "@react-navigation/native";
+import * as ScreenCapture from "expo-screen-capture";
 import React, { useEffect, useState } from "react";
 import {
   Linking,
@@ -143,6 +144,16 @@ export default function CollegeDetails() {
 
     return () => clearTimeout(timer); // cleanup if component unmounts
   }, [collegeDetails]);
+
+  useEffect(() => {
+    // Prevent screenshot when this screen is mounted
+    ScreenCapture.preventScreenCaptureAsync();
+
+    // Allow again when leaving screen
+    return () => {
+      ScreenCapture.allowScreenCaptureAsync();
+    };
+  }, []);
 
   const handleOpenLink = (url: string) => {
     if (url) {

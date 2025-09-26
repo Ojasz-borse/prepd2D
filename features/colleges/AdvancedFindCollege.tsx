@@ -1,10 +1,15 @@
+import BookmarkIcon from "@/assets/icons/BookmarkIcon";
 import SearchIcon from "@/assets/icons/SearchIcon";
 import AdvancedFindCollegeCard from "@/components/AdvancedFindCollegeCard";
 import AdvancedFindCollegeCardSkeleton from "@/components/AdvancedFindCollegeCardSkeleton";
 import FloatingLabelInput from "@/components/FloatingLabelInput";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
+import * as ScreenCapture from "expo-screen-capture";
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  Animated,
   FlatList,
   Modal,
   StyleSheet,
@@ -15,6 +20,11 @@ import {
   View,
 } from "react-native";
 import { MultiSelect } from "react-native-element-dropdown";
+import {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
 interface CollegeBranch {
   branch_name: string;
@@ -43,6 +53,54 @@ interface DropdownItemProps {
   label: string;
   isSelected: boolean;
 }
+
+interface FlyingAnim {
+  id: string;
+  startX: number;
+  startY: number;
+  targetX: number;
+  targetY: number;
+}
+
+const FlyingCardAnimation = ({ anim }: { anim: FlyingAnim }) => {
+  const translateX = useSharedValue(anim.startX);
+  const translateY = useSharedValue(anim.startY);
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
+
+  useEffect(() => {
+    translateX.value = withTiming(anim.targetX, { duration: 700 });
+    translateY.value = withTiming(anim.targetY, { duration: 700 });
+    scale.value = withTiming(0.3, { duration: 700 });
+    opacity.value = withTiming(0, { duration: 700 });
+  }, []);
+
+  const style = useAnimatedStyle(() => ({
+    position: "absolute",
+    left: 0,
+    top: 0,
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+      { scale: scale.value },
+    ],
+    opacity: opacity.value,
+    zIndex: 99,
+  }));
+
+  return (
+    <Animated.View style={style}>
+      <View
+        style={{
+          width: 100,
+          height: 50,
+          backgroundColor: "#ebf0fa",
+          borderRadius: 10,
+        }}
+      />
+    </Animated.View>
+  );
+};
 
 const DropdownItem: React.FC<DropdownItemProps> = ({ label, isSelected }) => {
   return (
@@ -77,6 +135,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
   const [searchText, setSearchText] = useState("");
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
   const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
+  const [movedCollegesCount, setMovedCollegesCount] = useState<number>();
 
   // Smart Match
   const [smartMatchEnabled, setSmartMatchEnabled] = useState(false);
@@ -110,8 +169,24 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
   }, [branches, searchText, selectedBranches, selectedDistricts]);
 
   useEffect(() => {
-    console.log(filteredData, "filteredData");
-  }, [filteredData]);
+    // Prevent screenshot when this screen is mounted
+    ScreenCapture.preventScreenCaptureAsync();
+    const loadStoredColleges = async () => {
+      const cached = await AsyncStorage.getItem("myList");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        setMovedCollegesCount(parsed.length);
+      } else {
+        setMovedCollegesCount(0);
+      }
+    };
+    loadStoredColleges();
+
+    // Allow again when leaving screen
+    return () => {
+      ScreenCapture.allowScreenCaptureAsync();
+    };
+  }, []);
 
   const clearFilters = () => {
     setSearchText("");
@@ -129,6 +204,32 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
     // Later: calculate scores with percentile & rank
   };
 
+  const handleMoveToMyList = async () => {
+    console.log("calling handleMoveToMyList");
+    try {
+      // Get existing cached colleges
+      const cached = await AsyncStorage.getItem("myList");
+      console.log("cached", cached);
+      let existingColleges: string[] = cached ? JSON.parse(cached) : [];
+
+      // Extract choice codes from filtered results
+      const newChoiceCodes = filteredData.map((c) => c.choice_code);
+
+      // Merge without duplicates
+      const updated = Array.from(
+        new Set([...existingColleges, ...newChoiceCodes])
+      );
+
+      // Save back
+      await AsyncStorage.setItem("myList", JSON.stringify(updated));
+
+      // Update count
+      setMovedCollegesCount(updated.length);
+    } catch (error) {
+      console.error("Error saving colleges:", error);
+    }
+  };
+
   if (error) {
     return (
       <View style={styles.centerContainer}>
@@ -138,185 +239,221 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
   }
 
   return (
-    <FlatList
-      data={filteredData}
-      keyExtractor={(item) => item.choice_code}
-      renderItem={({ item }) => (
-        <AdvancedFindCollegeCard key={item.choice_code} item={item} />
-      )}
-      ListEmptyComponent={
-        loading ? (
+    <>
+      <FlatList
+        data={filteredData}
+        keyExtractor={(item) => item.choice_code}
+        renderItem={({ item }) => (
+          <AdvancedFindCollegeCard key={item.choice_code} item={item} />
+        )}
+        ListEmptyComponent={
+          loading ? (
+            <>
+              <AdvancedFindCollegeCardSkeleton />
+              <AdvancedFindCollegeCardSkeleton />
+              <AdvancedFindCollegeCardSkeleton />
+            </>
+          ) : (
+            <Text style={styles.noResult}>No colleges found</Text>
+          )
+        }
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          padding: 4,
+          paddingTop: 16,
+          paddingBottom: 10,
+        }}
+        ListHeaderComponent={
           <>
-            <AdvancedFindCollegeCardSkeleton />
-            <AdvancedFindCollegeCardSkeleton />
-            <AdvancedFindCollegeCardSkeleton />
-          </>
-        ) : (
-          <Text style={styles.noResult}>No colleges found</Text>
-        )
-      }
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{
-        padding: 4,
-        paddingTop: 16,
-        paddingBottom: 10,
-      }}
-      ListHeaderComponent={
-        <>
-          {/* Search Bar */}
-          <View style={styles.searchContainer}>
-            <SearchIcon size={18} focused={false} />
-            <TextInput
-              style={styles.searchBar}
-              placeholder="Search by college or branch"
-              placeholderTextColor="#777"
-              value={searchText}
-              onChangeText={setSearchText}
-            />
-          </View>
-
-          {/* Filters Row */}
-          <View style={styles.filterRow}>
-            {/* Branch MultiSelect */}
-            <View style={[styles.pickerWrapper, { flex: 0.5 }]}>
-              <MultiSelect
-                style={styles.dropdown}
-                data={collegeBranches.map((b) => ({ label: b, value: b }))}
-                labelField="label"
-                valueField="value"
-                placeholder="Branches"
-                placeholderStyle={styles.dropdownText}
-                selectedTextStyle={styles.dropdownText}
-                itemTextStyle={styles.dropdownText}
-                value={selectedBranches}
-                onChange={(items) => setSelectedBranches(items as string[])}
-                renderItem={(item) => {
-                  const isSelected = selectedBranches.includes(item.value);
-                  return (
-                    <DropdownItem label={item.label} isSelected={isSelected} />
-                  );
-                }}
-                renderSelectedItem={() => <View style={{ height: 0 }} />}
+            {/* Search Bar */}
+            <View style={styles.searchContainer}>
+              <SearchIcon size={18} focused={false} />
+              <TextInput
+                style={styles.searchBar}
+                placeholder="Search by college or branch"
+                placeholderTextColor="#777"
+                value={searchText}
+                onChangeText={setSearchText}
               />
-              {selectedBranches.length > 0 && (
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>
-                    {selectedBranches.length}
-                  </Text>
-                </View>
-              )}
             </View>
 
-            <View style={{ marginHorizontal: 5 }} />
+            {/* Filters Row */}
+            <View style={styles.filterRow}>
+              {/* Branch MultiSelect */}
+              <View style={[styles.pickerWrapper, { flex: 0.5 }]}>
+                <MultiSelect
+                  style={styles.dropdown}
+                  data={collegeBranches.map((b) => ({ label: b, value: b }))}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Branches"
+                  placeholderStyle={styles.dropdownText}
+                  selectedTextStyle={styles.dropdownText}
+                  itemTextStyle={styles.dropdownText}
+                  value={selectedBranches}
+                  onChange={(items) => setSelectedBranches(items as string[])}
+                  renderItem={(item) => {
+                    const isSelected = selectedBranches.includes(item.value);
+                    return (
+                      <DropdownItem
+                        label={item.label}
+                        isSelected={isSelected}
+                      />
+                    );
+                  }}
+                  renderSelectedItem={() => <View style={{ height: 0 }} />}
+                />
+                {selectedBranches.length > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>
+                      {selectedBranches.length}
+                    </Text>
+                  </View>
+                )}
+              </View>
 
-            {/* District MultiSelect */}
-            <View style={[styles.pickerWrapper, { flex: 0.5 }]}>
-              <MultiSelect
-                style={styles.dropdown}
-                data={districts.map((d) => ({ label: d, value: d }))}
-                labelField="label"
-                valueField="value"
-                placeholder="Districts"
-                placeholderStyle={styles.dropdownText}
-                selectedTextStyle={styles.dropdownText}
-                itemTextStyle={styles.dropdownText}
-                value={selectedDistricts}
-                onChange={(items) => setSelectedDistricts(items as string[])}
-                renderItem={(item) =>
-                  renderDropdownItem(item, selectedDistricts)
-                }
-                renderSelectedItem={() => <View style={{ height: 0 }} />}
-              />
-              {selectedDistricts.length > 0 && (
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>
-                    {selectedDistricts.length}
-                  </Text>
-                </View>
-              )}
-            </View>
-          </View>
+              <View style={{ marginHorizontal: 5 }} />
 
-          {/* Smart Match */}
-          <View style={styles.smartMatchRow}>
-            <Text style={styles.smartMatchLabel}>Smart Match</Text>
-            <Switch
-              value={smartMatchEnabled}
-              onValueChange={handleSmartMatchToggle}
-              trackColor={{ false: "#ccc", true: "#99b3e6" }}
-              thumbColor={smartMatchEnabled ? "#063866" : "#f4f3f4"}
-            />
-          </View>
-
-          {/* Result count + Clear filter */}
-          <View style={styles.resultRow}>
-            <Text style={styles.resultCount}>
-              Total Results: {filteredData.length}
-            </Text>
-
-            {(searchText ||
-              selectedDistricts.length > 0 ||
-              selectedBranches.length > 0) && (
-              <TouchableOpacity
-                style={styles.clearFilterBtn}
-                onPress={clearFilters}
-              >
-                {/* <Ionicons name="close-circle-outline" size={16} color="#063866" /> */}
-                <Text style={styles.clearFilterText}>Clear Filters</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-
-          {/* Modal for Percentile & Rank */}
-          <Modal
-            visible={modalVisible}
-            transparent
-            animationType="slide"
-            onRequestClose={() => setModalVisible(false)}
-          >
-            <View style={styles.modalOverlay}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>
-                  To enable Smart Match mode, please enter your Percentile &
-                  Rank
-                </Text>
-
-                <View style={{ flexDirection: "row", gap: 10 }}>
-                  <FloatingLabelInput
-                    label="Percentile"
-                    value={percentile}
-                    onChangeText={setPercentile}
-                  />
-                  <FloatingLabelInput
-                    label="Rank"
-                    value={rank}
-                    onChangeText={setRank}
-                  />
-                </View>
-
-                <View style={styles.modalActions}>
-                  <TouchableOpacity
-                    style={styles.modalButtonCancel}
-                    onPress={() => {
-                      setModalVisible(false);
-                      setSmartMatchEnabled(false);
-                    }}
-                  >
-                    <Text style={styles.modalButtonTextCancel}>Cancel</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.modalButtonSubmit}
-                    onPress={handleSubmitSmartMatch}
-                  >
-                    <Text style={styles.modalButtonTextSubmit}>Enable</Text>
-                  </TouchableOpacity>
-                </View>
+              {/* District MultiSelect */}
+              <View style={[styles.pickerWrapper, { flex: 0.5 }]}>
+                <MultiSelect
+                  style={styles.dropdown}
+                  data={districts.map((d) => ({ label: d, value: d }))}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Districts"
+                  placeholderStyle={styles.dropdownText}
+                  selectedTextStyle={styles.dropdownText}
+                  itemTextStyle={styles.dropdownText}
+                  value={selectedDistricts}
+                  onChange={(items) => setSelectedDistricts(items as string[])}
+                  renderItem={(item) =>
+                    renderDropdownItem(item, selectedDistricts)
+                  }
+                  renderSelectedItem={() => <View style={{ height: 0 }} />}
+                />
+                {selectedDistricts.length > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>
+                      {selectedDistricts.length}
+                    </Text>
+                  </View>
+                )}
               </View>
             </View>
-          </Modal>
-        </>
-      }
-    />
+
+            {/* Smart Match */}
+            <View style={{ marginVertical: -10 }}>
+              <View style={styles.smartMatchRow}>
+                <View style={styles.smartMatchRow}>
+                  <Text style={styles.smartMatchLabel}>Smart Match</Text>
+                  <Switch
+                    value={smartMatchEnabled}
+                    onValueChange={handleSmartMatchToggle}
+                    trackColor={{ false: "#ccc", true: "#99b3e6" }}
+                    thumbColor={smartMatchEnabled ? "#063866" : "#f4f3f4"}
+                  />
+                </View>
+                {(searchText ||
+                  selectedDistricts.length > 0 ||
+                  selectedBranches.length > 0) && (
+                  <TouchableOpacity onPress={handleMoveToMyList}>
+                    <Text style={styles.smartMatchLabel}>Move to myList</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+
+            {/* Result count + Clear filter */}
+            <View style={styles.resultRow}>
+              <Text style={styles.resultCount}>
+                Total Results: {filteredData.length}
+              </Text>
+
+              {(searchText ||
+                selectedDistricts.length > 0 ||
+                selectedBranches.length > 0) && (
+                <TouchableOpacity
+                  style={styles.clearFilterBtn}
+                  onPress={clearFilters}
+                >
+                  {/* <Ionicons name="close-circle-outline" size={16} color="#063866" /> */}
+                  <Text style={styles.clearFilterText}>Clear Filters</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </>
+        }
+      />
+
+      {(searchText ||
+        selectedDistricts.length > 0 ||
+        selectedBranches.length > 0) && (
+        <TouchableOpacity
+          style={styles.fab}
+          activeOpacity={0.8}
+          onPress={() => router.push("/profile")}
+        >
+          <BookmarkIcon size={24} />
+          {movedCollegesCount && movedCollegesCount > 0 && (
+            <View style={styles.fabTextContainer}>
+              <Text style={styles.fabText}>{movedCollegesCount}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      )}
+
+      {/* Modal for Percentile & Rank */}
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>
+              To enable Smart Match mode, please enter your Percentile & Rank
+            </Text>
+
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              <View style={{ width: "50%" }}>
+                <FloatingLabelInput
+                  label="Percentile"
+                  value={percentile}
+                  onChangeText={setPercentile}
+                />
+              </View>
+              <View style={{ width: "50%" }}>
+                <FloatingLabelInput
+                  label="Rank"
+                  value={rank}
+                  onChangeText={setRank}
+                />
+              </View>
+            </View>
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={styles.modalButtonCancel}
+                onPress={() => {
+                  setModalVisible(false);
+                  setSmartMatchEnabled(false);
+                }}
+              >
+                <Text style={styles.modalButtonTextCancel}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButtonSubmit}
+                onPress={handleSubmitSmartMatch}
+              >
+                <Text style={styles.modalButtonTextSubmit}>Enable</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 };
 
@@ -451,15 +588,50 @@ const styles = StyleSheet.create({
   smartMatchRow: {
     flexDirection: "row",
     gap: 10,
+    justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 4,
-    marginTop: -15,
-    marginBottom: -10,
   },
   smartMatchLabel: {
     fontSize: 16,
     fontFamily: "SourceSans3Medium",
     color: "#063866",
+  },
+
+  fab: {
+    position: "absolute",
+    bottom: 15,
+    right: 15,
+    backgroundColor: "#063866", // Dark blue
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 5, // Android shadow
+    shadowColor: "#000", // iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+  },
+
+  fabTextContainer: {
+    position: "absolute",
+    top: 0,
+    left: 35,
+    backgroundColor: "#ff6600", // dark blue
+    borderRadius: 12,
+    minWidth: 24,
+    height: 18,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 6,
+    zIndex: 10,
+  },
+  fabText: {
+    color: "white",
+    fontSize: 12,
+    fontFamily: "SourceSans3Medium",
   },
 
   // Modal

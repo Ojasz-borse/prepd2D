@@ -1,39 +1,44 @@
 import React from "react";
-import { Path, Svg } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 
-type Props = {
-  focused: boolean;
+type NetworkShareIconProps = {
   size?: number;
+  color?: string;
 };
 
-export const ShareIcon: React.FC<Props> = ({ focused, size = 24 }) => {
-  return focused ? (
-    // FOCUSED VERSION
+export default function ShareIcon({
+  size = 24,
+  color = "#063866",
+}: NetworkShareIconProps) {
+  return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
-        d="M12.6644 5.47875L16.6367 9.00968C18.2053 10.404 18.9896 11.1012 18.9896 11.9993C18.9896 12.8975 18.2053 13.5946 16.6367 14.989L12.6644 18.5199C11.9484 19.1563 11.5903 19.4746 11.2952 19.342C11 19.2095 11 18.7305 11 17.7725V15.4279C7.4 15.4279 3.5 17.1422 2 19.9993C2 10.8565 7.33333 8.57075 11 8.57075V6.22616C11 5.26817 11 4.78917 11.2952 4.65662C11.5903 4.52407 11.9484 4.8423 12.6644 5.47875Z"
-        stroke="#063866"
+        d="M9 12C9 13.3807 7.88071 14.5 6.5 14.5C5.11929 14.5 4 13.3807 4 12C4 10.6193 5.11929 9.5 6.5 9.5C7.88071 9.5 9 10.6193 9 12Z"
+        stroke={color}
         strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  ) : (
-    // NORMAL VERSION
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M12.6644 5.47875L16.6367 9.00968C18.2053 10.404 18.9896 11.1012 18.9896 11.9993C18.9896 12.8975 18.2053 13.5946 16.6367 14.989L12.6644 18.5199C11.9484 19.1563 11.5903 19.4746 11.2952 19.342C11 19.2095 11 18.7305 11 17.7725V15.4279C7.4 15.4279 3.5 17.1422 2 19.9993C2 10.8565 7.33333 8.57075 11 8.57075V6.22616C11 5.26817 11 4.78917 11.2952 4.65662C11.5903 4.52407 11.9484 4.8423 12.6644 5.47875Z"
-        stroke="#000000"
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
       />
       <Path
-        d="M15.5386 4.5L20.7548 9.34362C21.5489 10.081 22.0001 11.1158 22.0001 12.1994C22.0001 13.3418 21.4989 14.4266 20.629 15.1671L15.5386 19.5"
-        stroke="#d3d3d3"
+        d="M14 6.5L9 10"
+        stroke={color}
         strokeWidth={1.5}
         strokeLinecap="round"
+      />
+      <Path
+        d="M14 17.5L9 14"
+        stroke={color}
+        strokeWidth={1.5}
+        strokeLinecap="round"
+      />
+      <Path
+        d="M19 18.5C19 19.8807 17.8807 21 16.5 21C15.1193 21 14 19.8807 14 18.5C14 17.1193 15.1193 16 16.5 16C17.8807 16 19 17.1193 19 18.5Z"
+        stroke={color}
+        strokeWidth={1.5}
+      />
+      <Path
+        d="M19 5.5C19 6.88071 17.8807 8 16.5 8C15.1193 8 14 6.88071 14 5.5C14 4.11929 15.1193 3 16.5 3C17.8807 3 19 4.11929 19 5.5Z"
+        stroke={color}
+        strokeWidth={1.5}
       />
     </Svg>
   );
-};
+}

@@ -23,12 +23,16 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
       )}
       <Text style={styles.headerTitle}>{title}</Text>
 
-      <TouchableOpacity
-        style={styles.profileIconContainer}
-        onPress={() => router.push("/profile")}
-      >
-        <ProfileTabIcon size={28} focused={false} />
-      </TouchableOpacity>
+      {title != "Profile" ? (
+        <TouchableOpacity
+          style={styles.profileIconContainer}
+          onPress={() => router.push("/profile")}
+        >
+          <ProfileTabIcon size={28} focused={false} />
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity></TouchableOpacity>
+      )}
     </View>
   );
 };

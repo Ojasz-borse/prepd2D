@@ -115,7 +115,7 @@ export default function CollegeFees({ fees }: Props) {
 const styles = StyleSheet.create({
   dropdownWrapper: {
     flexDirection: "row",
-    marginBottom: 12,
+    marginBottom: 4,
     marginTop: -45,
   },
   rightGroup: {
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 16,
     padding: 12,
-    marginBottom: 12,
+    marginBottom: 6,
     borderWidth: 1,
     borderColor: "#d9d9d9",
   },
