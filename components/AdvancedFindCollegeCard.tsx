@@ -13,6 +13,10 @@ interface CollegeBranch {
   is_government: boolean;
   name: string;
   standard_cutoff_data: StandardCutoffData[];
+  percentage?: number;
+  tag?: string;
+  req_rank?: number;
+  considered_category?: string | null;
 }
 
 interface StandardCutoffData {
@@ -32,11 +36,14 @@ const TYPE_META: Record<
 
 interface Props {
   item: CollegeBranch;
+  onLongPress?: () => void;
 }
 
-const AdvancedFindCollegeCard: React.FC<Props> = ({ item }) => {
+const AdvancedFindCollegeCard: React.FC<Props> = ({ item, onLongPress }) => {
   const meta = item.is_government ? TYPE_META.Govt : TYPE_META.Pvt;
   const TypeIcon = meta.Icon;
+
+  console.log("\n\nitem", item);
 
   return (
     <Pressable
@@ -45,11 +52,10 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({ item }) => {
       onPress={() =>
         router.push({
           pathname: "../branch-details",
-          params: {
-            id: item.choice_code,
-          },
+          params: { id: item.choice_code },
         })
       }
+      onLongPress={onLongPress}
     >
       {/* Top Row */}
       <View style={styles.subRow}>
@@ -76,13 +82,58 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({ item }) => {
             </Text>
           </View>
         ))}
-
-        <View style={{ marginLeft: "auto" }}>
-          <View style={styles.chance}>
-            <Text style={styles.chanceText}>99%</Text>
-          </View>
-        </View>
       </View>
+      {(item.tag || item.percentage) && (
+        <View style={styles.smartMatch}>
+          {item.tag && (
+            <Text
+              style={[
+                styles.smartMatchText,
+                {
+                  backgroundColor:
+                    item.tag === "Exact"
+                      ? "#2ecc71"
+                      : item.tag === "Very Hard"
+                      ? "#ef4444"
+                      : item.tag === "Hard"
+                      ? "#f97316"
+                      : item.tag === "Easy"
+                      ? " #facc15"
+                      : item.tag === "Very Easy"
+                      ? "#a3e635"
+                      : "gray", // fallback
+                },
+              ]}
+            >
+              {item.tag}
+            </Text>
+          )}
+
+          {item.percentage && item.percentage < 100 && (
+            <Text
+              style={[
+                styles.smartMatchNormalText,
+                {
+                  color:
+                    item.tag === "Exact"
+                      ? "#2ecc71"
+                      : item.tag === "Very Hard"
+                      ? "#ef4444"
+                      : item.tag === "Hard"
+                      ? "#f97316"
+                      : item.tag === "Easy"
+                      ? " #facc15"
+                      : item.tag === "Very Easy"
+                      ? "#a3e635"
+                      : "gray", // fallback
+                },
+              ]}
+            >
+              {item.percentage}%
+            </Text>
+          )}
+        </View>
+      )}
     </Pressable>
   );
 };
@@ -94,9 +145,9 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: 16,
     padding: 12,
-    marginBottom: 12,
     borderWidth: 1,
     borderColor: "#d9d9d9",
+    backgroundColor: "#fff",
   },
   subRow: {
     flexDirection: "row",
@@ -130,7 +181,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
-    marginTop: 12,
+    marginTop: 8,
     alignItems: "center",
   },
   cutoffBox: {
@@ -163,11 +214,34 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     paddingHorizontal: 6,
     paddingVertical: 2,
-   
   },
   chanceText: {
     color: "#fff",
     fontSize: 9,
     fontFamily: "SourceSans3SemiBold",
+  },
+  smartMatch: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 10,
+    marginLeft: 2,
+    gap: 10,
+  },
+  smartMatchText: {
+    color: "#fff",
+    backgroundColor: "green",
+    paddingHorizontal: 8,
+    borderRadius: 6,
+    fontFamily: "SourceSans3Medium",
+    fontSize: 12,
+  },
+  smartMatchNormalText: {
+    color: "green",
+    backgroundColor: "#f2f2f2",
+    paddingHorizontal: 8,
+    borderRadius: 6,
+    fontFamily: "SourceSans3Medium",
+    fontSize: 12,
   },
 });

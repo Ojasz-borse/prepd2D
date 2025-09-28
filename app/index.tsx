@@ -1,6 +1,8 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { useNotificationListener } from "@/hooks/useNotificationListener";
+import { registerForPushNotificationsAsync } from "@/services/notificationService";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import {
@@ -54,8 +56,13 @@ function GlowBall({
 
 export default function Index() {
   const router = useRouter();
-  const { checkAuth, loading } = useAuth(); // 👈 use loading
+  const { checkAuth, userToken, loading } = useAuth(); // 👈 use loading
 
+  useEffect(() => {
+    registerForPushNotificationsAsync(userToken);
+  }, [userToken]);
+
+  useNotificationListener();
   useEffect(() => {
     const verify = async () => {
       const isSignedIn = await checkAuth();

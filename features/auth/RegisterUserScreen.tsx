@@ -243,22 +243,6 @@ const RegisterUserScreen: React.FC = () => {
                     <TouchableOpacity
                       style={[
                         styles.groupOption,
-                        group === "PCB" && styles.groupOptionSelected,
-                      ]}
-                      onPress={() => setGroup("PCB")}
-                    >
-                      <Text
-                        style={[
-                          styles.groupOptionText,
-                          group === "PCB" && styles.groupOptionTextSelected,
-                        ]}
-                      >
-                        PCB
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[
-                        styles.groupOption,
                         group === "PCM" && styles.groupOptionSelected,
                       ]}
                       onPress={() => setGroup("PCM")}
@@ -270,6 +254,22 @@ const RegisterUserScreen: React.FC = () => {
                         ]}
                       >
                         PCM
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.groupOption,
+                        group === "PCB" && styles.groupOptionSelected,
+                      ]}
+                      onPress={() => setGroup("PCB")}
+                    >
+                      <Text
+                        style={[
+                          styles.groupOptionText,
+                          group === "PCB" && styles.groupOptionTextSelected,
+                        ]}
+                      >
+                        PCB
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -518,7 +518,10 @@ const styles = StyleSheet.create({
     color: "#777",
     fontFamily: "SourceSans3Medium",
   },
-  groupOptionTextSelected: { color: "#063866", fontWeight: "600" },
+  groupOptionTextSelected: {
+    color: "#063866",
+    fontFamily: "SourceSans3Medium",
+  },
 });
 
 export default RegisterUserScreen;

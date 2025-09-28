@@ -8,6 +8,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useRef, useState } from "react";
 import {
   PanResponder,
+  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -79,6 +80,8 @@ interface StandardCutoffData {
   percentile: number;
 }
 
+const MemoizedCard = React.memo(AdvancedFindCollegeCard);
+
 export default function ProfileView() {
   const { user, loading } = useAuth();
 
@@ -120,27 +123,9 @@ export default function ProfileView() {
     isActive,
   }: RenderItemParams<CollegeBranch>) => {
     return (
-      <View
-        style={{
-          opacity: isActive ? 0.8 : 1,
-          transform: [{ scale: isActive ? 1.05 : 1 }],
-          marginVertical: 4,
-        }}
-      >
-        <AdvancedFindCollegeCard item={item} />
-        {/* Drag can be triggered anywhere inside the card */}
-        <TouchableOpacity
-          onLongPress={drag}
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            padding: 8,
-          }}
-        >
-          <Text style={{ fontSize: 20 }}>⇅</Text> {/* visual drag handle */}
-        </TouchableOpacity>
-      </View>
+      <Pressable onLongPress={drag}>
+        <MemoizedCard item={item} onLongPress={drag} />
+      </Pressable>
     );
   };
 
@@ -223,6 +208,15 @@ export default function ProfileView() {
                     keyExtractor={(item) => item.choice_code}
                     renderItem={renderItem}
                     onDragEnd={({ data }) => setFilteredData(data)}
+                    activationDistance={10} // drag starts after moving 10px
+                    autoscrollSpeed={50} // helps when dragging near edges
+                    autoscrollThreshold={80} // starts auto-scroll sooner
+                    animationConfig={{
+                      mass: 0.5,
+                      damping: 20,
+                      stiffness: 150,
+                      overshootClamping: false,
+                    }}
                     ListEmptyComponent={
                       branchesLoading ? (
                         <>

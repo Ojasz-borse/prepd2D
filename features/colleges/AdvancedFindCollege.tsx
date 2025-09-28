@@ -35,6 +35,20 @@ interface CollegeBranch {
   is_government: boolean;
   name: string;
   standard_cutoff_data: StandardCutoffData[];
+  Open: number | null;
+  considered_category_open: string | null;
+  OBC: number | null;
+  considered_category_obc: string | null;
+  TFWS: number | null;
+  considered_category_tfws: string | null;
+  SC_ST: number | null;
+  considered_category_sc_st: string | null;
+  VJ_NT: number | null;
+  considered_category_vj_nt: string | null;
+  percentage?: number;
+  tag?: string;
+  req_rank?: number;
+  considered_category?: string | null;
 }
 
 interface StandardCutoffData {
@@ -142,6 +156,9 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
   const [modalVisible, setModalVisible] = useState(false);
   const [percentile, setPercentile] = useState("");
   const [rank, setRank] = useState("");
+  const [category, setCategory] = useState<
+    "Open" | "OBC" | "TFWS" | "SC_ST" | "VJ_NT" | null
+  >(null);
 
   // Unique values
   const collegeBranches = [...new Set(branches.map((d) => d.branch_name))];
@@ -195,13 +212,12 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
   };
 
   const handleSmartMatchToggle = (value: boolean) => {
-    setSmartMatchEnabled(value);
-    if (value) setModalVisible(true);
-  };
-
-  const handleSubmitSmartMatch = () => {
-    setModalVisible(false);
-    // Later: calculate scores with percentile & rank
+    if (value) {
+      setModalVisible(true);
+    } else {
+      setSmartMatchEnabled(false);
+      setModalVisible(false);
+    }
   };
 
   const handleMoveToMyList = async () => {
@@ -230,6 +246,89 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
     }
   };
 
+  const enrichedData = useMemo(() => {
+    if (!smartMatchEnabled || !rank || !category) return filteredData;
+
+    const userRank = parseInt(rank, 10);
+    if (isNaN(userRank)) return filteredData;
+
+    const enriched = filteredData.map((item) => {
+      let cutoff_rank: number | null = null;
+      let considered_category: string | null = null;
+
+      switch (category) {
+        case "Open":
+          cutoff_rank = item.Open;
+          considered_category = item.considered_category_open;
+          break;
+        case "OBC":
+          cutoff_rank = item.OBC;
+          considered_category = item.considered_category_obc;
+          break;
+        case "TFWS":
+          cutoff_rank = item.TFWS;
+          considered_category = item.considered_category_tfws;
+          break;
+        case "SC_ST":
+          cutoff_rank = item.SC_ST;
+          considered_category = item.considered_category_sc_st;
+          break;
+        case "VJ_NT":
+          cutoff_rank = item.VJ_NT;
+          considered_category = item.considered_category_vj_nt;
+          break;
+      }
+
+      if (cutoff_rank == null) {
+        return { ...item, percentage: undefined, displayPercentage: undefined };
+      }
+
+      let percentage: number;
+      if (userRank === cutoff_rank) {
+        percentage = 99;
+      } else if (userRank > cutoff_rank) {
+        const diff = userRank - cutoff_rank;
+        percentage = 99 - diff / 10;
+      } else {
+        const diff = cutoff_rank - userRank;
+        percentage = 99 + diff / 10;
+      }
+
+      const rounded = Math.round(percentage);
+      const displayPercentage = percentage > 100 ? 100 : rounded;
+
+      let tag: string;
+      if (displayPercentage >= 96 && displayPercentage <= 99) tag = "Exact";
+      else if (displayPercentage >= 80 && displayPercentage < 96) tag = "Hard";
+      else if (displayPercentage < 80) tag = "Very Hard";
+      else if (displayPercentage > 99 && displayPercentage <= 100) tag = "Easy";
+      else tag = "Very Easy";
+
+      return {
+        ...item,
+        percentage: rounded,
+        displayPercentage,
+        tag,
+        req_rank: cutoff_rank,
+        considered_category,
+      };
+    });
+
+    // Sort safely
+    return enriched.sort((a, b) => {
+      const aPerc = a.percentage ?? -Infinity; // undefined → lowest
+      const bPerc = b.percentage ?? -Infinity;
+
+      const aAbove100 = aPerc > 100;
+      const bAbove100 = bPerc > 100;
+
+      if (aAbove100 && !bAbove100) return 1;
+      if (!aAbove100 && bAbove100) return -1;
+
+      return bPerc - aPerc; // descending
+    });
+  }, [filteredData, smartMatchEnabled, rank, category]);
+
   if (error) {
     return (
       <View style={styles.centerContainer}>
@@ -241,10 +340,12 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
   return (
     <>
       <FlatList
-        data={filteredData}
+        data={enrichedData}
         keyExtractor={(item) => item.choice_code}
         renderItem={({ item }) => (
-          <AdvancedFindCollegeCard key={item.choice_code} item={item} />
+          <View key={item.choice_code} style={{ marginBottom: 15 }}>
+            <AdvancedFindCollegeCard item={item} />
+          </View>
         )}
         ListEmptyComponent={
           loading ? (
@@ -407,7 +508,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
       <Modal
         visible={modalVisible}
         transparent
-        animationType="slide"
+        animationType="fade"
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
@@ -417,20 +518,118 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
             </Text>
 
             <View style={{ flexDirection: "row", gap: 10 }}>
-              <View style={{ width: "50%" }}>
+              <View style={{ width: "48%" }}>
                 <FloatingLabelInput
                   label="Percentile"
                   value={percentile}
                   onChangeText={setPercentile}
                 />
               </View>
-              <View style={{ width: "50%" }}>
+              <View style={{ width: "48%" }}>
                 <FloatingLabelInput
                   label="Rank"
                   value={rank}
                   onChangeText={setRank}
                 />
               </View>
+            </View>
+
+            <Text
+              style={{
+                marginTop: -14,
+                marginBottom: 10,
+                fontSize: 16,
+                fontFamily: "SourceSans3Medium",
+                color: "#06386660",
+              }}
+            >
+              Select category
+            </Text>
+            <View style={styles.groupWrapper}>
+              <TouchableOpacity
+                style={[
+                  styles.groupOption,
+                  category === "Open" && styles.groupOptionSelected,
+                ]}
+                onPress={() => setCategory("Open")}
+              >
+                <Text
+                  style={[
+                    styles.groupOptionText,
+                    category === "Open" && styles.groupOptionTextSelected,
+                  ]}
+                >
+                  Open
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.groupOption,
+                  category === "OBC" && styles.groupOptionSelected,
+                ]}
+                onPress={() => setCategory("OBC")}
+              >
+                <Text
+                  style={[
+                    styles.groupOptionText,
+                    category === "OBC" && styles.groupOptionTextSelected,
+                  ]}
+                >
+                  OBC
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.groupOption,
+                  category === "TFWS" && styles.groupOptionSelected,
+                ]}
+                onPress={() => setCategory("TFWS")}
+              >
+                <Text
+                  style={[
+                    styles.groupOptionText,
+                    category === "TFWS" && styles.groupOptionTextSelected,
+                  ]}
+                >
+                  TFWS
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.groupOption,
+                  category === "SC_ST" && styles.groupOptionSelected,
+                ]}
+                onPress={() => setCategory("SC_ST")}
+              >
+                <Text
+                  style={[
+                    styles.groupOptionText,
+                    category === "SC_ST" && styles.groupOptionTextSelected,
+                  ]}
+                >
+                  SC/ST
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.groupOption,
+                  category === "VJ_NT" && styles.groupOptionSelected,
+                ]}
+                onPress={() => setCategory("VJ_NT")}
+              >
+                <Text
+                  style={[
+                    styles.groupOptionText,
+                    category === "VJ_NT" && styles.groupOptionTextSelected,
+                  ]}
+                >
+                  VJNT
+                </Text>
+              </TouchableOpacity>
             </View>
 
             <View style={styles.modalActions}>
@@ -445,7 +644,10 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.modalButtonSubmit}
-                onPress={handleSubmitSmartMatch}
+                onPress={() => {
+                  setModalVisible(false);
+                  setSmartMatchEnabled(true);
+                }}
               >
                 <Text style={styles.modalButtonTextSubmit}>Enable</Text>
               </TouchableOpacity>
@@ -684,9 +886,35 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
   },
   flexInput: {
     flex: 1,
   },
+
+  groupWrapper: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 30,
+    gap: 8,
+  },
+  groupOption: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    paddingVertical: 12,
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  groupOptionSelected: {
+    borderColor: "#063866",
+    borderWidth: 2,
+    backgroundColor: "#f8fbff",
+  },
+  groupOptionText: {
+    fontSize: 12,
+    color: "#777",
+    fontFamily: "SourceSans3Medium",
+  },
+  groupOptionTextSelected: { color: "#063866", fontWeight: "600" },
 });

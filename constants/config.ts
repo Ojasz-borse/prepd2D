@@ -9,6 +9,7 @@ export const FORGOT_PASSWORD_VERIFY_OTP = `${extra.SERVER_URL}/api/auth/forgot-p
 export const FORGOT_PASSWORD_RESET = `${extra.SERVER_URL}/api/auth/forgot-password/reset`;
 
 export const GET_NEWS = `${extra.SERVER_URL}/api/news`;
+export const SAVE_PUSH_TOKEN = `${extra.SERVER_URL}/api/notifications/save-push-token`;
 
 export const GET_COLLEGES = `${extra.SERVER_URL}/api/colleges/normal`;
 export const GET_COLLEGE_BRANCHES = `${extra.SERVER_URL}/api/colleges/advanced`;
