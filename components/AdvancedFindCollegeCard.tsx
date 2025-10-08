@@ -52,7 +52,7 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({ item, onLongPress }) => {
       onPress={() =>
         router.push({
           pathname: "../branch-details",
-          params: { id: item.choice_code },
+          params: { choice_code: item.choice_code },
         })
       }
       onLongPress={onLongPress}
