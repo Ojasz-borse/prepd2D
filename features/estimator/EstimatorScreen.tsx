@@ -1,47 +1,53 @@
 import FloatingLabelInput from "@/components/FloatingLabelInput";
 import TopHeader from "@/components/TopHeader";
+import { useEstimator } from "@/hooks/useEstimator";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { colors } from "../../constants/theme";
 
 export default function EstimatorScreen() {
+  const { percentile, rank, loading, error, predictPercentile, predictRank } =
+    useEstimator();
+
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"marks" | "rank">("marks");
 
-  // --- Local states ---
+  // Local input fields
   const [marks, setMarks] = useState("");
-  const [percentile, setPercentile] = useState<string | null>(null);
-
   const [inputPercentile, setInputPercentile] = useState("");
-  const [rank, setRank] = useState<string | null>(null);
 
-  // --- Handlers ---
-  const handleCalculatePercentile = () => {
-    if (marks) {
-      const calc = (parseFloat(marks) / 360) * 100; // example formula
-      setPercentile(calc.toFixed(2));
-    } else {
-      setPercentile(null);
+  // ===== Handlers =====
+  const handleCalculatePercentile = async () => {
+    if (!marks) return;
+    try {
+      await predictPercentile(Number(marks), "easy");
+    } catch (err) {
+      console.error("Error predicting percentile:", err);
     }
   };
 
-  const handleCalculateRank = () => {
-    if (inputPercentile) {
-      const totalCandidates = 200000; // example number
-      const calc =
-        ((100 - parseFloat(inputPercentile)) / 100) * totalCandidates;
-      setRank(Math.round(calc).toString());
-    } else {
-      setRank(null);
+  const handleCalculateRank = async () => {
+    if (!inputPercentile) return;
+    try {
+      await predictRank(Number(inputPercentile));
+    } catch (err) {
+      console.error("Error predicting rank:", err);
     }
   };
 
+  // ===== UI =====
   return (
     <View style={styles.container}>
       <TopHeader title="Estimator" showBackArrow={false} />
 
-      {/* ===== Tabs ===== */}
+      {/* Tabs */}
       <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tab, activeTab === "marks" && styles.activeTab]}
@@ -72,12 +78,10 @@ export default function EstimatorScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* ===== Content ===== */}
+      {/* Content */}
       <View style={styles.contentWrapper}>
-        {/* Marks → Percentile */}
-        <View
-          style={{ flex: 1, display: activeTab === "marks" ? "flex" : "none" }}
-        >
+        {/* --- Marks → Percentile --- */}
+        {activeTab === "marks" && (
           <View style={styles.contentBox}>
             <Text style={styles.headingText}>Enter your Marks</Text>
 
@@ -95,7 +99,7 @@ export default function EstimatorScreen() {
                   marks && styles.confirmButtonActive,
                 ]}
                 onPress={handleCalculatePercentile}
-                disabled={!marks}
+                disabled={!marks || loading}
               >
                 <Text
                   style={[
@@ -103,25 +107,23 @@ export default function EstimatorScreen() {
                     marks && styles.confirmButtonTextActive,
                   ]}
                 >
-                  Calculate
+                  {loading ? "Calculating..." : "Calculate"}
                 </Text>
               </TouchableOpacity>
             </View>
 
             {percentile && (
               <Text style={styles.resultText}>
-                🎯 Estimated Percentile: {percentile}%
+                🎯 Estimated Percentile: {percentile.toFixed(2)}%
               </Text>
             )}
           </View>
-        </View>
+        )}
 
-        {/* Percentile → Rank */}
-        <View
-          style={{ flex: 1, display: activeTab === "rank" ? "flex" : "none" }}
-        >
+        {/* --- Percentile → Rank --- */}
+        {activeTab === "rank" && (
           <View style={styles.contentBox}>
-            <Text style={styles.headingText}>Percentile to Rank</Text>
+            <Text style={styles.headingText}>Enter your Percentile</Text>
 
             <FloatingLabelInput
               label="Enter Percentile"
@@ -137,7 +139,7 @@ export default function EstimatorScreen() {
                   inputPercentile && styles.confirmButtonActive,
                 ]}
                 onPress={handleCalculateRank}
-                disabled={!inputPercentile}
+                disabled={!inputPercentile || loading}
               >
                 <Text
                   style={[
@@ -145,7 +147,7 @@ export default function EstimatorScreen() {
                     inputPercentile && styles.confirmButtonTextActive,
                   ]}
                 >
-                  Calculate
+                  {loading ? "Calculating..." : "Calculate"}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -154,8 +156,21 @@ export default function EstimatorScreen() {
               <Text style={styles.resultText}>📊 Estimated Rank: {rank}</Text>
             )}
           </View>
-        </View>
+        )}
       </View>
+
+      {/* Loading or Error */}
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      )}
+
+      {error && (
+        <Text style={{ color: "red", textAlign: "center", marginTop: 10 }}>
+          {error}
+        </Text>
+      )}
     </View>
   );
 }
@@ -224,5 +239,17 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3Medium",
     color: colors.textDark,
     textAlign: "center",
+  },
+
+  // --- Loader ---
+  loadingOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.6)",
   },
 });

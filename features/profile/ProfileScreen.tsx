@@ -149,13 +149,10 @@ export default function ProfileView() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-        {/* <GlowBall bottom={-400} right={-400} /> */}
-
+      <TopHeader title="Profile" showBackArrow={false} />
         {/* 🔹 Profile content */}
         <View style={styles.container}>
           {/* Header */}
-          <TopHeader title="Profile" showBackArrow={true} />
 
           <View style={styles.profileSection}>
             {/* Profile Icon on Left */}
@@ -251,7 +248,6 @@ export default function ProfileView() {
             </View>
           </View>
         </View>
-      </SafeAreaView>
     </GestureHandlerRootView>
   );
 }

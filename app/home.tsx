@@ -1,38 +1,39 @@
-// app/home.tsx
-import AiChatTabIcon from "@/assets/icons/AiChatTabIcon";
 import EstimatorTabIcon from "@/assets/icons/EstimatorTabIcon";
+import { ProfilePageIcon } from "@/assets/icons/ProfilePageIcon";
 import SearchCollegeTabIcon from "@/assets/icons/SearchCollegeTabIcon";
 import { useAuth } from "@/context/AuthContext";
 import FindColleges from "@/features/colleges/FindColleges";
 import EstimatorScreen from "@/features/estimator/EstimatorScreen";
 import HomeScreen from "@/features/home/HomeScreen";
+import ProfileScreen from "@/features/profile/ProfileScreen";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HomeTabIcon from "../assets/icons/HomeTabIcon";
-import { colors, fonts } from "../constants/theme";
+import { colors } from "../constants/theme";
 
 const Tab = createBottomTabNavigator();
 
 export default function Home() {
   const router = useRouter();
-
-  const { checkAuth, logout } = useAuth();
+  const { checkAuth } = useAuth();
 
   useEffect(() => {
     const verify = async () => {
       const isSignedIn = await checkAuth();
       if (!isSignedIn) {
-        router.replace("/"); // ❌ redirect if not logged in
+        router.replace("/");
       }
     };
     verify();
   }, []);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f2f2f2" }}>
       <Tab.Navigator
         screenOptions={{
           headerShown: false,
@@ -41,7 +42,7 @@ export default function Home() {
           tabBarInactiveTintColor: colors.textLight,
           tabBarStyle: {
             ...styles.tabBar,
-            paddingTop: 10,
+            paddingTop: 5,
             paddingBottom: 20,
           },
           tabBarLabelStyle: styles.tabBarLabel,
@@ -52,15 +53,7 @@ export default function Home() {
           options={{
             tabBarLabel: "Home",
             tabBarIcon: ({ focused, size }) => (
-              <View
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  top: 2,
-                }}
-              >
-                <HomeTabIcon focused={focused} size={size} />
-              </View>
+              <HomeTabIcon focused={focused} size={size} />
             ),
           }}
         >
@@ -72,107 +65,108 @@ export default function Home() {
           options={{
             tabBarLabel: "Estimator",
             tabBarIcon: ({ focused, size }) => (
-              <View
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  top: 2,
-                }}
-              >
-                <EstimatorTabIcon focused={focused} size={size} />
-              </View>
+              <EstimatorTabIcon focused={focused} size={size} />
             ),
           }}
         >
           {() => <EstimatorScreen />}
         </Tab.Screen>
 
+        {/* ✨ Middle Circular “Prep AI” Button */}
         <Tab.Screen
-          name="Ask me"
+          name="PrepAI"
+          component={HomeScreen}
           options={{
-            tabBarLabel: "Ask me",
-            tabBarIcon: ({ focused, size }) => (
-              <View
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  top: 2,
-                }}
-              >
-                <AiChatTabIcon focused={focused} size={size} />
-              </View>
-            ),
+            tabBarLabel: "",
+            tabBarButton: () => <PrepAIMiddleButton />,
           }}
-        >
-          {() => (
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                top: 200,
-              }}
-            >
-              <TouchableOpacity onPress={logout}>
-                <Text>Logout</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </Tab.Screen>
+        />
 
         <Tab.Screen
-          name="Find Colleges"
+          name="Colleges"
           options={{
-            tabBarLabel: "Find Colleges",
+            tabBarLabel: "Colleges",
             tabBarIcon: ({ focused, size }) => (
-              <View
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  top: 2,
-                }}
-              >
-                <SearchCollegeTabIcon focused={focused} size={size} />
-              </View>
+              <SearchCollegeTabIcon focused={focused} size={size} />
             ),
           }}
         >
           {() => <FindColleges />}
+        </Tab.Screen>
+
+        <Tab.Screen
+          name="My Profile"
+          options={{
+            tabBarLabel: "My Profile",
+            tabBarIcon: ({ focused, size }) => (
+              <ProfilePageIcon focused={focused} size={size} />
+            ),
+          }}
+        >
+          {() => <ProfileScreen />}
         </Tab.Screen>
       </Tab.Navigator>
     </SafeAreaView>
   );
 }
 
+// ✅ Custom middle button component
+const PrepAIMiddleButton = () => {
+  const router = useRouter();
+  return (
+    <View style={styles.middleButtonContainer}>
+      <TouchableOpacity
+        activeOpacity={0.85}
+        onPress={() => router.push("/ai-chat")}
+      >
+        <LinearGradient
+          colors={["#e699ff", "#99b3ff"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.middleButton}
+        >
+          <FontAwesome5 name="magic" size={20} color="#fff" />
+        </LinearGradient>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
-  screenContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: colors.background,
-  },
-  screenTitle: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: colors.textDark,
-    fontFamily: fonts.semiBold,
-  },
   tabBar: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#fff",
+    height: 65,
     borderTopWidth: 1,
     borderTopColor: colors.border,
-    paddingTop: 10,
-    paddingBottom: 5,
-    height: 80,
     shadowColor: "#d3d3d3",
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 8,
+    paddingTop: -20,
   },
   tabBarLabel: {
     fontSize: 12,
     fontFamily: "SourceSans3SemiBold",
-
-    marginTop: 4,
+    marginTop: 0,
+  },
+  // 🔮 Prep AI button styling
+  middleButtonContainer: {
+    position: "absolute",
+    bottom: Platform.OS === "ios" ? 20 : 10,
+    alignSelf: "center",
+  },
+  middleButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 35,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
+    shadowColor: "#999",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 8,
   },
 });

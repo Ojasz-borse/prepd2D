@@ -2,8 +2,7 @@ import SearchIcon from "@/assets/icons/SearchIcon";
 import NormalFindCollegeCard from "@/components/NormalFindCollegeCard";
 import NormalFindCollegeCardSkeleton from "@/components/NormalFindCollegeCardSkeleton";
 import { Ionicons } from "@expo/vector-icons";
-import * as ScreenCapture from "expo-screen-capture";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -87,16 +86,6 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
       return matchesSearch && matchesDistrict && matchesType;
     });
   }, [colleges, searchText, selectedDistricts, selectedType]);
-
-  useEffect(() => {
-    // Prevent screenshot when this screen is mounted
-    ScreenCapture.preventScreenCaptureAsync();
-
-    // Allow again when leaving screen
-    return () => {
-      ScreenCapture.allowScreenCaptureAsync();
-    };
-  }, []);
 
   const districts = [...new Set(colleges.map((item) => item.district))];
 
