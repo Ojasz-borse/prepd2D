@@ -43,9 +43,9 @@ function GlowBall({
       <Svg width="100%" height="100%" viewBox={`0 0 ${size} ${size}`}>
         <Defs>
           <RadialGradient id="glow" cx="50%" cy="50%" r="50%">
-            <Stop offset="0%" stopColor="#063866" stopOpacity="0.6" />
-            <Stop offset="40%" stopColor="#063866" stopOpacity="0.3" />
-            <Stop offset="100%" stopColor="#063866" stopOpacity="0" />
+            <Stop offset="0%" stopColor="#004aad" stopOpacity="0.6" />
+            <Stop offset="40%" stopColor="#004aad" stopOpacity="0.3" />
+            <Stop offset="100%" stopColor="#004aad" stopOpacity="0" />
           </RadialGradient>
         </Defs>
         <Circle cx={size / 2} cy={size / 2} r={size / 2} fill="url(#glow)" />
@@ -77,7 +77,7 @@ export default function Index() {
   if (loading) {
     return (
       <SafeAreaView style={styles.loadingWrapper}>
-        <Text style={{ fontSize: 18, color: "#063866" }}>Loading...</Text>
+        <Text style={{ fontSize: 18, color: "#004aad" }}>Loading...</Text>
       </SafeAreaView>
     );
   }
@@ -139,14 +139,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    color: "#063866",
+    color: "#004aad",
     textAlign: "center",
     fontFamily: "SourceSans3Medium",
     marginTop: 100,
   },
   subtitle: {
     fontSize: 16,
-    color: "#063866",
+    color: "#004aad",
     textAlign: "center",
     fontFamily: "SourceSans3Medium",
     marginTop: 8,
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   registerButton: {
-    backgroundColor: "#063866",
+    backgroundColor: "#004aad",
   },
   loginButton: {
     backgroundColor: "#fff",
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   loginButtonText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#063866",
+    color: "#004aad",
     fontFamily: "SourceSans3Medium",
   },
 });

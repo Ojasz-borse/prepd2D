@@ -53,7 +53,7 @@ const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
             }),
             color: labelAnim.interpolate({
               inputRange: [0, 1],
-              outputRange: ["#999", "#063866"],
+              outputRange: ["#999", "#004aad"],
             }),
           },
         ]}
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 10,
   },
-  inputContainerFocused: { borderColor: "#063866", borderWidth: 2 },
+  inputContainerFocused: { borderColor: "#004aad", borderWidth: 2 },
   input: {
     flex: 1,
     fontSize: 16,

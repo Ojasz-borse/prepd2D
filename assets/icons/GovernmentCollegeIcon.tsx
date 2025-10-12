@@ -8,7 +8,7 @@ type GovernmentCollegeIconProps = {
 
 export default function GovernmentCollegeIcon({
   size = 24,
-  color = "#063866",
+  color = "#004aad",
 }: GovernmentCollegeIconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">

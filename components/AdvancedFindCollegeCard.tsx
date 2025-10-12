@@ -36,10 +36,16 @@ const TYPE_META: Record<
 
 interface Props {
   item: CollegeBranch;
+  quickView?: boolean;
+  isDragging?: boolean;
   onLongPress?: () => void;
 }
 
-const AdvancedFindCollegeCard: React.FC<Props> = ({ item, onLongPress }) => {
+const AdvancedFindCollegeCard: React.FC<Props> = ({
+  item,
+  quickView,
+  onLongPress,
+}) => {
   const meta = item.is_government ? TYPE_META.Govt : TYPE_META.Pvt;
   const TypeIcon = meta.Icon;
 
@@ -57,32 +63,6 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({ item, onLongPress }) => {
       }
       onLongPress={onLongPress}
     >
-      {/* Top Row */}
-      <View style={styles.subRow}>
-        <Text style={styles.subText}>{item.choice_code}</Text>
-        <View style={styles.typeRow}>
-          <TypeIcon size={16} />
-          <Text style={styles.subText}>{meta.label}</Text>
-        </View>
-      </View>
-
-      {/* Branch */}
-      <Text style={styles.collegeName}>{item.branch_name}</Text>
-
-      {/* College */}
-      <Text style={styles.districtText}>{item.name}</Text>
-
-      {/* Cutoff Grid */}
-      <View style={styles.cutoffWrapper}>
-        {item.standard_cutoff_data.map((cutoff, idx) => (
-          <View key={idx} style={styles.cutoffBox}>
-            <Text style={styles.cutoffCategory}>{cutoff.category}</Text>
-            <Text style={styles.cutoffValue}>
-              {cutoff.percentile.toFixed(2)}
-            </Text>
-          </View>
-        ))}
-      </View>
       {(item.tag || item.percentage) && (
         <View style={styles.smartMatch}>
           {item.tag && (
@@ -134,6 +114,38 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({ item, onLongPress }) => {
           )}
         </View>
       )}
+      {/* Top Row */}
+      <View style={styles.subRow}>
+        <Text style={styles.subText}>{item.choice_code}</Text>
+        <View style={styles.typeRow}>
+          {!quickView && (
+            <>
+              <TypeIcon size={16} />
+              <Text style={styles.subText}>{meta.label}</Text>
+            </>
+          )}
+        </View>
+      </View>
+
+      {/* Branch */}
+      <Text style={styles.collegeName}>{item.branch_name}</Text>
+
+      {/* College */}
+      {!quickView && <Text style={styles.districtText}>{item.name}</Text>}
+
+      {/* Cutoff Grid */}
+      {!quickView && (
+        <View style={styles.cutoffWrapper}>
+          {item.standard_cutoff_data.map((cutoff, idx) => (
+            <View key={idx} style={styles.cutoffBox}>
+              <Text style={styles.cutoffCategory}>{cutoff.category}</Text>
+              <Text style={styles.cutoffValue}>
+                {cutoff.percentile.toFixed(2)}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
     </Pressable>
   );
 };
@@ -161,7 +173,7 @@ const styles = StyleSheet.create({
   },
   subText: {
     fontSize: 14,
-    color: "#063866",
+    color: "#004aad",
     fontFamily: "SourceSans3Medium",
   },
   collegeName: {
@@ -185,7 +197,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   cutoffBox: {
-    backgroundColor: "#f0f4fb",
+    backgroundColor: "#e6f1ff",
     borderRadius: 8,
     paddingVertical: 4,
     minWidth: 50,
@@ -224,13 +236,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 10,
+    marginTop: -20,
+    marginBottom: 5,
     marginLeft: 2,
     gap: 10,
   },
   smartMatchText: {
     color: "#fff",
-    backgroundColor: "green",
     paddingHorizontal: 8,
     borderRadius: 6,
     fontFamily: "SourceSans3Medium",

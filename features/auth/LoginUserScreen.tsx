@@ -55,7 +55,7 @@ const LoginUserScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#063866" />
+      <StatusBar barStyle="light-content" backgroundColor="#004aad" />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
@@ -139,7 +139,7 @@ const LoginUserScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#063866" },
+  safeArea: { flex: 1, backgroundColor: "#004aad" },
   whiteCard: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 10 },
   centerWrapper: {
     flex: 1,
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     borderRadius: 25,
   },
-  confirmButtonActive: { backgroundColor: "#063866" },
+  confirmButtonActive: { backgroundColor: "#004aad" },
   confirmButtonText: {
     color: "#999",
     fontSize: 14,

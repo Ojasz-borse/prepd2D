@@ -6,7 +6,7 @@ type Props = {
   color?: string;
 };
 
-const GovernmentAuto: React.FC<Props> = ({ size = 32, color = "#063866" }) => (
+const GovernmentAuto: React.FC<Props> = ({ size = 32, color = "#004aad" }) => (
   <Svg width={size} height={size} viewBox="0 0 22 32" fill="none">
     <G>
       <Path

@@ -8,7 +8,7 @@ type ExternalLinkIconProps = {
 
 export default function ExternalLinkIcon({
   size = 24,
-  color = "#063866",
+  color = "#004aad",
 }: ExternalLinkIconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">

@@ -8,7 +8,7 @@ type LocationPinIconProps = {
 
 export default function LocationPinIcon({
   size = 24,
-  color = "#063866",
+  color = "#004aad",
 }: LocationPinIconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">

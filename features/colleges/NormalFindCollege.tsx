@@ -38,10 +38,10 @@ const DropdownItem: React.FC<DropdownItemProps> = ({ label, isSelected }) => {
       <Ionicons
         name={isSelected ? "checkbox" : "square-outline"}
         size={20}
-        color={isSelected ? "#063866" : "#999"}
+        color={isSelected ? "#004aad" : "#999"}
         style={{ marginRight: 8 }}
       />
-      <Text style={[styles.itemText, isSelected && { color: "#063866" }]}>
+      <Text style={[styles.itemText, isSelected && { color: "#004aad" }]}>
         {label}
       </Text>
     </View>
@@ -199,7 +199,7 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
                 style={styles.clearFilterBtn}
                 onPress={clearFilters}
               >
-                {/* <Ionicons name="close-circle-outline" size={16} color="#063866" /> */}
+                {/* <Ionicons name="close-circle-outline" size={16} color="#004aad" /> */}
                 <Text style={styles.clearFilterText}>Clear Filters</Text>
               </TouchableOpacity>
             )}
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     fontFamily: "SourceSans3Medium",
-    color: "#063866",
+    color: "#004aad",
   },
   errorText: {
     fontSize: 16,
@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
     position: "relative",
     top: -32,
     left: 110,
-    backgroundColor: "#063866", // your given color
+    backgroundColor: "#004aad", // your given color
     borderRadius: 9999, // full rounded
     paddingHorizontal: 8,
     paddingVertical: 2,

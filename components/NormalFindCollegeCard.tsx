@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   },
   subText: {
     fontSize: 14,
-    color: "#063866",
+    color: "#004aad",
     fontFamily: "SourceSans3Medium",
   },
 });

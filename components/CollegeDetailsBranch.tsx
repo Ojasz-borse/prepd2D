@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   },
   subText: {
     fontSize: 14,
-    color: "#063866",
+    color: "#004aad",
     fontFamily: "SourceSans3Medium",
   },
   collegeName: {
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   cutoffBox: {
-    backgroundColor: "#f0f4fb",
+    backgroundColor: "#e6f1ff",
     borderRadius: 8,
     paddingVertical: 4,
     minWidth: 50,

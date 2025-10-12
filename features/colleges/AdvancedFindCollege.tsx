@@ -122,10 +122,10 @@ const DropdownItem: React.FC<DropdownItemProps> = ({ label, isSelected }) => {
       <Ionicons
         name={isSelected ? "checkbox" : "square-outline"}
         size={20}
-        color={isSelected ? "#063866" : "#999"}
+        color={isSelected ? "#004aad" : "#999"}
         style={{ marginRight: 8 }}
       />
-      <Text style={[styles.itemText, isSelected && { color: "#063866" }]}>
+      <Text style={[styles.itemText, isSelected && { color: "#004aad" }]}>
         {label}
       </Text>
     </View>
@@ -452,7 +452,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
                     value={smartMatchEnabled}
                     onValueChange={handleSmartMatchToggle}
                     trackColor={{ false: "#ccc", true: "#99b3e6" }}
-                    thumbColor={smartMatchEnabled ? "#063866" : "#f4f3f4"}
+                    thumbColor={smartMatchEnabled ? "#004aad" : "#f4f3f4"}
                   />
                 </View>
                 {(searchText ||
@@ -478,7 +478,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
                   style={styles.clearFilterBtn}
                   onPress={clearFilters}
                 >
-                  {/* <Ionicons name="close-circle-outline" size={16} color="#063866" /> */}
+                  {/* <Ionicons name="close-circle-outline" size={16} color="#004aad" /> */}
                   <Text style={styles.clearFilterText}>Clear Filters</Text>
                 </TouchableOpacity>
               )}
@@ -540,7 +540,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
                 marginBottom: 10,
                 fontSize: 16,
                 fontFamily: "SourceSans3Medium",
-                color: "#06386660",
+                color: "#004aad60",
               }}
             >
               Select category
@@ -677,7 +677,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     fontFamily: "SourceSans3Medium",
-    color: "#063866",
+    color: "#004aad",
   },
   errorText: {
     fontSize: 16,
@@ -769,7 +769,7 @@ const styles = StyleSheet.create({
     position: "relative",
     top: -32,
     left: 110,
-    backgroundColor: "#063866", // your given color
+    backgroundColor: "#004aad", // your given color
     borderRadius: 9999, // full rounded
     paddingHorizontal: 8,
     paddingVertical: 2,
@@ -797,14 +797,14 @@ const styles = StyleSheet.create({
   smartMatchLabel: {
     fontSize: 16,
     fontFamily: "SourceSans3Medium",
-    color: "#063866",
+    color: "#004aad",
   },
 
   fab: {
     position: "absolute",
     bottom: 15,
     right: 15,
-    backgroundColor: "#063866", // Dark blue
+    backgroundColor: "#004aad", // Dark blue
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -853,7 +853,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "SourceSans3Medium",
     marginBottom: 16,
-    color: "#063866",
+    color: "#004aad",
     textAlign: "center",
   },
 
@@ -867,7 +867,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
   },
   modalButtonSubmit: {
-    backgroundColor: "#063866",
+    backgroundColor: "#004aad",
     paddingHorizontal: 18,
     paddingVertical: 8,
     borderRadius: 14,
@@ -907,7 +907,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   groupOptionSelected: {
-    borderColor: "#063866",
+    borderColor: "#004aad",
     borderWidth: 2,
     backgroundColor: "#f8fbff",
   },
@@ -916,5 +916,5 @@ const styles = StyleSheet.create({
     color: "#777",
     fontFamily: "SourceSans3Medium",
   },
-  groupOptionTextSelected: { color: "#063866", fontWeight: "600" },
+  groupOptionTextSelected: { color: "#004aad", fontWeight: "600" },
 });

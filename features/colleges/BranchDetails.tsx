@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   },
   subText: {
     fontSize: 14,
-    color: "#063866",
+    color: "#004aad",
     fontFamily: "SourceSans3Medium",
     textAlign: "center",
   },
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 1,
-    backgroundColor: "#063866",
+    backgroundColor: "#004aad",
     opacity: 0.15,
     marginVertical: 4,
   },
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   cutoffBox: {
-    backgroundColor: "#f0f4fb",
+    backgroundColor: "#e6f1ff",
     borderRadius: 8,
     paddingVertical: 6,
     paddingHorizontal: 10,

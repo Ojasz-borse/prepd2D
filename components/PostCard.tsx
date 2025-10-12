@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   badgeText: {
-    color: "#063866",
+    color: "#004aad",
     fontSize: 18,
     fontFamily: "SourceSans3Medium",
   },
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   },
   viewMore: {
     fontSize: 14,
-    color: "#063866",
+    color: "#004aad",
     fontFamily: "SourceSans3Medium",
   },
   shareBadge: {
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   linkText: {
-    color: "#063866",
+    color: "#004aad",
     fontFamily: "SourceSans3Medium",
     fontSize: 14,
     lineHeight: 18,

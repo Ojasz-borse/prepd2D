@@ -147,7 +147,7 @@ export default function CollegeDetails() {
 
   useEffect(() => {
     // Prevent screenshot when this screen is mounted
-    ScreenCapture.preventScreenCaptureAsync();
+    // ScreenCapture.preventScreenCaptureAsync();
 
     // Allow again when leaving screen
     return () => {
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
   },
   subText: {
     fontSize: 14,
-    color: "#063866",
+    color: "#004aad",
     fontFamily: "SourceSans3Medium",
     textAlign: "center",
   },
@@ -344,8 +344,8 @@ const styles = StyleSheet.create({
     gap: 2,
     borderWidth: 1,
     paddingHorizontal: 8,
-    borderColor: "#063866",
-    backgroundColor: "#063866",
+    borderColor: "#004aad",
+    backgroundColor: "#004aad",
     padding: 4,
     paddingRight: 12,
     borderRadius: 99,
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
   placementUrlText: {
     fontFamily: "SourceSans3Medium",
     fontSize: 14,
-    color: "#063866",
+    color: "#004aad",
   },
 
   addressText: {
@@ -379,7 +379,7 @@ const styles = StyleSheet.create({
   // Separators
   separator: {
     height: 1,
-    backgroundColor: "#063866",
+    backgroundColor: "#004aad",
     opacity: 0.15,
     marginVertical: 4,
   },

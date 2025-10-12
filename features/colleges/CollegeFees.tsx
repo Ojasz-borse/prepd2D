@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   },
   fees_total: {
     fontSize: 16,
-    color: "#063866",
+    color: "#004aad",
     fontFamily: "SourceSans3Medium", // ✅ applied
     marginTop: 10,
   },

@@ -51,7 +51,7 @@ const AuthStatusModal: React.FC<AuthStatusModalProps> = ({
               <Text
                 style={[
                   styles.modalMessage,
-                  { color: error ? "red" : "#063866" },
+                  { color: error ? "red" : "#004aad" },
                 ]}
               >
                 {message}
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     borderRadius: 25,
   },
-  confirmButtonActive: { backgroundColor: "#063866" },
+  confirmButtonActive: { backgroundColor: "#004aad" },
   confirmButtonText: {
     color: "#999",
     fontSize: 14,

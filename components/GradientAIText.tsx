@@ -26,7 +26,7 @@ export default function GradientAIText({
         }
       >
         <LinearGradient
-          colors={["#e699ff", "#809fff"]}
+          colors={["#66ccff", "#004aad"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.gradient}
@@ -51,6 +51,6 @@ const styles = StyleSheet.create({
   },
   gradient: {
     height: 22, // enough to cover the text height
-    width: 70, // wide enough for your text + icon
+    width: 100, // wide enough for your text + icon
   },
 });

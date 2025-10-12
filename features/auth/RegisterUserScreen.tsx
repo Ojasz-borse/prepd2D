@@ -157,7 +157,7 @@ const RegisterUserScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#063866" />
+      <StatusBar barStyle="light-content" backgroundColor="#004aad" />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
@@ -426,7 +426,7 @@ const RegisterUserScreen: React.FC = () => {
 
 // Styles (unchanged)
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#063866" },
+  safeArea: { flex: 1, backgroundColor: "#004aad" },
   whiteCard: {
     flex: 1,
     backgroundColor: "#fff",
@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     borderRadius: 25,
   },
-  confirmButtonActive: { backgroundColor: "#063866" },
+  confirmButtonActive: { backgroundColor: "#004aad" },
   confirmButtonText: {
     color: "#999",
     fontSize: 14,
@@ -482,7 +482,7 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3Medium",
   },
   inputBoxActive: {
-    borderColor: "#063866",
+    borderColor: "#004aad",
     borderWidth: 2,
     backgroundColor: "#f8fbff",
   },
@@ -509,7 +509,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   groupOptionSelected: {
-    borderColor: "#063866",
+    borderColor: "#004aad",
     borderWidth: 2,
     backgroundColor: "#f8fbff",
   },
@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3Medium",
   },
   groupOptionTextSelected: {
-    color: "#063866",
+    color: "#004aad",
     fontFamily: "SourceSans3Medium",
   },
 });

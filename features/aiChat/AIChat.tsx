@@ -93,27 +93,8 @@ const AIChat: React.FC = () => {
     if (messages.length === 0) return;
 
     const lastMsg = messages[messages.length - 1];
-    if (lastMsg.role === "assistant") {
-      setTypingText("");
-      let i = 0;
-      const words = lastMsg.content.split(" ");
-      const interval = setInterval(() => {
-        if (i < words.length) {
-          setTypingText((prev) => prev + (prev ? " " : "") + words[i]);
-          i++;
-        } else {
-          clearInterval(interval);
-          setDisplayedMessages((prev) => [
-            ...prev,
-            { ...lastMsg, content: lastMsg.content },
-          ]);
-          setTypingText("");
-        }
-      }, 80);
-      return () => clearInterval(interval);
-    } else {
-      setDisplayedMessages((prev) => [...prev, lastMsg]);
-    }
+
+    setDisplayedMessages((prev) => [...prev, lastMsg]);
   }, [messages]);
 
   const handleSend = () => {
@@ -130,8 +111,6 @@ const AIChat: React.FC = () => {
     setHasStartedChat(false);
     if (refresh) refresh();
   };
-
-  
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -182,7 +161,7 @@ const AIChat: React.FC = () => {
                     ]}
                   >
                     {item.role !== "user" && (
-                      <GradientAIText text="PrepAI" style={styles.aiName} />
+                      <GradientAIText text="PrepCET AI" style={styles.aiName} />
                     )}
                     {item.role === "assistant" ? (
                       <Markdown style={markdownStyles}>{item.content}</Markdown>
@@ -217,7 +196,7 @@ const AIChat: React.FC = () => {
                   <MaterialCommunityIcons
                     name="tune-variant"
                     size={22}
-                    color="#063866"
+                    color="#004aad"
                   />
                 </TouchableOpacity>
 
@@ -232,7 +211,7 @@ const AIChat: React.FC = () => {
                         backgroundColor:
                           loading || input.trim().length === 0
                             ? "#d9d9d9"
-                            : "#063866",
+                            : "#004aad",
                       },
                     ]}
                   >
@@ -271,7 +250,7 @@ const styles = StyleSheet.create({
   message: { margin: 8, padding: 10, borderRadius: 8, maxWidth: "80%" },
   userMessage: {
     alignSelf: "flex-end",
-    backgroundColor: "#f0f4fb",
+    backgroundColor: "#e6f1ff",
     borderTopRightRadius: 0,
     borderTopLeftRadius: 24,
     borderBottomRightRadius: 24,

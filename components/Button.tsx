@@ -16,7 +16,7 @@ export default function Button({
 
 const styles = StyleSheet.create({
   btn: {
-    backgroundColor: "#063866",
+    backgroundColor: "#004aad",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
