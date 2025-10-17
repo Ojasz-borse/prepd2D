@@ -93,7 +93,7 @@ export default function PostCard({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 10,
+    marginBottom: 1,
     backgroundColor: "#fff",
     padding: 16,
     borderBottomWidth: 0.5,

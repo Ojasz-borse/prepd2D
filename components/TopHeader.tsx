@@ -1,9 +1,21 @@
-import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useRef, useState } from "react";
+import {
+  Animated,
+  Dimensions,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { colors } from "../constants/theme";
+import { useAuth } from "../context/AuthContext"; // adjust path if needed
+
+const SCREEN_WIDTH = Dimensions.get("window").width;
 
 interface TopHeaderProps {
   title: string;
@@ -12,45 +24,136 @@ interface TopHeaderProps {
 
 const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
   const router = useRouter();
+  const { user, logout } = useAuth(); // assuming logout is provided
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const slideAnim = useRef(new Animated.Value(-SCREEN_WIDTH * 0.8)).current;
+
+  const initials = (user?.first_name?.[0] || "") + (user?.last_name?.[0] || "");
+
+  const openDrawer = () => {
+    setIsDrawerOpen(true);
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const closeDrawer = () => {
+    Animated.timing(slideAnim, {
+      toValue: -SCREEN_WIDTH * 0.8,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setIsDrawerOpen(false);
+    });
+  };
 
   return (
-    <View style={styles.topHeader}>
-      {/* Left Side (Back Arrow or Placeholder for Alignment) */}
-      <View style={styles.sideContainer}>
-        {showBackArrow ? (
-          <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={22} color={colors.textDark} />
-          </TouchableOpacity>
-        ) : (
-          <View style={{ width: 22 }} /> // Keeps spacing consistent
-        )}
-      </View>
-
-      {/* Center Title */}
-      <Text numberOfLines={1} style={styles.headerTitle}>
-        {title}
-      </Text>
-
-      {/* Right Floating Button */}
-      <View style={styles.sideContainer}>
-        {/* <View>
-          <TouchableOpacity
-            style={{ borderRadius: 20, overflow: "hidden" }}
-            onPress={() => router.push("/ai-chat")}
-          >
-            <LinearGradient
-              colors={["#e699ff", "#99b3ff"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.sendButton}
+    <>
+      {/* ===== Top Header ===== */}
+      <View style={styles.topHeader}>
+        {/* Left side — Profile Icon or Back Arrow */}
+        <View style={styles.sideContainer}>
+          {showBackArrow ? (
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={{ marginLeft: -10 }}
             >
-              <Text style={styles.sendButtonText}>Prep AI</Text>
-              <FontAwesome5 name="magic" size={15} color="#fff" />
-            </LinearGradient>
-          </TouchableOpacity>
-        </View> */}
+              <Ionicons name="arrow-back" size={22} color={colors.textDark} />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.profileButton} onPress={openDrawer}>
+              <LinearGradient
+                colors={["#7C3AED", "#9333EA"]}
+                style={styles.profileCircle}
+              >
+                <Text style={styles.profileInitials}>
+                  {initials.toUpperCase()}
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* Center Title */}
+        <Text numberOfLines={1} style={styles.headerTitle}>
+          {title}
+        </Text>
+
+        {/* Right Empty Side (for symmetry) */}
+        <View style={styles.sideContainer} />
       </View>
-    </View>
+
+      {/* ===== Drawer Modal ===== */}
+      <Modal
+        transparent
+        visible={isDrawerOpen}
+        animationType="none"
+        onRequestClose={closeDrawer}
+      >
+        {/* Overlay */}
+        <Pressable style={styles.overlay} onPress={closeDrawer} />
+
+        {/* Animated Drawer */}
+        <Animated.View
+          style={[
+            styles.drawerContainer,
+            {
+              transform: [{ translateX: slideAnim }],
+            },
+          ]}
+        >
+          {/* Drawer Header */}
+          <View style={styles.drawerHeader}>
+            <LinearGradient
+              colors={["#7C3AED", "#9333EA"]}
+              style={styles.drawerProfileCircle}
+            >
+              <Text style={styles.drawerProfileInitials}>
+                {initials.toUpperCase()}
+              </Text>
+            </LinearGradient>
+            <View style={{ marginLeft: 12 }}>
+              <Text style={styles.drawerName}>
+                {user?.first_name} {user?.last_name}
+              </Text>
+              <Text style={styles.drawerEmail}>{user?.email}</Text>
+            </View>
+          </View>
+
+          {/* Drawer Content */}
+          <View style={styles.drawerContent}>
+            <TouchableOpacity
+              style={styles.drawerItem}
+              onPress={() => {
+                closeDrawer();
+                router.push("/my-list");
+              }}
+            >
+              <Ionicons name="list-outline" size={22} color={colors.textDark} />
+              <Text style={styles.drawerItemText}>My List</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* ===== Logout Button at Bottom ===== */}
+          <View style={styles.logoutContainer}>
+            <TouchableOpacity
+              style={styles.drawerItem}
+              onPress={() => {
+                closeDrawer();
+                logout?.(); // optional chaining in case logout isn’t defined
+              }}
+            >
+              <Ionicons name="log-out-outline" size={22} color="#E53935" />
+              <Text style={[styles.drawerItemText, { color: "#E53935" }]}>
+                Logout
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+      </Modal>
+    </>
   );
 };
 
@@ -74,11 +177,9 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   sideContainer: {
-    width: 70, // Fixed width ensures title stays centered
+    width: 40,
     alignItems: "center",
-    flexDirection: "row",
     justifyContent: "center",
-    marginRight: 10,
   },
   headerTitle: {
     fontSize: 16,
@@ -87,17 +188,93 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3Medium",
     flexShrink: 1,
   },
-  sendButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 99,
-    flexDirection: "row",
-    gap: 6,
+  profileButton: {
     alignItems: "center",
+    justifyContent: "center",
   },
-  sendButtonText: {
+  profileCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 19,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  profileInitials: {
     color: "#fff",
-    fontFamily: "SourceSans3Medium",
+    fontSize: 14,
+    fontFamily: "SourceSans3SemiBold",
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0,0,0,0.4)",
+  },
+  drawerContainer: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    width: SCREEN_WIDTH * 0.8,
+    backgroundColor: "#fff",
+    elevation: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 2, height: 0 },
+    shadowRadius: 4,
+    justifyContent: "space-between",
+  },
+  drawerHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 20,
+    paddingHorizontal: 15,
+    borderBottomColor: "#eee",
+    borderBottomWidth: 1,
+  },
+  drawerProfileCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  drawerProfileInitials: {
+    color: "#fff",
+    fontSize: 16,
+    fontFamily: "SourceSans3SemiBold",
+  },
+  drawerName: {
+    fontSize: 16,
+    color: colors.textDark,
+    fontFamily: "SourceSans3SemiBold",
+  },
+  drawerEmail: {
+    fontSize: 13,
+    color: "#666",
+    marginTop: 2,
+  },
+  drawerContent: {
+    padding: 16,
+    flexGrow: 1,
+  },
+  drawerItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    gap: 8,
+  },
+  drawerItemText: {
     fontSize: 15,
+    color: colors.textDark,
+    fontFamily: "SourceSans3SemiBold",
+  },
+  logoutContainer: {
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
   },
 });

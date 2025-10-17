@@ -91,9 +91,7 @@ const AIChat: React.FC = () => {
   // Watch for backend messages
   React.useEffect(() => {
     if (messages.length === 0) return;
-
     const lastMsg = messages[messages.length - 1];
-
     setDisplayedMessages((prev) => [...prev, lastMsg]);
   }, [messages]);
 
