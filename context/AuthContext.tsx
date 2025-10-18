@@ -8,6 +8,7 @@ import {
   SIGNUP_REQUEST_OTP,
   SIGNUP_VERIFY_OTP,
 } from "@/constants/config";
+import { registerForPushNotificationsAsync } from "@/services/notificationService";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -51,48 +52,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-
-
   useEffect(() => {
-  const loadTokenAndUser = async () => {
-    const token = await SecureStore.getItemAsync("userToken");
-    const userData = await SecureStore.getItemAsync("userData");
+    const loadTokenAndUser = async () => {
+      const token = await SecureStore.getItemAsync("userToken");
+      const userData = await SecureStore.getItemAsync("userData");
 
-    if (token) setUserToken(token);
-    if (userData) setUser(JSON.parse(userData));
+      if (token) setUserToken(token);
+      if (userData) setUser(JSON.parse(userData));
 
-    setLoading(false);
-  };
-  loadTokenAndUser();
-}, []);
-
+      setLoading(false);
+    };
+    loadTokenAndUser();
+  }, []);
 
   const login = async (email: string, password: string) => {
-  try {
-    const response = await fetch(LOGIN, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response = await fetch(LOGIN, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.message || "Login failed");
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Login failed");
 
-    if (data.token && data.user) {
-      await SecureStore.setItemAsync("userToken", data.token);
-      await SecureStore.setItemAsync("userData", JSON.stringify(data.user)); // 👈 save user
-      setUserToken(data.token);
-      setUser(data.user);
+      if (data.token && data.user) {
+        await SecureStore.setItemAsync("userToken", data.token);
+        await SecureStore.setItemAsync("userData", JSON.stringify(data.user)); // 👈 save user
+        setUserToken(data.token);
+        setUser(data.user);
 
-      router.replace("/home");
-    } else {
-      throw new Error("No token or user data received");
+        router.replace("/home");
+        registerForPushNotificationsAsync(userToken);
+      } else {
+        throw new Error("No token or user data received");
+      }
+    } catch (err: any) {
+      throw new Error(err.message || "Login failed");
     }
-  } catch (err: any) {
-    throw new Error(err.message || "Login failed");
-  }
-};
-
+  };
 
   const registerRequestOtp = async (
     firstName: string,
@@ -130,7 +128,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       await SecureStore.setItemAsync("userData", JSON.stringify(data.user)); // 👈 save user
       setUserToken(data.token);
       setUser(data.user);
-    
+
       router.replace("/home");
     } else {
       throw new Error("No token received");

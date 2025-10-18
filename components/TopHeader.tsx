@@ -65,7 +65,7 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
           ) : (
             <TouchableOpacity style={styles.profileButton} onPress={openDrawer}>
               <LinearGradient
-                colors={["#7C3AED", "#9333EA"]}
+                colors={["#ff33cc", "#ff3399"]}
                 style={styles.profileCircle}
               >
                 <Text style={styles.profileInitials}>
@@ -107,7 +107,7 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
           {/* Drawer Header */}
           <View style={styles.drawerHeader}>
             <LinearGradient
-              colors={["#7C3AED", "#9333EA"]}
+              colors={["#ff33cc", "#ff3399"]}
               style={styles.drawerProfileCircle}
             >
               <Text style={styles.drawerProfileInitials}>
@@ -142,7 +142,7 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
               style={styles.drawerItem}
               onPress={() => {
                 closeDrawer();
-                logout?.(); // optional chaining in case logout isn’t defined
+                logout(); // optional chaining in case logout isn’t defined
               }}
             >
               <Ionicons name="log-out-outline" size={22} color="#E53935" />

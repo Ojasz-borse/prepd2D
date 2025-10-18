@@ -37,8 +37,7 @@ const TYPE_META: Record<
 interface Props {
   item: CollegeBranch;
   quickView?: boolean;
-  isDragging?: boolean;
-  onLongPress?: () => void;
+  onLongPress?: (choice_code: string) => void;
 }
 
 const AdvancedFindCollegeCard: React.FC<Props> = ({
@@ -55,13 +54,13 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({
     <Pressable
       key={item.choice_code}
       style={styles.card3D}
+      onLongPress={onLongPress ? () => onLongPress(item.choice_code) : () => {}}
       onPress={() =>
         router.push({
           pathname: "../branch-details",
           params: { choice_code: item.choice_code },
         })
       }
-      onLongPress={onLongPress}
     >
       {(item.tag || item.percentage) && (
         <View style={styles.smartMatch}>
@@ -132,6 +131,16 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({
 
       {/* College */}
       {!quickView && <Text style={styles.districtText}>{item.name}</Text>}
+
+      {quickView && (
+        <Text style={styles.districtText}>
+          {item.name
+            .split(" ")
+            .map((word) => word[0])
+            .join("")
+            .toUpperCase()}
+        </Text>
+      )}
 
       {/* Cutoff Grid */}
       {!quickView && (

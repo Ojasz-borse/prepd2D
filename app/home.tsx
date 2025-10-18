@@ -120,7 +120,7 @@ const PrepAIMiddleButton = () => {
         onPress={() => router.push("/ai-chat")}
       >
         <LinearGradient
-          colors={["#cc33ff", "#004aad"]}
+          colors={["#3399ff", "#004aad"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.middleButton}

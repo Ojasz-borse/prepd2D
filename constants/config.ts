@@ -19,3 +19,5 @@ export const PREDICT_PERCENTILE = `${extra.SERVER_URL}/api/estimator/predictPerc
 export const PREDICT_RANK = `${extra.SERVER_URL}/api/estimator/predictRank`;
 
 export const GET_CHAT_LLM_RESPONSE = `${extra.SERVER_URL}/api/chatllm`;
+
+export const MY_LIST_API_URL = `${extra.SERVER_URL}/api/my-option-form`;

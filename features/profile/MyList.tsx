@@ -3,11 +3,10 @@ import AdvancedFindCollegeCard from "@/components/AdvancedFindCollegeCard";
 import AdvancedFindCollegeCardSkeleton from "@/components/AdvancedFindCollegeCardSkeleton";
 import TopHeader from "@/components/TopHeader";
 import { useAdvancedColleges } from "@/hooks/useAdvancedColleges";
+import { useMyList } from "@/hooks/useMyList";
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import {
-  Alert,
   Animated,
   Modal,
   Pressable,
@@ -22,7 +21,6 @@ import DraggableFlatList, {
 import { Dropdown } from "react-native-element-dropdown";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { colors } from "../../constants/theme";
 
 interface CollegeBranch {
   branch_name: string;
@@ -45,147 +43,111 @@ const MemoizedCard = React.memo(AdvancedFindCollegeCard);
 
 export default function MyList() {
   const { branches, branchesLoading } = useAdvancedColleges();
+  const { codes, loading, saving, saveList, clearList } = useMyList();
+
   const [filteredData, setFilteredData] = useState<CollegeBranch[]>([]);
-  const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [originalOrder, setOriginalOrder] = useState<string[]>([]);
-
   const [view, setView] = useState<"quick" | "info">("quick");
-
   const [visibleModal, setVisibleModal] = useState(false);
-  const [longPressedCard, setLongPressedCard] = useState<string | null>(null);
-  const [showDeleteIcon, setShowDeleteIcon] = useState<string | null>(null);
 
-  const handleClearAll = () => {
-    // 👉 your clear-all logic here
-    console.log("Cleared all colleges");
-    setVisibleModal(false);
-  };
+  const [selectedCards, setSelectedCards] = useState<string[]>([]);
+  const [selectionMode, setSelectionMode] = useState(false);
 
-  // Load cached list and filter colleges in order
   useEffect(() => {
-    const loadList = async () => {
-      const cached = await AsyncStorage.getItem("myList");
-      let existingCodes: string[] = cached ? JSON.parse(cached) : [];
-      setOriginalOrder(existingCodes);
+    if (branches?.length === 0 || codes?.length === 0) return;
+    const sorted = codes
+      .map((code) => branches.find((b) => b.choice_code === code))
+      .filter(Boolean) as CollegeBranch[];
+    setFilteredData(sorted);
+    setOriginalOrder(codes);
+  }, [branches, codes]);
 
-      // Arrange branches in sequence of choice_code
-      const sorted = existingCodes
-        .map((code) => branches.find((b) => b.choice_code === code))
-        .filter(Boolean) as CollegeBranch[];
-
-      setFilteredData(sorted);
-      setHasChanges(false);
-    };
-
-    if (branches.length > 0) loadList();
-  }, [branches]);
-
-  // Save new order
   const handleSave = async () => {
-    setSaving(true);
     const newOrder = filteredData.map((b) => b.choice_code);
-    await AsyncStorage.setItem("myList", JSON.stringify(newOrder));
+    await saveList(newOrder);
     setOriginalOrder(newOrder);
     setHasChanges(false);
-    setSaving(false);
     alert("✅ List updated!");
   };
 
-  // Check for changes whenever filteredData changes
-  useEffect(() => {
-    const currentOrder = filteredData.map((b) => b.choice_code);
-    const hasOrderChanged =
-      JSON.stringify(currentOrder) !== JSON.stringify(originalOrder);
-    setHasChanges(hasOrderChanged);
-  }, [filteredData, originalOrder]);
+  const handleClearAll = async () => {
+    await clearList();
+    setFilteredData([]);
+    setVisibleModal(false);
+  };
 
   const handleDragEnd = ({ data }: { data: CollegeBranch[] }) => {
     setFilteredData(data);
-    setLongPressedCard(null);
-    setShowDeleteIcon(null);
   };
+
+  useEffect(() => {
+    const currentOrder = filteredData.map((b) => b.choice_code);
+    setHasChanges(
+      JSON.stringify(currentOrder) !== JSON.stringify(originalOrder)
+    );
+  }, [filteredData, originalOrder]);
 
   const handleLongPress = (choiceCode: string) => {
-    setLongPressedCard(choiceCode);
-    setShowDeleteIcon(choiceCode);
-  };
-
-  const handleDeleteCard = (choiceCode: string) => {
-    Alert.alert(
-      "Remove College",
-      "Are you sure you want to remove this college from your list?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Remove",
-          style: "destructive",
-          onPress: () => {
-            const newData = filteredData.filter(
-              (item) => item.choice_code !== choiceCode
-            );
-            setFilteredData(newData);
-            setShowDeleteIcon(null);
-            setLongPressedCard(null);
-          },
-        },
-      ]
+    setSelectionMode(true);
+    setSelectedCards((prev) =>
+      prev.includes(choiceCode) ? prev : [...prev, choiceCode]
     );
   };
+
+  const handleSelectCard = (choiceCode: string) => {
+    if (!selectionMode) return;
+    setSelectedCards((prev) =>
+      prev.includes(choiceCode)
+        ? prev.filter((code) => code !== choiceCode)
+        : [...prev, choiceCode]
+    );
+  };
+
+  const handleDeleteSelected = () => {
+    const newData = filteredData.filter(
+      (item) => !selectedCards.includes(item.choice_code)
+    );
+    setFilteredData(newData);
+    setSelectedCards([]);
+    setSelectionMode(false);
+  };
+
+  useEffect(() => {
+    if (selectedCards.length === 0) setSelectionMode(false);
+  }, [selectedCards]);
 
   const renderItem = ({
     item,
     drag,
     isActive,
   }: RenderItemParams<CollegeBranch>) => {
+    const isSelected = selectedCards.includes(item.choice_code);
+
     return (
       <Animated.View
         style={[
           styles.cardContainer,
           isActive && styles.activeCard,
-          longPressedCard === item.choice_code && styles.longPressedCard,
+          isSelected && styles.selectedCard,
         ]}
       >
-        {/* Delete Icon - appears on long press */}
-        {showDeleteIcon === item.choice_code && (
-          <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={() => handleDeleteCard(item.choice_code)}
-          >
-            <View style={styles.deleteIconContainer}>
-              <Ionicons name="trash-outline" size={20} color="#fff" />
+        {!selectionMode && (
+          <TouchableOpacity style={styles.dragHandle} onPressIn={drag}>
+            <View style={styles.dragIconContainer}>
+              <GripDotsIcon size={22} color="#444" />
             </View>
           </TouchableOpacity>
         )}
-
-        {/* Drag Handle - 6 dots icon */}
-        <TouchableOpacity
-          style={styles.dragHandle}
-          onPressIn={() => {
-            drag();
-            handleLongPress(item.choice_code);
-          }}
-        >
-          <View style={styles.dragIconContainer}>
-            <GripDotsIcon size={22} color="#444" />
-          </View>
-        </TouchableOpacity>
-
         <Pressable
-          onLongPress={() => {
-            drag();
-            handleLongPress(item.choice_code);
-          }}
-          delayLongPress={200} // Adjust delay as needed
           style={styles.cardPressable}
+          onPress={() => selectionMode && handleSelectCard(item.choice_code)}
+          delayLongPress={200}
         >
-          <AdvancedFindCollegeCard
+          <MemoizedCard
             item={item}
             quickView={view === "quick"}
-            isDragging={isActive}
+            onLongPress={handleLongPress}
           />
         </Pressable>
       </Animated.View>
@@ -193,94 +155,94 @@ export default function MyList() {
   };
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea}>
+      <GestureHandlerRootView>
         <TopHeader title="My List" showBackArrow={true} />
-        {/* 🔹 Profile content */}
         <View style={styles.container}>
-          {/* Swipeable Content */}
           <View style={styles.contentWrapper}>
-            <View style={{ flex: 1 }}>
-              <View style={{ flex: 1 }}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    paddingHorizontal: 10,
-                    paddingVertical: 5,
-                  }}
-                >
-                  <Dropdown
-                    style={styles.dropdown}
-                    data={[
-                      { label: "Quick view", value: "quick" },
-                      { label: "Info view", value: "info" },
-                    ]}
-                    labelField="label"
-                    valueField="value"
-                    showsVerticalScrollIndicator={false}
-                    value={view}
-                    onChange={(item) => setView(item.value)}
-                    placeholder="Select view"
-                    placeholderStyle={styles.dropdownText}
-                    selectedTextStyle={styles.dropdownText}
-                    itemTextStyle={styles.dropdownText}
-                  />
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+              }}
+            >
+              <Dropdown
+                style={styles.dropdown}
+                data={[
+                  { label: "Quick view", value: "quick" },
+                  { label: "Info view", value: "info" },
+                ]}
+                labelField="label"
+                valueField="value"
+                value={view}
+                onChange={(item) => setView(item.value)}
+                placeholder="Select view"
+                placeholderStyle={styles.dropdownText}
+                selectedTextStyle={styles.dropdownText}
+                itemTextStyle={styles.dropdownText}
+              />
 
-                  <TouchableOpacity onPress={() => setVisibleModal(true)}>
-                    <Text style={styles.clearButton}>Clear All</Text>
-                  </TouchableOpacity>
-                </View>
-
-                <DraggableFlatList
-                  data={filteredData}
-                  keyExtractor={(item) => item.choice_code}
-                  renderItem={renderItem}
-                  onDragEnd={handleDragEnd}
-                  activationDistance={10} // drag starts after moving 10px
-                  autoscrollSpeed={200} // Increased for smoother scrolling
-                  autoscrollThreshold={50} // Starts auto-scroll sooner for multi-card movement
-                  dragHitSlop={{ left: 0, right: 50, top: 15, bottom: 15 }} // Better touch area
-                  animationConfig={{
-                    mass: 0.5,
-                    damping: 20,
-                    stiffness: 150,
-                    overshootClamping: false,
-                  }}
-                  ListEmptyComponent={
-                    branchesLoading ? (
-                      <>
-                        <AdvancedFindCollegeCardSkeleton />
-                        <AdvancedFindCollegeCardSkeleton />
-                        <AdvancedFindCollegeCardSkeleton />
-                      </>
-                    ) : (
-                      <Text style={styles.noResult}>No colleges found</Text>
-                    )
-                  }
-                  contentContainerStyle={{
-                    padding: 4,
-                    paddingTop: 16,
-                    paddingBottom: 80, // space for button
-                  }}
-                />
-
-                {hasChanges && filteredData.length > 0 && (
-                  <View>
-                    <TouchableOpacity
-                      style={styles.saveBtn}
-                      onPress={handleSave}
-                      disabled={saving}
-                    >
-                      <Text style={styles.saveBtnText}>
-                        {saving ? "Saving..." : "Save Changes"}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
+              <TouchableOpacity onPress={() => setVisibleModal(true)}>
+                <Text style={styles.clearButton}>Clear All</Text>
+              </TouchableOpacity>
             </View>
+
+            <DraggableFlatList
+              data={filteredData}
+              keyExtractor={(item) => item.choice_code}
+              renderItem={renderItem}
+              onDragEnd={handleDragEnd}
+              activationDistance={10}
+              autoscrollSpeed={200}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                padding: 4,
+                paddingTop: 16,
+                paddingBottom: 100,
+              }}
+              ListEmptyComponent={
+                loading || branchesLoading ? (
+                  <>
+                    <AdvancedFindCollegeCardSkeleton />
+                    <AdvancedFindCollegeCardSkeleton />
+                  </>
+                ) : (
+                  <Text style={styles.noResult}>No colleges found</Text>
+                )
+              }
+            />
+
+            {hasChanges && filteredData.length > 0 && (
+              <View style={styles.bottomDeleteWrapper}>
+                <TouchableOpacity
+                  style={styles.bottomSaveBtn}
+                  onPress={handleSave}
+                  disabled={saving}
+                >
+                  <Ionicons name="checkmark" size={20} color="#fff" />
+                  <Text style={styles.bottomDeleteText}>
+                    {saving ? "Saving..." : "Save Changes"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {selectionMode && selectedCards.length > 0 && (
+              <View style={styles.bottomDeleteWrapper}>
+                <TouchableOpacity
+                  style={styles.bottomDeleteBtn}
+                  onPress={handleDeleteSelected}
+                >
+                  <Ionicons name="trash-outline" size={20} color="#fff" />
+                  <Text style={styles.bottomDeleteText}>
+                    Delete Selected ({selectedCards.length})
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
 
           <Modal
@@ -297,17 +259,13 @@ export default function MyList() {
                 <View style={styles.modalActions}>
                   <TouchableOpacity
                     style={styles.modalButtonCancel}
-                    onPress={() => {
-                      setVisibleModal(false);
-                    }}
+                    onPress={() => setVisibleModal(false)}
                   >
                     <Text style={styles.modalButtonTextCancel}>Cancel</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.modalButtonSubmit}
-                    onPress={() => {
-                      handleClearAll();
-                    }}
+                    onPress={handleClearAll}
                   >
                     <Text style={styles.modalButtonTextSubmit}>Clear All</Text>
                   </TouchableOpacity>
@@ -316,8 +274,8 @@ export default function MyList() {
             </View>
           </Modal>
         </View>
-      </SafeAreaView>
-    </GestureHandlerRootView>
+      </GestureHandlerRootView>
+    </SafeAreaView>
   );
 }
 
@@ -327,84 +285,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#f2f2f2",
   },
   container: { flex: 1, backgroundColor: "#fff" },
-
-  profileSection: {
-    flexDirection: "row", // side by side
-    alignItems: "center",
-    marginTop: 20,
-    paddingHorizontal: 20,
-  },
-
-  profileWrapper: {
-    marginRight: 16, // space between icon and text
-  },
-
-  profileInfo: {
-    flex: 1,
-    alignItems: "flex-start", // left aligned
-  },
-
-  userName: {
-    fontSize: 18,
-    color: colors.textDark,
-    fontFamily: "SourceSans3Medium",
-  },
-
-  userEmail: {
-    fontSize: 16,
-    color: colors.textLight,
-    fontFamily: "SourceSans3Medium",
-  },
-
-  groupBadge: {
-    backgroundColor: "#004aad",
-    paddingVertical: 1,
-    paddingHorizontal: 10,
-    borderRadius: 12,
-    marginTop: 8,
-    alignSelf: "flex-start", // keeps badge left-aligned
-  },
-
-  groupText: {
-    color: "#fff",
-    fontFamily: "SourceSans3Medium",
-    fontSize: 12,
-  },
-  tabContainer: {
-    flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: "#d3d3d3",
-    backgroundColor: "#fff",
-    marginTop: 10,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    borderBottomWidth: 2,
-    borderBottomColor: "#fff",
-  },
-  activeTab: { borderBottomColor: colors.primary },
-  tabText: {
-    fontSize: 16,
-    color: colors.textDark,
-    fontFamily: "SourceSans3Medium",
-  },
-  activeTabText: { color: colors.primary },
-  dropdown: {
-    width: 110,
-    height: 20,
-    borderRadius: 20,
-  },
+  contentWrapper: { flex: 1, paddingHorizontal: 12, paddingTop: 8 },
+  dropdown: { width: 110, height: 20, borderRadius: 20 },
   dropdownText: {
     fontSize: 16,
     fontFamily: "SourceSans3Medium",
     color: "#333",
     textTransform: "capitalize",
   },
-
-  contentWrapper: { flex: 1, paddingHorizontal: 12, paddingTop: 8 },
+  clearButton: {
+    fontFamily: "SourceSans3Medium",
+  },
   noResult: {
     textAlign: "center",
     marginTop: 20,
@@ -419,8 +310,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 30,
     borderRadius: 25,
-    elevation: 5, // Android shadow
-    shadowColor: "#000", // iOS shadow
+    elevation: 5,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
@@ -432,30 +323,30 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3Medium",
   },
 
-  clearButton: {
-    fontFamily: "SourceSans3Medium",
-  },
-
   // Card Styles
   cardContainer: {
     position: "relative",
     marginBottom: 15,
     borderRadius: 12,
-    overflow: "visible",
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "#fff",
   },
   cardPressable: {
     flex: 1,
   },
-  activeCard: {},
-  longPressedCard: {
+  selectedCard: {
     borderWidth: 1.5,
     borderColor: "#004aad",
     borderRadius: 18,
   },
+  activeCard: {
+    borderWidth: 1.5,
+    borderColor: "#004aad50",
+    borderRadius: 18,
+  },
 
-  // Drag Handle Styles
+  // Drag Handle
   dragHandle: {
     position: "absolute",
     right: -7,
@@ -475,25 +366,37 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  // Delete Icon Styles
-  deleteButton: {
+  // Bottom Delete Bar
+  bottomDeleteWrapper: {
     position: "absolute",
-    right: 45, // Moved left to make space for drag handle
-    top: -10,
-    zIndex: 1000,
-  },
-  deleteIconContainer: {
-    backgroundColor: "#ff3b30",
-    borderRadius: 12,
-    width: 24,
-    height: 24,
-    justifyContent: "center",
+    bottom: 20,
+    left: 0,
+    right: 0,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 3,
+  },
+  bottomDeleteBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#ff3b30",
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderRadius: 30,
+    elevation: 5,
+  },
+  bottomSaveBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#004aad",
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderRadius: 30,
+    elevation: 5,
+  },
+  bottomDeleteText: {
+    color: "#fff",
+    marginLeft: 8,
+    fontFamily: "SourceSans3Medium",
+    fontSize: 15,
   },
 
   // Modal
@@ -516,7 +419,6 @@ const styles = StyleSheet.create({
     color: "#004aad",
     textAlign: "center",
   },
-
   modalActions: {
     flexDirection: "row",
     justifyContent: "flex-end",
