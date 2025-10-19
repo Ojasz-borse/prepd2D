@@ -3,6 +3,7 @@ import SearchIcon from "@/assets/icons/SearchIcon";
 import AdvancedFindCollegeCard from "@/components/AdvancedFindCollegeCard";
 import AdvancedFindCollegeCardSkeleton from "@/components/AdvancedFindCollegeCardSkeleton";
 import FloatingLabelInput from "@/components/FloatingLabelInput";
+import { CACHE_MY_COLLEGES_LIST } from "@/constants/cacheStorageConfig";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
@@ -221,23 +222,32 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
   };
 
   const handleMoveToMyList = async () => {
-    console.log("calling handleMoveToMyList");
     try {
       // Get existing cached colleges
-      const cached = await AsyncStorage.getItem("myList");
-      console.log("cached", cached);
-      let existingColleges: string[] = cached ? JSON.parse(cached) : [];
+      const cached = await AsyncStorage.getItem(CACHE_MY_COLLEGES_LIST);
+
+      let existingColleges: string[] = [];
+
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        existingColleges = Array.isArray(parsed.data) ? parsed.data : [];
+      }
 
       // Extract choice codes from filtered results
       const newChoiceCodes = filteredData.map((c) => c.choice_code);
 
-      // Merge without duplicates
       const updated = Array.from(
         new Set([...existingColleges, ...newChoiceCodes])
       );
 
-      // Save back
-      await AsyncStorage.setItem("myList", JSON.stringify(updated));
+      // Save in same format used by useMyList
+      await AsyncStorage.setItem(
+        CACHE_MY_COLLEGES_LIST,
+        JSON.stringify({
+          data: updated,
+          lastFetched: Date.now(),
+        })
+      );
 
       // Update count
       setMovedCollegesCount(updated.length);
@@ -252,7 +262,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
     const userRank = parseInt(rank, 10);
     if (isNaN(userRank)) return filteredData;
 
-    const enriched = filteredData.map((item) => {
+    const mappedData = filteredData.map((item) => {
       let cutoff_rank: number | null = null;
       let considered_category: string | null = null;
 
@@ -279,8 +289,8 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
           break;
       }
 
-      if (cutoff_rank == null) {
-        return { ...item, percentage: undefined, displayPercentage: undefined };
+      if (cutoff_rank == null || Math.abs(cutoff_rank - userRank) > 500) {
+        return { ...item, percentage: undefined };
       }
 
       let percentage: number;
@@ -294,25 +304,24 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
         percentage = 99 + diff / 10;
       }
 
-      const rounded = Math.round(percentage);
-      const displayPercentage = percentage > 100 ? 100 : rounded;
-
       let tag: string;
-      if (displayPercentage >= 96 && displayPercentage <= 99) tag = "Exact";
-      else if (displayPercentage >= 80 && displayPercentage < 96) tag = "Hard";
-      else if (displayPercentage < 80) tag = "Very Hard";
-      else if (displayPercentage > 99 && displayPercentage <= 100) tag = "Easy";
+      if (percentage >= 96 && percentage <= 99) tag = "Exact";
+      else if (percentage >= 80 && percentage < 96) tag = "Hard";
+      else if (percentage < 80) tag = "Very Hard";
+      else if (percentage > 99 && percentage <= 120)
+        tag = "Easy"; // Correct boundary
       else tag = "Very Easy";
 
       return {
         ...item,
-        percentage: rounded,
-        displayPercentage,
+        percentage: percentage,
         tag,
         req_rank: cutoff_rank,
         considered_category,
       };
     });
+
+    const enriched = mappedData.filter((item) => item.percentage !== undefined);
 
     // Sort safely
     return enriched.sort((a, b) => {
@@ -459,7 +468,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
                   selectedDistricts.length > 0 ||
                   selectedBranches.length > 0) && (
                   <TouchableOpacity onPress={handleMoveToMyList}>
-                    <Text style={styles.smartMatchLabel}>Move to myList</Text>
+                    <Text style={styles.smartMatchLabel}>Move to My List</Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -493,7 +502,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
         <TouchableOpacity
           style={styles.fab}
           activeOpacity={0.8}
-          onPress={() => router.push("/profile")}
+          onPress={() => router.push("/my-list")}
         >
           <BookmarkIcon size={24} />
           {movedCollegesCount && movedCollegesCount > 0 && (
@@ -712,11 +721,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 16,
     backgroundColor: "#ebf0fa",
+    textTransform: "capitalize",
   },
   dropdownText: {
     fontSize: 16,
     fontFamily: "SourceSans3Medium",
     color: "#333",
+    textTransform: "capitalize",
   },
   item: {
     paddingVertical: 15,
@@ -745,7 +756,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 14,
     marginHorizontal: 4,
     marginTop: 10,
   },
@@ -870,7 +881,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#004aad",
     paddingHorizontal: 18,
     paddingVertical: 8,
-    borderRadius: 14,
+    borderRadius: 99,
   },
   modalButtonTextCancel: {
     fontSize: 15,

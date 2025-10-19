@@ -1,5 +1,4 @@
-import EstimatorTabIcon from "@/assets/icons/EstimatorTabIcon";
-import { ProfilePageIcon } from "@/assets/icons/ProfilePageIcon";
+import BookTabIcon from "@/assets/icons/BookTabIcon";
 import SearchCollegeTabIcon from "@/assets/icons/SearchCollegeTabIcon";
 import { useAuth } from "@/context/AuthContext";
 import FindColleges from "@/features/colleges/FindColleges";
@@ -61,11 +60,11 @@ export default function Home() {
         </Tab.Screen>
 
         <Tab.Screen
-          name="Estimator"
+          name="Preparation"
           options={{
-            tabBarLabel: "Estimator",
+            tabBarLabel: "Preparation",
             tabBarIcon: ({ focused, size }) => (
-              <EstimatorTabIcon focused={focused} size={size} />
+              <BookTabIcon focused={focused} size={size} />
             ),
           }}
         >
@@ -97,9 +96,10 @@ export default function Home() {
         <Tab.Screen
           name="My Profile"
           options={{
-            tabBarLabel: "My Profile",
+            tabBarLabel: "",
             tabBarIcon: ({ focused, size }) => (
-              <ProfilePageIcon focused={focused} size={size} />
+              <></>
+              // <ProfilePageIcon focused={focused} size={size} />
             ),
           }}
         >

@@ -1,16 +1,10 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { useNotificationListener } from "@/hooks/useNotificationListener";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Circle, Defs, RadialGradient, Stop } from "react-native-svg";
 
 function GlowBall({
@@ -57,7 +51,7 @@ export default function Index() {
   const router = useRouter();
   const { checkAuth, loading } = useAuth(); // 👈 use loading
 
-  useNotificationListener();
+  // useNotificationListener();
   useEffect(() => {
     const verify = async () => {
       const isSignedIn = await checkAuth();

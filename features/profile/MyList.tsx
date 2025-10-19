@@ -148,6 +148,8 @@ export default function MyList() {
             item={item}
             quickView={view === "quick"}
             onLongPress={handleLongPress}
+            selectionMode={selectionMode}
+            handleSelectCard={handleSelectCard}
           />
         </Pressable>
       </Animated.View>

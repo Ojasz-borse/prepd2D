@@ -1,3 +1,4 @@
+import { CACHE_COLLEGE_BRANCHES, CACHE_TTL } from "@/constants/cacheStorageConfig";
 import { GET_COLLEGE_BRANCHES } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -35,8 +36,6 @@ interface CachePayload {
   lastFetched: number; // timestamp
 }
 
-const CACHE_KEY = "college_branches";
-const CACHE_TTL = 1000 * 60 * 60 * 24; // 24h
 
 export function useAdvancedColleges() {
   const [branches, setBranches] = useState<CollegeBranch[]>([]);
@@ -67,7 +66,7 @@ export function useAdvancedColleges() {
       setBranchesLoading(true);
 
       // 1. Load cache
-      const cached = await AsyncStorage.getItem(CACHE_KEY);
+      const cached = await AsyncStorage.getItem(CACHE_COLLEGE_BRANCHES);
       if (cached) {
         const parsed: CachePayload = JSON.parse(cached);
         setBranches(parsed.branches);
@@ -101,7 +100,7 @@ export function useAdvancedColleges() {
           branches: data.branches,
           lastFetched: Date.now(),
         };
-        await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(payload));
+        await AsyncStorage.setItem(CACHE_COLLEGE_BRANCHES, JSON.stringify(payload));
       } else {
         throw new Error("Failed to fetch colleges");
       }

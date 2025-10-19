@@ -2,19 +2,38 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import { StyleSheet, Text, View, ViewStyle } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+} from "react-native";
 
 interface GradientTextButtonProps {
   text: string;
   iconName?: string;
   style?: ViewStyle;
+  isLoading?: boolean;
 }
 
 export default function GradientAIText({
   text,
   iconName = "magic",
   style,
+  isLoading,
 }: GradientTextButtonProps) {
+  // if loading, show spinner instead of gradient text
+  if (isLoading) {
+    return (
+      <View style={[styles.loadingContainer, style]}>
+        <ActivityIndicator size="small" color="#3399ff" />
+        <Text style={styles.loadingText}>{text}</Text>
+      </View>
+    );
+  }
+
+  // otherwise show gradient text
   return (
     <View style={[styles.container, style]}>
       <MaskedView
@@ -26,7 +45,7 @@ export default function GradientAIText({
         }
       >
         <LinearGradient
-          colors={["#66ccff", "#004aad"]}
+          colors={["#3399ff", "#004aad"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.gradient}
@@ -38,19 +57,28 @@ export default function GradientAIText({
 
 const styles = StyleSheet.create({
   container: {},
+  loadingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  loadingText: {
+    fontSize: 16,
+    fontFamily: "SourceSans3SemiBold",
+    color: "#3399ff", // same as gradient tone
+  },
   mask: {
     flexDirection: "row",
     alignItems: "center",
-    fontFamily: "SourceSans3Medium",
     gap: 4,
   },
   text: {
     fontSize: 16,
     fontFamily: "SourceSans3SemiBold",
-    color: "black", // mask color, important for masking
+    color: "black", // important for masking
   },
   gradient: {
-    height: 22, // enough to cover the text height
-    width: 100, // wide enough for your text + icon
+    height: 22,
+    width: 160, // wide enough for your text + icon
   },
 });

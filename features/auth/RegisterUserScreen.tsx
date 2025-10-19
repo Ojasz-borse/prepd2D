@@ -155,6 +155,23 @@ const RegisterUserScreen: React.FC = () => {
   const formatTime = (seconds: number) =>
     `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, "0")}`;
 
+  // --- Password strength checks ---
+  const passwordChecks = [
+    {
+      label: "At least 8 characters",
+      valid: password.length >= 8,
+    },
+    {
+      label: "Contains uppercase, lowercase, and number",
+      valid:
+        /[A-Z]/.test(password) && /[a-z]/.test(password) && /\d/.test(password),
+    },
+    {
+      label: "At least one special symbol (!@#$%^&*)",
+      valid: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    },
+  ];
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor="#004aad" />
@@ -333,6 +350,35 @@ const RegisterUserScreen: React.FC = () => {
                         Submit
                       </Text>
                     </TouchableOpacity>
+                  </View>
+                  {/* Password Strength Hints */}
+                  <View style={{ marginTop: 10, marginBottom: 20 }}>
+                    {passwordChecks.map((check, index) => (
+                      <View key={index} style={styles.passwordCheckRow}>
+                        <View
+                          style={[
+                            styles.bullet,
+                            password === "" && confirmPassword === ""
+                              ? styles.bulletGray
+                              : check.valid
+                              ? styles.bulletGreen
+                              : styles.bulletRed,
+                          ]}
+                        />
+                        <Text
+                          style={[
+                            styles.passwordCheckText,
+                            password === "" && confirmPassword === ""
+                              ? styles.textGray
+                              : check.valid
+                              ? styles.textGreen
+                              : styles.textRed,
+                          ]}
+                        >
+                          {check.label}
+                        </Text>
+                      </View>
+                    ))}
                   </View>
                 </>
               )}
@@ -522,6 +568,27 @@ const styles = StyleSheet.create({
     color: "#004aad",
     fontFamily: "SourceSans3Medium",
   },
+  passwordCheckRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 3,
+  },
+  bullet: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 8,
+  },
+  bulletGray: { backgroundColor: "#ccc" },
+  bulletRed: { backgroundColor: "#ff6b6b" },
+  bulletGreen: { backgroundColor: "#4caf50" },
+  passwordCheckText: {
+    fontSize: 13,
+    fontFamily: "SourceSans3Medium",
+  },
+  textGray: { color: "#777" },
+  textRed: { color: "#ff6b6b" },
+  textGreen: { color: "#4caf50" },
 });
 
 export default RegisterUserScreen;

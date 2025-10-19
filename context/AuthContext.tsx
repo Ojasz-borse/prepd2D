@@ -1,6 +1,14 @@
 "use client";
 
 import {
+  AUTH_TOKEN,
+  CACHE_COLLEGE_BRANCHES,
+  CACHE_COLLEGES,
+  CACHE_MY_COLLEGES_LIST,
+  CACHE_NEWS,
+  USER_SESSION,
+} from "@/constants/cacheStorageConfig";
+import {
   FORGOT_PASSWORD_REQUEST_OTP,
   FORGOT_PASSWORD_RESET,
   FORGOT_PASSWORD_VERIFY_OTP,
@@ -9,6 +17,7 @@ import {
   SIGNUP_VERIFY_OTP,
 } from "@/constants/config";
 import { registerForPushNotificationsAsync } from "@/services/notificationService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -54,8 +63,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     const loadTokenAndUser = async () => {
-      const token = await SecureStore.getItemAsync("userToken");
-      const userData = await SecureStore.getItemAsync("userData");
+      const token = await SecureStore.getItemAsync(AUTH_TOKEN);
+      const userData = await SecureStore.getItemAsync(USER_SESSION);
 
       if (token) setUserToken(token);
       if (userData) setUser(JSON.parse(userData));
@@ -77,13 +86,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       if (!response.ok) throw new Error(data.message || "Login failed");
 
       if (data.token && data.user) {
-        await SecureStore.setItemAsync("userToken", data.token);
-        await SecureStore.setItemAsync("userData", JSON.stringify(data.user)); // 👈 save user
+        await SecureStore.setItemAsync(AUTH_TOKEN, data.token);
+        await SecureStore.setItemAsync(USER_SESSION, JSON.stringify(data.user)); // 👈 save user
         setUserToken(data.token);
         setUser(data.user);
 
         router.replace("/home");
-        registerForPushNotificationsAsync(userToken);
+        registerForPushNotificationsAsync(data.token);
       } else {
         throw new Error("No token or user data received");
       }
@@ -124,8 +133,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!res.ok) throw new Error(data.message || "Invalid OTP");
 
     if (data.token) {
-      await SecureStore.setItemAsync("userToken", data.token);
-      await SecureStore.setItemAsync("userData", JSON.stringify(data.user)); // 👈 save user
+      await SecureStore.setItemAsync(AUTH_TOKEN, data.token);
+      await SecureStore.setItemAsync(USER_SESSION, JSON.stringify(data.user)); // 👈 save user
       setUserToken(data.token);
       setUser(data.user);
 
@@ -204,13 +213,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const logout = async () => {
-    await SecureStore.deleteItemAsync("userToken");
+    await SecureStore.deleteItemAsync(AUTH_TOKEN);
+    await SecureStore.deleteItemAsync(USER_SESSION);
+
+    await AsyncStorage.removeItem(CACHE_COLLEGES);
+    await AsyncStorage.removeItem(CACHE_COLLEGE_BRANCHES);
+    await AsyncStorage.removeItem(CACHE_MY_COLLEGES_LIST);
+    await AsyncStorage.removeItem(CACHE_NEWS);
+
     setUserToken(null);
     router.replace("/login-user");
   };
 
   const checkAuth = async (): Promise<boolean> => {
-    const token = await SecureStore.getItemAsync("userToken");
+    const token = await SecureStore.getItemAsync(AUTH_TOKEN);
     if (token) {
       setUserToken(token);
       return true; // ✅ signed in
@@ -221,7 +237,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const getToken = async (): Promise<string | null> => {
-    const token = await SecureStore.getItemAsync("userToken");
+    const token = await SecureStore.getItemAsync(AUTH_TOKEN);
     return token ?? null;
   };
 

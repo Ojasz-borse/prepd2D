@@ -22,12 +22,15 @@ export default function EstimatorScreen() {
   // Local input fields
   const [marks, setMarks] = useState("");
   const [inputPercentile, setInputPercentile] = useState("");
+  const [shift, setShift] = useState<"easy" | "medium" | "hard" | null>(null);
 
   // ===== Handlers =====
   const handleCalculatePercentile = async () => {
     if (!marks) return;
     try {
-      await predictPercentile(Number(marks), "easy");
+      if (shift) {
+        await predictPercentile(Number(marks), shift);
+      }
     } catch (err) {
       console.error("Error predicting percentile:", err);
     }
@@ -91,6 +94,61 @@ export default function EstimatorScreen() {
               onChangeText={setMarks}
               keyboardType="number-pad"
             />
+
+            <Text style={styles.headingText}>Enter your Shift</Text>
+
+            <View style={styles.groupWrapper}>
+              <TouchableOpacity
+                style={[
+                  styles.groupOption,
+                  shift === "easy" && styles.groupOptionSelected,
+                ]}
+                onPress={() => setShift("easy")}
+              >
+                <Text
+                  style={[
+                    styles.groupOptionText,
+                    shift === "easy" && styles.groupOptionTextSelected,
+                  ]}
+                >
+                  Easy
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.groupOption,
+                  shift === "medium" && styles.groupOptionSelected,
+                ]}
+                onPress={() => setShift("medium")}
+              >
+                <Text
+                  style={[
+                    styles.groupOptionText,
+                    shift === "medium" && styles.groupOptionTextSelected,
+                  ]}
+                >
+                  Medium
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.groupOption,
+                  shift === "hard" && styles.groupOptionSelected,
+                ]}
+                onPress={() => setShift("hard")}
+              >
+                <Text
+                  style={[
+                    styles.groupOptionText,
+                    shift === "hard" && styles.groupOptionTextSelected,
+                  ]}
+                >
+                  Hard
+                </Text>
+              </TouchableOpacity>
+            </View>
 
             <View style={styles.buttonWrapper}>
               <TouchableOpacity
@@ -252,4 +310,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(255,255,255,0.6)",
   },
+  groupWrapper: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 30,
+    gap: 12,
+  },
+  groupOption: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    paddingVertical: 14,
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  groupOptionSelected: {
+    borderColor: "#004aad",
+    borderWidth: 2,
+    backgroundColor: "#f8fbff",
+  },
+  groupOptionText: {
+    fontSize: 16,
+    color: "#777",
+    fontFamily: "SourceSans3Medium",
+  },
+  groupOptionTextSelected: { color: "#004aad", fontWeight: "600" },
 });

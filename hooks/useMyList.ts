@@ -1,11 +1,11 @@
 // src/hooks/useMyList.ts
+import { CACHE_MY_COLLEGES_LIST, CACHE_TTL } from "@/constants/cacheStorageConfig";
 import { MY_LIST_API_URL } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useState } from "react";
 
-const CACHE_KEY = "myList";
-const CACHE_TTL = 1000 * 60 * 60 * 24; // 24h
+
 
 export function useMyList() {
   const [codes, setCodes] = useState<string[]>([]);
@@ -34,7 +34,7 @@ export function useMyList() {
   const loadList = useCallback(async () => {
     try {
       setLoading(true);
-      const cached = await AsyncStorage.getItem(CACHE_KEY);
+      const cached = await AsyncStorage.getItem(CACHE_MY_COLLEGES_LIST);
       if (cached) {
         const parsed = JSON.parse(cached);
         setCodes(parsed.data);
@@ -56,7 +56,7 @@ export function useMyList() {
       if (data.success && Array.isArray(data.data)) {
         setCodes(data.data);
         await AsyncStorage.setItem(
-          CACHE_KEY,
+          CACHE_MY_COLLEGES_LIST,
           JSON.stringify({ data: data.data, lastFetched: Date.now() })
         );
       } else {
@@ -77,7 +77,7 @@ export function useMyList() {
         const token = await getToken();
 
         await AsyncStorage.setItem(
-          CACHE_KEY,
+          CACHE_MY_COLLEGES_LIST,
           JSON.stringify({ data: newCodes, lastFetched: Date.now() })
         );
         setCodes(newCodes);
@@ -102,7 +102,8 @@ export function useMyList() {
   );
 
   const clearList = useCallback(async () => {
-    await AsyncStorage.removeItem(CACHE_KEY);
+    await AsyncStorage.removeItem(CACHE_MY_COLLEGES_LIST);
+    await saveList([]);
     setCodes([]);
   }, []);
 

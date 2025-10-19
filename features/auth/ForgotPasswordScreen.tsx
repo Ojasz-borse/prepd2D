@@ -10,7 +10,6 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
@@ -19,6 +18,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ForgotPasswordScreen: React.FC = () => {
   const { forgotRequestOtp, forgotVerifyOtp, forgotResetPassword } = useAuth();
@@ -153,6 +153,22 @@ const ForgotPasswordScreen: React.FC = () => {
 
   const formatTime = (seconds: number) =>
     `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, "0")}`;
+
+  const passwordChecks = [
+    {
+      label: "At least 8 characters",
+      valid: password.length >= 8,
+    },
+    {
+      label: "Contains uppercase, lowercase, and number",
+      valid:
+        /[A-Z]/.test(password) && /[a-z]/.test(password) && /\d/.test(password),
+    },
+    {
+      label: "At least one special symbol (!@#$%^&*)",
+      valid: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    },
+  ];
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -305,6 +321,35 @@ const ForgotPasswordScreen: React.FC = () => {
                       </Text>
                     </TouchableOpacity>
                   </View>
+                  {/* Password Strength Hints */}
+                  <View style={{ marginTop: 10, marginBottom: 20 }}>
+                    {passwordChecks.map((check, index) => (
+                      <View key={index} style={styles.passwordCheckRow}>
+                        <View
+                          style={[
+                            styles.bullet,
+                            password === "" && confirmPassword === ""
+                              ? styles.bulletGray
+                              : check.valid
+                              ? styles.bulletGreen
+                              : styles.bulletRed,
+                          ]}
+                        />
+                        <Text
+                          style={[
+                            styles.passwordCheckText,
+                            password === "" && confirmPassword === ""
+                              ? styles.textGray
+                              : check.valid
+                              ? styles.textGreen
+                              : styles.textRed,
+                          ]}
+                        >
+                          {check.label}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
                 </>
               )}
             </View>
@@ -393,6 +438,27 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontFamily: "SourceSans3Medium",
   },
+  passwordCheckRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 3,
+  },
+  bullet: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 8,
+  },
+  bulletGray: { backgroundColor: "#ccc" },
+  bulletRed: { backgroundColor: "#ff6b6b" },
+  bulletGreen: { backgroundColor: "#4caf50" },
+  passwordCheckText: {
+    fontSize: 13,
+    fontFamily: "SourceSans3Medium",
+  },
+  textGray: { color: "#777" },
+  textRed: { color: "#ff6b6b" },
+  textGreen: { color: "#4caf50" },
 });
 
 export default ForgotPasswordScreen;

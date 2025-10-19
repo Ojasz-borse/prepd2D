@@ -1,3 +1,4 @@
+import { CACHE_COLLEGES, CACHE_TTL } from "@/constants/cacheStorageConfig";
 import { GET_COLLEGES } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -17,8 +18,6 @@ interface CachePayload {
   lastFetched: number; // timestamp
 }
 
-const CACHE_KEY = "colleges";
-const CACHE_TTL = 1000 * 60 * 60 * 24; // 24h
 
 export function useNormalColleges() {
   const [colleges, setColleges] = useState<College[]>([]);
@@ -49,7 +48,7 @@ export function useNormalColleges() {
       setLoading(true);
 
       // 1. Load cache
-      const cached = await AsyncStorage.getItem(CACHE_KEY);
+      const cached = await AsyncStorage.getItem(CACHE_COLLEGES);
       if (cached) {
         const parsed: CachePayload = JSON.parse(cached);
         setColleges(parsed.colleges);
@@ -83,7 +82,7 @@ export function useNormalColleges() {
           colleges: data.colleges,
           lastFetched: Date.now(),
         };
-        await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(payload));
+        await AsyncStorage.setItem(CACHE_COLLEGES, JSON.stringify(payload));
       } else {
         throw new Error("Failed to fetch colleges");
       }

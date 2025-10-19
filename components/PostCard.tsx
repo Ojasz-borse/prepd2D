@@ -18,6 +18,7 @@ interface PostCardProps {
 }
 
 export default function PostCard({
+  created_at,
   news_heading,
   news_desc,
   news_url,
@@ -50,16 +51,38 @@ export default function PostCard({
     }
   };
 
+  function timeAgo(dateString: string) {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diff = (now.getTime() - date.getTime()) / 1000; // diff in seconds
+
+    if (diff < 60) return "just now";
+    if (diff < 3600) {
+      const mins = Math.floor(diff / 60);
+      return `${mins} min${mins > 1 ? "s" : ""} ago`;
+    }
+    if (diff < 86400) {
+      const hours = Math.floor(diff / 3600);
+      return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    }
+    if (diff < 604800) {
+      const days = Math.floor(diff / 86400);
+      return `${days} day${days > 1 ? "s" : ""} ago`;
+    }
+    const weeks = Math.floor(diff / 604800);
+    return `${weeks} week${weeks > 1 ? "s" : ""} ago`;
+  }
+
   return (
     <View style={styles.container}>
       {/* Row: Profile + Posted by + Time */}
       <View style={styles.headerRow}>
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>Pa</Text>
+          <Text style={styles.badgeText}>PC</Text>
         </View>
         <View style={styles.headerTextContainer}>
-          <Text style={styles.postedBy}>PrepAcademy Admin</Text>
-          <Text style={styles.postTime}>2 hours ago</Text>
+          <Text style={styles.postedBy}>PrepCET Admin</Text>
+          <Text style={styles.postTime}>{timeAgo(created_at)}</Text>
         </View>
       </View>
 
@@ -78,14 +101,16 @@ export default function PostCard({
 
       {/* Bottom row: Visit link (left) + Share icon (right) */}
       <View style={styles.bottomRow}>
-        <TouchableOpacity style={styles.linkRow} onPress={handleOpenLink}>
-          <Text style={styles.linkText}>visit </Text>
-          <ExternalLinkIcon size={14} />
-        </TouchableOpacity>
+        <View style={{ flexDirection: "row", gap: 8 }}>
+          <TouchableOpacity style={styles.linkRow} onPress={handleOpenLink}>
+            {/* <Text style={styles.linkText}>visit </Text> */}
+            <ExternalLinkIcon size={16} />
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.shareBadge} onPress={handleShare}>
-          <ShareIcon size={18} />
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.linkRow} onPress={handleShare}>
+            <ShareIcon size={16} />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -109,7 +134,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f4fb",
     marginRight: 10,
     borderRadius: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 14,
     paddingVertical: 10,
     alignSelf: "flex-start",
   },
@@ -161,7 +186,7 @@ const styles = StyleSheet.create({
 
   bottomRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     alignItems: "center",
   },
   linkRow: {

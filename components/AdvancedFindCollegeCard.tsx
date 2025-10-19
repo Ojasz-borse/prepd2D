@@ -38,29 +38,35 @@ interface Props {
   item: CollegeBranch;
   quickView?: boolean;
   onLongPress?: (choice_code: string) => void;
+  selectionMode?: boolean;
+  handleSelectCard?: (choice_code: string) => void;
 }
 
 const AdvancedFindCollegeCard: React.FC<Props> = ({
   item,
   quickView,
   onLongPress,
+  selectionMode,
+  handleSelectCard,
 }) => {
   const meta = item.is_government ? TYPE_META.Govt : TYPE_META.Pvt;
   const TypeIcon = meta.Icon;
-
-  console.log("\n\nitem", item);
 
   return (
     <Pressable
       key={item.choice_code}
       style={styles.card3D}
       onLongPress={onLongPress ? () => onLongPress(item.choice_code) : () => {}}
-      onPress={() =>
-        router.push({
-          pathname: "../branch-details",
-          params: { choice_code: item.choice_code },
-        })
-      }
+      onPress={() => {
+        if (selectionMode) {
+          handleSelectCard && handleSelectCard(item.choice_code);
+        } else {
+          router.push({
+            pathname: "../branch-details",
+            params: { choice_code: item.choice_code },
+          });
+        }
+      }}
     >
       {(item.tag || item.percentage) && (
         <View style={styles.smartMatch}>
@@ -80,7 +86,7 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({
                       ? " #facc15"
                       : item.tag === "Very Easy"
                       ? "#a3e635"
-                      : "gray", // fallback
+                      : "#d3d3d3", // fallback
                 },
               ]}
             >
@@ -88,7 +94,7 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({
             </Text>
           )}
 
-          {item.percentage && item.percentage < 100 && (
+          {item.percentage && (
             <Text
               style={[
                 styles.smartMatchNormalText,

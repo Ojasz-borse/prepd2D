@@ -1,3 +1,4 @@
+import { CACHE_NEWS, CACHE_TTL } from "@/constants/cacheStorageConfig";
 import { GET_NEWS } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -15,8 +16,7 @@ interface CachePayload {
   lastFetched: number;
 }
 
-const CACHE_KEY = "news_cache";
-const CACHE_TTL = 1000 * 60 * 15; // 15 minutes
+
 
 export function useNews() {
   const [news, setNews] = useState<News[]>([]);
@@ -47,7 +47,7 @@ export function useNews() {
       setLoading(true);
 
       // 1. Load from cache first
-      const cached = await AsyncStorage.getItem(CACHE_KEY);
+      const cached = await AsyncStorage.getItem(CACHE_NEWS);
       if (cached) {
         const parsed: CachePayload = JSON.parse(cached);
         setNews(parsed.news);
@@ -82,7 +82,7 @@ export function useNews() {
           news: data.news,
           lastFetched: Date.now(),
         };
-        await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(payload));
+        await AsyncStorage.setItem(CACHE_NEWS, JSON.stringify(payload));
       } else {
         throw new Error("Failed to fetch news");
       }
