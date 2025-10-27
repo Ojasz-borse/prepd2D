@@ -206,11 +206,11 @@ export default function ProfileView() {
           delayLongPress={200} // Adjust delay as needed
           style={styles.cardPressable}
         >
-          <AdvancedFindCollegeCard
+          {/* <AdvancedFindCollegeCard
             item={item}
             quickView={view === "quick"}
             isDragging={isActive}
-          />
+          /> */}
         </Pressable>
       </Animated.View>
     );

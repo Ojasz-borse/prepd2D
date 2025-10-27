@@ -1,7 +1,7 @@
 import SearchIcon from "@/assets/icons/SearchIcon";
 import NormalFindCollegeCard from "@/components/NormalFindCollegeCard";
 import NormalFindCollegeCardSkeleton from "@/components/NormalFindCollegeCardSkeleton";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useMemo, useState } from "react";
 import {
   FlatList,
@@ -87,7 +87,9 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
     });
   }, [colleges, searchText, selectedDistricts, selectedType]);
 
-  const districts = [...new Set(colleges.map((item) => item.district))];
+  const districts = [
+    ...new Set(colleges.map((item) => item.district.toLowerCase())),
+  ].sort((a, b) => a.localeCompare(b));
 
   const clearFilters = () => {
     setSearchText("");
@@ -146,7 +148,10 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
             <View style={[styles.pickerWrapper, { flex: 0.5 }]}>
               <MultiSelect
                 style={styles.dropdown}
-                data={districts.map((d) => ({ label: d, value: d }))}
+                data={districts.map((d) => ({
+                  label: d.charAt(0).toUpperCase() + d.slice(1).toLowerCase(),
+                  value: d,
+                }))}
                 labelField="label"
                 valueField="value"
                 placeholder="Districts"
@@ -158,7 +163,7 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
                 renderItem={(item) =>
                   renderDropdownItem(item, selectedDistricts)
                 }
-                renderSelectedItem={() => <View style={{ height: 0 }} />}
+                visibleSelectedItem={false}
               />
               {selectedDistricts.length > 0 && (
                 <View style={styles.badge}>
@@ -199,7 +204,11 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
                 style={styles.clearFilterBtn}
                 onPress={clearFilters}
               >
-                {/* <Ionicons name="close-circle-outline" size={16} color="#004aad" /> */}
+                <MaterialCommunityIcons
+                  name="filter-off"
+                  size={16}
+                  color="#99b3e6"
+                />
                 <Text style={styles.clearFilterText}>Clear Filters</Text>
               </TouchableOpacity>
             )}
@@ -287,12 +296,13 @@ const styles = StyleSheet.create({
   clearFilterBtn: {
     flexDirection: "row",
     alignItems: "center",
+    marginRight: 4,
   },
   clearFilterText: {
     fontSize: 14,
     fontFamily: "SourceSans3SemiBold",
     color: "#99b3e6",
-    marginLeft: 4,
+    marginLeft: 2,
   },
 
   itemRow: {

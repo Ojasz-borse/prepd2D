@@ -83,7 +83,7 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({
                       : item.tag === "Hard"
                       ? "#f97316"
                       : item.tag === "Easy"
-                      ? " #facc15"
+                      ? "#facc15"
                       : item.tag === "Very Easy"
                       ? "#a3e635"
                       : "#d3d3d3", // fallback
@@ -94,7 +94,7 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({
             </Text>
           )}
 
-          {item.percentage && (
+          {item.percentage && item.percentage <= 100 && (
             <Text
               style={[
                 styles.smartMatchNormalText,
@@ -107,10 +107,10 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({
                       : item.tag === "Hard"
                       ? "#f97316"
                       : item.tag === "Easy"
-                      ? " #facc15"
+                      ? "#facc15"
                       : item.tag === "Very Easy"
                       ? "#a3e635"
-                      : "gray", // fallback
+                      : "#000000", // fallback
                 },
               ]}
             >
@@ -251,21 +251,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: -20,
+    marginTop: -22,
     marginBottom: 5,
     marginLeft: 2,
+    marginRight: 2,
     gap: 10,
   },
   smartMatchText: {
-    color: "#fff",
+    color: "#ffffff",
     paddingHorizontal: 8,
     borderRadius: 6,
-    fontFamily: "SourceSans3Medium",
+    fontFamily: "SourceSans3Bold",
     fontSize: 12,
   },
   smartMatchNormalText: {
-    color: "green",
+    color: "#ccc",
     backgroundColor: "#f2f2f2",
+    borderWidth: 0.5,
+    borderColor: "#d9d9d9",
     paddingHorizontal: 8,
     borderRadius: 6,
     fontFamily: "SourceSans3Medium",

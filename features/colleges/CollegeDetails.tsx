@@ -219,11 +219,10 @@ export default function CollegeDetails() {
             {/* NAAC + Placement */}
             <View style={styles.subRow}>
               <View style={styles.naacGrade}>
-                <Text style={styles.naacGradeText}>🎗️</Text>
                 <Text style={styles.naacGradeText}>
                   NAAC: {collegeDetails?.naac_grade}
                 </Text>
-                <Text style={styles.naacGradeText}>-</Text>
+                <Text style={styles.naacGradeText}>🔹</Text>
                 <Text style={styles.naacGradeText}>
                   {collegeDetails?.naac_score}/4
                 </Text>
@@ -333,9 +332,10 @@ const styles = StyleSheet.create({
 
   address: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     gap: 2,
     marginBottom: -8,
+    paddingVertical: 8,
   },
 
   naacGrade: {
@@ -345,7 +345,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 8,
     borderColor: "#004aad",
-    backgroundColor: "#004aad",
+    color: "#004aad",
+    // backgroundColor: "#004aad",
     padding: 4,
     paddingRight: 12,
     borderRadius: 99,
@@ -354,7 +355,7 @@ const styles = StyleSheet.create({
   naacGradeText: {
     fontFamily: "SourceSans3Medium",
     fontSize: 14,
-    color: "#fff",
+    color: "#004aad",
   },
 
   placementUrl: {

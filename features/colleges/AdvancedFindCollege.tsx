@@ -2,17 +2,15 @@ import BookmarkIcon from "@/assets/icons/BookmarkIcon";
 import SearchIcon from "@/assets/icons/SearchIcon";
 import AdvancedFindCollegeCard from "@/components/AdvancedFindCollegeCard";
 import AdvancedFindCollegeCardSkeleton from "@/components/AdvancedFindCollegeCardSkeleton";
-import FloatingLabelInput from "@/components/FloatingLabelInput";
+import SmartMatchModal from "@/components/SmartMatchModel";
 import { CACHE_MY_COLLEGES_LIST } from "@/constants/cacheStorageConfig";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import * as ScreenCapture from "expo-screen-capture";
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  Animated,
   FlatList,
-  Modal,
   StyleSheet,
   Switch,
   Text,
@@ -21,11 +19,6 @@ import {
   View,
 } from "react-native";
 import { MultiSelect } from "react-native-element-dropdown";
-import {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
 
 interface CollegeBranch {
   branch_name: string;
@@ -77,46 +70,6 @@ interface FlyingAnim {
   targetY: number;
 }
 
-const FlyingCardAnimation = ({ anim }: { anim: FlyingAnim }) => {
-  const translateX = useSharedValue(anim.startX);
-  const translateY = useSharedValue(anim.startY);
-  const scale = useSharedValue(1);
-  const opacity = useSharedValue(1);
-
-  useEffect(() => {
-    translateX.value = withTiming(anim.targetX, { duration: 700 });
-    translateY.value = withTiming(anim.targetY, { duration: 700 });
-    scale.value = withTiming(0.3, { duration: 700 });
-    opacity.value = withTiming(0, { duration: 700 });
-  }, []);
-
-  const style = useAnimatedStyle(() => ({
-    position: "absolute",
-    left: 0,
-    top: 0,
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-      { scale: scale.value },
-    ],
-    opacity: opacity.value,
-    zIndex: 99,
-  }));
-
-  return (
-    <Animated.View style={style}>
-      <View
-        style={{
-          width: 100,
-          height: 50,
-          backgroundColor: "#ebf0fa",
-          borderRadius: 10,
-        }}
-      />
-    </Animated.View>
-  );
-};
-
 const DropdownItem: React.FC<DropdownItemProps> = ({ label, isSelected }) => {
   return (
     <View style={styles.itemRow}>
@@ -162,8 +115,13 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
   >(null);
 
   // Unique values
-  const collegeBranches = [...new Set(branches.map((d) => d.branch_name))];
-  const districts = [...new Set(branches.map((d) => d.district))];
+  const collegeBranches = [
+    ...new Set(branches.map((d) => d.branch_name.toLowerCase())),
+  ].sort((a, b) => a.localeCompare(b));
+
+  const districts = [
+    ...new Set(branches.map((d) => d.district.toLowerCase())),
+  ].sort((a, b) => a.localeCompare(b));
 
   // Filtering
   const filteredData = useMemo(() => {
@@ -176,11 +134,11 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
 
       const matchesBranch =
         selectedBranches.length === 0 ||
-        selectedBranches.includes(item.branch_name);
+        selectedBranches.includes(item.branch_name.toLowerCase());
 
       const matchesDistrict =
         selectedDistricts.length === 0 ||
-        selectedDistricts.includes(item.district);
+        selectedDistricts.includes(item.district.toLowerCase());
 
       return matchesSearch && matchesBranch && matchesDistrict;
     });
@@ -188,12 +146,12 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
 
   useEffect(() => {
     // Prevent screenshot when this screen is mounted
-    ScreenCapture.preventScreenCaptureAsync();
+    // ScreenCapture.preventScreenCaptureAsync();
     const loadStoredColleges = async () => {
-      const cached = await AsyncStorage.getItem("myList");
+      const cached = await AsyncStorage.getItem(CACHE_MY_COLLEGES_LIST);
       if (cached) {
         const parsed = JSON.parse(cached);
-        setMovedCollegesCount(parsed.length);
+        setMovedCollegesCount(parsed.data.length);
       } else {
         setMovedCollegesCount(0);
       }
@@ -218,6 +176,9 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
     } else {
       setSmartMatchEnabled(false);
       setModalVisible(false);
+      setPercentile("");
+      setRank("");
+      setCategory(null);
     }
   };
 
@@ -352,7 +313,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
         data={enrichedData}
         keyExtractor={(item) => item.choice_code}
         renderItem={({ item }) => (
-          <View key={item.choice_code} style={{ marginBottom: 15 }}>
+          <View key={item.choice_code} style={{ marginBottom: 18 }}>
             <AdvancedFindCollegeCard item={item} />
           </View>
         )}
@@ -393,7 +354,10 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
               <View style={[styles.pickerWrapper, { flex: 0.5 }]}>
                 <MultiSelect
                   style={styles.dropdown}
-                  data={collegeBranches.map((b) => ({ label: b, value: b }))}
+                  data={collegeBranches.map((b) => ({
+                    label: b.charAt(0).toUpperCase() + b.slice(1).toLowerCase(),
+                    value: b,
+                  }))}
                   labelField="label"
                   valueField="value"
                   placeholder="Branches"
@@ -411,7 +375,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
                       />
                     );
                   }}
-                  renderSelectedItem={() => <View style={{ height: 0 }} />}
+                  visibleSelectedItem={false}
                 />
                 {selectedBranches.length > 0 && (
                   <View style={styles.badge}>
@@ -428,7 +392,10 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
               <View style={[styles.pickerWrapper, { flex: 0.5 }]}>
                 <MultiSelect
                   style={styles.dropdown}
-                  data={districts.map((d) => ({ label: d, value: d }))}
+                  data={districts.map((d) => ({
+                    label: d.charAt(0).toUpperCase() + d.slice(1).toLowerCase(),
+                    value: d,
+                  }))}
                   labelField="label"
                   valueField="value"
                   placeholder="Districts"
@@ -440,7 +407,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
                   renderItem={(item) =>
                     renderDropdownItem(item, selectedDistricts)
                   }
-                  renderSelectedItem={() => <View style={{ height: 0 }} />}
+                  visibleSelectedItem={false}
                 />
                 {selectedDistricts.length > 0 && (
                   <View style={styles.badge}>
@@ -453,7 +420,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
             </View>
 
             {/* Smart Match */}
-            <View style={{ marginVertical: -10 }}>
+            <View>
               <View style={styles.smartMatchRow}>
                 <View style={styles.smartMatchRow}>
                   <Text style={styles.smartMatchLabel}>Smart Match</Text>
@@ -467,8 +434,12 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
                 {(searchText ||
                   selectedDistricts.length > 0 ||
                   selectedBranches.length > 0) && (
-                  <TouchableOpacity onPress={handleMoveToMyList}>
-                    <Text style={styles.smartMatchLabel}>Move to My List</Text>
+                  <TouchableOpacity
+                    onPress={handleMoveToMyList}
+                    style={styles.addToListButton}
+                  >
+                    <BookmarkIcon size={12} />
+                    <Text style={styles.addToListButtonText}>Add to List</Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -477,7 +448,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
             {/* Result count + Clear filter */}
             <View style={styles.resultRow}>
               <Text style={styles.resultCount}>
-                Total Results: {filteredData.length}
+                Total Results: {enrichedData.length}
               </Text>
 
               {(searchText ||
@@ -487,7 +458,11 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
                   style={styles.clearFilterBtn}
                   onPress={clearFilters}
                 >
-                  {/* <Ionicons name="close-circle-outline" size={16} color="#004aad" /> */}
+                  <MaterialCommunityIcons
+                    name="filter-off"
+                    size={16}
+                    color="#99b3e6"
+                  />
                   <Text style={styles.clearFilterText}>Clear Filters</Text>
                 </TouchableOpacity>
               )}
@@ -514,156 +489,17 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
       )}
 
       {/* Modal for Percentile & Rank */}
-      <Modal
-        visible={modalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>
-              To enable Smart Match mode, please enter your Percentile & Rank
-            </Text>
-
-            <View style={{ flexDirection: "row", gap: 10 }}>
-              <View style={{ width: "48%" }}>
-                <FloatingLabelInput
-                  label="Percentile"
-                  value={percentile}
-                  onChangeText={setPercentile}
-                />
-              </View>
-              <View style={{ width: "48%" }}>
-                <FloatingLabelInput
-                  label="Rank"
-                  value={rank}
-                  onChangeText={setRank}
-                />
-              </View>
-            </View>
-
-            <Text
-              style={{
-                marginTop: -14,
-                marginBottom: 10,
-                fontSize: 16,
-                fontFamily: "SourceSans3Medium",
-                color: "#004aad60",
-              }}
-            >
-              Select category
-            </Text>
-            <View style={styles.groupWrapper}>
-              <TouchableOpacity
-                style={[
-                  styles.groupOption,
-                  category === "Open" && styles.groupOptionSelected,
-                ]}
-                onPress={() => setCategory("Open")}
-              >
-                <Text
-                  style={[
-                    styles.groupOptionText,
-                    category === "Open" && styles.groupOptionTextSelected,
-                  ]}
-                >
-                  Open
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.groupOption,
-                  category === "OBC" && styles.groupOptionSelected,
-                ]}
-                onPress={() => setCategory("OBC")}
-              >
-                <Text
-                  style={[
-                    styles.groupOptionText,
-                    category === "OBC" && styles.groupOptionTextSelected,
-                  ]}
-                >
-                  OBC
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.groupOption,
-                  category === "TFWS" && styles.groupOptionSelected,
-                ]}
-                onPress={() => setCategory("TFWS")}
-              >
-                <Text
-                  style={[
-                    styles.groupOptionText,
-                    category === "TFWS" && styles.groupOptionTextSelected,
-                  ]}
-                >
-                  TFWS
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.groupOption,
-                  category === "SC_ST" && styles.groupOptionSelected,
-                ]}
-                onPress={() => setCategory("SC_ST")}
-              >
-                <Text
-                  style={[
-                    styles.groupOptionText,
-                    category === "SC_ST" && styles.groupOptionTextSelected,
-                  ]}
-                >
-                  SC/ST
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.groupOption,
-                  category === "VJ_NT" && styles.groupOptionSelected,
-                ]}
-                onPress={() => setCategory("VJ_NT")}
-              >
-                <Text
-                  style={[
-                    styles.groupOptionText,
-                    category === "VJ_NT" && styles.groupOptionTextSelected,
-                  ]}
-                >
-                  VJNT
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={styles.modalButtonCancel}
-                onPress={() => {
-                  setModalVisible(false);
-                  setSmartMatchEnabled(false);
-                }}
-              >
-                <Text style={styles.modalButtonTextCancel}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.modalButtonSubmit}
-                onPress={() => {
-                  setModalVisible(false);
-                  setSmartMatchEnabled(true);
-                }}
-              >
-                <Text style={styles.modalButtonTextSubmit}>Enable</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <SmartMatchModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        setSmartMatchEnabled={setSmartMatchEnabled}
+        percentile={percentile}
+        setPercentile={setPercentile}
+        rank={rank}
+        setRank={setRank}
+        category={category}
+        setCategory={setCategory}
+      />
     </>
   );
 };
@@ -768,18 +604,19 @@ const styles = StyleSheet.create({
   clearFilterBtn: {
     flexDirection: "row",
     alignItems: "center",
+    marginRight: 4,
   },
   clearFilterText: {
     fontSize: 14,
     fontFamily: "SourceSans3SemiBold",
     color: "#99b3e6",
-    marginLeft: 4,
+    marginLeft: 2,
   },
 
   badge: {
     position: "relative",
     top: -32,
-    left: 110,
+    left: "60%",
     backgroundColor: "#004aad", // your given color
     borderRadius: 9999, // full rounded
     paddingHorizontal: 8,
@@ -804,6 +641,20 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 4,
+  },
+  addToListButton: {
+    backgroundColor: "#004aad",
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    borderRadius: 30,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  addToListButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontFamily: "SourceSans3Medium",
   },
   smartMatchLabel: {
     fontSize: 16,
@@ -846,86 +697,4 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "SourceSans3Medium",
   },
-
-  // Modal
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    width: "85%",
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 30,
-  },
-  modalTitle: {
-    fontSize: 16,
-    fontFamily: "SourceSans3Medium",
-    marginBottom: 16,
-    color: "#004aad",
-    textAlign: "center",
-  },
-
-  modalActions: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-  },
-  modalButtonCancel: {
-    paddingHorizontal: 18,
-    paddingVertical: 8,
-    borderRadius: 14,
-  },
-  modalButtonSubmit: {
-    backgroundColor: "#004aad",
-    paddingHorizontal: 18,
-    paddingVertical: 8,
-    borderRadius: 99,
-  },
-  modalButtonTextCancel: {
-    fontSize: 15,
-    color: "#999",
-    fontFamily: "SourceSans3Medium",
-  },
-  modalButtonTextSubmit: {
-    fontSize: 15,
-    color: "#fff",
-    fontFamily: "SourceSans3Medium",
-  },
-  inputRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  flexInput: {
-    flex: 1,
-  },
-
-  groupWrapper: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 30,
-    gap: 8,
-  },
-  groupOption: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    paddingVertical: 12,
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-  groupOptionSelected: {
-    borderColor: "#004aad",
-    borderWidth: 2,
-    backgroundColor: "#f8fbff",
-  },
-  groupOptionText: {
-    fontSize: 12,
-    color: "#777",
-    fontFamily: "SourceSans3Medium",
-  },
-  groupOptionTextSelected: { color: "#004aad", fontWeight: "600" },
 });

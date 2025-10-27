@@ -21,3 +21,7 @@ export const PREDICT_RANK = `${extra.SERVER_URL}/api/estimator/predictRank`;
 export const GET_CHAT_LLM_RESPONSE = `${extra.SERVER_URL}/api/chatllm`;
 
 export const MY_LIST_API_URL = `${extra.SERVER_URL}/api/my-option-form`;
+
+export const GET_PYQS = `${extra.SERVER_URL}/api/pyqs/chapter/id`;
+
+export const GET_PYQ_CHAPTERS = `${extra.SERVER_URL}/api/pyqs`;

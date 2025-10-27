@@ -76,7 +76,7 @@ export default function CollegeFees({ fees }: Props) {
       )}
 
       {/* Fees Card */}
-      {activeFees && (
+      {activeFees ? (
         <View style={styles.card}>
           <View style={styles.fees_row}>
             <View>
@@ -107,6 +107,8 @@ export default function CollegeFees({ fees }: Props) {
 
           <Text style={styles.fees_total}>₹{formatINR(activeFees.total)}</Text>
         </View>
+      ) : (
+        <Text style={styles.notAVailable}>No Fees Data available</Text>
       )}
     </View>
   );
@@ -172,5 +174,10 @@ const styles = StyleSheet.create({
     color: "#004aad",
     fontFamily: "SourceSans3Medium", // ✅ applied
     marginTop: 10,
+  },
+  notAVailable: {
+    fontSize: 14,
+    color: "#787878ff",
+    fontFamily: "SourceSans3Medium",
   },
 });

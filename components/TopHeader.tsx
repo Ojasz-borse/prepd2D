@@ -1,5 +1,6 @@
+import ChecklistIcon from "@/assets/icons/CheckListIcon";
+import EstimatorTabIcon from "@/assets/icons/EstimatorTabIcon";
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
@@ -12,8 +13,18 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../constants/theme";
 import { useAuth } from "../context/AuthContext"; // adjust path if needed
+
+// Add this just below imports
+const avatarColors = ["#F06292", "#64B5F6", "#81C784", "#FFD54F", "#BA68C8"];
+
+const getAvatarColor = (name?: string) => {
+  if (!name) return avatarColors[0];
+  const index = name.toUpperCase().charCodeAt(0) % avatarColors.length;
+  return avatarColors[index];
+};
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -64,14 +75,16 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
             </TouchableOpacity>
           ) : (
             <TouchableOpacity style={styles.profileButton} onPress={openDrawer}>
-              <LinearGradient
-                colors={["#ff33cc", "#ff3399"]}
-                style={styles.profileCircle}
+              <View
+                style={[
+                  styles.profileCircle,
+                  { backgroundColor: getAvatarColor(user?.first_name) },
+                ]}
               >
                 <Text style={styles.profileInitials}>
                   {initials.toUpperCase()}
                 </Text>
-              </LinearGradient>
+              </View>
             </TouchableOpacity>
           )}
         </View>
@@ -81,7 +94,7 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
           {title}
         </Text>
 
-        {/* Right Empty Side (for symmetry) */}
+        {/* Right Empty Side */}
         <View style={styles.sideContainer} />
       </View>
 
@@ -91,67 +104,87 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
         visible={isDrawerOpen}
         animationType="none"
         onRequestClose={closeDrawer}
+        statusBarTranslucent // 👈 important for Android
       >
-        {/* Overlay */}
-        <Pressable style={styles.overlay} onPress={closeDrawer} />
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#f2f2f2" }}>
+          {/* Overlay */}
+          <Pressable style={styles.overlay} onPress={closeDrawer} />
 
-        {/* Animated Drawer */}
-        <Animated.View
-          style={[
-            styles.drawerContainer,
-            {
-              transform: [{ translateX: slideAnim }],
-            },
-          ]}
-        >
-          {/* Drawer Header */}
-          <View style={styles.drawerHeader}>
-            <LinearGradient
-              colors={["#ff33cc", "#ff3399"]}
-              style={styles.drawerProfileCircle}
-            >
-              <Text style={styles.drawerProfileInitials}>
-                {initials.toUpperCase()}
-              </Text>
-            </LinearGradient>
-            <View style={{ marginLeft: 12 }}>
-              <Text style={styles.drawerName}>
-                {user?.first_name} {user?.last_name}
-              </Text>
-              <Text style={styles.drawerEmail}>{user?.email}</Text>
-            </View>
-          </View>
+          {/* Animated Drawer */}
+          <Animated.View
+            style={[
+              styles.drawerContainer,
+              {
+                transform: [{ translateX: slideAnim }],
+              },
+            ]}
+          >
+            <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+              {/* Drawer Header */}
+              <View style={styles.drawerHeader}>
+                <View
+                  style={[
+                    styles.drawerProfileCircle,
+                    { backgroundColor: getAvatarColor(user?.first_name) },
+                  ]}
+                >
+                  <Text style={styles.drawerProfileInitials}>
+                    {initials.toUpperCase()}
+                  </Text>
+                </View>
+                <View style={{ marginLeft: 12 }}>
+                  <Text style={styles.drawerName}>
+                    {user?.first_name} {user?.last_name}
+                  </Text>
+                  <Text style={styles.drawerEmail}>{user?.email}</Text>
+                </View>
+              </View>
 
-          {/* Drawer Content */}
-          <View style={styles.drawerContent}>
-            <TouchableOpacity
-              style={styles.drawerItem}
-              onPress={() => {
-                closeDrawer();
-                router.push("/my-list");
-              }}
-            >
-              <Ionicons name="list-outline" size={22} color={colors.textDark} />
-              <Text style={styles.drawerItemText}>My List</Text>
-            </TouchableOpacity>
-          </View>
+              {/* Drawer Content */}
+              <View style={styles.drawerContent}>
+                <TouchableOpacity
+                  style={styles.drawerItem}
+                  onPress={() => {
+                    closeDrawer();
+                    router.push("/my-list");
+                  }}
+                >
+                  <ChecklistIcon size={22} />
+                  <Text style={styles.drawerItemText}>My List</Text>
+                </TouchableOpacity>
 
-          {/* ===== Logout Button at Bottom ===== */}
-          <View style={styles.logoutContainer}>
-            <TouchableOpacity
-              style={styles.drawerItem}
-              onPress={() => {
-                closeDrawer();
-                logout(); // optional chaining in case logout isn’t defined
-              }}
-            >
-              <Ionicons name="log-out-outline" size={22} color="#E53935" />
-              <Text style={[styles.drawerItemText, { color: "#E53935" }]}>
-                Logout
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </Animated.View>
+                <Text style={styles.section}>Tools</Text>
+
+                <TouchableOpacity
+                  style={styles.drawerItem}
+                  onPress={() => {
+                    closeDrawer();
+                    router.push("/estimator");
+                  }}
+                >
+                  <EstimatorTabIcon size={18} focused={false} />
+                  <Text style={styles.drawerItemText}>Estimator</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Logout Button */}
+              <View style={styles.logoutContainer}>
+                <TouchableOpacity
+                  style={styles.drawerItem}
+                  onPress={() => {
+                    closeDrawer();
+                    logout?.();
+                  }}
+                >
+                  <Ionicons name="log-out-outline" size={22} color="#E53935" />
+                  <Text style={[styles.drawerItemText, { color: "#E53935" }]}>
+                    Logout
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </SafeAreaView>
+          </Animated.View>
+        </SafeAreaView>
       </Modal>
     </>
   );
@@ -160,6 +193,7 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
 export default TopHeader;
 
 const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: "#f2f2f2" },
   topHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -255,6 +289,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: "#666",
     marginTop: 2,
+    fontFamily: "SourceSans3Medium",
   },
   drawerContent: {
     padding: 16,
@@ -270,6 +305,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.textDark,
     fontFamily: "SourceSans3SemiBold",
+  },
+  section: {
+    fontSize: 12,
+    color: "gray",
+    fontFamily: "SourceSans3Medium",
+    marginTop: 30,
   },
   logoutContainer: {
     borderTopWidth: 1,

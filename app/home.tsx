@@ -2,8 +2,8 @@ import BookTabIcon from "@/assets/icons/BookTabIcon";
 import SearchCollegeTabIcon from "@/assets/icons/SearchCollegeTabIcon";
 import { useAuth } from "@/context/AuthContext";
 import FindColleges from "@/features/colleges/FindColleges";
-import EstimatorScreen from "@/features/estimator/EstimatorScreen";
 import HomeScreen from "@/features/home/HomeScreen";
+import Preparation from "@/features/preparation/Preparation";
 import ProfileScreen from "@/features/profile/ProfileScreen";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -68,7 +68,7 @@ export default function Home() {
             ),
           }}
         >
-          {() => <EstimatorScreen />}
+          {() => <Preparation />}
         </Tab.Screen>
 
         {/* ✨ Middle Circular “Prep AI” Button */}

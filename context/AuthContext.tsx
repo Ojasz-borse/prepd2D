@@ -91,6 +91,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setUserToken(data.token);
         setUser(data.user);
 
+        console.log("token", data.token);
+        console.log("user", data.user);
+
         router.replace("/home");
         registerForPushNotificationsAsync(data.token);
       } else {
@@ -137,6 +140,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       await SecureStore.setItemAsync(USER_SESSION, JSON.stringify(data.user)); // 👈 save user
       setUserToken(data.token);
       setUser(data.user);
+
+      console.log("token", data.token);
+      console.log("user", data.user);
 
       router.replace("/home");
     } else {

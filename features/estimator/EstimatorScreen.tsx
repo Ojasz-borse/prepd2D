@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../constants/theme";
 
 export default function EstimatorScreen() {
@@ -47,193 +48,196 @@ export default function EstimatorScreen() {
 
   // ===== UI =====
   return (
-    <View style={styles.container}>
-      <TopHeader title="Estimator" showBackArrow={false} />
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <TopHeader title="Estimator" showBackArrow={false} />
 
-      {/* Tabs */}
-      <View style={styles.tabContainer}>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === "marks" && styles.activeTab]}
-          onPress={() => setActiveTab("marks")}
-        >
-          <Text
-            style={[
-              styles.tabText,
-              activeTab === "marks" && styles.activeTabText,
-            ]}
+        {/* Tabs */}
+        <View style={styles.tabContainer}>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === "marks" && styles.activeTab]}
+            onPress={() => setActiveTab("marks")}
           >
-            Marks to Percentile
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === "marks" && styles.activeTabText,
+              ]}
+            >
+              Marks to Percentile
+            </Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.tab, activeTab === "rank" && styles.activeTab]}
-          onPress={() => setActiveTab("rank")}
-        >
-          <Text
-            style={[
-              styles.tabText,
-              activeTab === "rank" && styles.activeTabText,
-            ]}
+          <TouchableOpacity
+            style={[styles.tab, activeTab === "rank" && styles.activeTab]}
+            onPress={() => setActiveTab("rank")}
           >
-            Percentile to Rank
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Content */}
-      <View style={styles.contentWrapper}>
-        {/* --- Marks → Percentile --- */}
-        {activeTab === "marks" && (
-          <View style={styles.contentBox}>
-            <Text style={styles.headingText}>Enter your Marks</Text>
-
-            <FloatingLabelInput
-              label="Enter Marks"
-              value={marks}
-              onChangeText={setMarks}
-              keyboardType="number-pad"
-            />
-
-            <Text style={styles.headingText}>Enter your Shift</Text>
-
-            <View style={styles.groupWrapper}>
-              <TouchableOpacity
-                style={[
-                  styles.groupOption,
-                  shift === "easy" && styles.groupOptionSelected,
-                ]}
-                onPress={() => setShift("easy")}
-              >
-                <Text
-                  style={[
-                    styles.groupOptionText,
-                    shift === "easy" && styles.groupOptionTextSelected,
-                  ]}
-                >
-                  Easy
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.groupOption,
-                  shift === "medium" && styles.groupOptionSelected,
-                ]}
-                onPress={() => setShift("medium")}
-              >
-                <Text
-                  style={[
-                    styles.groupOptionText,
-                    shift === "medium" && styles.groupOptionTextSelected,
-                  ]}
-                >
-                  Medium
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.groupOption,
-                  shift === "hard" && styles.groupOptionSelected,
-                ]}
-                onPress={() => setShift("hard")}
-              >
-                <Text
-                  style={[
-                    styles.groupOptionText,
-                    shift === "hard" && styles.groupOptionTextSelected,
-                  ]}
-                >
-                  Hard
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.buttonWrapper}>
-              <TouchableOpacity
-                style={[
-                  styles.confirmButton,
-                  marks && styles.confirmButtonActive,
-                ]}
-                onPress={handleCalculatePercentile}
-                disabled={!marks || loading}
-              >
-                <Text
-                  style={[
-                    styles.confirmButtonText,
-                    marks && styles.confirmButtonTextActive,
-                  ]}
-                >
-                  {loading ? "Calculating..." : "Calculate"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {percentile && (
-              <Text style={styles.resultText}>
-                🎯 Estimated Percentile: {percentile.toFixed(2)}%
-              </Text>
-            )}
-          </View>
-        )}
-
-        {/* --- Percentile → Rank --- */}
-        {activeTab === "rank" && (
-          <View style={styles.contentBox}>
-            <Text style={styles.headingText}>Enter your Percentile</Text>
-
-            <FloatingLabelInput
-              label="Enter Percentile"
-              value={inputPercentile}
-              onChangeText={setInputPercentile}
-              keyboardType="number-pad"
-            />
-
-            <View style={styles.buttonWrapper}>
-              <TouchableOpacity
-                style={[
-                  styles.confirmButton,
-                  inputPercentile && styles.confirmButtonActive,
-                ]}
-                onPress={handleCalculateRank}
-                disabled={!inputPercentile || loading}
-              >
-                <Text
-                  style={[
-                    styles.confirmButtonText,
-                    inputPercentile && styles.confirmButtonTextActive,
-                  ]}
-                >
-                  {loading ? "Calculating..." : "Calculate"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {rank && (
-              <Text style={styles.resultText}>📊 Estimated Rank: {rank}</Text>
-            )}
-          </View>
-        )}
-      </View>
-
-      {/* Loading or Error */}
-      {loading && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color={colors.primary} />
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === "rank" && styles.activeTabText,
+              ]}
+            >
+              Percentile to Rank
+            </Text>
+          </TouchableOpacity>
         </View>
-      )}
 
-      {error && (
-        <Text style={{ color: "red", textAlign: "center", marginTop: 10 }}>
-          {error}
-        </Text>
-      )}
-    </View>
+        {/* Content */}
+        <View style={styles.contentWrapper}>
+          {/* --- Marks → Percentile --- */}
+          {activeTab === "marks" && (
+            <View style={styles.contentBox}>
+              <Text style={styles.headingText}>Enter your Marks</Text>
+
+              <FloatingLabelInput
+                label="Enter Marks"
+                value={marks}
+                onChangeText={setMarks}
+                keyboardType="number-pad"
+              />
+
+              <Text style={styles.headingText}>Enter your Shift</Text>
+
+              <View style={styles.groupWrapper}>
+                <TouchableOpacity
+                  style={[
+                    styles.groupOption,
+                    shift === "easy" && styles.groupOptionSelected,
+                  ]}
+                  onPress={() => setShift("easy")}
+                >
+                  <Text
+                    style={[
+                      styles.groupOptionText,
+                      shift === "easy" && styles.groupOptionTextSelected,
+                    ]}
+                  >
+                    Easy
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.groupOption,
+                    shift === "medium" && styles.groupOptionSelected,
+                  ]}
+                  onPress={() => setShift("medium")}
+                >
+                  <Text
+                    style={[
+                      styles.groupOptionText,
+                      shift === "medium" && styles.groupOptionTextSelected,
+                    ]}
+                  >
+                    Medium
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.groupOption,
+                    shift === "hard" && styles.groupOptionSelected,
+                  ]}
+                  onPress={() => setShift("hard")}
+                >
+                  <Text
+                    style={[
+                      styles.groupOptionText,
+                      shift === "hard" && styles.groupOptionTextSelected,
+                    ]}
+                  >
+                    Hard
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.buttonWrapper}>
+                <TouchableOpacity
+                  style={[
+                    styles.confirmButton,
+                    marks && styles.confirmButtonActive,
+                  ]}
+                  onPress={handleCalculatePercentile}
+                  disabled={!marks || loading}
+                >
+                  <Text
+                    style={[
+                      styles.confirmButtonText,
+                      marks && styles.confirmButtonTextActive,
+                    ]}
+                  >
+                    {loading ? "Calculating..." : "Calculate"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {percentile && (
+                <Text style={styles.resultText}>
+                  🎯 Estimated Percentile: {percentile.toFixed(2)}%
+                </Text>
+              )}
+            </View>
+          )}
+
+          {/* --- Percentile → Rank --- */}
+          {activeTab === "rank" && (
+            <View style={styles.contentBox}>
+              <Text style={styles.headingText}>Enter your Percentile</Text>
+
+              <FloatingLabelInput
+                label="Enter Percentile"
+                value={inputPercentile}
+                onChangeText={setInputPercentile}
+                keyboardType="number-pad"
+              />
+
+              <View style={styles.buttonWrapper}>
+                <TouchableOpacity
+                  style={[
+                    styles.confirmButton,
+                    inputPercentile && styles.confirmButtonActive,
+                  ]}
+                  onPress={handleCalculateRank}
+                  disabled={!inputPercentile || loading}
+                >
+                  <Text
+                    style={[
+                      styles.confirmButtonText,
+                      inputPercentile && styles.confirmButtonTextActive,
+                    ]}
+                  >
+                    {loading ? "Calculating..." : "Calculate"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {rank && (
+                <Text style={styles.resultText}>📊 Estimated Rank: {rank}</Text>
+              )}
+            </View>
+          )}
+        </View>
+
+        {/* Loading or Error */}
+        {loading && (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color={colors.primary} />
+          </View>
+        )}
+
+        {error && (
+          <Text style={{ color: "red", textAlign: "center", marginTop: 10 }}>
+            {error}
+          </Text>
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: "#f2f2f2" },
   container: { flex: 1, backgroundColor: "#fff" },
 
   // --- Tabs ---

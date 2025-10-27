@@ -1,6 +1,7 @@
+import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React from "react";
-import { Modal, StyleSheet, Text, View } from "react-native";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface AuthStatusModalProps {
   visible: boolean;
@@ -8,7 +9,7 @@ interface AuthStatusModalProps {
   message: string;
   error?: boolean;
   onClose?: () => void;
-  showButton?: boolean; // if true, show button (e.g., for errors)
+  showButton?: boolean;
 }
 
 const AuthStatusModal: React.FC<AuthStatusModalProps> = ({
@@ -28,6 +29,13 @@ const AuthStatusModal: React.FC<AuthStatusModalProps> = ({
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
+          {/* Cross icon for error state */}
+          {error && (
+            <TouchableOpacity style={styles.closeIcon} onPress={onClose}>
+              <Ionicons name="close" size={22} color="#484848ff" />
+            </TouchableOpacity>
+          )}
+
           {loading && !error && (
             <>
               <Image
@@ -77,6 +85,13 @@ const styles = StyleSheet.create({
     width: "80%",
     alignItems: "center",
     paddingVertical: 40,
+    position: "relative",
+  },
+  closeIcon: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    padding: 6,
   },
   modalMessage: {
     fontSize: 16,
@@ -86,26 +101,6 @@ const styles = StyleSheet.create({
     width: "70%",
   },
   gif: { width: 100, height: 80 },
-  buttonWrapper: {
-    width: "100%",
-    alignItems: "flex-end",
-    position: "relative",
-    bottom: 180,
-  },
-  confirmButton: {
-    backgroundColor: "#e0e0e0",
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-  },
-  confirmButtonActive: { backgroundColor: "#004aad" },
-  confirmButtonText: {
-    color: "#999",
-    fontSize: 14,
-    fontWeight: "600",
-    fontFamily: "SourceSans3Medium",
-  },
-  confirmButtonTextActive: { color: "#fff" },
 });
 
 export default AuthStatusModal;
