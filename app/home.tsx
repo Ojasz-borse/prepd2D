@@ -1,10 +1,11 @@
 import BookTabIcon from "@/assets/icons/BookTabIcon";
+import { ProfilePageIcon } from "@/assets/icons/ProfilePageIcon";
 import SearchCollegeTabIcon from "@/assets/icons/SearchCollegeTabIcon";
 import { useAuth } from "@/context/AuthContext";
 import FindColleges from "@/features/colleges/FindColleges";
 import HomeScreen from "@/features/home/HomeScreen";
+import MockTestScreen from "@/features/mocktest/MockTestScreen";
 import Preparation from "@/features/preparation/Preparation";
-import ProfileScreen from "@/features/profile/ProfileScreen";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { LinearGradient } from "expo-linear-gradient";
@@ -82,6 +83,18 @@ export default function Home() {
         />
 
         <Tab.Screen
+          name="My Profile"
+          options={{
+            tabBarLabel: "Mock Tests",
+            tabBarIcon: ({ focused, size }) => (
+              <ProfilePageIcon focused={focused} size={size} />
+            ),
+          }}
+        >
+          {() => <MockTestScreen />}
+        </Tab.Screen>
+
+        <Tab.Screen
           name="Colleges"
           options={{
             tabBarLabel: "Colleges",
@@ -91,19 +104,6 @@ export default function Home() {
           }}
         >
           {() => <FindColleges />}
-        </Tab.Screen>
-
-        <Tab.Screen
-          name="My Profile"
-          options={{
-            tabBarLabel: "",
-            tabBarIcon: ({ focused, size }) => (
-              <></>
-              // <ProfilePageIcon focused={focused} size={size} />
-            ),
-          }}
-        >
-          {() => <ProfileScreen />}
         </Tab.Screen>
       </Tab.Navigator>
     </SafeAreaView>

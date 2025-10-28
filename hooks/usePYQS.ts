@@ -1,4 +1,4 @@
-import { GET_PYQ_CHAPTERS, GET_PYQS } from "@/constants/config";
+import { GET_PYQ_CHAPTERS } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useState } from "react";
@@ -54,6 +54,7 @@ export function usePYQS() {
   );
 
   const loadPYQS = useCallback(async () => {
+    console.log("called loadPYQs");
     try {
       setLoading(true);
 
@@ -62,6 +63,7 @@ export function usePYQS() {
       if (cached) {
         const parsed: CachePayload = JSON.parse(cached);
         setPyqs(parsed.chapters);
+        console.log("cached", parsed.chapters);
 
         // If cache still valid, skip API
         if (Date.now() - parsed.lastFetched < CACHE_TTL) {
@@ -72,6 +74,9 @@ export function usePYQS() {
 
       // 2️⃣ Background refresh
       const token = await getToken();
+
+      console.log("token", token);
+      console.log("URL", GET_PYQ_CHAPTERS);
       const res = await fetchWithRetry(
         GET_PYQ_CHAPTERS,
         {
@@ -86,8 +91,10 @@ export function usePYQS() {
       );
 
       const data: ApiResponse = await res.json();
+      console.log("data", data);
       if (data.success && Array.isArray(data.chapters)) {
         setPyqs(data.chapters);
+        console.log("res", data.chapters);
 
         // 3️⃣ Cache the new data
         const payload: CachePayload = {
