@@ -89,7 +89,7 @@ export default function PYQ() {
   const handleChapterPress = (id: number, chapter_name: string) => {
     router.push({
       pathname: "/pyq-list",
-      params: { id: 25, chapter_name: chapter_name },
+      params: { id: id, chapter_name: chapter_name },
     });
   };
 

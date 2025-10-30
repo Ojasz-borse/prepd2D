@@ -10,6 +10,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
 
 interface PYQItem {
   id: number;
@@ -37,17 +39,23 @@ export default function PYQDetailsPage() {
   if (!current) {
     return (
       <View style={styles.center}>
-        <Text style={{ color: "#555" }}>No question data found</Text>
+        <LinearGradient
+          colors={['#667eea', '#764ba2']}
+          style={styles.errorContainer}
+        >
+          <Ionicons name="document-text-outline" size={48} color="#ffffff" />
+          <Text style={styles.errorText}>No question data found</Text>
+        </LinearGradient>
       </View>
     );
   }
 
   const options = [current.a, current.b, current.c, current.d];
   const correctIndex =
-    current.correct_option?.trim().toLowerCase().charCodeAt(0) - 97; // "a"→0, "b"→1, etc.
+    current.correct_option?.trim().toLowerCase().charCodeAt(0) - 97;
 
   const handleSelect = (i: number) => {
-    if (selectedOption !== null) return; // prevent re-select
+    if (selectedOption !== null) return;
     setSelectedOption(i);
     setShowExplanation(true);
   };
@@ -76,56 +84,130 @@ export default function PYQDetailsPage() {
     return styles.option;
   };
 
+  const getOptionIcon = (i: number) => {
+    if (selectedOption === null) return "radio-button-off";
+    if (i === correctIndex) return "checkmark-circle";
+    if (i === selectedOption && i !== correctIndex) return "close-circle";
+    return "radio-button-off";
+  };
+
+  const getOptionIconColor = (i: number) => {
+    if (selectedOption === null) return "#667eea";
+    if (i === correctIndex) return "#10b981";
+    if (i === selectedOption && i !== correctIndex) return "#ef4444";
+    return "#9ca3af";
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <TopHeader title="PYQ Section" showBackArrow={true} />
+      <LinearGradient
+        colors={['#004aad', '#004aad']}
+        style={styles.headerGradient}
+      >
+        <TopHeader title="PYQ Section" showBackArrow={true} />
+      </LinearGradient>
 
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.qTitle}>
-          <MathText content={current.pyq_content} />
-        </Text>
+        {/* Progress Indicator */}
+        <View style={styles.progressContainer}>
+          <View style={styles.progressBar}>
+            <View 
+              style={[
+                styles.progressFill,
+                { width: `${((index + 1) / allQuestions.length) * 100}%` }
+              ]} 
+            />
+          </View>
+          <Text style={styles.progressText}>
+            Question {index + 1} of {allQuestions.length}
+          </Text>
+        </View>
 
-        {options.map((opt, i) => (
-          <TouchableOpacity
-            key={i}
-            style={getOptionStyle(i)}
-            onPress={() => handleSelect(i)}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.optionText}>
-              {String.fromCharCode(65 + i)}. <MathText content={opt} />
-            </Text>
-          </TouchableOpacity>
-        ))}
+        {/* Question Card */}
+        <View style={styles.questionCard}>
+          <View style={styles.questionHeader}>
+            <View style={styles.questionBadge}>
+              <Text style={styles.questionBadgeText}>Question {index + 1}</Text>
+            </View>
+          </View>
+          <View style={styles.questionContent}>
+            <MathText content={current.pyq_content} />
+          </View>
+        </View>
 
+        {/* Options */}
+        <View style={styles.optionsContainer}>
+          {options.map((opt, i) => (
+            <TouchableOpacity
+              key={i}
+              style={getOptionStyle(i)}
+              onPress={() => handleSelect(i)}
+              activeOpacity={0.8}
+            >
+              <View style={styles.optionContent}>
+                <Ionicons 
+                  name={getOptionIcon(i)} 
+                  size={22} 
+                  color={getOptionIconColor(i)} 
+                  style={styles.optionIcon}
+                />
+                <View style={styles.optionTextContainer}>
+                  <Text style={styles.optionLabel}>
+                    {String.fromCharCode(65 + i)}.
+                  </Text>
+                  <MathText content={opt} />
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Explanation */}
         {showExplanation && (
           <View style={styles.explanationBox}>
-            <Text style={styles.explanationTitle}>Explanation:</Text>
-            <MathText content={current.explanation_content} />
+            <View style={styles.explanationHeader}>
+              <Ionicons name="bulb-outline" size={16} color="#f59e0b" />
+              <Text style={styles.explanationTitle}>Explanation</Text>
+            </View>
+            <View style={styles.explanationContent}>
+              <MathText content={current.explanation_content} />
+            </View>
           </View>
         )}
 
-        <View style={styles.navRow}>
+        {/* Navigation */}
+        <View style={styles.navContainer}>
           <TouchableOpacity
-            style={[styles.navBtn, index === 0 && styles.disabledBtn]}
+            style={[styles.navButton, styles.prevButton, index === 0 && styles.disabledButton]}
             disabled={index === 0}
             onPress={handlePrev}
           >
-            <Text style={styles.navText}>Previous</Text>
+            <Ionicons 
+              name="chevron-back" 
+              size={18} 
+              color={index === 0 ? "#9ca3af" : "#ffffff"} 
+            />
+            <Text style={[styles.navButtonText, index === 0 && styles.disabledButtonText]}>
+              Previous
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[
-              styles.navBtn,
-              index === allQuestions.length - 1 && styles.disabledBtn,
-            ]}
+            style={[styles.navButton, styles.nextButton, index === allQuestions.length - 1 && styles.disabledButton]}
             disabled={index === allQuestions.length - 1}
             onPress={handleNext}
           >
-            <Text style={styles.navText}>Next</Text>
+            <Text style={[styles.navButtonText, index === allQuestions.length - 1 && styles.disabledButtonText]}>
+              Next
+            </Text>
+            <Ionicons 
+              name="chevron-forward" 
+              size={18} 
+              color={index === allQuestions.length - 1 ? "#9ca3af" : "#ffffff"} 
+            />
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -134,57 +216,172 @@ export default function PYQDetailsPage() {
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, padding: 16, backgroundColor: "#fff" },
-  qTitle: {
-    fontSize: 17,
-    fontWeight: "600",
-    color: "#111",
-    lineHeight: 24,
-    marginBottom: 14,
-    fontFamily: "SourceSans3Medium",
+  container: { 
+    flexGrow: 1, 
+    padding: 20, 
+    backgroundColor: "#ffffff" 
   },
-  option: {
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
+  headerGradient: {
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+  },
+  progressContainer: {
     marginBottom: 10,
   },
-  correctOption: {
-    borderColor: "green",
+  progressBar: {
+    height: 6,
+    backgroundColor: '#e2e8f0',
+    borderRadius: 3,
+    marginBottom: 8,
+    overflow: 'hidden',
   },
-  wrongOption: {
-    borderColor: "red",
+  progressFill: {
+    height: '100%',
+    backgroundColor: '#004aad',
+    borderRadius: 3,
   },
-  optionText: { fontSize: 15, color: "#333", fontFamily: "SourceSans3Medium" },
-  explanationBox: {
-    backgroundColor: "#ebf8ff",
-    marginTop: 14,
-    padding: 10,
+  progressText: {
+    fontSize: 14,
+    color: '#64748b',
+    fontFamily: "SourceSans3Medium",
+    textAlign: 'center',
+  },
+  questionCard: {
+    marginBottom: 20,
+  },
+  questionHeader: {
+    marginBottom: 12,
+  },
+  questionBadge: {
+    backgroundColor: "#ebf0fa",
+    padding: 2,
+    paddingHorizontal: 10,
     borderRadius: 8,
+    alignSelf: 'flex-start',
   },
-  explanationTitle: {
+  questionBadgeText: {
+   fontSize: 12,
     color: "#004aad",
-    fontSize: 15,
-    fontWeight: "600",
-    marginBottom: 6,
     fontFamily: "SourceSans3Medium",
   },
-  navRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
+  questionContent: {
+    minHeight: 60,
   },
-  navBtn: {
-    backgroundColor: "#004aad",
-    paddingHorizontal: 20,
+  optionsContainer: {
+    marginBottom: 20,
+  },
+  option: {
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#d9d9d9",
+    backgroundColor: "#fff",
+    marginBottom: 14,
+  },
+  correctOption: {
+    borderColor: '#10b981',
+    backgroundColor: '#f0fdf9',
+  },
+  wrongOption: {
+    borderColor: '#ef4444',
+    backgroundColor: '#fef2f2',
+  },
+  optionContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  optionIcon: {
+    marginRight: 12,
+    marginTop: 2,
+  },
+  optionTextContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  optionLabel: {
+    fontSize: 16,
+    fontFamily: "SourceSans3Bold",
+    color: '#374151',
+    marginRight: 8,
+    lineHeight: 20,
+  },
+  explanationBox: {
+    backgroundColor: '#fffbeb',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#fef3c7',
+  },
+  explanationHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  explanationTitle: {
+    color: '#92400e',
+    fontSize: 16,
+    fontFamily: "SourceSans3Medium",
+    marginLeft: 4,
+  },
+  explanationContent: {
+    marginTop: 4,
+  },
+  navContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+  },
+  navButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 8,
+    borderRadius: 20,
+    minWidth: 110,
+    justifyContent: 'center',
+   
   },
-  disabledBtn: {
-    backgroundColor: "#999",
+  prevButton: {
+    backgroundColor: '#004aad',
+    borderWidth: 1,
+    borderColor: "#d9d9d9",
   },
-  navText: { color: "#fff", fontSize: 15 },
-  center: { flex: 1, justifyContent: "center", alignItems: "center" },
+  nextButton: {
+    backgroundColor: '#004aad',
+    borderWidth: 1,
+    borderColor: "#d9d9d9",
+  },
+  disabledButton: {
+    backgroundColor: '#ffffff',
+  },
+  navButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontFamily: "SourceSans3SemiBold",
+    marginHorizontal: 4,
+  },
+  disabledButtonText: {
+    color: '#9ca3af',
+  },
+  center: { 
+    flex: 1, 
+    justifyContent: "center", 
+    alignItems: "center" 
+  },
+  errorContainer: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  errorText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontFamily: "SourceSans3Medium",
+    marginTop: 12,
+    textAlign: 'center',
+  },
 });
