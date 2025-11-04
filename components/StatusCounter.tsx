@@ -10,54 +10,87 @@ interface Props {
     | "marked"
     | "answeredMarked";
   count: number;
+  size?: number;
 }
 
-const StatusCounter: React.FC<Props> = ({ status, count }) => {
+const StatusCounter: React.FC<Props> = ({ status, count, size = 1 }) => {
+  const baseWidth = 40; // Reduced from 52
+  const baseHeight = 38;
+
+  const scale = (val: number) => val * size;
+
   const statusConfig = {
-    answered: { color: "#70C23A", points: "16,0 34,0 45,15 45,35 5,35 5,15" }, // Green shape from image
+    answered: {
+      color: "#70C23A",
+      points: [
+        [12, 0],
+        [28, 0],
+        [38, 15],
+        [38, 35],
+        [2, 35],
+        [2, 15],
+      ],
+    },
     notAnswered: {
       color: "#EF4136",
-      points: "5,0 45,0 45,20 34,35 16,35 5,20",
+      points: [
+        [2, 0],
+        [38, 0],
+        [38, 20],
+        [28, 35],
+        [12, 35],
+        [2, 20],
+      ],
     },
     notVisited: {
       color: "#C5C5C5",
-      points: "5,0 45,0 45,40 5,40",
+      points: [
+        [2, 0],
+        [38, 0],
+        [38, 40],
+        [2, 40],
+      ],
     },
     marked: {
       color: "#7F5BC4",
       type: "circle",
-      cx: "25",
-      cy: "20",
-      r: "18",
+      cx: 20,
+      cy: 18,
+      r: 18,
     },
     answeredMarked: {
       color: "#5636B3",
       type: "circle",
-      cx: "25",
-      cy: "20",
-      r: "18",
+      cx: 20,
+      cy: 18,
+      r: 18,
     },
   }[status];
 
   return (
-    <View style={{ width: 52, height: 38 }}>
-      <Svg height="38" width="52">
+    <View style={{ width: scale(baseWidth), height: scale(baseHeight) }}>
+      <Svg height={scale(baseHeight)} width={scale(baseWidth)}>
         {statusConfig.type === "circle" ? (
           <Circle
-            cx={statusConfig.cx}
-            cy={statusConfig.cy}
-            r={statusConfig.r}
+            cx={scale(statusConfig.cx)}
+            cy={scale(statusConfig.cy)}
+            r={scale(statusConfig.r)}
             fill={statusConfig.color}
           />
         ) : (
-          <Polygon fill={statusConfig.color} points={statusConfig.points} />
+          <Polygon
+            fill={statusConfig.color}
+            points={(statusConfig.points || [])
+              .map(([x, y]) => `${scale(x)},${scale(y)}`)
+              .join(" ")}
+          />
         )}
         <SvgText
           fill="white"
-          fontSize="18"
+          fontSize={scale(16)}
           fontWeight="bold"
-          x="26"
-          y="24"
+          x={scale(baseWidth / 2)}
+          y={scale(24)}
           textAnchor="middle"
         >
           {count}

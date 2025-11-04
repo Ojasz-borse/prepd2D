@@ -25,3 +25,7 @@ export const MY_LIST_API_URL = `${extra.SERVER_URL}/api/my-option-form`;
 export const GET_PYQS = `${extra.SERVER_URL}/api/pyqs/chapter/id`;
 
 export const GET_PYQ_CHAPTERS = `${extra.SERVER_URL}/api/pyqs/chapter`;
+
+export const GET_MOCK_TESTS = `${extra.SERVER_URL}/api/mock-tests`;
+
+export const GET_MOCK_TEST_QUESTIONS = `${extra.SERVER_URL}/api/mock-tests/questions`;

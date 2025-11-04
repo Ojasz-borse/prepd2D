@@ -1,13 +1,13 @@
-import StatusCounter from "@/components/StatusCounter";
+import { useAuth } from "@/context/AuthContext";
+import { useMockTests } from "@/hooks/useMockTests";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons"; // Icons
 import NavigationBar from "expo-navigation-bar";
+import { useLocalSearchParams } from "expo-router";
 import * as ScreenOrientation from "expo-screen-orientation";
 import React, { useEffect, useState } from "react";
 import {
-  Dimensions,
   Image,
   Platform,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -15,12 +15,37 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Exam from "./Exam";
+import Guidelines from "./Guidelines";
 
-const { width, height } = Dimensions.get("window");
+interface PYQItem {
+  id: number;
+  pyq_content: string;
+  a: string;
+  b: string;
+  c: string;
+  d: string;
+  correct_option: string;
+}
 
-const TestScreen = () => {
+const StartMockTest = () => {
+  const { user } = useAuth(); // assuming logout is provided
   const [section, setSection] = useState(0);
   const [isAgreed, setIsAgreed] = useState(false);
+  const [questions, setQuestions] = useState<PYQItem[]>([]);
+
+  const { testid } = useLocalSearchParams();
+
+  const { fetchMockTestQuestions } = useMockTests();
+
+  useEffect(() => {
+    const loadQuestions = async () => {
+      const q = await fetchMockTestQuestions(testid as string);
+      setQuestions(q);
+    };
+
+    loadQuestions();
+  }, [testid]);
 
   useEffect(() => {
     const setupFullscreen = async () => {
@@ -115,7 +140,9 @@ const TestScreen = () => {
             <View style={styles.rightBox}>
               <View>
                 <Text style={styles.smallWhite}>Candidate Name :</Text>
-                <Text style={styles.candidate}>John Smith</Text>
+                <Text style={styles.candidate}>
+                  {user?.first_name} {user?.last_name}
+                </Text>
                 <View style={{ flexDirection: "row", marginTop: 2 }}>
                   <Text style={styles.smallWhite}>Subject :</Text>
                   <Text style={styles.subject}> Mock Exam</Text>
@@ -178,170 +205,34 @@ const TestScreen = () => {
       )}
 
       {section == 1 && (
-        <View style={styles.guidelinesContainer}>
-          <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={{ paddingBottom: 40 }}
-          >
-            {/* ✅ Dark Blue Top Bar */}
-            <View style={styles.topDarkHeader}>
-              <Text style={styles.headerTitle}>PCM CET - 02</Text>
-
-              <TouchableOpacity style={styles.langBox}>
-                <Text style={styles.langText}>English</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={{ padding: 10 }}>
-              <View style={styles.detailsBox}>
-                <Text style={styles.detailsTitle}>Examinee Details</Text>
-                <View style={styles.hr} />
-                <View style={styles.row}>
-                  <Text style={styles.label}>Name:</Text>
-                  <Text style={styles.value}>RAJESH POTDAR</Text>
-
-                  <Text style={styles.labelRight}>Exam Duration:</Text>
-                  <Text style={styles.value}>180 Minutes</Text>
-                </View>
-
-                <View style={styles.row}>
-                  <Text style={styles.label}>Date of Exam:</Text>
-                  <Text style={styles.value}>05/04/2025</Text>
-
-                  <Text style={styles.labelRight}>Maximum Marks:</Text>
-                  <Text style={styles.value}>200</Text>
-                </View>
-                <View style={styles.hr} />
-                <Text style={styles.detailsTitle}>Exam Instrutions</Text>
-                <View style={styles.hr} />
-                <View style={{ padding: 4, paddingHorizontal: 10 }}>
-                  <Text style={styles.subTitle}>About Question Paper :</Text>
-                  <View style={styles.bulletWrapper}>
-                    <Text style={styles.bullet}>
-                      • There are in all 150 Questions for this exam,{" "}
-                      <Text style={styles.bold}>Physics - 50 Questions</Text> (1
-                      mark for each question),{" "}
-                      <Text style={styles.bold}>Chemistry - 50 Questions</Text>{" "}
-                      (1 mark for each question),{" "}
-                      <Text style={styles.bold}>
-                        Mathematics - 50 Questions
-                      </Text>{" "}
-                      (2 mark for each question).
-                    </Text>
-
-                    <Text style={styles.bullet}>
-                      • You will be given 180 minutes to answer all questions.
-                    </Text>
-
-                    <Text style={styles.bulletBold}>
-                      • There is no negative marking system for this test.
-                    </Text>
-
-                    <Text style={styles.bullet}>
-                      • Questions will be in two languages (English,Marathi)
-                    </Text>
-                    <Text style={styles.bullet}>
-                      • Mode of Examination - Online.
-                    </Text>
-                    <Text style={styles.bullet}>
-                      • The test will comprise of multiple choice objective type
-                      questions (Four Options)
-                    </Text>
-                    <Text style={styles.bullet}>
-                      • Refer Information Broucher of MHT-CET 2026 for detail
-                      information.
-                    </Text>
-                  </View>
-
-                  <View style={styles.wrapper}>
-                    <View style={styles.header}>
-                      <Text style={styles.headerText}>Navigation Buttons</Text>
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableLabel}>Answered</Text>
-                      <StatusCounter status="answered" count={0} />
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableLabel}>Not Answered</Text>
-                      <StatusCounter status="notAnswered" count={0} />
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableLabel}>Not Visited</Text>
-                      <StatusCounter status="notVisited" count={0} />
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableLabel}>Marked for Review</Text>
-                      <StatusCounter status="marked" count={0} />
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableLabel}>
-                        Answered & Marked for Review
-                      </Text>
-                      <StatusCounter status="answeredMarked" count={0} />
-                    </View>
-                  </View>
-                </View>
-              </View>
-            </View>
-          </ScrollView>
-
-          {/* Fixed Bottom Section */}
-          <View style={styles.bottomSection}>
-            {/* Checkbox and I Agree Text */}
-            <View style={styles.checkboxContainer}>
-              <TouchableOpacity
-                style={[styles.checkbox, isAgreed && styles.checkboxChecked]}
-                onPress={() => setIsAgreed(!isAgreed)}
-              >
-                {isAgreed && <Text style={styles.checkmark}>✓</Text>}
-              </TouchableOpacity>
-              <Text style={styles.agreeText}>
-                I have read and understood the instructions. All the computer
-                hardware allotted to me are in proper working condition. I agree
-                that I am aware of the instructions and I shall not violate or
-                challenge the sanctity of the examination.
-              </Text>
-            </View>
-
-            {/* I am Ready to Begin Button */}
-            <TouchableOpacity
-              style={[
-                styles.beginButton,
-                !isAgreed && styles.beginButtonDisabled,
-              ]}
-              onPress={() => isAgreed && setSection(2)}
-              disabled={!isAgreed}
-            >
-              <Text style={styles.beginButtonText}>I am ready to begin</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <Guidelines
+          setIsAgreed={setIsAgreed}
+          isAgreed={isAgreed}
+          setSection={setSection}
+        />
       )}
+
+      {section == 2 && <Exam questions={questions} />}
     </View>
   );
 };
 
-export default TestScreen;
+export default StartMockTest;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
-    justifyContent: "flex-start",
-    width: "100%", // Always use the larger dimension
+    margin: "auto",
+    width: 800, // Always use the larger dimension
     height: "100%", // Always use the smaller dimension
+    borderWidth: 1,
+    borderColor: "#000",
   },
   topBlueBar: {
     width: "100%",
     height: 20,
     backgroundColor: "#1a4d80",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
   },
   headerPanel: {
     width: "100%",
@@ -424,6 +315,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    height: 200,
   },
 
   guidelinesHeader: {
@@ -431,11 +323,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 10,
   },
 
   headerTitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
     color: "#fff",
   },
