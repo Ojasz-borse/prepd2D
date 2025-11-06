@@ -1,5 +1,5 @@
 import BookTabIcon from "@/assets/icons/BookTabIcon";
-import { ProfilePageIcon } from "@/assets/icons/ProfilePageIcon";
+import MockTestTabIcon from "@/assets/icons/MockTestTabIcon";
 import SearchCollegeTabIcon from "@/assets/icons/SearchCollegeTabIcon";
 import { useAuth } from "@/context/AuthContext";
 import FindColleges from "@/features/colleges/FindColleges";
@@ -83,11 +83,11 @@ export default function Home() {
         />
 
         <Tab.Screen
-          name="My Profile"
+          name="Mock Tests"
           options={{
             tabBarLabel: "Mock Tests",
             tabBarIcon: ({ focused, size }) => (
-              <ProfilePageIcon focused={focused} size={size} />
+              <MockTestTabIcon focused={focused} size={size} />
             ),
           }}
         >

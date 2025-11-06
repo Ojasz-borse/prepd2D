@@ -1,16 +1,16 @@
 import MathText from "@/components/MathText";
-import NormalFindCollegeCardSkeleton from "@/components/NormalFindCollegeCardSkeleton";
+import PyqQuestionCardSkeleton from "@/components/PyqQuestionCardSkeleton";
 import TopHeader from "@/components/TopHeader";
 import { GET_PYQS } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
+import { usePYQContext } from "@/context/PYQContext";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   Animated,
-  Dimensions,
   FlatList,
   StyleSheet,
   Text,
@@ -19,30 +19,35 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-interface PYQItem {
-  id: number;
-  pyq_content: string;
-  a: string;
-  b: string;
-  c: string;
-  d: string;
-  correct_option: string;
-  explanation_content: string;
-}
-
-const { width } = Dimensions.get("window");
-
 export default function PYQListScreen() {
   const router = useRouter();
-  const { id, chapter_name } = useLocalSearchParams<{
+  const { id, chapter_name, title } = useLocalSearchParams<{
     id: string;
     chapter_name: string;
+    title: string;
   }>();
 
-  const [data, setData] = useState<PYQItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { getToken } = useAuth();
   const fadeAnim = useState(new Animated.Value(0))[0];
+
+  const { pyqList, setPYQList } = usePYQContext();
+
+  const [lastProgress, setLastProgress] = useState<number | null>(null);
+
+  useEffect(() => {
+    const loadProgress = async () => {
+      try {
+        const data = await AsyncStorage.getItem("PYQ_PROGRESS");
+        const progress = data ? JSON.parse(data) : {};
+        const chapterProgress = progress[id]; // current chapterId
+        if (chapterProgress !== undefined) setLastProgress(chapterProgress);
+      } catch (err) {
+        console.error("Error loading progress", err);
+      }
+    };
+    loadProgress();
+  }, []);
 
   useEffect(() => {
     const fetchPYQs = async () => {
@@ -58,15 +63,14 @@ export default function PYQListScreen() {
         });
 
         const json = await response.json();
-        if (json.success) setData(json.pyqs);
+        if (json.success) setPYQList(json.pyqs);
       } catch (err) {
         console.error("Error fetching PYQs", err);
       } finally {
         setLoading(false);
-        // Start fade animation when data is loaded
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 500,
+          duration: 400,
           useNativeDriver: true,
         }).start();
       }
@@ -74,152 +78,177 @@ export default function PYQListScreen() {
     fetchPYQs();
   }, [id]);
 
-  if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#667eea" />
-        <Text style={styles.loadingText}>Loading Questions...</Text>
-      </View>
-    );
-  }
-
-  if (data.length === 0) {
-    return (
-      <View style={styles.center}>
-        <LinearGradient
-          colors={["#004aad", "#004aad"]}
-          style={styles.emptyContainer}
-        >
-          <Ionicons name="document-text-outline" size={64} color="#ffffff" />
-          <Text style={styles.emptyTitle}>No Questions Found</Text>
-          <Text style={styles.emptySubtitle}>
-            There are no PYQs available for this chapter yet.
-          </Text>
-        </LinearGradient>
-      </View>
-    );
-  }
-
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f2f2f2" }}>
       <LinearGradient
         colors={["#004aad", "#004aad"]}
         style={styles.headerGradient}
       >
-        <TopHeader title={id || "PYQs"} showBackArrow={true} />
+        <TopHeader title={title} showBackArrow={true} />
       </LinearGradient>
 
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>{chapter_name}</Text>
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{data.length} Questions</Text>
-          </View>
-        </View>
-
-        <Animated.View style={{ opacity: fadeAnim, flex: 1 }}>
-          <FlatList
-            data={data}
-            keyExtractor={(item) => item.id.toString()}
-            ListEmptyComponent={
-              loading ? (
-                <>
-                  <NormalFindCollegeCardSkeleton />
-                  <NormalFindCollegeCardSkeleton />
-                  <NormalFindCollegeCardSkeleton />
-                  <NormalFindCollegeCardSkeleton />
-                </>
-              ) : (
-                <View style={styles.noResultsContainer}>
-                  <Ionicons name="search-outline" size={48} color="#999" />
-                  <Text style={styles.noResult}>No PYQs found</Text>
+      <FlatList
+        data={pyqList}
+        keyExtractor={(item) => item.id.toString()}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContent}
+        ListHeaderComponent={
+          <>
+            <View style={styles.screenHeader}>
+              <Text style={styles.title}>{chapter_name}</Text>
+              <View>
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>
+                    {pyqList.length > 0 && pyqList.length} Questions
+                  </Text>
                 </View>
-              )
-            }
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.listContent}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity
-                style={styles.card}
-                onPress={() =>
-                  router.push({
-                    pathname: "/pyq-detail",
-                    params: {
-                      data: JSON.stringify(data),
-                      currentIndex: index.toString(),
-                    },
-                  })
-                }
-                activeOpacity={0.7}
-              >
-                <LinearGradient
-                  colors={["#ffffff", "#f8f9fa"]}
-                  style={styles.cardGradient}
+              </View>
+            </View>
+            {lastProgress !== null && (
+              <View style={styles.analysisTab}>
+                <Text style={styles.analysisTabTitle}>
+                  Q. {lastProgress} of {pyqList.length > 0 && pyqList.length}{" "}
+                  Completed
+                </Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push({
+                      pathname: "/pyq-detail",
+                      params: { currentIndex: lastProgress.toString() },
+                    })
+                  }
                 >
-                  <View style={styles.cardHeader}>
-                    <View style={styles.questionNumber}>
-                      <Text style={styles.questionNumberText}>
-                        Question {index + 1}
-                      </Text>
-                    </View>
-                    <View style={styles.arrowContainer}>
-                      <Ionicons
-                        name="chevron-forward"
-                        size={20}
-                        color="#004aad"
-                      />
-                    </View>
-                  </View>
-
-                  <View style={styles.questionContent}>
-                    <MathText content={item.pyq_content} />
-                  </View>
-
-                  <View style={styles.cardFooter}>
-                    <View style={styles.optionsIndicator}>
-                      <Text style={styles.optionsText}>
-                        Multiple Choice • 4 Options
-                      </Text>
-                    </View>
-                  </View>
-                </LinearGradient>
-              </TouchableOpacity>
+                  <Text style={styles.analysisTabTitle}>
+                    Continue from Q. {lastProgress + 1}{" "}
+                    <Ionicons name="arrow-forward" size={14} color="#b38f00" />
+                  </Text>
+                </TouchableOpacity>
+              </View>
             )}
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
-          />
-        </Animated.View>
-      </View>
+          </>
+        }
+        ListEmptyComponent={
+          loading ? (
+            <>
+              <PyqQuestionCardSkeleton />
+              <PyqQuestionCardSkeleton />
+              <PyqQuestionCardSkeleton />
+              <PyqQuestionCardSkeleton />
+            </>
+          ) : (
+            <View style={styles.noResultsContainer}>
+              <Text style={styles.noResultTitle}>No Questions Found</Text>
+              <Text style={styles.noResultSub}>
+                There are no PYQs available for this chapter yet.
+              </Text>
+            </View>
+          )
+        }
+        renderItem={({ item, index }) => (
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() =>
+              router.push({
+                pathname: "/pyq-detail",
+                params: {
+                  currentIndex: index.toString(),
+                  chapterId: id.toString(),
+                },
+              })
+            }
+            activeOpacity={0.7}
+          >
+            <View style={styles.cardGradient}>
+              <View style={styles.cardHeader}>
+                <View style={styles.questionNumber}>
+                  <Text style={styles.questionNumberText}>
+                    Question {index + 1}
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#004aad" />
+              </View>
+
+              <View style={styles.questionContent}>
+                <MathText content={item.pyq_content} />
+              </View>
+
+              <View style={styles.cardFooter}>
+                <View style={styles.optionsIndicator}>
+                  <Text style={styles.optionsText}>
+                    Multiple Choice • 4 Options
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </TouchableOpacity>
+        )}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+      />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: "#fff",
-    // backgroundColor: "#f5f7ff",
-  },
   headerGradient: {
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
   },
-  header: {
+
+  analysisTab: {
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#ffe680",
+    backgroundColor: "#fff5cc",
+    padding: 10,
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 15,
+  },
+  analysisTabTitle: {
+    color: "#b38f00",
+    fontFamily: "SourceSans3Medium",
+  },
+  progressContainer: {
+    marginBottom: 10,
+  },
+  progressBar: {
+    height: 6,
+    backgroundColor: "#e2e8f0",
+    borderRadius: 3,
+    marginBottom: 8,
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: "#004aad",
+    borderRadius: 3,
+  },
+  progressText: {
+    fontSize: 14,
+    color: "#64748b",
+    fontFamily: "SourceSans3Medium",
+    textAlign: "center",
+  },
+  listContent: {
+    padding: 16,
+    paddingBottom: 32,
+    backgroundColor: "#fff",
+  },
+  screenHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 18,
   },
   title: {
     fontSize: 16,
     fontFamily: "SourceSans3Medium",
     color: "#2d3748",
-    flex: 1,
+    maxWidth: 200,
   },
   badge: {
     backgroundColor: "#ebf0fa",
-    padding: 2,
     paddingHorizontal: 10,
+    paddingVertical: 2,
     borderRadius: 8,
   },
   badgeText: {
@@ -227,14 +256,10 @@ const styles = StyleSheet.create({
     color: "#004aad",
     fontFamily: "SourceSans3Medium",
   },
-  listContent: {
-    paddingBottom: 20,
-  },
   card: {
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "#d9d9d9",
-    marginBottom: 4,
   },
   cardGradient: {
     borderRadius: 20,
@@ -243,13 +268,12 @@ const styles = StyleSheet.create({
   cardHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
     marginBottom: 10,
   },
   questionNumber: {
     backgroundColor: "#ebf0fa",
-    padding: 2,
     paddingHorizontal: 10,
+    paddingVertical: 2,
     borderRadius: 8,
   },
   questionNumberText: {
@@ -257,81 +281,45 @@ const styles = StyleSheet.create({
     color: "#004aad",
     fontFamily: "SourceSans3Medium",
   },
-  arrowContainer: {
-    padding: 0,
-  },
   questionContent: {
     marginBottom: 12,
   },
   cardFooter: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
   },
   optionsIndicator: {
-    backgroundColor: "#e2e8f0",
+    borderWidth: 1,
+    borderColor: "#d9d9d9",
     paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
   },
   optionsText: {
-    color: "#4a5568",
     fontSize: 11,
+    color: "#2d3748",
     fontFamily: "SourceSans3Regular",
   },
   separator: {
-    height: 12,
-  },
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loadingContainer: {
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loadingText: {
-    color: "#0000",
-    fontSize: 16,
-    fontFamily: "SourceSans3Medium",
-    marginTop: 12,
-  },
-  emptyContainer: {
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 40,
-  },
-  emptyTitle: {
-    color: "#ffffff",
-    fontSize: 24,
-    fontFamily: "SourceSans3Bold",
-    marginTop: 16,
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  emptySubtitle: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontFamily: "SourceSans3Regular",
-    textAlign: "center",
-    opacity: 0.9,
-    lineHeight: 22,
+    height: 14,
   },
   noResultsContainer: {
     alignItems: "center",
-    justifyContent: "center",
     padding: 40,
+    marginTop: 50,
   },
-  noResult: {
-    fontSize: 16,
-    color: "#777",
-    fontFamily: "SourceSans3Medium",
+  noResultTitle: {
+    fontSize: 20,
+    color: "#444",
+    fontFamily: "SourceSans3Bold",
+    marginTop: 16,
     textAlign: "center",
-    marginTop: 12,
+  },
+  noResultSub: {
+    fontSize: 15,
+    color: "#777",
+    fontFamily: "SourceSans3Regular",
+    textAlign: "center",
+    marginTop: 6,
+    lineHeight: 22,
   },
 });

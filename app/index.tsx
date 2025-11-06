@@ -88,12 +88,12 @@ export default function Index() {
 
         {/* Buttons at bottom center */}
         <View style={styles.buttonWrapper}>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={[styles.button, styles.registerButton, { zIndex: 10 }]}
             onPress={() => router.push("/register-user")}
           >
             <Text style={styles.registerButtonText}>Register</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity
             style={[styles.button, styles.loginButton, { zIndex: 10 }]}

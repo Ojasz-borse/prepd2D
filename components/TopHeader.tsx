@@ -104,7 +104,6 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
         visible={isDrawerOpen}
         animationType="none"
         onRequestClose={closeDrawer}
-        statusBarTranslucent // 👈 important for Android
       >
         <SafeAreaView style={{ flex: 1, backgroundColor: "#f2f2f2" }}>
           {/* Overlay */}

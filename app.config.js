@@ -26,28 +26,18 @@ export default {
             output: "static",
             favicon: "./assets/images/icon.png"
         },
+        // Remove expo-splash-screen completely
         plugins: [
             "expo-router",
-            [
-                "expo-splash-screen",
-                {
-                    image: "./assets/images/icon.png",
-                    imageWidth: 200,
-                    resizeMode: "contain",
-                    backgroundColor: "#ffffff"
-                }
-            ],
-
             "expo-secure-store"
         ],
         experiments: {
             typedRoutes: true
         },
-
         extra: {
             SERVER_URL: process.env.SERVER_URL,
             eas: {
-                projectId: "7683fa74-ce9f-4e10-8d94-747c11bf92eb"  // 👈 paste here
+                projectId: "7683fa74-ce9f-4e10-8d94-747c11bf92eb"
             }
         },
     },

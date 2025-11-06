@@ -1,4 +1,5 @@
 import { AuthProvider } from "@/context/AuthContext";
+import { PYQProvider } from "@/context/PYQContext";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -40,9 +41,11 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-        <Stack screenOptions={{ headerShown: false }} />
-      </View>
+      <PYQProvider>
+        <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+          <Stack screenOptions={{ headerShown: false }} />
+        </View>
+      </PYQProvider>
     </AuthProvider>
   );
 }

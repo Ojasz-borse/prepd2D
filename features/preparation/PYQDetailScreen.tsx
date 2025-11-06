@@ -1,5 +1,9 @@
 import MathText from "@/components/MathText";
 import TopHeader from "@/components/TopHeader";
+import { usePYQContext } from "@/context/PYQContext";
+import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -10,37 +14,24 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
-
-interface PYQItem {
-  id: number;
-  pyq_content: string;
-  a: string;
-  b: string;
-  c: string;
-  d: string;
-  correct_option: string;
-  explanation_content: string;
-}
 
 export default function PYQDetailsPage() {
-  const { data, currentIndex } = useLocalSearchParams<{
-    data: string;
+  const { currentIndex, chapterId } = useLocalSearchParams<{
     currentIndex: string;
+    chapterId: string;
   }>();
+  const { pyqList } = usePYQContext();
 
-  const allQuestions: PYQItem[] = JSON.parse(data || "[]");
   const [index, setIndex] = useState(parseInt(currentIndex || "0", 10));
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
 
-  const current = allQuestions[index];
+  const current = pyqList[index];
   if (!current) {
     return (
       <View style={styles.center}>
         <LinearGradient
-          colors={['#667eea', '#764ba2']}
+          colors={["#667eea", "#764ba2"]}
           style={styles.errorContainer}
         >
           <Ionicons name="document-text-outline" size={48} color="#ffffff" />
@@ -61,10 +52,11 @@ export default function PYQDetailsPage() {
   };
 
   const handleNext = () => {
-    if (index < allQuestions.length - 1) {
+    if (index < pyqList.length - 1) {
       setIndex(index + 1);
       setSelectedOption(null);
       setShowExplanation(false);
+      saveProgress(chapterId, index + 1);
     }
   };
 
@@ -73,6 +65,7 @@ export default function PYQDetailsPage() {
       setIndex(index - 1);
       setSelectedOption(null);
       setShowExplanation(false);
+      saveProgress(chapterId, index - 1);
     }
   };
 
@@ -98,128 +91,163 @@ export default function PYQDetailsPage() {
     return "#9ca3af";
   };
 
+  const saveProgress = async (chapterId: string, questionIndex: number) => {
+    try {
+      const data = await AsyncStorage.getItem("PYQ_PROGRESS");
+      const progress = data ? JSON.parse(data) : {};
+      progress[chapterId] = questionIndex; // save last visited index
+      await AsyncStorage.setItem("PYQ_PROGRESS", JSON.stringify(progress));
+    } catch (err) {
+      console.error("Error saving PYQ progress", err);
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <LinearGradient
-        colors={['#004aad', '#004aad']}
+        colors={["#004aad", "#004aad"]}
         style={styles.headerGradient}
       >
         <TopHeader title="PYQ Section" showBackArrow={true} />
       </LinearGradient>
 
-      <ScrollView
-        contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Progress Indicator */}
-        <View style={styles.progressContainer}>
-          <View style={styles.progressBar}>
-            <View 
-              style={[
-                styles.progressFill,
-                { width: `${((index + 1) / allQuestions.length) * 100}%` }
-              ]} 
-            />
-          </View>
-          <Text style={styles.progressText}>
-            Question {index + 1} of {allQuestions.length}
-          </Text>
-        </View>
-
-        {/* Question Card */}
-        <View style={styles.questionCard}>
-          <View style={styles.questionHeader}>
-            <View style={styles.questionBadge}>
-              <Text style={styles.questionBadgeText}>Question {index + 1}</Text>
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          contentContainerStyle={styles.container}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Progress Indicator */}
+          <View style={styles.progressContainer}>
+            <View style={styles.progressBar}>
+              <View
+                style={[
+                  styles.progressFill,
+                  { width: `${((index + 1) / pyqList.length) * 100}%` },
+                ]}
+              />
             </View>
+            <Text style={styles.progressText}>
+              Question {index + 1} of {pyqList.length}
+            </Text>
           </View>
-          <View style={styles.questionContent}>
-            <MathText content={current.pyq_content} />
-          </View>
-        </View>
 
-        {/* Options */}
-        <View style={styles.optionsContainer}>
-          {options.map((opt, i) => (
-            <TouchableOpacity
-              key={i}
-              style={getOptionStyle(i)}
-              onPress={() => handleSelect(i)}
-              activeOpacity={0.8}
-            >
-              <View style={styles.optionContent}>
-                <Ionicons 
-                  name={getOptionIcon(i)} 
-                  size={22} 
-                  color={getOptionIconColor(i)} 
-                  style={styles.optionIcon}
-                />
-                <View style={styles.optionTextContainer}>
-                  <Text style={styles.optionLabel}>
-                    {String.fromCharCode(65 + i)}.
-                  </Text>
-                  <MathText content={opt} />
-                </View>
+          {/* Question Card */}
+          <View style={styles.questionCard}>
+            <View style={styles.questionHeader}>
+              <View style={styles.questionBadge}>
+                <Text style={styles.questionBadgeText}>
+                  Question {index + 1}
+                </Text>
               </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Explanation */}
-        {showExplanation && (
-          <View style={styles.explanationBox}>
-            <View style={styles.explanationHeader}>
-              <Ionicons name="bulb-outline" size={16} color="#f59e0b" />
-              <Text style={styles.explanationTitle}>Explanation</Text>
             </View>
-            <View style={styles.explanationContent}>
-              <MathText content={current.explanation_content} />
+            <View style={styles.questionContent}>
+              <MathText content={current.pyq_content} />
             </View>
           </View>
-        )}
 
-        {/* Navigation */}
+          {/* Options */}
+          <View style={styles.optionsContainer}>
+            {options.map((opt, i) => (
+              <TouchableOpacity
+                key={i}
+                style={getOptionStyle(i)}
+                onPress={() => handleSelect(i)}
+                activeOpacity={0.8}
+              >
+                <View style={styles.optionContent}>
+                  <Ionicons
+                    name={getOptionIcon(i)}
+                    size={22}
+                    color={getOptionIconColor(i)}
+                    style={styles.optionIcon}
+                  />
+                  <View style={styles.optionTextContainer}>
+                    <Text style={styles.optionLabel}>
+                      {String.fromCharCode(65 + i)}.
+                    </Text>
+                    <MathText content={opt} />
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Explanation */}
+          {showExplanation && (
+            <View style={styles.explanationBox}>
+              <View style={styles.explanationHeader}>
+                <Ionicons name="bulb-outline" size={16} color="#f59e0b" />
+                <Text style={styles.explanationTitle}>Explanation</Text>
+              </View>
+              <View style={styles.explanationContent}>
+                <MathText content={current.explanation_content} />
+              </View>
+            </View>
+          )}
+
+          <View style={{ height: 80 }} />
+        </ScrollView>
+
+        {/* Floating Navigation Buttons */}
         <View style={styles.navContainer}>
           <TouchableOpacity
-            style={[styles.navButton, styles.prevButton, index === 0 && styles.disabledButton]}
+            style={[
+              styles.navButton,
+              styles.prevButton,
+              index === 0 && styles.disabledButton,
+            ]}
             disabled={index === 0}
             onPress={handlePrev}
           >
-            <Ionicons 
-              name="chevron-back" 
-              size={18} 
-              color={index === 0 ? "#9ca3af" : "#ffffff"} 
+            <Ionicons
+              name="chevron-back"
+              size={18}
+              color={index === 0 ? "#9ca3af" : "#ffffff"}
             />
-            <Text style={[styles.navButtonText, index === 0 && styles.disabledButtonText]}>
-              Previous
+            <Text
+              style={[
+                styles.navButtonText,
+                index === 0 && styles.disabledButtonText,
+              ]}
+            >
+              Prev
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.navButton, styles.nextButton, index === allQuestions.length - 1 && styles.disabledButton]}
-            disabled={index === allQuestions.length - 1}
+            style={[
+              styles.navButton,
+              styles.nextButton,
+              index === pyqList.length - 1 && styles.disabledButton,
+            ]}
+            disabled={index === pyqList.length - 1}
             onPress={handleNext}
           >
-            <Text style={[styles.navButtonText, index === allQuestions.length - 1 && styles.disabledButtonText]}>
+            <Text
+              style={[
+                styles.navButtonText,
+                index === pyqList.length - 1 && styles.disabledButtonText,
+              ]}
+            >
               Next
             </Text>
-            <Ionicons 
-              name="chevron-forward" 
-              size={18} 
-              color={index === allQuestions.length - 1 ? "#9ca3af" : "#ffffff"} 
+            <Ionicons
+              name="chevron-forward"
+              size={18}
+              color={index === pyqList.length - 1 ? "#9ca3af" : "#ffffff"}
             />
           </TouchableOpacity>
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flexGrow: 1, 
-    padding: 20, 
-    backgroundColor: "#ffffff" 
+  container: {
+    flexGrow: 1,
+    padding: 20,
+    backgroundColor: "#ffffff",
   },
   headerGradient: {
     borderBottomLeftRadius: 20,
@@ -230,21 +258,21 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 6,
-    backgroundColor: '#e2e8f0',
+    backgroundColor: "#e2e8f0",
     borderRadius: 3,
     marginBottom: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   progressFill: {
-    height: '100%',
-    backgroundColor: '#004aad',
+    height: "100%",
+    backgroundColor: "#004aad",
     borderRadius: 3,
   },
   progressText: {
     fontSize: 14,
-    color: '#64748b',
+    color: "#64748b",
     fontFamily: "SourceSans3Medium",
-    textAlign: 'center',
+    textAlign: "center",
   },
   questionCard: {
     marginBottom: 20,
@@ -257,10 +285,10 @@ const styles = StyleSheet.create({
     padding: 2,
     paddingHorizontal: 10,
     borderRadius: 8,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
   },
   questionBadgeText: {
-   fontSize: 12,
+    fontSize: 12,
     color: "#004aad",
     fontFamily: "SourceSans3Medium",
   },
@@ -279,16 +307,16 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   correctOption: {
-    borderColor: '#10b981',
-    backgroundColor: '#f0fdf9',
+    borderColor: "#10b981",
+    backgroundColor: "#f0fdf9",
   },
   wrongOption: {
-    borderColor: '#ef4444',
-    backgroundColor: '#fef2f2',
+    borderColor: "#ef4444",
+    backgroundColor: "#fef2f2",
   },
   optionContent: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
   },
   optionIcon: {
     marginRight: 12,
@@ -296,31 +324,31 @@ const styles = StyleSheet.create({
   },
   optionTextContainer: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
   },
   optionLabel: {
     fontSize: 16,
     fontFamily: "SourceSans3Bold",
-    color: '#374151',
+    color: "#374151",
     marginRight: 8,
     lineHeight: 20,
   },
   explanationBox: {
-    backgroundColor: '#fffbeb',
+    backgroundColor: "#fffbeb",
     borderRadius: 12,
     padding: 16,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#fef3c7',
+    borderColor: "#fef3c7",
   },
   explanationHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 8,
   },
   explanationTitle: {
-    color: '#92400e',
+    color: "#92400e",
     fontSize: 16,
     fontFamily: "SourceSans3Medium",
     marginLeft: 4,
@@ -329,59 +357,62 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   navContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 8,
+    position: "absolute",
+    bottom: 20,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
   },
   navButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     borderRadius: 20,
-    minWidth: 110,
-    justifyContent: 'center',
-   
+    minWidth: 80,
+    justifyContent: "center",
   },
   prevButton: {
-    backgroundColor: '#004aad',
+    backgroundColor: "#004aad",
     borderWidth: 1,
     borderColor: "#d9d9d9",
   },
   nextButton: {
-    backgroundColor: '#004aad',
+    backgroundColor: "#004aad",
     borderWidth: 1,
     borderColor: "#d9d9d9",
   },
   disabledButton: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
   },
   navButtonText: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 14,
     fontFamily: "SourceSans3SemiBold",
     marginHorizontal: 4,
   },
   disabledButtonText: {
-    color: '#9ca3af',
+    color: "#9ca3af",
   },
-  center: { 
-    flex: 1, 
-    justifyContent: "center", 
-    alignItems: "center" 
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   errorContainer: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 40,
   },
   errorText: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 16,
     fontFamily: "SourceSans3Medium",
     marginTop: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

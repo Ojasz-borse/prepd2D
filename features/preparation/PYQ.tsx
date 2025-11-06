@@ -1,10 +1,11 @@
 import SearchIcon from "@/assets/icons/SearchIcon";
+
+import PyqChapterCardSkeleton from "@/components/PyqChapterCardSkeleton";
 import { usePYQS } from "@/hooks/usePYQS"; // ⬅️ our new hook
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   StyleSheet,
   Text,
@@ -86,24 +87,20 @@ export default function PYQ() {
   };
 
   // 🧭 Navigation handler
-  const handleChapterPress = (id: number, chapter_name: string) => {
+  const handleChapterPress = (
+    id: number,
+    chapter_name: string,
+    chapter_no: number,
+    subject: number
+  ) => {
+    const title = `${chapter_no}. ${
+      subject === 1 ? "Physics" : subject === 2 ? "Chemistry" : "Mathematics"
+    }`;
     router.push({
       pathname: "/pyq-list",
-      params: { id: id, chapter_name: chapter_name },
+      params: { id: id, chapter_name: chapter_name, title },
     });
   };
-
-  // 🧩 Loading / Error UI
-  if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#004aad" />
-        <Text style={{ marginTop: 8, fontFamily: "SourceSans3Medium" }}>
-          Loading chapters...
-        </Text>
-      </View>
-    );
-  }
 
   if (error) {
     return (
@@ -126,7 +123,14 @@ export default function PYQ() {
       showsVerticalScrollIndicator={false}
       renderItem={({ item }) => (
         <TouchableOpacity
-          onPress={() => handleChapterPress(item.id, item.chapter_name)}
+          onPress={() =>
+            handleChapterPress(
+              item.id,
+              item.chapter_name,
+              item.chapter_no,
+              item.subject
+            )
+          }
         >
           <View style={styles.chapterTag}>
             <View style={styles.subRow}>
@@ -135,7 +139,7 @@ export default function PYQ() {
                   ? "Physics"
                   : item.subject === 2
                   ? "Chemistry"
-                  : "Maths"}
+                  : "Mathematics"}
               </Text>
               <Text style={styles.subText}>
                 {item.class === 1 ? "11th" : "12th"}
@@ -162,7 +166,18 @@ export default function PYQ() {
         </TouchableOpacity>
       )}
       ListEmptyComponent={
-        <Text style={styles.noResult}>No chapters found</Text>
+        loading ? (
+          <>
+            <PyqChapterCardSkeleton />
+            <PyqChapterCardSkeleton />
+            <PyqChapterCardSkeleton />
+            <PyqChapterCardSkeleton />
+            <PyqChapterCardSkeleton />
+            <PyqChapterCardSkeleton />
+          </>
+        ) : (
+          <Text style={styles.noResult}>No chapters found</Text>
+        )
       }
       contentContainerStyle={{ padding: 4, paddingTop: 16, paddingBottom: 10 }}
       ListHeaderComponent={

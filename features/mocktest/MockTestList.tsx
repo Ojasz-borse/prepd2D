@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import {
   ActivityIndicator,
+  FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -21,37 +22,70 @@ const MockTestList: React.FC<MockTestListProps> = ({
 }) => {
   const router = useRouter();
 
-  if (loading)
-    return <ActivityIndicator size="large" style={{ marginTop: 40 }} />;
-
-  if (error) return <Text style={styles.errorText}>{error}</Text>;
+  if (error) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.listContainer}>
-      {tests.map((test) => (
+    <FlatList
+      data={tests}
+      keyExtractor={(item) => item.id.toString()}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ padding: 4, paddingTop: 10, paddingBottom: 20 }}
+      renderItem={({ item }) => (
         <TouchableOpacity
-          key={test.id}
           style={styles.card}
           onPress={() =>
             router.push({
               pathname: "/start-mock-test",
-              params: { testid: test.id.toString() },
+              params: { testid: item.id.toString() },
             })
           }
         >
-          <Text style={styles.title}>{test.title}</Text>
-          <Text style={styles.subtitle}>
-            {test.shift_time} • {test.shift_date} {test.shift_year}
-          </Text>
+          <Text style={styles.title}>{item.title}</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 6,
+            }}
+          >
+            <Text style={styles.subtitle}>
+              <Text style={styles.subtitleText}>{item.shift_time}</Text>
+            </Text>
+
+            <Text style={styles.subtitle}>
+              <Text style={styles.subtitleText}>
+                {item.shift_date} {item.shift_year}
+              </Text>
+            </Text>
+          </View>
         </TouchableOpacity>
-      ))}
-    </View>
+      )}
+      ListEmptyComponent={
+        loading ? (
+          <ActivityIndicator size="large" style={{ marginTop: 40 }} />
+        ) : (
+          <Text style={styles.noResult}>No tests available</Text>
+        )
+      }
+    />
   );
 };
 
 export default MockTestList;
 
 const styles = StyleSheet.create({
+  centerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
   listContainer: {
     flex: 1,
   },
@@ -71,10 +105,23 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontFamily: "SourceSans3Medium",
   },
+
   subtitle: {
-    fontSize: 14,
-    color: "#666",
-    marginTop: 2,
+    backgroundColor: "#ebf0fa",
+    padding: 2,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+  },
+  subtitleText: {
+    fontSize: 12,
+    color: "#004aad",
+    fontFamily: "SourceSans3Medium",
+  },
+  noResult: {
+    textAlign: "center",
+    marginTop: 40,
+    fontSize: 16,
+    color: "#777",
     fontFamily: "SourceSans3Medium",
   },
   errorText: {
