@@ -4,8 +4,7 @@ import TopHeader from "@/components/TopHeader";
 import { GET_PYQS } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import { usePYQContext } from "@/context/PYQContext";
-import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -33,25 +32,12 @@ export default function PYQListScreen() {
 
   const { pyqList, setPYQList } = usePYQContext();
 
-  const [lastProgress, setLastProgress] = useState<number | null>(null);
-
-  useEffect(() => {
-    const loadProgress = async () => {
-      try {
-        const data = await AsyncStorage.getItem("PYQ_PROGRESS");
-        const progress = data ? JSON.parse(data) : {};
-        const chapterProgress = progress[id]; // current chapterId
-        if (chapterProgress !== undefined) setLastProgress(chapterProgress);
-      } catch (err) {
-        console.error("Error loading progress", err);
-      }
-    };
-    loadProgress();
-  }, []);
-
   useEffect(() => {
     const fetchPYQs = async () => {
+      setPYQList([]); // ✅ reset previous chapter questions
+      setLoading(true);
       const token = await getToken();
+      console.log("token", token);
       try {
         const response = await fetch(GET_PYQS, {
           method: "POST",
@@ -63,6 +49,7 @@ export default function PYQListScreen() {
         });
 
         const json = await response.json();
+        console.log("status", json);
         if (json.success) setPYQList(json.pyqs);
       } catch (err) {
         console.error("Error fetching PYQs", err);
@@ -104,26 +91,22 @@ export default function PYQListScreen() {
                 </View>
               </View>
             </View>
-            {lastProgress !== null && (
-              <View style={styles.analysisTab}>
+            {true && (
+              <LinearGradient
+                colors={["#3399ff", "#004aad"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.analysisTab}
+              >
                 <Text style={styles.analysisTabTitle}>
-                  Q. {lastProgress} of {pyqList.length > 0 && pyqList.length}{" "}
-                  Completed
+                  Chapter Analysis{"  "}
+                  <FontAwesome5 name="magic" size={12} color="#fff" />
                 </Text>
-                <TouchableOpacity
-                  onPress={() =>
-                    router.push({
-                      pathname: "/pyq-detail",
-                      params: { currentIndex: lastProgress.toString() },
-                    })
-                  }
-                >
-                  <Text style={styles.analysisTabTitle}>
-                    Continue from Q. {lastProgress + 1}{" "}
-                    <Ionicons name="arrow-forward" size={14} color="#b38f00" />
-                  </Text>
-                </TouchableOpacity>
-              </View>
+                <Text style={styles.analysisTabText}>
+                  Finish the remaining questions to unlock your Chapter
+                  Analysis!
+                </Text>
+              </LinearGradient>
             )}
           </>
         }
@@ -196,16 +179,18 @@ const styles = StyleSheet.create({
 
   analysisTab: {
     borderRadius: 14,
-    borderWidth: 1,
-    borderColor: "#ffe680",
-    backgroundColor: "#fff5cc",
     padding: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 15,
+    marginBottom: 20,
   },
   analysisTabTitle: {
-    color: "#b38f00",
+    color: "#fff",
+    fontSize: 16,
+    fontFamily: "SourceSans3Medium",
+  },
+  analysisTabText: {
+    color: "#ffffff",
+    marginTop: 6,
+    fontSize: 14,
     fontFamily: "SourceSans3Medium",
   },
   progressContainer: {

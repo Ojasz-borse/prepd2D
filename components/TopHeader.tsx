@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "../constants/theme";
 import { useAuth } from "../context/AuthContext"; // adjust path if needed
 
@@ -34,6 +34,7 @@ interface TopHeaderProps {
 }
 
 const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const { user, logout } = useAuth(); // assuming logout is provided
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -99,91 +100,90 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
       </View>
 
       {/* ===== Drawer Modal ===== */}
+
       <Modal
         transparent
         visible={isDrawerOpen}
         animationType="none"
         onRequestClose={closeDrawer}
       >
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#f2f2f2" }}>
-          {/* Overlay */}
-          <Pressable style={styles.overlay} onPress={closeDrawer} />
+        {/* Overlay */}
+        <Pressable style={styles.overlay} onPress={closeDrawer} />
 
-          {/* Animated Drawer */}
-          <Animated.View
-            style={[
-              styles.drawerContainer,
-              {
-                transform: [{ translateX: slideAnim }],
-              },
-            ]}
-          >
-            <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-              {/* Drawer Header */}
-              <View style={styles.drawerHeader}>
-                <View
-                  style={[
-                    styles.drawerProfileCircle,
-                    { backgroundColor: getAvatarColor(user?.first_name) },
-                  ]}
-                >
-                  <Text style={styles.drawerProfileInitials}>
-                    {initials.toUpperCase()}
-                  </Text>
-                </View>
-                <View style={{ marginLeft: 12 }}>
-                  <Text style={styles.drawerName}>
-                    {user?.first_name} {user?.last_name}
-                  </Text>
-                  <Text style={styles.drawerEmail}>{user?.email}</Text>
-                </View>
-              </View>
+        {/* Animated Drawer */}
+        <Animated.View
+          style={[
+            styles.drawerContainer,
+            {
+              transform: [{ translateX: slideAnim }],
+              paddingTop: insets.top,
+              paddingBottom: insets.bottom + 10, // extra for bottom nav
+            },
+          ]}
+        >
+          {/* Drawer Header */}
+          <View style={styles.drawerHeader}>
+            <View
+              style={[
+                styles.drawerProfileCircle,
+                { backgroundColor: getAvatarColor(user?.first_name) },
+              ]}
+            >
+              <Text style={styles.drawerProfileInitials}>
+                {initials.toUpperCase()}
+              </Text>
+            </View>
+            <View style={{ marginLeft: 12 }}>
+              <Text style={styles.drawerName}>
+                {user?.first_name} {user?.last_name}
+              </Text>
+              <Text style={styles.drawerEmail}>{user?.email}</Text>
+            </View>
+          </View>
 
-              {/* Drawer Content */}
-              <View style={styles.drawerContent}>
-                <TouchableOpacity
-                  style={styles.drawerItem}
-                  onPress={() => {
-                    closeDrawer();
-                    router.push("/my-list");
-                  }}
-                >
-                  <ChecklistIcon size={22} />
-                  <Text style={styles.drawerItemText}>My List</Text>
-                </TouchableOpacity>
+          {/* Drawer Content */}
+          <View style={styles.drawerContent}>
+            <TouchableOpacity
+              style={styles.drawerItem}
+              onPress={() => {
+                closeDrawer();
+                router.push("/my-list");
+              }}
+            >
+              <ChecklistIcon size={22} />
+              <Text style={styles.drawerItemText}>My List</Text>
+            </TouchableOpacity>
 
-                <Text style={styles.section}>Tools</Text>
+            <Text style={styles.section}>Tools</Text>
 
-                <TouchableOpacity
-                  style={styles.drawerItem}
-                  onPress={() => {
-                    closeDrawer();
-                    router.push("/estimator");
-                  }}
-                >
-                  <EstimatorTabIcon size={18} focused={false} />
-                  <Text style={styles.drawerItemText}>Estimator</Text>
-                </TouchableOpacity>
-              </View>
+            <TouchableOpacity
+              style={styles.drawerItem}
+              onPress={() => {
+                closeDrawer();
+                router.push("/estimator");
+              }}
+            >
+              <EstimatorTabIcon size={18} focused={false} />
+              <Text style={styles.drawerItemText}>Estimator</Text>
+            </TouchableOpacity>
+          </View>
 
-              {/* Logout Button */}
-              <View style={styles.logoutContainer}>
-                <TouchableOpacity
-                  style={styles.drawerItem}
-                  onPress={() => {
-                    closeDrawer();
-                    logout?.();
-                  }}
-                >
-                  <Ionicons name="log-out-outline" size={22} color="#E53935" />
-                  <Text style={[styles.drawerItemText, { color: "#E53935" }]}>
-                    Logout
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </SafeAreaView>
-          </Animated.View>
-        </SafeAreaView>
+          {/* Logout Button */}
+          <View style={styles.logoutContainer}>
+            <TouchableOpacity
+              style={styles.drawerItem}
+              onPress={() => {
+                closeDrawer();
+                logout?.();
+              }}
+            >
+              <Ionicons name="log-out-outline" size={22} color="#E53935" />
+              <Text style={[styles.drawerItemText, { color: "#E53935" }]}>
+                Logout
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
       </Modal>
     </>
   );

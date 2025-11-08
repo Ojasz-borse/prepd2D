@@ -67,7 +67,10 @@ const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
         ]}
       >
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            secureTextEntry && !showPassword && { letterSpacing: 2 },
+          ]}
           value={value}
           onChangeText={onChangeText}
           onFocus={() => setIsFocused(true)}
@@ -82,7 +85,7 @@ const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
         {secureTextEntry && (
           <TouchableOpacity onPress={() => setShowPassword((prev) => !prev)}>
             <Ionicons
-              name={showPassword ? "eye-off" : "eye"}
+              name={showPassword ? "eye" : "eye-off"}
               size={22}
               color="#666"
             />

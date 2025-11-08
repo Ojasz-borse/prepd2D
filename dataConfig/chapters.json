@@ -1,81 +1,2624 @@
-[
-  { "id": 1, "chapter_name": "Motion in a Plane", "subject": "Physics", "std": "11th" },
-  { "id": 2, "chapter_name": "Laws of Motion", "subject": "Physics", "std": "11th" },
-  { "id": 3, "chapter_name": "Gravitation", "subject": "Physics", "std": "11th" },
-  { "id": 4, "chapter_name": "Thermal Properties of Matter", "subject": "Physics", "std": "11th" },
-  { "id": 5, "chapter_name": "Sound", "subject": "Physics", "std": "11th" },
-  { "id": 6, "chapter_name": "Optics", "subject": "Physics", "std": "11th" },
-  { "id": 7, "chapter_name": "Electrostatics", "subject": "Physics", "std": "11th" },
-  { "id": 8, "chapter_name": "Semiconductors", "subject": "Physics", "std": "11th" },
+[ {
+    "id": 1,
+    "chapter_no": 1,
+    "chapter_name": "Units and Measurements (Error Analysis)",
+    "weightage": 0,
+    "topics": [
+      {
+        "topic": "Introduction",
+        "sub_topic": []
+      },
+      {
+        "topic": "System of Units",
+        "sub_topic": ["Fundamental Quantities and Units", "Derived Quantities and Units", "Conventions for the use of SI Units"]
+      },
+      {
+        "topic": "Measurement of Length",
+        "sub_topic": ["Measurements of Large Distance: Parallax method", "Measurement of Distance to Stars", "Measurement of the Size of a Planet or a Star", "Measurement of Very Small Distances"]
+      },
+      {
+        "topic": "Measurement of Mass",
+        "sub_topic": []
+      },
+      {
+        "topic": "Measurement of Time",
+        "sub_topic": []
+      },
+      {
+        "topic": "Dimensions and Dimensional Analysis",
+        "sub_topic": ["Uses of Dimensional Analysis", "Limitations of Dimensional Analysis"]
+      },
+      {
+        "topic": "Accuracy, Precision and Uncertainty in Measurement",
+        "sub_topic": []
+      },
+      {
+        "topic": "Errors in Measurements",
+        "sub_topic": ["Estimation of error", "Combination of errors"]
+      },
+      {
+        "topic": "Significant Figures",
+        "sub_topic": []
+      }
+    ],
+    "subject": 1,
+    "class": 1
+  },
+  {
+    "id": 2,
+    "chapter_no": 2,
+    "chapter_name": "Mathematical Methods (Vectors)",
+    "weightage": 0,
+    "topics": [
+      {
+        "topic": "Introduction",
+        "sub_topic": []
+      },
+      {
+        "topic": "Vector Analysis",
+        "sub_topic": ["Scalars", "Vectors"]
+      },
+      {
+        "topic": "Vector Operations",
+        "sub_topic": ["Multiplication of a Vector by a Scalar", "Addition and Subtraction of Vectors", "Triangle Law for Vector Addition", "Law of parallelogram of vectors"]
+      },
+      {
+        "topic": "Resolution of vectors",
+        "sub_topic": []
+      },
+      {
+        "topic": "Multiplication of Vectors",
+        "sub_topic": ["Scalar Product (Dot Product)", "Vector Product (cross product)"]
+      },
+      {
+        "topic": "Introduction to Calculus",
+        "sub_topic": ["Differential Calculus", "Integral calculus"]
+      }
+    ],
+    "subject": 1,
+    "class": 1
+  },
+  {
+    "id": 3,
+    "chapter_no": 3,
+    "chapter_name": "Motion in a Plane",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Introduction of Motion in a Plane",
+        "sub_topic": []
+      },
+      {
+        "topic": "Rectilinear Motion",
+        "sub_topic": ["Displacement", "Path length", "Average velocity", "Average speed", "Instantaneous velocity", "Instantaneous speed Graphical Study of Motion", "Acceleration", "Relative Velocity"]
+      },
+      {
+        "topic": "Equations of Motion for Uniform Acceleration",
+        "sub_topic": []
+      },
+      {
+        "topic": "Motion in Two Dimensions - Motion in a Plane",
+        "sub_topic": ["Average and Instantaneous Velocities", "Average and Instantaneous Acceleration", "Equations of Motion for an Object travelling a Plane with Uniform Acceleration", "Relative Velocity", "Projectile Motion"]
+      },
+      {
+        "topic": "Uniform Circular Motion (UCM)",
+        "sub_topic": []
+      },
+      {
+        "topic": "Circular motion",
+        "sub_topic": []
+      },
+      {
+        "topic": "Terms involved in a circular motion",
+        "sub_topic": ["Angular displacement", "Angular Velocity", "Angular Acceleration"]
+      },
+      {
+        "topic": "Uniform Circular Motion (UCM)",
+        "sub_topic": []
+      },
+      {
+        "topic": "Time Period of UCM",
+        "sub_topic": []
+      },
+      {
+        "topic": "Frequency of UCM",
+        "sub_topic": []
+      },
+      {
+        "topic": "Centripetal acceleration (Radial acceleration)",
+        "sub_topic": ["For non-uniform circular motion"]
+      },
+      {
+        "topic": "Centripetal force",
+        "sub_topic": []
+      },
+      {
+        "topic": "Centrifugal force",
+        "sub_topic": []
+      }
+    ],
+    "subject": 1,
+    "class": 1
+  },
+  {
+    "id": 4,
+    "chapter_no": 4,
+    "chapter_name": "Laws of Motion",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Introduction to Laws of Motion",
+        "sub_topic": []
+      },
+      {
+        "topic": "Aristotle's Fallacy",
+        "sub_topic": []
+      },
+      {
+        "topic": "Newton's Laws of Motion",
+        "sub_topic": ["Importance of Newton's First Law of Motion", "Importance of Newton's Second Law of Motion", "Importance of Newton's Third Law of Motion"]
+      },
+      {
+        "topic": "Inertial and Non-inertial Frames of Reference",
+        "sub_topic": []
+      },
+      {
+        "topic": "Types of Forces",
+        "sub_topic": ["Fundamental Forces in Nature", "Contact and Non-Contact Forces", "Real and Pseudo Forces", "Conservative and Non-Conservative Forces and Concept of Potential Energy", "Work Done by a Variable Force"]
+      },
+      {
+        "topic": "Work Energy Theorem",
+        "sub_topic": []
+      },
+      {
+        "topic": "Principle of Conservation of Linear Momentum",
+        "sub_topic": []
+      },
+      {
+        "topic": "Collisions",
+        "sub_topic": ["Collisions", "Features of collision", "Types of collisions", "Elastic collision", "Inelastic collision", "Coefficient of restitution", "Collisions in One Dimension - Elastic collision in one dimension, Inelastic collision in one dimension", "Collisions in Two Dimensions - Elastic collision in two dimensions, Inelastic collision in two dimensions"]
+      },
+      {
+        "topic": "Impulse of Force",
+        "sub_topic": ["Impulse of force", "Applications of impulse"]
+      },
+      {
+        "topic": "Rotational Analogue of a Force - Moment of a Force Or Torque",
+        "sub_topic": []
+      },
+      {
+        "topic": "Couple and Its Torque",
+        "sub_topic": ["To prove that the moment of a couple is independent of the axis of rotation"]
+      },
+      {
+        "topic": "Mechanical Equilibrium",
+        "sub_topic": ["Stable, unstable and neutral equilibrium"]
+      },
+      {
+        "topic": "Centre of Mass",
+        "sub_topic": []
+      },
+      {
+        "topic": "Centre of Gravity",
+        "sub_topic": ["Centre of Gravity", "Centre of gravity of regular-shaped objects", "Real-Life Applications of Centre of Gravity"]
+      }
+    ],
+    "subject": 1,
+    "class": 1
+  },
+  {
+    "id": 5,
+    "chapter_no": 5,
+    "chapter_name": "Gravitation",
+    "weightage": 2,
+    "topics": [
+      {
+        "topic": "Introduction to Gravitation",
+        "sub_topic": []
+      },
+      {
+        "topic": "Kepler's Laws",
+        "sub_topic": ["First law (law of orbits)", "Second law (law of areas)", "Third law (law of period)"]
+      },
+      {
+        "topic": "Newton's Universal Law of Gravitation",
+        "sub_topic": ["Newton's universal law of gravitation", "Importance of the Universal Law of Gravitation", "Application of Newton's law of gravitation", "Principle of superposition of gravitation"]
+      },
+      {
+        "topic": "Measurement of the Gravitational Constant (G)",
+        "sub_topic": []
+      },
+      {
+        "topic": "Acceleration Due to Gravity (Earth's Gravitational Acceleration)",
+        "sub_topic": ["Acceleration due to gravity", "Relationship between g and G", "Mass of the Earth (M)", "Value of g on the surface of the earth", "Variation of acceleration due to gravity (g)"]
+      },
+      {
+        "topic": "Variation in the Acceleration Due to Gravity with Altitude, Depth, Latitude and Shape",
+        "sub_topic": ["Variation in g with Altitude", "Variation in g with Depth", "Variation in g with Latitude and Rotation of the Earth"]
+      },
+      {
+        "topic": "Gravitational Potential and Potential Energy",
+        "sub_topic": ["Expression for Gravitational Potential Energy", "Connection of potential energy formula with mgh", "Concept of Potential", "Escape Velocity"]
+      },
+      {
+        "topic": "Earth Satellites",
+        "sub_topic": ["Projection of Satellite", "Weightlessness in a Satellite", "Time Period of a Satellite", "Binding Energy of an orbiting satellite"]
+      }
+    ],
+    "subject": 1,
+    "class": 1
+  },
+  {
+    "id": 6,
+    "chapter_no": 6,
+    "chapter_name": "Mechanical Properties of Solids",
+    "weightage": 0,
+    "topics": [
+      {
+        "topic": "Introduction",
+        "sub_topic": []
+      },
+      {
+        "topic": "Elastic Behavior of Solids",
+        "sub_topic": []
+      },
+      {
+        "topic": "Stress and Strain",
+        "sub_topic": []
+      },
+      {
+        "topic": "Hooke's Law",
+        "sub_topic": []
+      },
+      {
+        "topic": "Elastic modulus",
+        "sub_topic": ["Young's modulus (Y)", "Bulk modulus (K)", "Modulus of rigidity (η)", "Poisson's ratio"]
+      },
+      {
+        "topic": "Stress-Strain Curve",
+        "sub_topic": []
+      },
+      {
+        "topic": "Strain Energy",
+        "sub_topic": []
+      },
+      {
+        "topic": "Hardness",
+        "sub_topic": []
+      },
+      {
+        "topic": "Friction in Solids",
+        "sub_topic": ["Origin of friction", "Types of friction"]
+      }
+    ],
+    "subject": 1,
+    "class": 1
+  },
+  {
+    "id": 7,
+    "chapter_no": 7,
+    "chapter_name": "Thermal Properties of Matter",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Introduction to Thermal Properties of Matter",
+        "sub_topic": []
+      },
+      {
+        "topic": "Heat and Temperature",
+        "sub_topic": ["Heat", "Temperature"]
+      },
+      {
+        "topic": "Measurement of Temperature",
+        "sub_topic": []
+      },
+      {
+        "topic": "Absolute Temperature and Ideal Gas Equation",
+        "sub_topic": ["Absolute zero and absolute temperature", "Ideal Gas Equation"]
+      },
+      {
+        "topic": "Thermal Expansion",
+        "sub_topic": ["Linear Expansion", "Areal Expansion", "Volume expansion", "Relation between Coefficients of Expansion"]
+      },
+      {
+        "topic": "Specific Heat Capacity",
+        "sub_topic": ["Specific Heat Capacity", "Units of specific heat capacity", "Measurement of specific heat: (mixing method) and calorimeter", "Specific Heat Capacity of some common substance"]
+      },
+      {
+        "topic": "Calorimetry",
+        "sub_topic": ["Calorimetry", "Principle of calorimetry", "Temperature of mixture in different cases"]
+      },
+      {
+        "topic": "Change of State",
+        "sub_topic": ["Analysis of observations", "From point A to B", "From point B to D", "Sublimation", "Phase Diagram", "Vapourisation curve l - v", "Fusion curve l - s", "Sublimation curve s - v", "Triple point", "Gas and Vapour", "Latent Heat"]
+      },
+      {
+        "topic": "Heat Transfer",
+        "sub_topic": ["Conduction", "Thermal Conductivity", "Coefficient of Thermal Conductivity", "Thermal Resistance (RT)", "Applications of Thermal Conductivity", "Convection", "Applications of Convection", "Free and Forced Convection", "Radiation"]
+      },
+      {
+        "topic": "Newton's Law of Cooling",
+        "sub_topic": ["Newton's law of cooling", "Graphical representation", "Applications", "Factors affecting the rate of cooling", "Limitations of Newton's law of cooling"]
+      }
+    ],
+    "subject": 1,
+    "class": 1
+  },
+  {
+    "id": 8,
+    "chapter_no": 8,
+    "chapter_name": "Sound",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Introduction to Sound",
+        "sub_topic": []
+      },
+      {
+        "topic": "Common Properties of All Waves",
+        "sub_topic": ["Amplitude (A)", "Wavelength", "Period (T)", "Double periodicity", "Frequency (n)", "Velocity (v)", "Phase and phase difference", "Characteristics of progressive wave"]
+      },
+      {
+        "topic": "Transverse Waves and Longitudinal Waves",
+        "sub_topic": []
+      },
+      {
+        "topic": "Mathematical Expression of a Wave",
+        "sub_topic": []
+      },
+      {
+        "topic": "The Speed of Travelling Waves",
+        "sub_topic": ["The speed of transverse waves", "The speed of longitudinal waves", "Newton's formula for velocity of sound", "Laplace's correction", "Factors affecting speed of sound", "Effect of pressure on velocity of sound", "Effect of temperature on speed of sound", "Effect of humidity on speed of sound"]
+      },
+      {
+        "topic": "Principle of Superposition of Waves",
+        "sub_topic": ["Superposition principle", "Some important terms", "Phase", "Phase difference", "Path difference", "Resultant amplitude due to superposition", "Resultant intensity due to superposition"]
+      },
+      {
+        "topic": "Echo, Reverberation and Acoustics",
+        "sub_topic": ["Acoustics observed in nature", "Medical applications of acoustics", "Other applications of acoustics"]
+      },
+      {
+        "topic": "Qualities of Sound",
+        "sub_topic": ["Audible sound or human response to sound", "Pitch", "Timbre (sound quality)", "Loudness"]
+      },
+      {
+        "topic": "Doppler Effect",
+        "sub_topic": ["Source Moving and Listener Stationary", "Listener Approaching a Stationary Source with Velocity vL", "Both Source and Listener are Moving", "Common Properties between Doppler Effect of Sound and Light", "Major Differences between Doppler Effects of Sound and Light", "Effect of wind velocity on Doppler's effect in sound", "Applications of Doppler's effect"]
+      },
+      {
+        "topic": "Types of Waves",
+        "sub_topic": ["Mechanical waves", "EM waves", "Matter waves"]
+      }
+    ],
+    "subject": 1,
+    "class": 1
+  },
+  {
+    "id": 9,
+    "chapter_no": 9,
+    "chapter_name": "Optics",
+    "weightage": 2,
+    "topics": [
+      {
+        "topic": "Introduction to Ray Optics",
+        "sub_topic": ["Light and its sources", "Optics", "Ray optics"]
+      },
+      {
+        "topic": "Nature of Light",
+        "sub_topic": ["Corpuscular Nature", "Wave Nature", "Dual Nature of Light", "Ray optics or geometrical optics", "Wave optics or physical optics", "Particle nature of light"]
+      },
+      {
+        "topic": "Ray Optics Or Geometrical Optics Cartesian sign convention",
+        "sub_topic": []
+      },
+      {
+        "topic": "Reflection",
+        "sub_topic": ["Reflection from a plane surface", "Reflection from curved mirrors"]
+      },
+      {
+        "topic": "Refraction",
+        "sub_topic": []
+      },
+      {
+        "topic": "Total Internal Reflection",
+        "sub_topic": ["Total Internal Reflection", "Essential conditions for the total internal reflection", "Total internal reflection in nature - optical fibres", "Rainbow production", "Refraction and total internal reflection of light rays at different angles of incidence", "Consequences of total internal refraction", "Applications of total internal reflection"]
+      },
+      {
+        "topic": "Refraction at Spherical Surfaces and Lenses",
+        "sub_topic": []
+      },
+      {
+        "topic": "Dispersion of Light and Prisms",
+        "sub_topic": []
+      },
+      {
+        "topic": "Some Natural Phenomena Due to Sunlight",
+        "sub_topic": ["Mirage", "Rainbow"]
+      },
+      {
+        "topic": "Defects of Lenses (Aberrations of Optical Images)",
+        "sub_topic": ["Chromatic aberration", "Spherical aberration"]
+      },
+      {
+        "topic": "Optical Instruments",
+        "sub_topic": []
+      }
+    ],
+    "subject": 1,
+    "class": 1
+  },
+  {
+    "id": 10,
+    "chapter_no": 10,
+    "chapter_name": "Electrostatics",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Introduction to Electrostatics",
+        "sub_topic": []
+      },
+      {
+        "topic": "Electric Charges",
+        "sub_topic": ["Point charge", "Test charge"]
+      },
+      {
+        "topic": "Basic Properties of Electric Charge",
+        "sub_topic": ["Additive Nature of Charge", "Quantization of Charge", "Conservation of Charge", "Forces between Charges"]
+      },
+      {
+        "topic": "Coulomb's Law - Force Between Two Point Charges",
+        "sub_topic": ["Coulomb's law", "Electric permittivity", "Dielectric constant (Kor Er)"]
+      },
+      {
+        "topic": "Principle of Superposition",
+        "sub_topic": []
+      },
+      {
+        "topic": "Electric Field",
+        "sub_topic": ["Electric Field Intensity due to a Point Charge in a Material Medium", "Practical Way of Calculating Electric Field", "Electric Lines of Force", "Electric field intensity"]
+      },
+      {
+        "topic": "Electric Flux",
+        "sub_topic": ["Electric Flux", "Tube of force", "Tube of induction", "Normal Electric Induction (NEI)", "Total Normal Electric Induction (TNEI)"]
+      },
+      {
+        "topic": "Gauss's Law",
+        "sub_topic": []
+      },
+      {
+        "topic": "Electric Dipole",
+        "sub_topic": ["The field of an electric dipole", "The physical significance of dipoles", "Couple Acting on an Electric Dipole in a Uniform Electric Field", "Electric Intensity at a Point due to an Electric Dipole", "Electric dipole moment (p)", "Electric field intensity due to an electric dipole at a point on its axial line", "Electric field intensity due to an electric dipole at a point on the equatorial line", "Electric field intensity at a general point due to short electric dipole"]
+      },
+      {
+        "topic": "Continuous Distribution of Charges",
+        "sub_topic": ["Continuous distribution of charges", "Types of charge distribution", "Linear charge distribution", "Surface charge distribution", "Volume charge distribution"]
+      }
+    ],
+    "subject": 1,
+    "class": 1
+  },
+  {
+    "id": 11,
+    "chapter_no": 11,
+    "chapter_name": "Semiconductors",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Introduction to Semiconductors",
+        "sub_topic": []
+      },
+      {
+        "topic": "Electrical Conduction in Solids",
+        "sub_topic": ["Conductors (Metals)", "Insulators", "Semiconductors"]
+      },
+      {
+        "topic": "Band Theory of Solids",
+        "sub_topic": []
+      },
+      {
+        "topic": "Intrinsic Semiconductor",
+        "sub_topic": ["Intrinsic Semiconductors", "Holes in Semiconductors"]
+      },
+      {
+        "topic": "Extrinsic Semiconductor",
+        "sub_topic": ["Doping", "Types of doping", "Pentavalent dopants", "Trivalent dopants", "Extrinsic semiconductors", "Types of Extrinsic semiconductors", "n-type semiconductor", "p-type semiconductor", "The conductivity of semiconductors (sigma)", "Charge neutrality of extrinsic semiconductors"]
+      },
+      {
+        "topic": "p-n Junction",
+        "sub_topic": ["p-n junction", "Formation of p-n junction"]
+      },
+      {
+        "topic": "A p-n Junction Diode",
+        "sub_topic": []
+      },
+      {
+        "topic": "Semiconductor Devices",
+        "sub_topic": []
+      },
+      {
+        "topic": "Applications of Semiconductors and P-n Junction Diode",
+        "sub_topic": []
+      },
+      {
+        "topic": "Thermistor",
+        "sub_topic": []
+      }
+    ],
+    "subject": 1,
+    "class": 1
+  },
+  {
+    "id": 12,
+    "chapter_no": 12,
+    "chapter_name": "Electromagnetic Waves and Communication System",
+    "weightage": 0,
+    "topics": [
+      {
+        "topic": "Introduction",
+        "sub_topic": []
+      },
+      {
+        "topic": "EM wave",
+        "sub_topic": ["Sources of EM waves", "Characteristics of EM waves"]
+      },
+      {
+        "topic": "Electromagnetic Spectrum",
+        "sub_topic": ["Radio waves", "Microwaves", "Infrared waves", "Visible light", "Ultraviolet rays", "X-rays", "Gamma Rays (γ-rays)"]
+      },
+      {
+        "topic": "Propagation of EM Waves",
+        "sub_topic": ["Ground (surface) wave", "Space wave", "Sky wave propagation"]
+      },
+      {
+        "topic": "Introduction to Communication System",
+        "sub_topic": ["Elements of a communication system", "Commonly used terms in electronic communication system"]
+      },
+      {
+        "topic": "Modulation",
+        "sub_topic": []
+      }
+    ],
+    "subject": 1,
+    "class": 1
+  }, 
+  {
+    "id": 13,
+    "chapter_no": 1,
+    "chapter_name": "Rotational Dynamics",
+    "weightage": 3,
+    "topics": [
+      {
+        "topic": "Rotational Dynamics",
+        "sub_topic": ["Introduction"]
+      },
+      {
+        "topic": "Circular Motion and Its Characteristics",
+        "sub_topic": ["Kinematics of Circular Motion", "Dynamics of Circular Motion (Centripetal Force and Centrifugal Force)", "Centripetal force (CPF)", "Centrifugal force (c.f.f.)"]
+      },
+      {
+        "topic": "Applications of Uniform Circular Motion",
+        "sub_topic": ["Vehicle Along a Horizontal Circular Track", "Well (or Wall) of Death", "Vehicle on a Banked Road", "Most safe speed", "Banking angle", "Speed limits", "Conical Pendulum"]
+      },
+      {
+        "topic": "Vertical Circular Motion",
+        "sub_topic": ["Point Mass Undergoing Vertical Circular Motion Under Gravity", "Case I: Mass tied to a string", "Case II: Mass tied to a rod", "Sphere of Death", "Vehicle at the Top of a Convex OverBridge"]
+      },
+      {
+        "topic": "Moment of Inertia as an Analogous Quantity for Mass",
+        "sub_topic": ["Moment of Inertia of a Uniform Ring", "Moment of Inertia of a Uniform Disc"]
+      },
+      {
+        "topic": "Radius of Gyration",
+        "sub_topic": []
+      },
+      {
+        "topic": "Theorems of Perpendicular and Parallel Axes",
+        "sub_topic": ["Theorem of Perpendicular Axes", "Theorem of Parallel Axes", "Application of perpendicular and parallel axes theorem on different regular bodies"]
+      },
+      {
+        "topic": "Angular Momentum or Moment of Linear Momentum",
+        "sub_topic": ["Expression for Angular Momentum in Terms of Moment of Inertia"]
+      },
+      {
+        "topic": "Expression for Torque in Terms of Moment of Inertia",
+        "sub_topic": []
+      },
+      {
+        "topic": "Conservation of Angular Momentum",
+        "sub_topic": ["Ballet dancers", "Diving in a swimming pool (during competition)"]
+      },
+      {
+        "topic": "Rolling Motion",
+        "sub_topic": ["Kinetic Energy of Rolling Motion", "Rolling motion on an inclined plane"]
+      }
+    ],
+    "subject": 1,
+    "class": 2
+  },
+  {
+    "id": 14,
+    "chapter_no": 2,
+    "chapter_name": "Mechanical Properties of Fluids",
+    "weightage": 3,
+    "topics": [
+      {
+        "topic": "Fluid and Its Properties",
+        "sub_topic": []
+      },
+      {
+        "topic": "Thrust and Pressure",
+        "sub_topic": ["Thrust", "Unit of thrust", "Example of thrust", "Pressure", "Unit of Pressure", "Examples of Pressure in our daily life"]
+      },
+      {
+        "topic": "Liquid Pressure",
+        "sub_topic": ["Liquid Pressure", "Experiment of pressure on fluid"]
+      },
+      {
+        "topic": "Pressure Exerted by a Liquid Column",
+        "sub_topic": []
+      },
+      {
+        "topic": "Atmospheric Pressure",
+        "sub_topic": ["Atmospheric Pressure", "Demonstration of Atmospheric Pressure"]
+      },
+      {
+        "topic": "Gauge Pressure and Absolute Pressure",
+        "sub_topic": []
+      },
+      {
+        "topic": "Hydrostatic Paradox",
+        "sub_topic": []
+      },
+      {
+        "topic": "Pascal's Law",
+        "sub_topic": []
+      },
+      {
+        "topic": "Application of Pascal's Law",
+        "sub_topic": ["Applications of Pascal's law", "Hydraulic press", "Hydraulic lift", "Hydraulic brakes"]
+      },
+      {
+        "topic": "Measurement of Atmospheric Pressure",
+        "sub_topic": ["Mercury Barometer (Simple Barometer)", "Open Tube Manometer"]
+      },
+      {
+        "topic": "Surface Tension",
+        "sub_topic": ["Surface Tension", "Force due to surface tension", "Factors affecting surface tension", "Nature of liquid", "Impurities", "Temperature", "Electrification", "Applications of surface tension"]
+      },
+      {
+        "topic": "Molecular Theory of Surface Tension",
+        "sub_topic": ["Intermolecular force", "Range of molecular force", "Sphere of influence", "Surface film", "Free surface of a liquid", "Surface tension on the basis of molecular theory"]
+      },
+      {
+        "topic": "Surface Tension and Surface Energy",
+        "sub_topic": ["Surface Tension", "Surface Energy", "Relation between the surface energy and surface tension"]
+      },
+      {
+        "topic": "Angle of Contact",
+        "sub_topic": ["Angle of contact", "Characteristics of angle of contact", "Factors affecting angle of contact (theta)", "Nature of solid and liquid in contact", "Impurities", "Inclination", "Temperature", "Shape of liquid meniscus", "Shape of liquid drop"]
+      },
+      {
+        "topic": "Effect of Impurity and Temperature on Surface Tension",
+        "sub_topic": ["Effect of impurities", "Effect of temperature"]
+      },
+      {
+        "topic": "Excess Pressure Across the Free Surface of a Liquid",
+        "sub_topic": ["Plane liquid surface", "Convex liquid surface", "Concave liquid surface"]
+      },
+      {
+        "topic": "Explanation of Formation of Drops and Bubbles",
+        "sub_topic": []
+      },
+      {
+        "topic": "Capillarity and Capillary Action",
+        "sub_topic": ["Capillary action", "Ascent formula", "Capillary fall", "Capillary rise", "Expression for capillary rise or fall", "Method (I): Using pressure difference", "Method (II): Using forces"]
+      },
+      {
+        "topic": "Fluids in Motion",
+        "sub_topic": []
+      },
+      {
+        "topic": "Critical Velocity and Reynolds Number",
+        "sub_topic": []
+      },
+      {
+        "topic": "Viscous Force or Viscosity",
+        "sub_topic": ["Viscosity", "Newton's law of viscosity", "Coefficient of viscosity", "Applications of coefficient of viscosity"]
+      },
+      {
+        "topic": "Stokes' Law",
+        "sub_topic": []
+      },
+      {
+        "topic": "Terminal Velocity",
+        "sub_topic": []
+      },
+      {
+        "topic": "Equation of Continuity",
+        "sub_topic": []
+      },
+      {
+        "topic": "Bernoulli's Equation",
+        "sub_topic": []
+      },
+      {
+        "topic": "Applications of Bernoulli's Equation",
+        "sub_topic": ["Applications of Bernoulli's theorem", "Action of atomiser", "Blowing of roofs by wind storms", "Venturimeter", "Blood Flow and Heart Attack", "Dynamic Lift", "Ball moving without spin", "Ball moving with spin", "Aerofoil or lift on aircraft wing"]
+      }
+    ],
+    "subject": 1,
+    "class": 2
+  },
+  {
+    "id": 15,
+    "chapter_no": 3,
+    "chapter_name": "Kinetic Theory of Gases and Radiation",
+    "weightage": 3,
+    "topics": [
+      {
+        "topic": "The Gas Laws",
+        "sub_topic": ["Boyle's Law (Pressure - Volume Relationship)"]
+      },
+      {
+        "topic": "Gases and Its Characteristics",
+        "sub_topic": ["Gases", "Behaviour and characteristic properties of gases", "Composition of gases", "Gases have neither a fixed volume nor a fixed shape", "Gases exert pressure in all directions", "Gases are highly compressible", "Gases are highly expansible", "Gases have low density", "Gases have a natural tendency to mix with one another (diffusion)", "Gases can be liquefied"]
+      },
+      {
+        "topic": "Classification of Gases: Real Gases and Ideal Gases",
+        "sub_topic": []
+      },
+      {
+        "topic": "Mean Free Path",
+        "sub_topic": ["Free path", "Mean free path"]
+      },
+      {
+        "topic": "Pressure of Ideal Gas",
+        "sub_topic": []
+      },
+      {
+        "topic": "Root Mean Square (RMS) Speed",
+        "sub_topic": []
+      },
+      {
+        "topic": "Interpretation of Temperature in Kinetic Theory",
+        "sub_topic": ["Kinetic energy of gas", "Different forms of K.E. of gas", "Relation between K.E. and temperature of the gas"]
+      },
+      {
+        "topic": "Law of Equipartition of Energy",
+        "sub_topic": ["Law of equipartition of energy", "Energy of a system of the degree of freedom (f)"]
+      },
+      {
+        "topic": "Specific Heat Capacity",
+        "sub_topic": ["Specific Heat Capacity", "Units of specific heat capacity", "Measurement of specific heat: (mixing method) and calorimeter", "Specific Heat Capacity of some common substance"]
+      },
+      {
+        "topic": "Absorption, Reflection, and Transmission of Heat Radiation",
+        "sub_topic": ["Interaction of Thermal Radiation and Matter"]
+      },
+      {
+        "topic": "Perfect Blackbody",
+        "sub_topic": ["Ferry's Blackbody"]
+      },
+      {
+        "topic": "Emission of Heat Radiation",
+        "sub_topic": ["Coefficient of Emission or Emissivity"]
+      },
+      {
+        "topic": "Kirchhoff's Law of Heat Radiation and Its Theoretical Proof",
+        "sub_topic": []
+      },
+      {
+        "topic": "Spectral Distribution of Blackbody Radiation",
+        "sub_topic": []
+      },
+      {
+        "topic": "Wien's Displacement Law",
+        "sub_topic": []
+      },
+      {
+        "topic": "Stefan-boltzmann Law of Radiation",
+        "sub_topic": []
+      }
+    ],
+    "subject": 1,
+    "class": 2
+  },
+  {
+    "id": 16,
+    "chapter_no": 4,
+    "chapter_name": "Thermodynamics",
+    "weightage": 3,
+    "topics": [
+      {
+        "topic": "Thermodynamics",
+        "sub_topic": []
+      },
+      {
+        "topic": "Thermal Equilibrium",
+        "sub_topic": []
+      },
+      {
+        "topic": "Zeroth Law of Thermodynamics",
+        "sub_topic": []
+      },
+      {
+        "topic": "Heat, Internal Energy and Work",
+        "sub_topic": ["Heat", "Internal Energy", "Work: P-V diagrams"]
+      },
+      {
+        "topic": "First Law of Thermodynamics",
+        "sub_topic": ["First law of thermodynamics", "Formulation of first law of thermodynamics", "First law of thermodynamics for various processes", "Isothermal process", "Adiabatic process", "Isochoric process", "Isobaric process", "Justification", "Mathematical expression", "Some useful conclusions are drawn from the law", "Limitations", "Expressions for the work done by an ideal gas under different conditions"]
+      },
+      {
+        "topic": "Thermodynamic State Variables and Equation of State",
+        "sub_topic": ["Thermodynamic Equilibrium", "Mechanical equilibrium", "Chemical equilibrium", "Thermal equilibrium", "Equation of state", "Thermodynamic state variables", "Extensive variables", "Intensive variables"]
+      },
+      {
+        "topic": "Thermodynamic Process",
+        "sub_topic": ["Thermodynamic Process", "Work Done During a Thermodynamic Process", "Heat Added During a Thermodynamic Process"]
+      },
+      {
+        "topic": "Heat Engine",
+        "sub_topic": ["Heat engine", "Source", "Working substance", "Sink", "Working", "Efficiency of heat engine"]
+      },
+      {
+        "topic": "Refrigerators and Heat Pumps",
+        "sub_topic": ["Refrigerator: Heat Flow from a Colder Region to a Hotter Region", "Source", "Working substance", "Sink", "Working", "Performance of a Refrigerator", "Air conditioner", "Heat Pump"]
+      },
+      {
+        "topic": "Second Law of Thermodynamics",
+        "sub_topic": ["Clausius' Statement", "Kelvin Planck's Statement", "Entropy"]
+      },
+      {
+        "topic": "Carnot Cycle and Carnot Engine",
+        "sub_topic": ["Significance of Reversibility in Thermodynamics", "Maximum Efficiency of a Heat Engine and Carnot's Cycle", "Carnot Refrigerator", "The Second Law of Thermodynamics and the Carnot Cycle"]
+      },
+      {
+        "topic": "Sterling Cycle",
+        "sub_topic": []
+      },
+      {
+        "topic": "Classification of Thermodynamic Processes",
+        "sub_topic": ["Classification of Thermodynamic Processes", "Quasi-static (nearly static) process", "Isothermal process", "Adiabatic process", "Isobaric process", "Isochoric process", "Polytropic process", "Cyclic process", "Non-cyclic process", "Reversible process", "Irreversible process"]
+      }
+    ],
+    "subject": 1,
+    "class": 2
+  },
+  {
+    "id": 17,
+    "chapter_no": 5,
+    "chapter_name": "Oscillations",
+    "weightage": 2,
+    "topics": [
+      {
+        "topic": "Oscillations",
+        "sub_topic": []
+      },
+      {
+        "topic": "Explanation of Periodic Motion",
+        "sub_topic": []
+      },
+      {
+        "topic": "Linear Simple Harmonic Motion (S.H.M.)",
+        "sub_topic": []
+      },
+      {
+        "topic": "Differential Equation of Linear S.H.M.",
+        "sub_topic": []
+      },
+      {
+        "topic": "Acceleration (a), Velocity (v) and Displacement (x) of S.H.M.",
+        "sub_topic": ["Expressions of displacement (x), velocity (v) and acceleration (a) at time t", "Extreme values of displacement (x), velocity (v) and acceleration (a)", "Displacement", "Velocity", "Acceleration"]
+      },
+      {
+        "topic": "Amplitude (A), Period (T) and Frequency (N) of S.H.M.",
+        "sub_topic": ["Amplitude of S.H.M.", "Period of S.H.M.", "Frequency of S.H.M."]
+      },
+      {
+        "topic": "Reference Circle Method",
+        "sub_topic": []
+      },
+      {
+        "topic": "Phase in S.H.M.",
+        "sub_topic": []
+      },
+      {
+        "topic": "Graphical Representation of S.H.M.",
+        "sub_topic": ["Graphical Representation of S.H.M.", "Particle executing S.H.M., starting from mean position, towards positive", "Particle performing S.H.M., starting from the positive extreme position", "Conclusions from graph"]
+      },
+      {
+        "topic": "Composition of Two S.H.M.'S Having Same Period and Along Same Line",
+        "sub_topic": []
+      },
+      {
+        "topic": "The Energy of a Particle Performing S.H.M.",
+        "sub_topic": []
+      },
+      {
+        "topic": "Simple Pendulum",
+        "sub_topic": ["Second's Pendulum"]
+      },
+      {
+        "topic": "Angular S.H.M. and It's Differential Equation",
+        "sub_topic": ["Magnet Vibrating in Uniform Magnetic Field"]
+      },
+      {
+        "topic": "Damped Oscillations",
+        "sub_topic": []
+      },
+      {
+        "topic": "Free Oscillations, Forced Oscillations and Resonance Oscillations",
+        "sub_topic": []
+      }
+    ],
+    "subject": 1,
+    "class": 2
+  },
+  
+  {
+    "id": 25,
+    "chapter_no": 1,
+    "chapter_name": "Some Basic Concepts of Chemistry",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Introduction of Some Basic Concepts of Chemistry",
+        "sub_topic": []
+      },
+      {
+        "topic": "Nature of Chemistry",
+        "sub_topic": ["Pure substances versus mixtures", "Metals", "Non-metals", "Metalloids", "States of matter"]
+      },
+      {
+        "topic": "Properties of Matter and Their Measurement",
+        "sub_topic": ["Measurement of properties", "Physical properties", "Mass and weight", "Length", "Volume", "Density", "Temperature", "Formulae for interconversion", "Some important conversion factors"]
+      },
+      {
+        "topic": "Laws of Chemical Combination",
+        "sub_topic": ["Law of conservation of mass", "Law of Definite Proportions", "Law of multiple proportions", "Gay Lussac Law of Gaseous Volume"]
+      },
+      {
+        "topic": "Dalton's Atomic Theory",
+        "sub_topic": []
+      },
+      {
+        "topic": "Atomic and Molecular Masses",
+        "sub_topic": ["Atomic Mass", "Average Atomic Mass", "Molecular Mass", "Formula Mass"]
+      },
+      {
+        "topic": "Mole Concept and Molar Masses",
+        "sub_topic": ["Mole concept", "Molar mass", "Mole triangle"]
+      },
+      {
+        "topic": "Moles and Gases",
+        "sub_topic": []
+      },
+      {
+        "topic": "Laws of Chemical Combination",
+        "sub_topic": ["Avogadro's Law"]
+      }
+    ],
+    "subject": 2,
+    "class": 1
+  },
+  {
+    "id": 26,
+    "chapter_no": 2,
+    "chapter_name": "Structure of Atom",
+    "weightage": 2,
+    "topics": [
+      {
+        "topic": "Subatomic Particles",
+        "sub_topic": ["Discovery of electron", "Discovery of proton", "Discovery of neutron"]
+      },
+      {
+        "topic": "Atomic Number and Atomic Mass Number",
+        "sub_topic": []
+      },
+      {
+        "topic": "Isotopes, Isobars and Isotones",
+        "sub_topic": []
+      },
+      {
+        "topic": "Drawbacks of Rutherford Atomic Model",
+        "sub_topic": []
+      },
+      {
+        "topic": "Bohr's Atomic Model",
+        "sub_topic": ["Wave particle duality of electromagnetic radiation", "Line emission spectrum of hydrogen", "Radii of the Orbits", "Energy of the Electrons", "Limitations of Bohr's Model", "De Broglie's Explanation"]
+      },
+      {
+        "topic": "Bohr's Model for Hydrogen Atom",
+        "sub_topic": ["Explanation of the line spectrum of hydrogen using Bohr theory", "Bohr's theory and atomic spectrum of hydrogen", "Ionization energy"]
+      },
+      {
+        "topic": "Quantum Mechanical Model of Atom",
+        "sub_topic": ["Schrodinger wave equation", "Physical significance of Psi and Psi2", "Radial probability distribution curves", "Difference between orbit and orbital", "Atomic orbitals and quantum numbers", "Shapes of atomic orbitals", "Energies of orbitals", "Aufbau principle", "Electronic configuration of atoms and its representation", "Electronic configurations of Cu and Cr", "Chromium", "Copper", "Isoelectronic species"]
+      }
+    ],
+    "subject": 2,
+    "class": 1
+  },
+  {
+    "id": 27,
+    "chapter_no": 3,
+    "chapter_name": "Chemical Bonding",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Introduction of Chemical Bonding",
+        "sub_topic": ["Chemical bond", "Causes of chemical combination", "Tendency to acquire stability", "Tendency to acquire noble gas configuration"]
+      },
+      {
+        "topic": "Kossel and Lewis Approach to Chemical Bonding",
+        "sub_topic": ["Kossel and Lewis theory", "Lewis symbols", "Significance of Lewis symbols", "Lewis symbols and valence of elements"]
+      },
+      {
+        "topic": "Ionic or Electrovalent Bond",
+        "sub_topic": ["Ionic bond or Electrovalent bond", "Mechanism of formation of ionic bond", "Lattice enthalpy", "Factors affecting the formation of an ionic bond", "Low ionization enthalpy", "High negative electron gain enthalpy", "Large lattice enthalpy", "Characteristics of ionic or electrovalent compounds", "Difference between ionic bond and covalent bond", "Covalent character in ionic bond", "Fajan's rules"]
+      },
+      {
+        "topic": "The Covalent Bond",
+        "sub_topic": ["Covalent Bond", "Covalent Bonding can be Achieved in two Ways", "Covalent Bonding in Carbon Atom", "Properties of Covalent Bond", "Polar Covalent Bond", "Non-polar Covalent Bond", "Polarization of Covalent Bonds"]
+      },
+      {
+        "topic": "Lewis Structures (Lewis Representation of Simple Molecules)",
+        "sub_topic": []
+      },
+      {
+        "topic": "Valence Shell Electron Pair Repulsion Theory (VSEPR)",
+        "sub_topic": ["VSEPR theory", "Main postulates of VSEPR theory", "Geometry of some molecules", "Steps to predict the molecular geometry using VSEPR theory"]
+      },
+      {
+        "topic": "Valence Bond Theory",
+        "sub_topic": ["Postulates of Valence Bond Theory", "Interacting forces during covalent bond formation", "Force of repulsion", "Force of attraction", "Formation of hydrogen molecule on the basis of valence bond theory (VBT)", "Overlap of atomic orbitals", "Limitation of VBT"]
+      },
+      {
+        "topic": "Hybridization",
+        "sub_topic": ["Steps considered in Hybridization", "Formation of excited state", "Mixing and Recasting of orbitals", "Types of Hybridization and Geometry of Molecules", "sp3 Hybridization", "sp2 Hybridization", "sp Hybridization"]
+      },
+      {
+        "topic": "Importance and Limitations of Valence Bond Theory",
+        "sub_topic": []
+      },
+      {
+        "topic": "Molecular Orbital Theory",
+        "sub_topic": ["Formation of molecular orbitals", "Conditions for the combination of Atomic Orbitals", "Types of molecular orbitals", "Energy levels and electronic configuration", "Key ideas of MO theory", "MO description of simple diatomic Molecules"]
+      },
+      {
+        "topic": "Parameters of Covalent Bond",
+        "sub_topic": ["Bond angle", "Bond Enthalpy", "Bond length", "Bond Order", "Polarity of a Covalent Bond"]
+      },
+      {
+        "topic": "Dipole Moment",
+        "sub_topic": []
+      },
+      {
+        "topic": "Covalent Character of Ionic Bond",
+        "sub_topic": []
+      },
+      {
+        "topic": "Resonance",
+        "sub_topic": []
+      }
+    ],
+    "subject": 2,
+    "class": 1
+  },
+  {
+    "id": 28,
+    "chapter_no": 4,
+    "chapter_name": "Redox Reactions",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Redox Reactions",
+        "sub_topic": ["Classical ideas of redox reactions", "Redox reaction in terms of electron transfer"]
+      },
+      {
+        "topic": "Oxidation Number",
+        "sub_topic": ["Rules to assign oxidation number", "Stock notation", "Redox reaction in terms of oxidation number"]
+      },
+      {
+        "topic": "Balancing Redox Reactions in Terms of Loss and Gain of Electrons",
+        "sub_topic": ["Oxidation number method", "Ion electron method (Half reaction method)"]
+      },
+      {
+        "topic": "Redox Reaction and Electrode Potential",
+        "sub_topic": ["Standard electrode potential"]
+      }
+    ],
+    "subject": 2,
+    "class": 1
+  },
+  {
+    "id": 29,
+    "chapter_no": 5,
+    "chapter_name": "Elements of Group 1 and Group 2",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Hydrogen",
+        "sub_topic": ["Occurrence", "Position of hydrogen in the periodic table", "Isotopes of Hydrogen", "Preparation of dihydrogen", "Properties of dihydrogen", "Uses of dihydrogen"]
+      },
+      {
+        "topic": "Alkali Metals and Alkaline Earth Metals",
+        "sub_topic": ["Electronic configuration of elements of group 1 and group 2", "Trends in atomic and physical properties of elements of group 1 and group 2", "Chemical properties of elements of group 1 and group 2", "Diagonal Relationship", "Uses of elements of group 1 and group 2", "Biological importance of elements of group 1 and group 2"]
+      },
+      {
+        "topic": "Some Important Compounds of Elements of S-block",
+        "sub_topic": ["Sodium Carbonate (washing soda) Na2CO3.10H2O", "Sodium hydroxide (caustic soda) NaOH", "Calcium Carbonate (CaCO3)", "Hydrogen peroxide (H2O2)", "Lithium aluminium hydride (LiAlH4)"]
+      }
+    ],
+    "subject": 2,
+    "class": 1
+  },
+  {
+    "id": 30,
+    "chapter_no": 6,
+    "chapter_name": "States of Matter: Gaseous and Liquid States",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Introduction of States of Matter: Gaseous and Liquid States",
+        "sub_topic": []
+      },
+      {
+        "topic": "Intermolecular Forces",
+        "sub_topic": ["Types of Intermolecular Forces", "Dipole-dipole interactions", "Ion-dipole interactions", "Dipole-Induced dipole interaction", "London Dispersion Force", "Hydrogen Bonding", "Intermolecular Forces and Thermal energy"]
+      },
+      {
+        "topic": "Characteristic Properties of Gases",
+        "sub_topic": []
+      },
+      {
+        "topic": "The Gas Laws",
+        "sub_topic": ["The Gas Laws", "Standard variables for gas laws", "The volume (V)", "The pressure (P)", "The temperature (T)"]
+      },
+      {
+        "topic": "Ideal Gas Equation",
+        "sub_topic": ["Ideal behaviour of gases", "Gases law: Boyle's law, Charles' law, Gay Lussac's law, Avogadro's law", "Universal gas constant", "Ideal gas equation", "Ideal gas", "Nature of universal gas constant 'R'", "Values of universal gas constant 'R' in different units", "Combined gas equation", "Relation between density (d), molar mass (M), and pressure (P) of a gas", "Expression for Molar mass"]
+      },
+      {
+        "topic": "Kinetic Molecular Theory of Gases",
+        "sub_topic": ["Kinetic molecular theory of gases", "Postulates of kinetic molecular theory", "Kinetic gas equation", "Calculation of kinetic energy (K.E.)", "Molecular speeds", "Types of speed", "Most probable speed (ump)", "Average speed (uav)", "Root mean square speed (ur.m.s.)", "Relation between molecular speeds, temperature, and molecular mass"]
+      },
+      {
+        "topic": "Deviation from Ideal Behaviour",
+        "sub_topic": ["Ideal Gas", "Real Gas"]
+      },
+      {
+        "topic": "Liquefaction of Gases and Critical Constant",
+        "sub_topic": []
+      },
+      {
+        "topic": "Liquid State",
+        "sub_topic": ["Vapour Pressure", "Surface Tension", "Viscosity"]
+      }
+    ],
+    "subject": 2,
+    "class": 1
+  },
+  {
+    "id": 31,
+    "chapter_no": 7,
+    "chapter_name": "Adsorption and Colloids",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Adsorption",
+        "sub_topic": ["Unbalanced forces", "Why does adsorption occur?", "Desorption", "Sorption"]
+      },
+      {
+        "topic": "Types of Adsorption",
+        "sub_topic": ["Types of adsorption", "Physical adsorption (Physisorption or van der Waals' adsorption)", "Chemical adsorption (Chemisorption or activated adsorption)", "Difference between physisorption and chemisorption"]
+      },
+      {
+        "topic": "Factors Affecting Adsorption of Gases on Solids",
+        "sub_topic": ["Factors affecting adsorption of gases on solids", "Nature of the gas (adsorbate)", "Nature of adsorbent", "Surface area of the adsorbent", "Temperature of the surface", "Pressure of gas"]
+      },
+      {
+        "topic": "Adsorption Isotherms (Freundlich and Langmuir Adsorption Isotherm)",
+        "sub_topic": ["Adsorption isotherm", "Freundlich adsorption isotherm", "Langmuir adsorption isotherm"]
+      },
+      {
+        "topic": "Applications of Adsorption",
+        "sub_topic": []
+      },
+      {
+        "topic": "Catalysis",
+        "sub_topic": ["Catalyst", "Catalysis", "Homogeneous Catalysis", "Heterogeneous Catalysis", "Inhibitors"]
+      },
+      {
+        "topic": "Adsorption Theory of Heterogeneous Catalysis",
+        "sub_topic": ["Important features of solid catalysts", "Catalytic activity", "Catalytic selectivity", "Shape selective catalysis by zeolites"]
+      },
+      {
+        "topic": "Colloids",
+        "sub_topic": ["Examples of colloids", "Classification of colloids", "Preparation of Colloids", "Purification of colloidal solution", "Properties of colloidal dispersions", "Methods to effect coagulation", "Emulsions", "Applications of colloids", "Dispersed phase and dispersion medium", "True solutions, colloids, and suspensions", "Types of colloidal systems"]
+      }
+    ],
+    "subject": 2,
+    "class": 1
+  },
+  {
+    "id": 32,
+    "chapter_no": 8,
+    "chapter_name": "Basic Principles of Organic Chemistry",
+    "weightage": 2,
+    "topics": [
+      {
+        "topic": "Introduction of Basic Principles of Organic Chemistry",
+        "sub_topic": []
+      },
+      {
+        "topic": "Structural Representation of Organic Molecules",
+        "sub_topic": ["Condensed formula", "Bond line formula or zig-zag formula", "Drawing the molecules in three dimensions", "Wedge formula", "Fischer projection formula or cross formula", "Newman projection formula", "Sawhorse or andiron or perspective formula"]
+      },
+      {
+        "topic": "Classification of Organic Compounds",
+        "sub_topic": ["Classification based on carbon skeleton", "Classification based on functional group"]
+      },
+      {
+        "topic": "Nomenclature of Organic Compounds",
+        "sub_topic": ["Common/trivial names", "IUPAC Nomenclature", "IUPAC names of straight-chain alkanes", "IUPAC names of branched saturated hydrocarbons", "IUPAC nomenclature of unsaturated hydrocarbons (Alkenes and Alkynes)", "IUPAC Names of simple monocyclic hydrocarbons", "IUPAC nomenclature of compounds containing one or more functional groups", "IUPAC nomenclature of substitued benzene", "Monosubstituted benzene", "Disubstituted benzene derivatives", "Trisubstituted benzene derivatives"]
+      },
+      {
+        "topic": "Isomerism",
+        "sub_topic": ["Structural isomerism", "Chain isomerism", "Position isomerism", "Functional group isomerism", "Metamerism", "Tautomerism", "Stereoisomerism", "Geometrical isomerism/Cis-trans isomerism", "Optical isomerism: enantiomers, dextrorotatory, laevorotatory, diastereomers, racemic mixture/ racemate, resolution."]
+      },
+      {
+        "topic": "Theoretical Basis of Organic Reactions",
+        "sub_topic": ["Types of cleavage of covalent bond", "Homolytic cleavage", "Heterolytic cleavage", "Types of reagent", "Electrophiles", "Nucleophiles", "Electronic effects in organic reaction", "Inductive effect", "Resonance structures", "Resonance Effect", "Electromeric effect", "Hyperconjugation"]
+      }
+    ],
+    "subject": 2,
+    "class": 1
+  },
+  {
+    "id": 33,
+    "chapter_no": 9,
+    "chapter_name": "Hydrocarbons",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Alkanes",
+        "sub_topic": ["Isomerism in alkanes", "Conformations in alkanes", "Industrial preparation of alkanes", "Physical properties of alkanes", "Chemical properties of alkanes", "Uses of alkanes"]
+      },
+      {
+        "topic": "Alkynes",
+        "sub_topic": ["Isomerism in alkynes", "Preparation of alkynes", "Physical properties of alkynes", "Chemical properties of alkynes", "Uses of acetylene"]
+      },
+      {
+        "topic": "Aromatic Hydrocarbons",
+        "sub_topic": ["Benzene", "Structure of benzene", "Aromatic character (Huckel Rule)", "Preparation of aromatic compounds", "Physical properties of benzene", "Chemical properties of benzene", "Directive influence of a functional group in monosubstituted benzene", "Carcinogenicity and Toxicity"]
+      }
+    ],
+    "subject": 2,
+    "class": 1
+  },
+  {
+    "id": 34,
+    "chapter_no": 10,
+    "chapter_name": "Chemistry in Everyday Life",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Basics of food chemistry",
+        "sub_topic": ["Food quality chemistry"]
+      },
+      {
+        "topic": "Compounds with medicinal properties",
+        "sub_topic": ["Analgesics and antipyretics", "Antimicrobials", "Traditional knowledge in medicine"]
+      },
+      {
+        "topic": "Cleansing Agents",
+        "sub_topic": ["Types of cleansing agents"]
+      }
+    ],
+    "subject": 2,
+    "class": 1
+  }, 
 
-  { "id": 9, "chapter_name": "Rotational Dynamics", "subject": "Physics", "std": "12th" },
-  { "id": 10, "chapter_name": "Mechanical Properties of Fluids", "subject": "Physics", "std": "12th" },
-  { "id": 11, "chapter_name": "Kinetic Theory of Gases and Radiation", "subject": "Physics", "std": "12th" },
-  { "id": 12, "chapter_name": "Thermodynamics", "subject": "Physics", "std": "12th" },
-  { "id": 13, "chapter_name": "Oscillations", "subject": "Physics", "std": "12th" },
-  { "id": 14, "chapter_name": "Superposition of Waves", "subject": "Physics", "std": "12th" },
-  { "id": 15, "chapter_name": "Wave Optics", "subject": "Physics", "std": "12th" },
-  { "id": 16, "chapter_name": "Electrostatics", "subject": "Physics", "std": "12th" },
-  { "id": 17, "chapter_name": "Current Electricity", "subject": "Physics", "std": "12th" },
-  { "id": 18, "chapter_name": "Magnetic Fields Due to Electric Current", "subject": "Physics", "std": "12th" },
-  { "id": 19, "chapter_name": "Magnetic Materials", "subject": "Physics", "std": "12th" },
-  { "id": 20, "chapter_name": "Electromagnetic Induction", "subject": "Physics", "std": "12th" },
-  { "id": 21, "chapter_name": "AC Circuits", "subject": "Physics", "std": "12th" },
-  { "id": 22, "chapter_name": "Dual Nature of Radiation and Matter", "subject": "Physics", "std": "12th" },
-  { "id": 23, "chapter_name": "Structure of Atoms and Nuclei", "subject": "Physics", "std": "12th" },
-  { "id": 24, "chapter_name": "Semiconductor Devices", "subject": "Physics", "std": "12th" },
 
-  { "id": 25, "chapter_name": "Some Basic Concepts of Chemistry", "subject": "Chemistry", "std": "11th" },
-  { "id": 26, "chapter_name": "Structure of Atom", "subject": "Chemistry", "std": "11th" },
-  { "id": 27, "chapter_name": "Chemical Bonding", "subject": "Chemistry", "std": "11th" },
-  { "id": 28, "chapter_name": "Redox Reactions", "subject": "Chemistry", "std": "11th" },
-  { "id": 29, "chapter_name": "Elements of Group 1 and Group 2", "subject": "Chemistry", "std": "11th" },
-  { "id": 30, "chapter_name": "States of Matter: Gaseous and Liquid States", "subject": "Chemistry", "std": "11th" },
-  { "id": 31, "chapter_name": "Adsorption and Colloids", "subject": "Chemistry", "std": "11th" },
-  { "id": 32, "chapter_name": "Basic Principles of Organic Chemistry", "subject": "Chemistry", "std": "11th" },
-  { "id": 33, "chapter_name": "Hydrocarbons", "subject": "Chemistry", "std": "11th" },
 
-  { "id": 34, "chapter_name": "Solid State", "subject": "Chemistry", "std": "12th" },
-  { "id": 35, "chapter_name": "Solutions", "subject": "Chemistry", "std": "12th" },
-  { "id": 36, "chapter_name": "Ionic Equilibria", "subject": "Chemistry", "std": "12th" },
-  { "id": 37, "chapter_name": "Chemical Thermodynamics", "subject": "Chemistry", "std": "12th" },
-  { "id": 38, "chapter_name": "Electrochemistry", "subject": "Chemistry", "std": "12th" },
-  { "id": 39, "chapter_name": "Chemical Kinetics", "subject": "Chemistry", "std": "12th" },
-  { "id": 40, "chapter_name": "Elements of Groups 16, 17, and 18", "subject": "Chemistry", "std": "12th" },
-  { "id": 41, "chapter_name": "Transition and Inner Transition Elements", "subject": "Chemistry", "std": "12th" },
-  { "id": 42, "chapter_name": "Coordination Compounds", "subject": "Chemistry", "std": "12th" },
-  { "id": 43, "chapter_name": "Halogen Derivatives", "subject": "Chemistry", "std": "12th" },
-  { "id": 44, "chapter_name": "Alcohols, Phenols, and Ethers", "subject": "Chemistry", "std": "12th" },
-  { "id": 45, "chapter_name": "Aldehydes, Ketones, and Carboxylic Acids", "subject": "Chemistry", "std": "12th" },
-  { "id": 46, "chapter_name": "Amines", "subject": "Chemistry", "std": "12th" },
-  { "id": 47, "chapter_name": "Biomolecules", "subject": "Chemistry", "std": "12th" },
-  { "id": 48, "chapter_name": "Introduction to Polymer Chemistry", "subject": "Chemistry", "std": "12th" },
-  { "id": 49, "chapter_name": "Green Chemistry and Nanochemistry", "subject": "Chemistry", "std": "12th" },
 
-  { "id": 50, "chapter_name": "Trigonometry - II", "subject": "Maths", "std": "11th" },
-  { "id": 51, "chapter_name": "Straight Line", "subject": "Maths", "std": "11th" },
-  { "id": 52, "chapter_name": "Circle", "subject": "Maths", "std": "11th" },
-  { "id": 53, "chapter_name": "Measures of Dispersion", "subject": "Maths", "std": "11th" },
-  { "id": 54, "chapter_name": "Probability", "subject": "Maths", "std": "11th" },
-  { "id": 55, "chapter_name": "Complex Numbers", "subject": "Maths", "std": "11th" },
-  { "id": 56, "chapter_name": "Permutations and Combinations", "subject": "Maths", "std": "11th" },
-  { "id": 57, "chapter_name": "Functions", "subject": "Maths", "std": "11th" },
-  { "id": 58, "chapter_name": "Limits", "subject": "Maths", "std": "11th" },
-  { "id": 59, "chapter_name": "Continuity", "subject": "Maths", "std": "11th" },
 
-  { "id": 60, "chapter_name": "Mathematical Logic", "subject": "Maths", "std": "12th" },
-  { "id": 61, "chapter_name": "Matrices", "subject": "Maths", "std": "12th" },
-  { "id": 62, "chapter_name": "Trigonometric Functions", "subject": "Maths", "std": "12th" },
-  { "id": 63, "chapter_name": "Pair of Straight Lines", "subject": "Maths", "std": "12th" },
-  { "id": 64, "chapter_name": "Vectors", "subject": "Maths", "std": "12th" },
-  { "id": 65, "chapter_name": "Line and Plane", "subject": "Maths", "std": "12th" },
-  { "id": 66, "chapter_name": "Linear Programming", "subject": "Maths", "std": "12th" },
-  { "id": 67, "chapter_name": "Differentiation", "subject": "Maths", "std": "12th" },
-  { "id": 68, "chapter_name": "Applications of Derivatives", "subject": "Maths", "std": "12th" },
-  { "id": 69, "chapter_name": "Indefinite Integration", "subject": "Maths", "std": "12th" },
-  { "id": 70, "chapter_name": "Definite Integration", "subject": "Maths", "std": "12th" },
-  { "id": 71, "chapter_name": "Application of Definite Integration", "subject": "Maths", "std": "12th" },
-  { "id": 72, "chapter_name": "Differential Equations", "subject": "Maths", "std": "12th" },
-  { "id": 73, "chapter_name": "Probability Distribution", "subject": "Maths", "std": "12th" },
-  { "id": 74, "chapter_name": "Binomial Distribution", "subject": "Maths", "std": "12th" }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  {
+    "id": 35,
+    "chapter_no": 1,
+    "chapter_name": "Solid State",
+    "weightage": 3,
+    "topics": [
+      {
+        "topic": "Introduction to Solid State",
+        "sub_topic": []
+      },
+      {
+        "topic": "Types of Solids",
+        "sub_topic": ["Crystalline solids", "Amorphous solids", "Isomorphism and polymorphism"]
+      },
+      {
+        "topic": "Classification of Crystalline Solids",
+        "sub_topic": ["Classification of crystalline solids", "Molecular solids:", "Polar molecular solids", "Non-polar molecular solids", "Hydrogen-bonded molecular solids", "Ionic Solids", "Metallic solids", "Covalent or Network Solids", "Structure and properties of diamond, graphite, and fullerene"]
+      },
+      {
+        "topic": "Crystal Structure",
+        "sub_topic": ["Crystal, lattice and basis", "Unit Cell", "Types of unit cell", "Crystal systems"]
+      },
+      {
+        "topic": "Cubic System",
+        "sub_topic": ["Number of particles in cubic unit cells", "Relationship between molar mass, density of the substance and unit cell edge length, is deduced in the following steps"]
+      },
+      {
+        "topic": "Packing of Particles in Crystal Lattice",
+        "sub_topic": ["Close packed structures", "Coordination number in close packed structure", "Number of voids per atom in hcp and ccp"]
+      },
+      {
+        "topic": "Packing Efficiency",
+        "sub_topic": []
+      },
+      {
+        "topic": "Crystal Defects or Imperfections",
+        "sub_topic": []
+      },
+      {
+        "topic": "Electrical Properties of Solids",
+        "sub_topic": ["Band theory", "Metals", "Insulators", "Semiconductors", "Extrinsic semiconductors and doping"]
+      },
+      {
+        "topic": "Magnetic Properties of Solids",
+        "sub_topic": ["Diamagnetic solids", "Paramagnetic solids", "Ferromagnetism"]
+      }
+    ],
+    "subject": 2,
+    "class": 2
+  },
+  {
+    "id": 36,
+    "chapter_no": 2,
+    "chapter_name": "Solutions",
+    "weightage": 3,
+    "topics": [
+      {
+        "topic": "Introduction of Solution",
+        "sub_topic": []
+      },
+      {
+        "topic": "Types of Solutions",
+        "sub_topic": ["Gaseous Solutions", "Liquid Solutions", "Solid Solutions"]
+      },
+      {
+        "topic": "Capacity of Solution to Dissolve Solute",
+        "sub_topic": []
+      },
+      {
+        "topic": "Solubility",
+        "sub_topic": ["Factors affecting solubility", "Nature of solute and solvent", "Effect of temperature on solubility", "Effect of pressure on solubility"]
+      },
+      {
+        "topic": "Vapour Pressure of Solutions of Liquids in Liquids",
+        "sub_topic": ["Raoult's law", "Ideal and nonideal solutions"]
+      },
+      {
+        "topic": "Colligative Properties of Nonelectrolyte Solutions",
+        "sub_topic": []
+      },
+      {
+        "topic": "Vapour Pressure Lowering",
+        "sub_topic": ["Raoult's law for solutions of nonvolatile solutes", "Relative lowering of vapour pressure", "Molar mass of solute from vapour pressure lowering"]
+      },
+      {
+        "topic": "Boiling Point Elevation",
+        "sub_topic": ["Boiling point elevation as a consequence of vapour pressure lowering", "Boiling point elevation and concentration of solute", "Molar mass of solute from boiling point elevation"]
+      },
+      {
+        "topic": "Depression in Freezing Point",
+        "sub_topic": ["Freezing point depression as a consequence of vapour pressure lowering", "Freezing point depression and concentration of solute", "The molar mass of solute from freezing point depression"]
+      },
+      {
+        "topic": "Osmotic Pressure",
+        "sub_topic": ["Osmosis", "Osmotic pressure", "Isotonic, hypertonic and hypotonic solutions", "Osmotic pressure and concentration of solution", "Molar mass of solute from osmotic pressure", "Reverse osmosis"]
+      },
+      {
+        "topic": "Colligative Properties of Electrolytes",
+        "sub_topic": ["van't Hoff factor(i)", "Modification of expressions of colligative properties", "van't Hoff factor and degree of dissociation"]
+      }
+    ],
+    "subject": 2,
+    "class": 2
+  },
+  {
+    "id": 37,
+    "chapter_no": 3,
+    "chapter_name": "Ionic Equilibria",
+    "weightage": 2,
+    "topics": [
+      {
+        "topic": "Ionic Equilibria",
+        "sub_topic": []
+      },
+      {
+        "topic": "Types of Electrolyte",
+        "sub_topic": ["Strong electrolyte", "Weak electrolyte", "Degree of dissociation (alpha)"]
+      },
+      {
+        "topic": "Acids and Bases",
+        "sub_topic": ["Arrhenius theory of acids and bases", "Bronsted - Lowry theory", "Lewis theory"]
+      },
+      {
+        "topic": "Ionization of Acids and Bases",
+        "sub_topic": ["Dissociation constant of weak acids and weak bases", "Ostwald's dilution law"]
+      },
+      {
+        "topic": "Autoionization of Water",
+        "sub_topic": []
+      },
+      {
+        "topic": "The pH Scale",
+        "sub_topic": ["pH of a solution", "pH scale", "Relationship between pH and pOH", "Approximate pH values of some substances", "Acidity, basicity, and neutrality of aqueous solutions", "pK value", "Measurement of pH of a solution", "Indicators", "Titration curves"]
+      },
+      {
+        "topic": "Hydrolysis of Salts",
+        "sub_topic": ["Salts of strong acids and strong bases", "Salts of strong acids and weak bases", "Salts of weak acids and strong bases", "Salts of weak acids and weak bases"]
+      },
+      {
+        "topic": "Buffer Solutions",
+        "sub_topic": ["Types of buffer solutions", "Buffer action", "Buffer capacity and buffer index", "Henderson - Hasselbalch equation", "Properties of buffer solution", "Applications of buffer solution", "In biochemical system", "Agriculture", "Industry", "Medicine", "Analytical chemistry"]
+      },
+      {
+        "topic": "Solubility Product",
+        "sub_topic": ["Solubility equilibria", "Relationship between solubility and solubility product", "Condition of precipitation"]
+      },
+      {
+        "topic": "Common Ion Effect",
+        "sub_topic": ["Common ion effect and solubility"]
+      }
+    ],
+    "subject": 2,
+    "class": 2
+  },
+  {
+    "id": 38,
+    "chapter_no": 4,
+    "chapter_name": "Chemical Thermodynamics",
+    "weightage": 3,
+    "topics": [
+      {
+        "topic": "Chemical Thermodynamics",
+        "sub_topic": []
+      },
+      {
+        "topic": "Terms Used in Thermodynamics",
+        "sub_topic": ["System and surrounding", "Types of system", "Properties of system", "State functions", "Path Functions", "Thermodynamic equilibrium", "Process and its types"]
+      },
+      {
+        "topic": "Nature of Heat and Work",
+        "sub_topic": ["Nature of work (W)", "Nature of heat (Q)", "Sign conventions of W and Q"]
+      },
+      {
+        "topic": "Expression for Pressure-volume (PV) Work",
+        "sub_topic": ["Free expansion", "Units of energy and work"]
+      },
+      {
+        "topic": "Concept of Maximum Work",
+        "sub_topic": ["Expression for the maximum work"]
+      },
+      {
+        "topic": "Internal Energy (U)",
+        "sub_topic": []
+      },
+      {
+        "topic": "First Law of Thermodynamics",
+        "sub_topic": ["First law of thermodynamics", "Formulation of first law of thermodynamics", "First law of thermodynamics for various processes", "Isothermal process", "Adiabatic process", "Isochoric process", "Isobaric process", "Justification", "Mathematical expression", "Some useful conclusions are drawn from the law", "Limitations", "Expressions for the work done by an ideal gas under different conditions"]
+      },
+      {
+        "topic": "Enthalpy (H)",
+        "sub_topic": ["Enthalpy", "Relationship between ∆H and ∆U for chemical reactions", "Work done in chemical reaction"]
+      },
+      {
+        "topic": "Enthalpies of Physical Transformations",
+        "sub_topic": ["Enthalpy of phase transition", "Enthalpy for the atomic / molecular change"]
+      },
+      {
+        "topic": "Thermochemistry",
+        "sub_topic": ["Enthalpy of chemical reaction (∆rH)", "Exothermic and endothermic reactions", "Standard enthalpy of reaction(∆rH0)", "Thermochemical equation", "Standard enthalpy of formation (∆fH0)", "Standard enthalpy of reaction from standard enthalpies of formation", "Standard enthalpy of combustion (∆cH0)", "Bond enthalpy", "Hess's law of constant heat summation"]
+      },
+      {
+        "topic": "Spontaneous (Irreversible) Process",
+        "sub_topic": ["Energy and spontaneity", "Entropy", "Entropy and spontaneity (Second law of Thermodynamics)", "Second law of thermodynamics", "Gibbs energy", "Gibbs energy and spontaneity", "Sponaneity and ∆H or ∆S", "Temperature of equilibrium", "Gibbs function and equilibrium constant"]
+      }
+    ],
+    "subject": 2,
+    "class": 2
+  },
+  {
+    "id": 39,
+    "chapter_no": 5,
+    "chapter_name": "Electrochemistry",
+    "weightage": 2,
+    "topics": [
+      {
+        "topic": "Introduction to Electrochemistry",
+        "sub_topic": []
+      },
+      {
+        "topic": "Electrical Conduction",
+        "sub_topic": ["Metallic conduction", "Electrolytic or ionic conduction", "Information provided by measurement of conductivities of solutions"]
+      },
+      {
+        "topic": "Electrical Conductance of Solution",
+        "sub_topic": ["Conductivity (k)", "Molar conductivity (lambda)", "Relation between k and lambda", "Variation of conductivity with concentration", "Variation of molar conductivity with concentration", "Kohlrausch law of independent migration of ions", "Molar conductivity and degree of dissociation of weak electrolytes", "Measurement of conductivity"]
+      },
+      {
+        "topic": "Electrochemical Cells",
+        "sub_topic": ["Electrochemical reactions", "Electrodes", "Types of electrochemical cells", "Galvanic cell", "Electrolytic cells"]
+      },
+      {
+        "topic": "Electrolytic Cells",
+        "sub_topic": ["Electrolysis of molten NaCl", "Electrolysis of aqueous NaCl", "Quantitative aspects of electrolysis"]
+      },
+      {
+        "topic": "Galvanic or Voltaic Cell",
+        "sub_topic": ["Salt bridge", "Formulation or short notation of galvanic cells", "Writing of cell reaction"]
+      },
+      {
+        "topic": "Electrode Potential and Cell Potential",
+        "sub_topic": ["Electrode potential", "Cell potential or e.m.f.", "Difference between e.m.f. and potential difference", "Standard electrode potential", "Dependence of cell potential on concentration (Nernst equation)"]
+      },
+      {
+        "topic": "Thermodynamics of Galvanic Cells",
+        "sub_topic": ["Gibbs energy of cell reactions and cell potential", "Standard cell potential and equilibrium constant"]
+      },
+      {
+        "topic": "Reference Electrodes",
+        "sub_topic": ["Standard hydrogen electrode (SHE)"]
+      },
+      {
+        "topic": "Galvanic Cells Useful in Day-to-day Life",
+        "sub_topic": ["Dry cell (Leclanche' cell)", "Lead storage battery (Lead accumulator)", "Nickel-Cadmium or NICAD storage cell", "Mercury battery"]
+      },
+      {
+        "topic": "Fuel Cells",
+        "sub_topic": ["Fuel cells", "Hydrogen-oxygen fuel cell", "Advantage and disadvantage of fuel cell"]
+      },
+      {
+        "topic": "Electrochemical Series (Electromotive Series)",
+        "sub_topic": ["Electrochemical series", "Convention used in the construction of electrochemical series", "Applications of electrochemical series"]
+      }
+    ],
+    "subject": 2,
+    "class": 2
+  },
+  {
+    "id": 40,
+    "chapter_no": 6,
+    "chapter_name": "Chemical Kinetics",
+    "weightage": 2,
+    "topics": [
+      {
+        "topic": "Chemical Kinetics",
+        "sub_topic": []
+      },
+      {
+        "topic": "Rate of Reactions",
+        "sub_topic": ["Average rate of chemical reaction", "Instantaneous rate"]
+      },
+      {
+        "topic": "Rate of Reaction and Reactant Concentration",
+        "sub_topic": ["Rate law", "Writing the rate law", "Order of the reaction"]
+      },
+      {
+        "topic": "Molecularity of Elementary Reactions",
+        "sub_topic": ["Elementary reaction", "Complex reactions", "Molecularity of reaction", "Order and molecularity of elementary reactions", "Rate determining step", "Reaction intermediate", "Differences between order and molecularity"]
+      },
+      {
+        "topic": "Integrated Rate Law",
+        "sub_topic": ["Integrated rate law for the first order reactions in solution", "Units of rate constant for the first order reaction", "Half life of the first order reactions (t1/2)", "Half life and rate constant of the first order reaction", "Graphical representation of the first order reactions", "Examples of first order reactions", "Integrated rate law for gas phase reactions", "Zero order reactions", "Pseudo-first order reactions"]
+      },
+      {
+        "topic": "Collision Theory of Bimolecular Reactions",
+        "sub_topic": ["Collision between reactant molecules", "Activation", "Orientation of reactant molecules", "Potential energy barrier"]
+      },
+      {
+        "topic": "Temperature Dependence of Reaction Rates",
+        "sub_topic": ["Arrhenius equation", "Graphical determination of activation energy", "Determination of activation energy", "Graphical description of effect of temperature"]
+      },
+      {
+        "topic": "Effect of Catalyst on the Rate of Reaction",
+        "sub_topic": []
+      }
+    ],
+    "subject": 2,
+    "class": 2
+  },
+
+
+
+
+
+
+
+
+  {
+    "id": 41,
+    "chapter_no": 1,
+    "chapter_name": "Trigonometry - II",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Compound Angle",
+        "sub_topic": []
+      },
+      {
+        "topic": "Trigonometric Functions of Sum and Difference of Angles",
+        "sub_topic": []
+      },
+      {
+        "topic": "Trigonometric Functions of Allied Angles",
+        "sub_topic": []
+      },
+      {
+        "topic": "Trigonometric Functions of Multiple Angles",
+        "sub_topic": []
+      },
+      {
+        "topic": "Trigonometric Functions of Double Angles",
+        "sub_topic": []
+      },
+      {
+        "topic": "Trigonometric Functions of Triple Angle",
+        "sub_topic": []
+      },
+      {
+        "topic": "Factorization Formulae",
+        "sub_topic": ["Formulae for Conversion of Sum Or Difference into Product", "Formulae for Conversion of Product in to Sum Or Difference", "Trigonometric Functions of Angles of a Triangle"]
+      }
+    ],
+    "subject": 3,
+    "class": 1
+  },
+  {
+    "id": 42,
+    "chapter_no": 2,
+    "chapter_name": "Straight Line",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Equation of Locus",
+        "sub_topic": []
+      },
+      {
+        "topic": "Shift of Origin",
+        "sub_topic": []
+      },
+      {
+        "topic": "Slope of a Line",
+        "sub_topic": []
+      },
+      {
+        "topic": "Two Intersecting Lines",
+        "sub_topic": []
+      },
+      {
+        "topic": "Distance of a Point from a Line",
+        "sub_topic": ["Introduction of Distance of a Point from a Line", "Distance between two parallel lines"]
+      },
+      {
+        "topic": "Locus of a Points in a Co-ordinate Plane",
+        "sub_topic": ["Locus", "Equation of Locus", "Shift of Origin"]
+      },
+      {
+        "topic": "Straight Lines",
+        "sub_topic": ["Inclination of a line", "Slope of a line", "Perpendicular Lines", "Angle between intersecting lines", "Different Forms of an equation of a straight line", "General form to other forms", "Family of Lines"]
+      },
+      {
+        "topic": "Equations of Line in Different Forms",
+        "sub_topic": ["Point-slope Form", "Slope-Intercept form", "Two-points Form", "Double-Intercept form", "Normal Form"]
+      },
+      {
+        "topic": "General Form of Equation of a Line",
+        "sub_topic": ["The distance of the Origin from a Line", "The distance of the point (x1,y1) from a line", "The distance between two parallel lines"]
+      }
+    ],
+    "subject": 3,
+    "class": 1
+  },
+  {
+    "id": 43,
+    "chapter_no": 3,
+    "chapter_name": "Circle",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Equation of a Circle in Different Forms",
+        "sub_topic": []
+      },
+      {
+        "topic": "Equation of Tangent to a Circle",
+        "sub_topic": []
+      },
+      {
+        "topic": "Different Forms of Equation of a Circle",
+        "sub_topic": ["Standard form", "Centre-radius form", "Diameter Form"]
+      },
+      {
+        "topic": "General Equation of a Circle",
+        "sub_topic": []
+      },
+      {
+        "topic": "Parametric Form of a Circle",
+        "sub_topic": []
+      },
+      {
+        "topic": "Tangent",
+        "sub_topic": []
+      },
+      {
+        "topic": "Circle",
+        "sub_topic": ["Condition of tangency", "Director circle"]
+      },
+      {
+        "topic": "Tangents from a Point to the Circle",
+        "sub_topic": []
+      }
+    ],
+    "subject": 3,
+    "class": 1
+  },
+  {
+    "id": 44,
+    "chapter_no": 4,
+    "chapter_name": "Conic Sections",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Introduction",
+        "sub_topic": ["Double cone", "Conic sections", "Definition of a conic section and its equation", "Some useful terms of conic sections", "Parabola", "Tracing of the parabola y2 = 4ax (a>0)", "Some results", "Some other standard forms of parabola", "Parametric expressions of standard parabola y2 = 4ax", "General forms of the equation of a parabola", "Tangent", "Condition of tangency", "Tangents from a point to a parabola"]
+      },
+      {
+        "topic": "Ellipse",
+        "sub_topic": ["Standard equation of ellipse", "Some Results", "Special cases of an ellipse", "Tangent to an ellipse", "Condition for tangency", "Tangents from a point to the ellipse", "Locus of point of intersection of perpendicular tangents", "Auxiliary circle, director circle of the ellipse"]
+      },
+      {
+        "topic": "Hyperbola",
+        "sub_topic": ["Standard equation of the hyperbola", "Some useful terms of the hyperbola", "Some Results :", "Tangent to a hyperbola:", "Condition for tangency", "Tangents from a point to the hyperbola", "Locus of point of intersection of perpendicular tangents", "Auxiliary Circle, Director Circle", "Asymptote"]
+      }
+    ],
+    "subject": 3,
+    "class": 1
+  },
+  {
+    "id": 45,
+    "chapter_no": 5,
+    "chapter_name": "Probability",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Algebra of Events",
+        "sub_topic": ["Union of two events", "Exhaustive Events", "Intersection of two events", "Mutually Exclusive Events"]
+      },
+      {
+        "topic": "Concept of Probability",
+        "sub_topic": ["Equally likely outcomes", "Probability of an Event", "Elementary Properties of Probability"]
+      },
+      {
+        "topic": "Basic Terminologies",
+        "sub_topic": ["Random Experiment", "Outcome", "Sample space", "Favourable Outcome"]
+      },
+      {
+        "topic": "Event and Its Types",
+        "sub_topic": ["Elementary Event", "Certain Event", "Impossible Event", "Algebra of Events", "Union of Two Events", "Exhaustive Events", "Intersection of Two Events", "Mutually Exclusive Events"]
+      },
+      {
+        "topic": "Addition Theorem for Two Events",
+        "sub_topic": ["Using the definition of probability", "Using Venn diagram"]
+      },
+      {
+        "topic": "Conditional Probability",
+        "sub_topic": []
+      },
+      {
+        "topic": "Multiplication Theorem on Probability",
+        "sub_topic": []
+      },
+      {
+        "topic": "Independent Events",
+        "sub_topic": []
+      },
+      {
+        "topic": "Bayes' Theorem",
+        "sub_topic": ["Partition of a sample space", "Theorem of total probability"]
+      },
+      {
+        "topic": "Odds (Ratio of Two Complementary Probabilities)",
+        "sub_topic": []
+      }
+    ],
+    "subject": 3,
+    "class": 1
+  },
+  {
+    "id": 46,
+    "chapter_no": 6,
+    "chapter_name": "Complex Numbers",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Introduction of Complex Number",
+        "sub_topic": []
+      },
+      {
+        "topic": "Concept of Complex Numbers",
+        "sub_topic": ["Imaginary number", "Complex Number"]
+      },
+      {
+        "topic": "Algebra of Complex Numbers",
+        "sub_topic": ["Equality of two Complex Numbers", "Conjugate of a Complex Number", "Properties of `barz`", "Addition of complex numbers - Properties of addition, Scalar Multiplication", "Subtraction of complex numbers - Properties of Subtraction", "Multiplication of complex numbers - Properties of Multiplication", "Powers of i in the complex number", "Division of complex number - Properties of Division"]
+      },
+      {
+        "topic": "Equality of Two Complex Numbers",
+        "sub_topic": []
+      },
+      {
+        "topic": "Conjugate of a Complex Number",
+        "sub_topic": ["Geometrical representation of conjugate of a complex number", "Properties of Complex Conjugates"]
+      },
+      {
+        "topic": "Powers of i",
+        "sub_topic": []
+      },
+      {
+        "topic": "Square Root of a Complex Number",
+        "sub_topic": []
+      },
+      {
+        "topic": "Fundamental Theorem of Algebra",
+        "sub_topic": ["Solution of a Quadratic Equation in complex number system"]
+      },
+      {
+        "topic": "Modulus of a Complex Number",
+        "sub_topic": ["Properties of Modulus of a complex number", "Square roots of a complex number"]
+      },
+      {
+        "topic": "Argument, Polar Form and Exponential Form of a Complex Number",
+        "sub_topic": []
+      },
+      {
+        "topic": "Argand Diagram Or Complex Plane",
+        "sub_topic": ["Modulus of z", "Argument of z", "Argument of z in different quadrants/axes - Properties of modulus of complex numbers, Properties of arguments", "Polar & Exponential form of C.N."]
+      },
+      {
+        "topic": "Cube Root of Unity",
+        "sub_topic": ["Properties of 1, w, w2"]
+      },
+      {
+        "topic": "DeMoivre's Theorem",
+        "sub_topic": []
+      },
+      {
+        "topic": "Set of Points in Complex Plane",
+        "sub_topic": []
+      }
+    ],
+    "subject": 3,
+    "class": 1
+  },
+  {
+    "id": 47,
+    "chapter_no": 7,
+    "chapter_name": "Permutations and Combinations",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Fundamental Principles of Counting",
+        "sub_topic": ["Tree Diagram", "Addition Principle", "Multiplication principle"]
+      },
+      {
+        "topic": "Invariance Principle",
+        "sub_topic": []
+      },
+      {
+        "topic": "Factorial Notation",
+        "sub_topic": ["Properties of the factorial notation", "Permutation", "Permutation of repeated things", "Permutations when all the objects are not distinct", "Permutations When All Objects Are Distinct", "Permutations When Repetitions Are Allowed", "Permutations When Some Objects Are Identical", "Circular Permutations", "Permutations of distinct objects", "Properties of Permutations", "Objects always together (String method)", "No two things are together (Gap method)", "Properties of Permutations"]
+      },
+      {
+        "topic": "Combination",
+        "sub_topic": ["When all things are different", "When all things are not different.", "Mixed problems on permutation and combinations."]
+      },
+      {
+        "topic": "Properties of Combinations",
+        "sub_topic": ["Properties of Combinations"]
+      }
+    ],
+    "subject": 3,
+    "class": 1
+  },
+  {
+    "id": 48,
+    "chapter_no": 8,
+    "chapter_name": "Functions",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Concept of Functions",
+        "sub_topic": ["Function, Domain, Co-domain, Range", "Types of function", "One-one or One to one or Injective function", "Onto or Surjective function", "Representation of Function", "Graph of a function", "Value of funcation", "Some Basic Functions - Constant Function, Identity function, Power Functions, Polynomial Function, Radical Function, Rational Function, Exponential Function, Logarithmic Function, Trigonometric function"]
+      },
+      {
+        "topic": "Algebra of Functions",
+        "sub_topic": ["Composition of Functions", "Inverse functions", "Piecewise Defined Functions", "Signum function", "Absolute value function (Modulus function)", "Greatest Integer Function (Step Function)", "Fractional part function"]
+      }
+    ],
+    "subject": 3,
+    "class": 1
+  },
+  {
+    "id": 49,
+    "chapter_no": 9,
+    "chapter_name": "Limits",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Concept of Limits",
+        "sub_topic": ["Definition of Limit", "One-Sided Limit", "Left-hand Limit", "Right-hand Limit", "Existence of a limit of a function at a point x = a", "Algebra of limits"]
+      },
+      {
+        "topic": "Factorization Method",
+        "sub_topic": []
+      },
+      {
+        "topic": "Rationalization Method",
+        "sub_topic": []
+      },
+      {
+        "topic": "Limits of Trigonometric Functions",
+        "sub_topic": []
+      },
+      {
+        "topic": "Substitution Method",
+        "sub_topic": []
+      },
+      {
+        "topic": "Limits of Exponential and Logarithmic Functions",
+        "sub_topic": []
+      },
+      {
+        "topic": "Limit at Infinity",
+        "sub_topic": ["Limit at infinity", "Infinite Limits"]
+      }
+    ],
+    "subject": 3,
+    "class": 1
+  },
+  {
+    "id": 50,
+    "chapter_no": 10,
+    "chapter_name": "Continuity",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Continuous and Discontinuous Functions",
+        "sub_topic": ["Continuity of a function at a point", "Definition of Continuity", "Continuity from the right and from the left", "Examples of Continuous Functions", "Properties of continuous functions", "Types of Discontinuities", "Jump Discontinuity", "Removable Discontinuity", "Infinite Discontinuity", "Continuity over an interval", "The intermediate value theorem for continuous functions"]
+      },
+      {
+        "topic": "Definition of Continuity",
+        "sub_topic": ["Continuity of a Function at a Point", "left hand limit, right hand limit", "Condition 1: If f (x) is to be continuous at x = a then f (a) must be defined.", "Condition 2: If f(x) is to be continuous at x = a then lim x->a f (x) must exist.", "Condition 3: If f(x) is to be continuous at x = a then lim x->a f (x) = f (a).", "Discontinuity of a Function", "Types of Discontinuity", "Jump Discontinuity", "Removable Discontinuity", "Infinite Discontinuity", "Continuity in Interval - Definition", "The intermediate value theorem for continuous functions"]
+      },
+      {
+        "topic": "Continuity in the Domain of the Function",
+        "sub_topic": []
+      },
+      {
+        "topic": "Algebra of Continuous Functions",
+        "sub_topic": []
+      },
+      {
+        "topic": "Continuity of Some Standard Functions - Polynomial Function",
+        "sub_topic": []
+      },
+      {
+        "topic": "Continuity of Some Standard Functions - Rational Function",
+        "sub_topic": []
+      },
+      {
+        "topic": "Continuity of Some Standard Functions - Trigonometric Function",
+        "sub_topic": []
+      }
+    ],
+    "subject": 3,
+    "class": 1
+  }, 
+
+
+  {
+    "id": 51,
+    "chapter_no": 1,
+    "chapter_name": "Mathematical Logic",
+    "weightage": 2,
+    "topics": [
+      {
+        "topic": "Concept of Statements",
+        "sub_topic": []
+      },
+      {
+        "topic": "Truth Value of Statement",
+        "sub_topic": []
+      },
+      {
+        "topic": "Logical Connective, Simple and Compound Statements",
+        "sub_topic": ["Concept of Statements", "Conjunction (AND)", "Disjunction (OR)", "Conditional statement (Implication) (->)", "Biconditional (Double implication) (<->)", "Negation (~)"]
+      },
+      {
+        "topic": "Statement Patterns and Logical Equivalence",
+        "sub_topic": []
+      },
+      {
+        "topic": "Tautology, Contradiction, and Contingency",
+        "sub_topic": []
+      },
+      {
+        "topic": "Duality",
+        "sub_topic": []
+      },
+      {
+        "topic": "Quantifier and Quantified Statements in Logic",
+        "sub_topic": ["Universal quantifier (∀)", "Existential quantifier (∃)"]
+      },
+      {
+        "topic": "Negations of Compound Statements",
+        "sub_topic": ["Negation of conjunction", "Negation of disjunction", "Negation of implication", "Negation of biconditional"]
+      },
+      {
+        "topic": "Converse, Inverse, and Contrapositive",
+        "sub_topic": []
+      },
+      {
+        "topic": "Algebra of Statements",
+        "sub_topic": ["Idempotent law", "Associative law", "Commutative law", "Distributive law", "Identity law", "Complement law", "Involution law", "DeMorgan's laws"]
+      },
+      {
+        "topic": "Application of Logic to Switching Circuits",
+        "sub_topic": ["Two switches in series", "Two switches in parallel"]
+      }
+    ],
+    "subject": 3,
+    "class": 2
+  },
+  {
+    "id": 52,
+    "chapter_no": 2,
+    "chapter_name": "Matrices",
+    "weightage": 3,
+    "topics": [
+      {
+        "topic": "Elementary Transformations",
+        "sub_topic": ["Interchange of any two rows or any two columns", "Multiplication of the elements of any row or column by a non-zero scalar", "Adding the scalar multiples of all the elements of any row (column) to corresponding elements of any other row (column)"]
+      },
+      {
+        "topic": "Inverse of Matrix",
+        "sub_topic": ["Inverse of a nonsingular matrix by elementary transformation", "Inverse of a square matrix by adjoint method"]
+      },
+      {
+        "topic": "Application of Matrices",
+        "sub_topic": ["Method of Inversion", "Method of Reduction"]
+      }
+    ],
+    "subject": 3,
+    "class": 2
+  },
+  {
+    "id": 53,
+    "chapter_no": 3,
+    "chapter_name": "Trigonometric Functions",
+    "weightage": 3,
+    "topics": [
+      {
+        "topic": "Trigonometric Equations and Their Solutions",
+        "sub_topic": ["Trigonometric equation", "Solution of Trigonometric equation", "Principal Solutions", "The General Solution"]
+      },
+      {
+        "topic": "Solutions of Triangle",
+        "sub_topic": ["Polar co-ordinates", "Relation between the polar co-ordinates and the Cartesian co-ordinates", "Solving a Triangle", "The Sine rule", "The Projection rule", "Applications of the Sine rule, the Cosine rule and the Projection rule"]
+      },
+      {
+        "topic": "Inverse Trigonometric Functions",
+        "sub_topic": ["Inverse sine function", "Inverse cosine function", "Inverse tangent function", "Inverse cosecant function", "Inverse secant function", "Inverse cotangent function", "Principal Values of Inverse Trigonometric Functions", "Properties of inverse trigonometric functions"]
+      }
+    ],
+    "subject": 3,
+    "class": 2
+  },
+  {
+    "id": 54,
+    "chapter_no": 4,
+    "chapter_name": "Pair of Straight Lines",
+    "weightage": 2,
+    "topics": [
+      {
+        "topic": "Combined Equation of a Pair Lines",
+        "sub_topic": []
+      },
+      {
+        "topic": "Homogeneous Equation of Degree Two",
+        "sub_topic": ["Degree of a term", "Homogeneous Equation"]
+      },
+      {
+        "topic": "Angle between lines represented by ax2 + 2hxy + by2 = 0",
+        "sub_topic": []
+      },
+      {
+        "topic": "General Second Degree Equation in x and y",
+        "sub_topic": ["The necessary conditions for a general second degree equation ax2 + 2hxy + by2 + 2gx + 2fy + c = 0", "abc + 2fgh - af2 - bg2 - ch2 = 0", "h2 - ab >= 0"]
+      },
+      {
+        "topic": "Equation of a Line in Space",
+        "sub_topic": ["Equation of a line through a given point and parallel to a given vector `vec b`", "Equation of a line passing through two given points"]
+      },
+      {
+        "topic": "Formation of Joint Equation and Separation of Equations from a Given Equation",
+        "sub_topic": []
+      },
+      {
+        "topic": "Sum and Product of Slopes",
+        "sub_topic": []
+      },
+      {
+        "topic": "Acute Angle Between a Pair of Straight Lines",
+        "sub_topic": []
+      },
+      {
+        "topic": "General 2nd Degree Equation to Represent a Pair of Lines",
+        "sub_topic": []
+      }
+    ],
+    "subject": 3,
+    "class": 2
+  },
+  {
+    "id": 55,
+    "chapter_no": 5,
+    "chapter_name": "Vectors",
+    "weightage": 4,
+    "topics": [
+      {
+        "topic": "Representation of Vector",
+        "sub_topic": ["Magnitude of a Vector"]
+      },
+      {
+        "topic": "Vectors and Their Types",
+        "sub_topic": ["Zero Vector", "Unit Vector", "Co-initial and Co-terminus Vectors", "Equal Vectors", "Negative of a Vector", "Collinear Vectors", "Free Vectors", "Localised Vectors"]
+      },
+      {
+        "topic": "Algebra of Vectors",
+        "sub_topic": ["Addition of Two Vectors", "Parallelogram Law", "Triangle Law of addition of two vectors", "Subtraction of two vectors", "Scalar multiplication of a vector"]
+      },
+      {
+        "topic": "Collinearity and Coplanarity of Vectors",
+        "sub_topic": []
+      },
+      {
+        "topic": "Vector in Two Dimensions (2-D)",
+        "sub_topic": []
+      },
+      {
+        "topic": "Three Dimensional (3-D) Coordinate System",
+        "sub_topic": ["Co-ordinates of a point in space", "Co-ordinates of points on co-ordinate axes", "Co-ordinates of points on co-ordinate planes", "Distance of P(x, y, z) from co-ordinate planes", "Distance of any point from origin", "Distance between any two points in space", "Distance of a point P(x, y, z) from coordinate axes"]
+      },
+      {
+        "topic": "Position Vector of a Point P(X, Y, Z) in Space",
+        "sub_topic": []
+      },
+      {
+        "topic": "Components of Vector",
+        "sub_topic": []
+      },
+      {
+        "topic": "Component Form of a Position Vector",
+        "sub_topic": []
+      },
+      {
+        "topic": "Vector Joining Two Points",
+        "sub_topic": []
+      },
+      {
+        "topic": "Section Formula",
+        "sub_topic": ["Section formula for internal division", "Midpoint formula", "Section formula for external division"]
+      },
+      {
+        "topic": "Scalar Product of Vectors (Dot)",
+        "sub_topic": ["Finding angle between two vectors", "Projections", "Direction Angles and Direction Cosine", "Direction ratios", "Relation between direction ratios and direction cosines"]
+      },
+      {
+        "topic": "Vector Product of Vectors (Cross)",
+        "sub_topic": ["Angle between two vectors", "Geometrical meaning of vector product"]
+      },
+      {
+        "topic": "Scalar Triple Product of Vectors",
+        "sub_topic": []
+      },
+      {
+        "topic": "Vector Triple Product",
+        "sub_topic": []
+      },
+      {
+        "topic": "Direction Angles",
+        "sub_topic": []
+      },
+      {
+        "topic": "Direction Ratios",
+        "sub_topic": []
+      },
+      {
+        "topic": "Direction Cosines",
+        "sub_topic": []
+      },
+      {
+        "topic": "Addition of Vectors",
+        "sub_topic": []
+      }
+    ],
+    "subject": 3,
+    "class": 2
+  },
+  {
+    "id": 56,
+    "chapter_no": 6,
+    "chapter_name": "Line and Plane",
+    "weightage": 4,
+    "topics": [
+      {
+        "topic": "Vector and Cartesian Equations of a Line",
+        "sub_topic": ["Equation of a line passing through a given point and parallel to given vector", "Equation of a line passing through given two points"]
+      },
+      {
+        "topic": "Distance of a Point from a Line",
+        "sub_topic": ["Introduction of Distance of a Point from a Line", "Distance between two parallel lines"]
+      },
+      {
+        "topic": "Distance Between Skew Lines and Parallel Lines",
+        "sub_topic": ["Distance between skew lines", "Distance between parallel lines"]
+      },
+      {
+        "topic": "Equation of a Plane",
+        "sub_topic": ["Passing through a point and perpendicular to a vector", "Passing through a point and parallel to two vectors", "Passing through three non-collinear points", "In normal form", "Passing through the intersection of two planes"]
+      },
+      {
+        "topic": "Angle Between the Planes",
+        "sub_topic": ["Angle between two planes", "Angle between a line and a plane"]
+      },
+      {
+        "topic": "Coplanarity of Two Lines",
+        "sub_topic": []
+      },
+      {
+        "topic": "Distance of a Point from a Plane",
+        "sub_topic": []
+      }
+    ],
+    "subject": 3,
+    "class": 2
+  },
+  {
+    "id": 57,
+    "chapter_no": 7,
+    "chapter_name": "Linear Programming",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Linear Inequations in Two Variables",
+        "sub_topic": ["Convex Sets", "Graphical representation of linear inequations in two variables", "Graphical solution of linear inequation"]
+      },
+      {
+        "topic": "Linear Programming Problem (L.P.P.)",
+        "sub_topic": ["Meaning of Linear Programming Problem", "Mathematical formulation of a linear programming problem", "Familiarize with terms related to Linear Programming Problem"]
+      },
+      {
+        "topic": "Lines of Regression of X on Y and Y on X Or Equation of Line of Regression",
+        "sub_topic": []
+      },
+      {
+        "topic": "Formulation of LPP",
+        "sub_topic": []
+      },
+      {
+        "topic": "Terminologies Related to the Solution of LPP",
+        "sub_topic": []
+      },
+      {
+        "topic": "Graphical Method of Solving Linear Programming Problems",
+        "sub_topic": ["Graphical method of solution for problems in two variables", "Feasible and infeasible regions and bounded regions", "Feasible and infeasible solutions", "Optimum feasible solution"]
+      },
+      {
+        "topic": "Special Cases of LPP",
+        "sub_topic": []
+      },
+      {
+        "topic": "Linear Programming Problem in Management Mathematics",
+        "sub_topic": []
+      }
+    ],
+    "subject": 3,
+    "class": 2
+  },
+  {
+    "id": 58,
+    "chapter_no": 8,
+    "chapter_name": "Differentiation",
+    "weightage": 3,
+    "topics": [
+      {
+        "topic": "Differentiation",
+        "sub_topic": ["Rule of Differentiation", "Introduction"]
+      },
+      {
+        "topic": "Derivative of Composite Functions",
+        "sub_topic": []
+      },
+      {
+        "topic": "Derivatives of Composite Functions - Chain Rule",
+        "sub_topic": []
+      },
+      {
+        "topic": "Geometrical Meaning of Derivative",
+        "sub_topic": []
+      },
+      {
+        "topic": "Derivative of Inverse Functions",
+        "sub_topic": []
+      },
+      {
+        "topic": "Logarithmic Differentiation",
+        "sub_topic": []
+      },
+      {
+        "topic": "Derivative of Implicit Functions",
+        "sub_topic": []
+      },
+      {
+        "topic": "Derivative of Parametric Functions",
+        "sub_topic": []
+      },
+      {
+        "topic": "Higher Order Derivatives",
+        "sub_topic": []
+      }
+    ],
+    "subject": 3,
+    "class": 2
+  },
+  {
+    "id": 59,
+    "chapter_no": 9,
+    "chapter_name": "Applications of Derivatives",
+    "weightage": 2,
+    "topics": [
+      {
+        "topic": "Application of Derivative to Tangents and Normals",
+        "sub_topic": []
+      },
+      {
+        "topic": "Derivative as a Rate Measure",
+        "sub_topic": []
+      },
+      {
+        "topic": "Velocity, Acceleration and Jerk",
+        "sub_topic": []
+      },
+      {
+        "topic": "Approximations",
+        "sub_topic": []
+      },
+      {
+        "topic": "Rolle's Theorem",
+        "sub_topic": []
+      },
+      {
+        "topic": "Lagrange's Mean Value Theorem (Lmvt)",
+        "sub_topic": []
+      },
+      {
+        "topic": "Increasing and Decreasing Functions",
+        "sub_topic": []
+      },
+      {
+        "topic": "Maxima and Minima",
+        "sub_topic": ["First and Second Derivative test", "Determine critical points of the function", "Find the point(s) of local maxima and local minima and corresponding local maximum and local minimum values", "Find the absolute maximum and absolute minimum value of a function"]
+      }
+    ],
+    "subject": 3,
+    "class": 2
+  },
+  {
+    "id": 60,
+    "chapter_no": 10,
+    "chapter_name": "Indefinite Integration",
+    "weightage": 3,
+    "topics": [
+      {
+        "topic": "Indefinite Integration",
+        "sub_topic": []
+      },
+      {
+        "topic": "Algebra of Integration and Standard Results",
+        "sub_topic": []
+      },
+      {
+        "topic": "Methods of Integration: Integration by Substitution",
+        "sub_topic": []
+      },
+      {
+        "topic": "Methods of Integration: Integration by Parts",
+        "sub_topic": []
+      },
+      {
+        "topic": "Methods of Integration: Integration Using Partial Fractions",
+        "sub_topic": []
+      },
+      {
+        "topic": "Integrals of Trignometric Functions",
+        "sub_topic": []
+      },
+      {
+        "topic": "Some Special Integrals",
+        "sub_topic": []
+      }
+    ],
+    "subject": 3,
+    "class": 2
+  },
+  {
+    "id": 61,
+    "chapter_no": 11,
+    "chapter_name": "Definite Integration",
+    "weightage": 3,
+    "topics": [
+      {
+        "topic": "Definite Integral as Limit of Sum",
+        "sub_topic": []
+      },
+      {
+        "topic": "Fundamental Theorem of Integral Calculus",
+        "sub_topic": []
+      },
+      {
+        "topic": "Evaluation of Definite Integrals by Substitution",
+        "sub_topic": []
+      },
+      {
+        "topic": "Evaluation of Definite Integrals by Parts Rule and by Partial Fraction",
+        "sub_topic": []
+      },
+      {
+        "topic": "Properties of Definite Integrals",
+        "sub_topic": []
+      }
+    ],
+    "subject": 3,
+    "class": 2
+  },
+  {
+    "id": 62,
+    "chapter_no": 12,
+    "chapter_name": "Application of Definite Integration",
+    "weightage": 2,
+    "topics": [
+      {
+        "topic": "Area Under Simple Curves",
+        "sub_topic": ["Simple curves: lines, parabolas, polynomial functions"]
+      },
+      {
+        "topic": "Symmetrical Area",
+        "sub_topic": []
+      },
+      {
+        "topic": "Area Bounded by Two Curves",
+        "sub_topic": []
+      }
+    ],
+    "subject": 3,
+    "class": 2
+  },
+  {
+    "id": 63,
+    "chapter_no": 13,
+    "chapter_name": "Differential Equations",
+    "weightage": 4,
+    "topics": [
+      {
+        "topic": "Order and Degree of a Differential Equation",
+        "sub_topic": []
+      },
+      {
+        "topic": "Solution of a Differential Equation",
+        "sub_topic": []
+      },
+      {
+        "topic": "Formation of Differential Equations",
+        "sub_topic": ["Formation of Differential equations from Physical Situations", "Formation of Differential Equations from Geometrical Problems"]
+      },
+      {
+        "topic": "Equations in Variable Separable Form",
+        "sub_topic": []
+      },
+      {
+        "topic": "Methods of Solving First Order, First Degree Differential Equations",
+        "sub_topic": ["Homogeneous Differential Equations", "Linear Differential Equations"]
+      },
+      {
+        "topic": "Application of Differential Equations",
+        "sub_topic": ["Population Growth and Growth of bacteria", "Ratio active Decay", "Newton's Law of Cooling", "Surface Area"]
+      }
+    ],
+    "subject": 3,
+    "class": 2
+  },
+  {
+    "id": 64,
+    "chapter_no": 14,
+    "chapter_name": "Probability Distribution",
+    "weightage": 2,
+    "topics": [
+      {
+        "topic": "Types of Random Variables",
+        "sub_topic": ["Discrete random variable", "Continuous random variable", "Probability Mass Function", "Cumulative Distribution Function or Distribution Function", "Cumulative Distribution Function from Probability Mass function", "Probability Mass Function from Cumulative Distribution Function"]
+      },
+      {
+        "topic": "Probability Distribution",
+        "sub_topic": ["Cumulative Probability Distribution of a Discrete Random Variable", "Probability Mass Function (P.M.F.)", "Expected Value, Variance and Standard Deviation of a Discrete Random Variable", "Apply arithmetic mean of frequency distribution to find the expected value of a random variable", "Calculate the Variance and S.D. of a random variable", "Probability Density Function (P.D.F.)", "Distribution Function of a Continuous Random Variable"]
+      }
+    ],
+    "subject": 3,
+    "class": 2
+  },
+  {
+    "id": 65,
+    "chapter_no": 15,
+    "chapter_name": "Binomial Distribution",
+    "weightage": 2,
+    "topics": [
+      {
+        "topic": "Bernoulli Trial",
+        "sub_topic": []
+      },
+      {
+        "topic": "Binomial Distribution",
+        "sub_topic": []
+      },
+      {
+        "topic": "Mean of Binomial Distribution (P.M.F.)",
+        "sub_topic": []
+      },
+      {
+        "topic": "Variance of Binomial Distribution (P.M.F.)",
+        "sub_topic": []
+      }
+    ],
+    "subject": 3,
+    "class": 2
+  }
+
+
 ]

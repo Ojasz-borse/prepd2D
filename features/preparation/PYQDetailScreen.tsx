@@ -2,7 +2,6 @@ import MathText from "@/components/MathText";
 import TopHeader from "@/components/TopHeader";
 import { usePYQContext } from "@/context/PYQContext";
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
@@ -56,7 +55,6 @@ export default function PYQDetailsPage() {
       setIndex(index + 1);
       setSelectedOption(null);
       setShowExplanation(false);
-      saveProgress(chapterId, index + 1);
     }
   };
 
@@ -65,7 +63,6 @@ export default function PYQDetailsPage() {
       setIndex(index - 1);
       setSelectedOption(null);
       setShowExplanation(false);
-      saveProgress(chapterId, index - 1);
     }
   };
 
@@ -91,25 +88,9 @@ export default function PYQDetailsPage() {
     return "#9ca3af";
   };
 
-  const saveProgress = async (chapterId: string, questionIndex: number) => {
-    try {
-      const data = await AsyncStorage.getItem("PYQ_PROGRESS");
-      const progress = data ? JSON.parse(data) : {};
-      progress[chapterId] = questionIndex; // save last visited index
-      await AsyncStorage.setItem("PYQ_PROGRESS", JSON.stringify(progress));
-    } catch (err) {
-      console.error("Error saving PYQ progress", err);
-    }
-  };
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <LinearGradient
-        colors={["#004aad", "#004aad"]}
-        style={styles.headerGradient}
-      >
-        <TopHeader title="PYQ Section" showBackArrow={true} />
-      </LinearGradient>
+      <TopHeader title="PYQ Section" showBackArrow={true} />
 
       <View style={{ flex: 1 }}>
         <ScrollView
@@ -179,8 +160,21 @@ export default function PYQDetailsPage() {
                 <Ionicons name="bulb-outline" size={16} color="#f59e0b" />
                 <Text style={styles.explanationTitle}>Explanation</Text>
               </View>
+
               <View style={styles.explanationContent}>
-                <MathText content={current.explanation_content} />
+                {current.explanation_content ? (
+                  <MathText content={current.explanation_content} />
+                ) : (
+                  <Text
+                    style={{
+                      fontSize: 15,
+                      color: "#222",
+                      fontFamily: "SourceSans3Medium",
+                    }}
+                  >
+                    No Explanation Found
+                  </Text>
+                )}
               </View>
             </View>
           )}
@@ -249,10 +243,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#ffffff",
   },
-  headerGradient: {
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-  },
+
   progressContainer: {
     marginBottom: 10,
   },
@@ -355,6 +346,7 @@ const styles = StyleSheet.create({
   },
   explanationContent: {
     marginTop: 4,
+    width: "100%",
   },
   navContainer: {
     position: "absolute",

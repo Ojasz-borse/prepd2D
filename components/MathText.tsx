@@ -7,6 +7,13 @@ interface MathRendererProps {
 }
 
 const MathRenderer: React.FC<MathRendererProps> = ({ content }) => {
+  if (!content) {
+    return (
+      <View>
+        <Text></Text>
+      </View>
+    );
+  }
   // Clean and split HTML + math parts
   const clean = content.replace(/\n/g, " ");
   const parts = clean.split(/(\$\$[\s\S]+?\$\$|\$[\s\S]+?\$)/g).filter(Boolean);

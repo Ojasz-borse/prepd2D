@@ -4,7 +4,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
-import { View } from "react-native";
+import { StatusBar, View } from "react-native";
 
 // keep splash visible until fonts are loaded
 SplashScreen.preventAutoHideAsync();
@@ -43,6 +43,7 @@ export default function RootLayout() {
     <AuthProvider>
       <PYQProvider>
         <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+          <StatusBar barStyle="dark-content" backgroundColor="#f2f2f2" />
           <Stack screenOptions={{ headerShown: false }} />
         </View>
       </PYQProvider>
