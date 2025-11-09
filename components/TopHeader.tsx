@@ -134,10 +134,20 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
               </Text>
             </View>
             <View style={{ marginLeft: 12 }}>
-              <Text style={styles.drawerName}>
+              <Text
+                style={styles.drawerName}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
                 {user?.first_name} {user?.last_name}
               </Text>
-              <Text style={styles.drawerEmail}>{user?.email}</Text>
+              <Text
+                style={styles.drawerEmail}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {user?.email}
+              </Text>
             </View>
           </View>
 
@@ -283,12 +293,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.textDark,
     fontFamily: "SourceSans3SemiBold",
+    width: 200,
   },
   drawerEmail: {
     fontSize: 13,
     color: "#666",
     marginTop: 2,
     fontFamily: "SourceSans3Medium",
+    width: 200,
   },
   drawerContent: {
     padding: 16,

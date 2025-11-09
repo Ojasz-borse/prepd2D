@@ -10,6 +10,7 @@ import { router } from "expo-router";
 import * as ScreenCapture from "expo-screen-capture";
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  Animated,
   FlatList,
   StyleSheet,
   Switch,
@@ -164,6 +165,33 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
     };
   }, []);
 
+  const listRef = React.useRef<FlatList>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const fadeAnim = React.useRef(new Animated.Value(0)).current;
+
+  const handleScroll = (e: any) => {
+    const y = e.nativeEvent.contentOffset.y;
+    if (y > 250 && !showScrollTop) {
+      setShowScrollTop(true);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    } else if (y <= 250 && showScrollTop) {
+      setShowScrollTop(false);
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
+
+  const scrollToTop = () => {
+    listRef.current?.scrollToOffset({ offset: 0, animated: true });
+  };
+
   const clearFilters = () => {
     setSearchText("");
     setSelectedDistricts([]);
@@ -310,6 +338,9 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
   return (
     <>
       <FlatList
+        ref={listRef}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         data={enrichedData}
         keyExtractor={(item) => item.choice_code}
         renderItem={({ item }) => (
@@ -500,6 +531,35 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
         category={category}
         setCategory={setCategory}
       />
+      {showScrollTop && (
+        <Animated.View
+          style={[
+            styles.scrollTopBtn,
+            {
+              opacity: fadeAnim,
+              left:
+                searchText ||
+                selectedDistricts.length > 0 ||
+                selectedBranches.length > 0
+                  ? 20
+                  : undefined,
+              right:
+                searchText ||
+                selectedDistricts.length > 0 ||
+                selectedBranches.length > 0
+                  ? undefined
+                  : 20,
+            },
+          ]}
+        >
+          <TouchableOpacity
+            onPress={scrollToTop}
+            style={styles.scrollTopTouchable}
+          >
+            <Ionicons name="chevron-up" size={24} color="#000" />
+          </TouchableOpacity>
+        </Animated.View>
+      )}
     </>
   );
 };
@@ -696,5 +756,27 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 12,
     fontFamily: "SourceSans3Medium",
+  },
+
+  scrollTopBtn: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    elevation: 5,
+  },
+
+  scrollTopTouchable: {
+    backgroundColor: "#e6e6e6", // Same blue shade used in app
+    width: 46,
+    height: 46,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#cccccc",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 10,
+    shadowOffset: { width: 4, height: 6 },
+    shadowRadius: 3,
   },
 });

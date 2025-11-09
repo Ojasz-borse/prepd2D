@@ -140,7 +140,7 @@ export default function CollegeDetails() {
         console.error("Error fetching branches:", error);
         setCollegeBranches([]);
       }
-    }, 10000); // 10 seconds delay
+    }, 2000); // 10 seconds delay
 
     return () => clearTimeout(timer); // cleanup if component unmounts
   }, [collegeDetails]);

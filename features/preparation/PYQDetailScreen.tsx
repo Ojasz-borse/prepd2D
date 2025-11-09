@@ -1,10 +1,12 @@
 import MathText from "@/components/MathText";
 import TopHeader from "@/components/TopHeader";
+import { UPDATE_USER_RESPONSE } from "@/constants/config";
+import { useAuth } from "@/context/AuthContext";
 import { usePYQContext } from "@/context/PYQContext";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -19,7 +21,14 @@ export default function PYQDetailsPage() {
     currentIndex: string;
     chapterId: string;
   }>();
-  const { pyqList } = usePYQContext();
+
+  interface UserResponseMap {
+    [question_id: string]: string; // { "101": "A" }
+  }
+
+  const { user, getToken } = useAuth();
+
+  const { pyqList, userResponses, setUserResponses } = usePYQContext();
 
   const [index, setIndex] = useState(parseInt(currentIndex || "0", 10));
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -44,10 +53,56 @@ export default function PYQDetailsPage() {
   const correctIndex =
     current.correct_option?.trim().toLowerCase().charCodeAt(0) - 97;
 
-  const handleSelect = (i: number) => {
+  useEffect(() => {
+    if (current.user_resp != null) {
+      const optionIndex =
+        current.user_resp == "A"
+          ? 0
+          : current.user_resp == "B"
+          ? 1
+          : current.user_resp == "C"
+          ? 2
+          : 3;
+      setSelectedOption(optionIndex);
+    }
+  }, [current]);
+
+  const handleSelect = async (i: number) => {
     if (selectedOption !== null) return;
+
     setSelectedOption(i);
     setShowExplanation(true);
+
+    const qid = current.id.toString();
+    const selected = String.fromCharCode(65 + i);
+
+    // ✅ Update only one key, but keep full object
+    setUserResponses((prev: any) => {
+      const updated = { ...prev, [qid]: selected };
+
+      pyqList[index].user_resp = selected;
+
+      sendToServer(updated); // ✅ send full updated object
+      return updated;
+    });
+  };
+
+  const sendToServer = async (updatedResponses: UserResponseMap) => {
+    console.log("Calling API...");
+    const token = await getToken();
+
+    await fetch(UPDATE_USER_RESPONSE, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+      body: JSON.stringify({
+        chapter_id: Number(chapterId),
+        user_id: user?.user_id,
+        responses: updatedResponses, // ✅ sending full updated data
+      }),
+    });
   };
 
   const handleNext = () => {

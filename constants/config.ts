@@ -26,6 +26,8 @@ export const GET_PYQS = `${extra.SERVER_URL}/api/pyqs/chapter/id`;
 
 export const GET_PYQ_CHAPTERS = `${extra.SERVER_URL}/api/pyqs/chapter`;
 
+export const UPDATE_USER_RESPONSE = `${extra.SERVER_URL}/api/pyqs/chapter/userResponse`;
+
 export const GET_MOCK_TESTS = `${extra.SERVER_URL}/api/mock-tests`;
 
 export const GET_MOCK_TEST_QUESTIONS = `${extra.SERVER_URL}/api/mock-tests/questions`;

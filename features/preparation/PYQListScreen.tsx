@@ -27,7 +27,7 @@ export default function PYQListScreen() {
   }>();
 
   const [loading, setLoading] = useState(true);
-  const { getToken } = useAuth();
+  const { user, getToken } = useAuth();
   const fadeAnim = useState(new Animated.Value(0))[0];
 
   const { pyqList, setPYQList } = usePYQContext();
@@ -45,11 +45,11 @@ export default function PYQListScreen() {
             "Content-Type": "application/json",
             Authorization: token ? `Bearer ${token}` : "",
           },
-          body: JSON.stringify({ chapter_id: id }),
+          body: JSON.stringify({ chapter_id: id, user_id: user?.user_id }),
         });
 
         const json = await response.json();
-        console.log("status", json);
+        console.log("status", json.pyqs[0]);
         if (json.success) setPYQList(json.pyqs);
       } catch (err) {
         console.error("Error fetching PYQs", err);
@@ -65,6 +65,33 @@ export default function PYQListScreen() {
     fetchPYQs();
   }, [id]);
 
+  const listRef = React.useRef<FlatList>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const fadeAnim1 = React.useRef(new Animated.Value(0)).current;
+
+  const handleScroll = (e: any) => {
+    const y = e.nativeEvent.contentOffset.y;
+    if (y > 250 && !showScrollTop) {
+      setShowScrollTop(true);
+      Animated.timing(fadeAnim1, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    } else if (y <= 250 && showScrollTop) {
+      setShowScrollTop(false);
+      Animated.timing(fadeAnim1, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
+
+  const scrollToTop = () => {
+    listRef.current?.scrollToOffset({ offset: 0, animated: true });
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f2f2f2" }}>
       <LinearGradient
@@ -75,6 +102,9 @@ export default function PYQListScreen() {
       </LinearGradient>
 
       <FlatList
+        ref={listRef}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         data={pyqList}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
@@ -167,6 +197,16 @@ export default function PYQListScreen() {
         )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
+      {showScrollTop && (
+        <Animated.View style={[styles.scrollTopBtn, { opacity: fadeAnim1 }]}>
+          <TouchableOpacity
+            onPress={scrollToTop}
+            style={styles.scrollTopTouchable}
+          >
+            <Ionicons name="chevron-up" size={24} color="#000" />
+          </TouchableOpacity>
+        </Animated.View>
+      )}
     </SafeAreaView>
   );
 }
@@ -306,5 +346,26 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 6,
     lineHeight: 22,
+  },
+  scrollTopBtn: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    elevation: 5,
+  },
+
+  scrollTopTouchable: {
+    backgroundColor: "#e6e6e6", // Same blue shade used in app
+    width: 46,
+    height: 46,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#cccccc",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 10,
+    shadowOffset: { width: 4, height: 6 },
+    shadowRadius: 3,
   },
 });
