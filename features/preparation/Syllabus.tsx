@@ -142,7 +142,10 @@ export default function Syllabus() {
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleChapterPress(item)}>
+          <TouchableOpacity
+            onPress={() => handleChapterPress(item)}
+            activeOpacity={0.7}
+          >
             <View style={styles.chapterTag}>
               <View style={styles.subRow}>
                 <Text style={styles.subText}>

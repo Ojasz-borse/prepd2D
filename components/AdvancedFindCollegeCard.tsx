@@ -2,7 +2,7 @@ import GovernmentCollegeIcon from "@/assets/icons/GovernmentCollegeIcon";
 import PrivateCollegeIcon from "@/assets/icons/PrivateCollegeIcon";
 import { router } from "expo-router";
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface CollegeBranch {
   branch_name: string;
@@ -53,7 +53,7 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({
   const TypeIcon = meta.Icon;
 
   return (
-    <Pressable
+    <TouchableOpacity
       key={item.choice_code}
       style={styles.card3D}
       onLongPress={onLongPress ? () => onLongPress(item.choice_code) : () => {}}
@@ -67,6 +67,7 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({
           });
         }
       }}
+      activeOpacity={0.7}
     >
       {(item.tag || item.percentage) && (
         <View style={styles.smartMatch}>
@@ -161,7 +162,7 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({
           ))}
         </View>
       )}
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

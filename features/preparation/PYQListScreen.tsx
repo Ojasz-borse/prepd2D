@@ -94,12 +94,7 @@ export default function PYQListScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f2f2f2" }}>
-      <LinearGradient
-        colors={["#004aad", "#004aad"]}
-        style={styles.headerGradient}
-      >
-        <TopHeader title={title} showBackArrow={true} />
-      </LinearGradient>
+      <TopHeader title={title} showBackArrow={true} />
 
       <FlatList
         ref={listRef}

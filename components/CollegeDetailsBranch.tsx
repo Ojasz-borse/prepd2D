@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface StandardCutoffData {
   rank: number;
@@ -18,19 +18,18 @@ interface Props {
   item: Branch;
 }
 
-const AdvancedFindCollegeCard: React.FC<Props> = ({ item }) => {
+const CollegeDetailsBranch: React.FC<Props> = ({ item }) => {
   return (
-    <Pressable
+    <TouchableOpacity
       key={item.choice_code}
       style={styles.card3D}
       onPress={() =>
         router.push({
           pathname: "../branch-details",
-          params: {
-            id: item.choice_code,
-          },
+          params: { choice_code: item.choice_code },
         })
       }
+      activeOpacity={0.7}
     >
       {/* Top Row */}
       <View style={styles.subRow}>
@@ -54,11 +53,11 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({ item }) => {
           </View>
         ))}
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 
-export default React.memo(AdvancedFindCollegeCard);
+export default React.memo(CollegeDetailsBranch);
 
 const styles = StyleSheet.create({
   card3D: {

@@ -1,15 +1,11 @@
 import FloatingLabelInput from "@/components/FloatingLabelInput";
 import TopHeader from "@/components/TopHeader";
 import { useEstimator } from "@/hooks/useEstimator";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Dropdown } from "react-native-element-dropdown";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../constants/theme";
 
@@ -20,33 +16,134 @@ export default function EstimatorScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"marks" | "rank">("marks");
 
-  // Local input fields
+  // Marks tab states
   const [marks, setMarks] = useState("");
-  const [inputPercentile, setInputPercentile] = useState("");
-  const [shift, setShift] = useState<"easy" | "medium" | "hard" | null>(null);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<any>(null);
+  const [errMsgMarks, setErrMsgMarks] = useState("");
 
-  // ===== Handlers =====
-  const handleCalculatePercentile = async () => {
-    if (!marks) return;
-    try {
-      if (shift) {
-        await predictPercentile(Number(marks), shift);
-      }
-    } catch (err) {
-      console.error("Error predicting percentile:", err);
+  // Rank tab states (separate so inputs don't overwrite each other)
+  const [overallPercentile, setOverallPercentile] = useState("");
+  const [physicsPercentile, setPhysicsPercentile] = useState("");
+  const [chemistryPercentile, setChemistryPercentile] = useState("");
+  const [mathsPercentile, setMathsPercentile] = useState("");
+  const [errMsgRank, setErrMsgRank] = useState("");
+
+  // Shared UI state
+  const [showInfo, setShowInfo] = useState(false);
+  const [showResultModal, setShowResultModal] = useState(false);
+
+  useEffect(() => {
+    if (Number(marks) < 0) {
+      setErrMsgMarks("Marks should not be less than 0!");
+    } else if (Number(marks) > 200) {
+      setErrMsgMarks("Marks should not be greater than 200!");
+    } else {
+      setErrMsgMarks("");
     }
+  }, [marks]);
+
+  // Validate rank inputs (overall required; subjects optional but must be 0-100 if provided)
+  useEffect(() => {
+    const checkNumberRange = (val: string) =>
+      val === "" || (Number(val) >= 0 && Number(val) <= 100);
+
+    if (!checkNumberRange(overallPercentile)) {
+      setErrMsgRank("Overall percentile must be between 0 and 100.");
+      return;
+    }
+
+    if (!checkNumberRange(physicsPercentile)) {
+      setErrMsgRank("Physics percentile must be between 0 and 100.");
+      return;
+    }
+    if (!checkNumberRange(chemistryPercentile)) {
+      setErrMsgRank("Chemistry percentile must be between 0 and 100.");
+      return;
+    }
+    if (!checkNumberRange(mathsPercentile)) {
+      setErrMsgRank("Mathematics percentile must be between 0 and 100.");
+      return;
+    }
+
+    setErrMsgRank("");
+  }, [
+    overallPercentile,
+    physicsPercentile,
+    chemistryPercentile,
+    mathsPercentile,
+  ]);
+
+  const difficultyOptions = [
+    { label: "Very Easy", value: "very_easy" },
+    { label: "Easy", value: "easy" },
+    { label: "Moderate", value: "moderate" },
+    { label: "Hard", value: "hard" },
+    { label: "Very Hard", value: "very_hard" },
+  ];
+
+  const isMarksValid =
+    Number(marks) > 0 &&
+    Number(marks) <= 200 &&
+    selectedDifficulty &&
+    !errMsgMarks;
+
+  // For rank: require overallPercentile and no validation error
+  const isRankValid = overallPercentile !== "" && !errMsgRank;
+
+  const handleCalculatePercentile = async () => {
+    if (!isMarksValid) return;
+    await predictPercentile(Number(marks), selectedDifficulty);
+    setShowResultModal(true);
   };
 
   const handleCalculateRank = async () => {
-    if (!inputPercentile) return;
-    try {
-      await predictRank(Number(inputPercentile));
-    } catch (err) {
-      console.error("Error predicting rank:", err);
+    if (!isRankValid) return;
+    // Keep the existing predictRank call (only overall) to avoid breaking the hook.
+    // If your hook supports extra fields later, you can extend this call.
+    await predictRank(Number(overallPercentile));
+    setShowResultModal(true);
+  };
+
+  // Info modal content dynamically based on active tab
+  const renderInfoContent = () => {
+    if (activeTab === "marks") {
+      return (
+        <>
+          <Text style={styles.modalTitle}>Know This First</Text>
+          <Text style={styles.modalPoint}>• Marks must be between 1 - 200</Text>
+          <Text style={styles.modalPoint}>
+            • Difficulty/Shift must be selected
+          </Text>
+          <Text style={styles.modalPoint}>
+            • Predictions are estimates, not exact results
+          </Text>
+          <Text style={styles.modalPoint}>
+            • Higher marks & easier shifts can improve percentile
+          </Text>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Text style={styles.modalTitle}>Percentile to Rank — Info</Text>
+          <Text style={styles.modalPoint}>
+            • Enter your overall percentile (required).
+          </Text>
+          <Text style={styles.modalPoint}>
+            • You may also provide Physics, Chemistry, and Mathematics
+            percentiles (optional) — providing them can improve accuracy.
+          </Text>
+          <Text style={styles.modalPoint}>
+            • Percentiles must be between 0 and 100.
+          </Text>
+          <Text style={styles.modalPoint}>
+            • Predictions are estimates — actual rank may differ.
+          </Text>
+        </>
+      );
     }
   };
 
-  // ===== UI =====
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -83,164 +180,252 @@ export default function EstimatorScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Content */}
         <View style={styles.contentWrapper}>
-          {/* --- Marks → Percentile --- */}
           {activeTab === "marks" && (
-            <View style={styles.contentBox}>
-              <Text style={styles.headingText}>Enter your Marks</Text>
-
-              <FloatingLabelInput
-                label="Enter Marks"
-                value={marks}
-                onChangeText={setMarks}
-                keyboardType="number-pad"
-              />
-
-              <Text style={styles.headingText}>Enter your Shift</Text>
-
-              <View style={styles.groupWrapper}>
-                <TouchableOpacity
-                  style={[
-                    styles.groupOption,
-                    shift === "easy" && styles.groupOptionSelected,
-                  ]}
-                  onPress={() => setShift("easy")}
-                >
-                  <Text
-                    style={[
-                      styles.groupOptionText,
-                      shift === "easy" && styles.groupOptionTextSelected,
-                    ]}
-                  >
-                    Easy
-                  </Text>
-                </TouchableOpacity>
+            <>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginBottom: 10,
+                }}
+              >
+                <View>
+                  {error && <Text style={styles.errorText}>{error}</Text>}
+                  {errMsgMarks && (
+                    <Text style={styles.errorText}>{errMsgMarks}</Text>
+                  )}
+                </View>
 
                 <TouchableOpacity
-                  style={[
-                    styles.groupOption,
-                    shift === "medium" && styles.groupOptionSelected,
-                  ]}
-                  onPress={() => setShift("medium")}
+                  onPress={() => setShowInfo(true)}
+                  style={{ marginBottom: 6 }}
                 >
-                  <Text
-                    style={[
-                      styles.groupOptionText,
-                      shift === "medium" && styles.groupOptionTextSelected,
-                    ]}
-                  >
-                    Medium
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[
-                    styles.groupOption,
-                    shift === "hard" && styles.groupOptionSelected,
-                  ]}
-                  onPress={() => setShift("hard")}
-                >
-                  <Text
-                    style={[
-                      styles.groupOptionText,
-                      shift === "hard" && styles.groupOptionTextSelected,
-                    ]}
-                  >
-                    Hard
-                  </Text>
+                  <Ionicons
+                    name="information-circle-outline"
+                    size={24}
+                    color={colors.primary}
+                  />
                 </TouchableOpacity>
               </View>
 
-              <View style={styles.buttonWrapper}>
-                <TouchableOpacity
-                  style={[
-                    styles.confirmButton,
-                    marks && styles.confirmButtonActive,
-                  ]}
-                  onPress={handleCalculatePercentile}
-                  disabled={!marks || loading}
-                >
-                  <Text
-                    style={[
-                      styles.confirmButtonText,
-                      marks && styles.confirmButtonTextActive,
-                    ]}
-                  >
-                    {loading ? "Calculating..." : "Calculate"}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+              <View style={styles.centerContainer}>
+                <View style={styles.contentBox}>
+                  <Text style={styles.headingText}>Enter your Marks</Text>
 
-              {percentile && (
-                <Text style={styles.resultText}>
-                  🎯 Estimated Percentile: {percentile.toFixed(2)}%
-                </Text>
-              )}
-            </View>
+                  <FloatingLabelInput
+                    label="Enter Marks"
+                    value={marks}
+                    onChangeText={setMarks}
+                    keyboardType="number-pad"
+                  />
+
+                  <Text style={styles.headingText}>
+                    Select Shift Difficulty
+                  </Text>
+
+                  <Dropdown
+                    style={styles.dropdown}
+                    data={difficultyOptions}
+                    labelField="label"
+                    valueField="value"
+                    value={selectedDifficulty}
+                    onChange={(item) => setSelectedDifficulty(item.value)}
+                    placeholder="Select Difficulty"
+                    placeholderStyle={styles.dropdownText}
+                    selectedTextStyle={styles.dropdownText}
+                    itemTextStyle={styles.dropdownText}
+                  />
+
+                  <View style={styles.buttonWrapper}>
+                    <TouchableOpacity
+                      style={[
+                        styles.confirmButton,
+                        isMarksValid && styles.confirmButtonActive,
+                      ]}
+                      onPress={handleCalculatePercentile}
+                      disabled={!isMarksValid || loading}
+                    >
+                      <Text
+                        style={[
+                          styles.confirmButtonText,
+                          isMarksValid && styles.confirmButtonTextActive,
+                        ]}
+                      >
+                        {loading ? "Calculating..." : "Calculate"}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </>
           )}
 
-          {/* --- Percentile → Rank --- */}
           {activeTab === "rank" && (
-            <View style={styles.contentBox}>
-              <Text style={styles.headingText}>Enter your Percentile</Text>
-
-              <FloatingLabelInput
-                label="Enter Percentile"
-                value={inputPercentile}
-                onChangeText={setInputPercentile}
-                keyboardType="number-pad"
-              />
-
-              <View style={styles.buttonWrapper}>
+            <>
+              {/* Top row: info button on LEFT and errors on RIGHT */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginBottom: 10,
+                  alignItems: "center",
+                }}
+              >
+                <View style={{ marginBottom: 10 }}>
+                  {error && <Text style={styles.errorText}>{error}</Text>}
+                  {errMsgRank && (
+                    <Text style={styles.errorText}>{errMsgRank}</Text>
+                  )}
+                </View>
                 <TouchableOpacity
-                  style={[
-                    styles.confirmButton,
-                    inputPercentile && styles.confirmButtonActive,
-                  ]}
-                  onPress={handleCalculateRank}
-                  disabled={!inputPercentile || loading}
+                  onPress={() => setShowInfo(true)}
+                  style={{ marginBottom: 6 }}
                 >
-                  <Text
-                    style={[
-                      styles.confirmButtonText,
-                      inputPercentile && styles.confirmButtonTextActive,
-                    ]}
-                  >
-                    {loading ? "Calculating..." : "Calculate"}
-                  </Text>
+                  <Ionicons
+                    name="information-circle-outline"
+                    size={24}
+                    color={colors.primary}
+                  />
                 </TouchableOpacity>
               </View>
 
-              {rank && (
-                <Text style={styles.resultText}>📊 Estimated Rank: {rank}</Text>
-              )}
-            </View>
+              <View style={styles.centerContainer}>
+                <View style={styles.contentBox}>
+                  <Text style={styles.headingText}>
+                    Enter your Overall Percentile
+                  </Text>
+
+                  <FloatingLabelInput
+                    label="Overall Percentile"
+                    value={overallPercentile}
+                    onChangeText={setOverallPercentile}
+                    keyboardType="number-pad"
+                  />
+
+                  <Text style={[styles.headingText, { marginTop: 8 }]}>
+                    (Optional) Subject Percentiles
+                  </Text>
+
+                  <View style={{ flexDirection: "row", gap: 10 }}>
+                    <View style={{ width: "30%" }}>
+                      <FloatingLabelInput
+                        label="Physics"
+                        value={physicsPercentile}
+                        onChangeText={setPhysicsPercentile}
+                        keyboardType="number-pad"
+                      />
+                    </View>
+                    <View style={{ width: "30%" }}>
+                      <FloatingLabelInput
+                        label="Chemistry"
+                        value={chemistryPercentile}
+                        onChangeText={setChemistryPercentile}
+                        keyboardType="number-pad"
+                      />
+                    </View>
+                    <View style={{ width: "34%" }}>
+                      <FloatingLabelInput
+                        label="Mathematics"
+                        value={mathsPercentile}
+                        onChangeText={setMathsPercentile}
+                        keyboardType="number-pad"
+                      />
+                    </View>
+                  </View>
+
+                  <View style={styles.buttonWrapper}>
+                    <TouchableOpacity
+                      style={[
+                        styles.confirmButton,
+                        isRankValid && styles.confirmButtonActive,
+                      ]}
+                      onPress={handleCalculateRank}
+                      disabled={!isRankValid || loading}
+                    >
+                      <Text
+                        style={[
+                          styles.confirmButtonText,
+                          isRankValid && styles.confirmButtonTextActive,
+                        ]}
+                      >
+                        {loading ? "Calculating..." : "Calculate"}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </>
           )}
         </View>
 
-        {/* Loading or Error */}
-        {loading && (
-          <View style={styles.loadingOverlay}>
-            <ActivityIndicator size="large" color={colors.primary} />
-          </View>
-        )}
+        {/* Result Modal (same modal for both tabs) */}
+        <Modal visible={showResultModal} transparent animationType="fade">
+          <View style={styles.resultModalBg}>
+            <View style={styles.resultBox}>
+              <TouchableOpacity
+                style={styles.closeBtn}
+                onPress={() => setShowResultModal(false)}
+              >
+                <Ionicons name="close" size={22} color="#333" />
+              </TouchableOpacity>
 
-        {error && (
-          <Text style={{ color: "red", textAlign: "center", marginTop: 10 }}>
-            {error}
-          </Text>
-        )}
+              {percentile && activeTab === "marks" && (
+                <>
+                  <Text style={{ fontSize: 100, opacity: 0.8 }}>🏅</Text>
+                  <Text style={styles.resultText}>{percentile.toFixed(2)}</Text>
+                  <Text style={styles.resultTextSub}>Estimated Percentile</Text>
+                </>
+              )}
+
+              {rank && activeTab === "rank" && (
+                <Text style={styles.resultText}>📊 Estimated Rank: {rank}</Text>
+              )}
+
+              {/* If user used marks -> rank prediction (both available) show both */}
+              {percentile && rank && (
+                <View style={{ marginTop: 12, alignItems: "center" }}>
+                  <Text style={styles.resultTextSub}>
+                    Percentile: {percentile.toFixed(2)}
+                  </Text>
+                  <Text style={[styles.resultTextSub, { marginTop: 6 }]}>
+                    Rank: {rank}
+                  </Text>
+                </View>
+              )}
+            </View>
+          </View>
+        </Modal>
+
+        {/* Info modal */}
+        <Modal visible={showInfo} transparent animationType="fade">
+          <TouchableOpacity
+            activeOpacity={1}
+            style={styles.modalBg}
+            onPress={() => setShowInfo(false)}
+          >
+            <View style={styles.modalBox}>
+              <TouchableOpacity
+                style={styles.closeBtn}
+                onPress={() => setShowInfo(false)}
+              >
+                <Ionicons name="close" size={22} color="#717171ff" />
+              </TouchableOpacity>
+
+              {renderInfoContent()}
+            </View>
+          </TouchableOpacity>
+        </Modal>
       </View>
     </SafeAreaView>
   );
 }
 
+/* STYLES — kept all your font families, widths and alignment intact */
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#f2f2f2" },
   container: { flex: 1, backgroundColor: "#fff" },
 
-  // --- Tabs ---
   tabContainer: {
     flexDirection: "row",
     borderBottomWidth: 1,
@@ -263,27 +448,54 @@ const styles = StyleSheet.create({
   },
   activeTabText: { color: colors.primary },
 
-  // --- Content ---
   contentWrapper: { flex: 1, padding: 16 },
-  contentBox: { marginTop: 30 },
 
+  /* center content vertically */
+  centerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    marginTop: -40,
+  },
+
+  contentBox: { marginBottom: 20 },
+
+  errorText: {
+    color: "red",
+    textAlign: "right",
+    marginRight: 20,
+    marginTop: 4,
+    fontSize: 14,
+    fontFamily: "SourceSans3Medium",
+  },
   headingText: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 16,
     color: "#000",
-    marginBottom: 20,
-    textAlign: "left",
-    width: "100%",
+    marginBottom: 18,
     fontFamily: "SourceSans3Medium",
   },
 
-  // --- Button ---
+  dropdown: {
+    width: "100%",
+    height: 60,
+    backgroundColor: "#fff",
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+  },
+  dropdownText: {
+    fontSize: 16,
+    fontFamily: "SourceSans3Medium",
+    color: "#333",
+  },
+
   buttonWrapper: { width: "100%", alignItems: "flex-end" },
   confirmButton: {
     backgroundColor: "#e0e0e0",
     paddingVertical: 10,
     paddingHorizontal: 30,
     borderRadius: 25,
+    marginTop: 60,
   },
   confirmButtonActive: { backgroundColor: colors.primary },
   confirmButtonText: {
@@ -292,52 +504,60 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontFamily: "SourceSans3Medium",
   },
-  confirmButtonTextActive: { color: "#fff", fontFamily: "SourceSans3Medium" },
+  confirmButtonTextActive: { color: "#fff" },
 
-  // --- Result ---
-  resultText: {
-    marginTop: 20,
-    fontSize: 16,
-    fontFamily: "SourceSans3Medium",
-    color: colors.textDark,
-    textAlign: "center",
-  },
-
-  // --- Loader ---
-  loadingOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+  /* RESULT MODAL */
+  resultModalBg: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.6)",
+    backgroundColor: "rgba(0,0,0,0.4)",
   },
-  groupWrapper: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 30,
-    gap: 12,
-  },
-  groupOption: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    paddingVertical: 14,
-    alignItems: "center",
+  resultBox: {
+    width: "80%",
     backgroundColor: "#fff",
+    padding: 25,
+    borderRadius: 12,
+    alignItems: "center",
+    position: "relative",
   },
-  groupOptionSelected: {
-    borderColor: "#004aad",
-    borderWidth: 2,
-    backgroundColor: "#f8fbff",
-  },
-  groupOptionText: {
-    fontSize: 16,
-    color: "#777",
+  resultText: {
+    fontSize: 30,
     fontFamily: "SourceSans3Medium",
+    color: colors.primary,
+    textAlign: "center",
+    marginTop: 8,
   },
-  groupOptionTextSelected: { color: "#004aad", fontWeight: "600" },
+  resultTextSub: {
+    fontSize: 16,
+    fontFamily: "SourceSans3Medium",
+    color: "#333",
+  },
+  closeBtn: { position: "absolute", top: 12, right: 12, padding: 6 },
+
+  modalBg: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalBox: {
+    width: "85%",
+    backgroundColor: "#fff",
+    padding: 30,
+    borderRadius: 12,
+    position: "relative",
+  },
+  modalTitle: {
+    fontFamily: "SourceSans3Medium",
+    color: colors.primary,
+    fontSize: 18,
+    marginBottom: 20,
+  },
+  modalPoint: {
+    fontSize: 16,
+    fontFamily: "SourceSans3Medium",
+    marginBottom: 6,
+    color: "#333",
+  },
 });

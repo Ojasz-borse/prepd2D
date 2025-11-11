@@ -140,7 +140,7 @@ export default function CollegeDetails() {
         console.error("Error fetching branches:", error);
         setCollegeBranches([]);
       }
-    }, 2000); // 10 seconds delay
+    }, 2000); // 2 seconds delay
 
     return () => clearTimeout(timer); // cleanup if component unmounts
   }, [collegeDetails]);
@@ -207,40 +207,56 @@ export default function CollegeDetails() {
             </TouchableOpacity>
 
             {/* Address */}
-            <View style={styles.address}>
-              <LocationPinIcon size={18} />
-              <Text style={styles.addressText}> {collegeDetails?.address}</Text>
-            </View>
+            {collegeDetails?.address && (
+              <View style={styles.address}>
+                <LocationPinIcon size={18} />
+                <Text style={styles.addressText}>
+                  {" "}
+                  {collegeDetails?.address}
+                </Text>
+              </View>
+            )}
 
-            <View>
-              <Text style={styles.addressText}> {collegeDetails?.status}</Text>
-            </View>
+            {collegeDetails?.status && (
+              <View>
+                <Text style={styles.addressText}>
+                  Status: 
+                  {collegeDetails?.status}
+                </Text>
+              </View>
+            )}
 
             {/* NAAC + Placement */}
             <View style={styles.subRow}>
-              <View style={styles.naacGrade}>
-                <Text style={styles.naacGradeText}>
-                  NAAC: {collegeDetails?.naac_grade}
-                </Text>
-                <Text style={styles.naacGradeText}>🔹</Text>
-                <Text style={styles.naacGradeText}>
-                  {collegeDetails?.naac_score}/4
-                </Text>
-              </View>
-
-              <TouchableOpacity
-                onPress={() =>
-                  handleOpenLink(collegeDetails?.placement_url || "")
-                }
-                style={styles.placementUrl}
-              >
-                <View style={styles.rowWithIcon}>
-                  <Text style={styles.placementUrlText}>View placements</Text>
-                  <View style={{ marginLeft: 4 }}>
-                    <ExternalLinkIcon size={12} />
-                  </View>
+              {collegeDetails?.naac_grade && collegeDetails?.naac_score ? (
+                <View style={styles.naacGrade}>
+                  <Text style={styles.naacGradeText}>
+                    NAAC: {collegeDetails?.naac_grade}
+                  </Text>
+                  <Text style={styles.naacGradeText}>🔹</Text>
+                  <Text style={styles.naacGradeText}>
+                    {collegeDetails?.naac_score}/4
+                  </Text>
                 </View>
-              </TouchableOpacity>
+              ) : (
+                <View></View>
+              )}
+
+              {collegeDetails?.placement_url && (
+                <TouchableOpacity
+                  onPress={() =>
+                    handleOpenLink(collegeDetails?.placement_url || "")
+                  }
+                  style={styles.placementUrl}
+                >
+                  <View style={styles.rowWithIcon}>
+                    <Text style={styles.placementUrlText}>View placements</Text>
+                    <View style={{ marginLeft: 4 }}>
+                      <ExternalLinkIcon size={12} />
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              )}
             </View>
           </>
         )}
@@ -280,7 +296,7 @@ export default function CollegeDetails() {
           </>
         )}
         {collegeBranches.map((e) => {
-          return <CollegeDetailsBranch key={e.choice_code} item={e} />;
+          return <CollegeDetailsBranch item={e} />;
         })}
 
         <View style={styles.separator} />

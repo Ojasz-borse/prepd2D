@@ -2,7 +2,7 @@ import GovernmentCollegeIcon from "@/assets/icons/GovernmentCollegeIcon";
 import PrivateCollegeIcon from "@/assets/icons/PrivateCollegeIcon";
 import { router } from "expo-router";
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export interface College {
   college_code: string;
@@ -20,7 +20,7 @@ const NormalFindCollegeCard: React.FC<NormalFindCollegeCardProps> = ({
   college,
 }) => {
   return (
-    <Pressable
+    <TouchableOpacity
       key={college.college_code}
       style={styles.card3D}
       onPress={() =>
@@ -31,6 +31,7 @@ const NormalFindCollegeCard: React.FC<NormalFindCollegeCardProps> = ({
           },
         })
       }
+      activeOpacity={0.7}
     >
       <View style={styles.subRow}>
         <Text style={styles.subText}>{college.college_code}</Text>
@@ -47,7 +48,7 @@ const NormalFindCollegeCard: React.FC<NormalFindCollegeCardProps> = ({
       </View>
       <Text style={styles.collegeName}>{college.name}</Text>
       <Text style={styles.statusText}>Status: {college.status}</Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

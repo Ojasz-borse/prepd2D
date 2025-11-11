@@ -163,6 +163,7 @@ export default function PYQ() {
                 item.subject
               )
             }
+            activeOpacity={0.7}
           >
             <View style={styles.chapterTag}>
               <View style={styles.subRow}>

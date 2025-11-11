@@ -16,6 +16,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+const MemoMathText = React.memo(MathText);
+
 export default function PYQDetailsPage() {
   const { currentIndex, chapterId } = useLocalSearchParams<{
     currentIndex: string;
@@ -77,12 +79,13 @@ export default function PYQDetailsPage() {
     const selected = String.fromCharCode(65 + i);
 
     // ✅ Update only one key, but keep full object
+
     setUserResponses((prev: any) => {
       const updated = { ...prev, [qid]: selected };
 
       pyqList[index].user_resp = selected;
+      setTimeout(() => sendToServer(updated), 100);
 
-      sendToServer(updated); // ✅ send full updated object
       return updated;
     });
   };
@@ -177,7 +180,7 @@ export default function PYQDetailsPage() {
               </View>
             </View>
             <View style={styles.questionContent}>
-              <MathText content={current.pyq_content} />
+              <MemoMathText content={current.pyq_content} />
             </View>
           </View>
 
@@ -201,7 +204,7 @@ export default function PYQDetailsPage() {
                     <Text style={styles.optionLabel}>
                       {String.fromCharCode(65 + i)}.
                     </Text>
-                    <MathText content={opt} />
+                    <MemoMathText content={opt} />
                   </View>
                 </View>
               </TouchableOpacity>
@@ -218,7 +221,7 @@ export default function PYQDetailsPage() {
 
               <View style={styles.explanationContent}>
                 {current.explanation_content ? (
-                  <MathText content={current.explanation_content} />
+                  <MemoMathText content={current.explanation_content} />
                 ) : (
                   <Text
                     style={{
