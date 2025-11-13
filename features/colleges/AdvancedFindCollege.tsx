@@ -1,15 +1,15 @@
-import BookmarkIcon from "@/assets/icons/BookmarkIcon";
 import SearchIcon from "@/assets/icons/SearchIcon";
 import AdvancedFindCollegeCard from "@/components/AdvancedFindCollegeCard";
 import AdvancedFindCollegeCardSkeleton from "@/components/AdvancedFindCollegeCardSkeleton";
 import SmartMatchModal from "@/components/SmartMatchModel";
 import { CACHE_MY_COLLEGES_LIST } from "@/constants/cacheStorageConfig";
+import { useMyList } from "@/hooks/useMyList";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
 import * as ScreenCapture from "expo-screen-capture";
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  Alert,
   Animated,
   FlatList,
   StyleSheet,
@@ -63,14 +63,6 @@ interface DropdownItemProps {
   isSelected: boolean;
 }
 
-interface FlyingAnim {
-  id: string;
-  startX: number;
-  startY: number;
-  targetX: number;
-  targetY: number;
-}
-
 const DropdownItem: React.FC<DropdownItemProps> = ({ label, isSelected }) => {
   return (
     <View style={styles.itemRow}>
@@ -115,6 +107,13 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
     "Open" | "OBC" | "TFWS" | "SC_ST" | "VJ_NT" | null
   >(null);
 
+  // Selection state (same as MyList component)
+  const [selectedCards, setSelectedCards] = useState<string[]>([]);
+  const [selectionMode, setSelectionMode] = useState(false);
+
+  // Use your custom hook
+  const { saveList, saving } = useMyList();
+
   // Unique values
   const collegeBranches = [
     ...new Set(branches.map((d) => d.branch_name.toLowerCase())),
@@ -146,8 +145,6 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
   }, [branches, searchText, selectedBranches, selectedDistricts]);
 
   useEffect(() => {
-    // Prevent screenshot when this screen is mounted
-    // ScreenCapture.preventScreenCaptureAsync();
     const loadStoredColleges = async () => {
       const cached = await AsyncStorage.getItem(CACHE_MY_COLLEGES_LIST);
       if (cached) {
@@ -159,7 +156,6 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
     };
     loadStoredColleges();
 
-    // Allow again when leaving screen
     return () => {
       ScreenCapture.allowScreenCaptureAsync();
     };
@@ -196,6 +192,9 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
     setSearchText("");
     setSelectedDistricts([]);
     setSelectedBranches([]);
+    // Clear selection when clearing filters
+    setSelectedCards([]);
+    setSelectionMode(false);
   };
 
   const handleSmartMatchToggle = (value: boolean) => {
@@ -210,7 +209,56 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
     }
   };
 
-  const handleMoveToMyList = async () => {
+  // Selection functions (same as MyList component)
+  const handleLongPress = (choiceCode: string) => {
+    setSelectionMode(true);
+    setSelectedCards((prev) =>
+      prev.includes(choiceCode) ? prev : [...prev, choiceCode]
+    );
+  };
+
+  const handleSelectCard = (choiceCode: string) => {
+    if (!selectionMode) return;
+    setSelectedCards((prev) =>
+      prev.includes(choiceCode)
+        ? prev.filter((code) => code !== choiceCode)
+        : [...prev, choiceCode]
+    );
+  };
+
+  // Toggle Select All functionality
+  const handleToggleSelectAll = () => {
+    if (selectedCards.length === enrichedData.length) {
+      // If all are selected, deselect all
+      setSelectedCards([]);
+    } else {
+      // If not all are selected, select all
+      const allChoiceCodes = enrichedData.map((item) => item.choice_code);
+      setSelectedCards(allChoiceCodes);
+    }
+  };
+
+  const handleSaveSelectedColleges = async () => {
+    if (selectedCards.length === 0) return;
+
+    // Show confirmation alert
+    Alert.alert(
+      "Save Colleges",
+      `Are you sure you want to save ${selectedCards.length} college(s) to your list?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Save",
+          onPress: saveCollegesToStorage,
+        },
+      ]
+    );
+  };
+
+  const saveCollegesToStorage = async () => {
     try {
       // Get existing cached colleges
       const cached = await AsyncStorage.getItem(CACHE_MY_COLLEGES_LIST);
@@ -222,28 +270,40 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
         existingColleges = Array.isArray(parsed.data) ? parsed.data : [];
       }
 
-      // Extract choice codes from filtered results
-      const newChoiceCodes = filteredData.map((c) => c.choice_code);
-
+      // Add new selected colleges to existing ones
       const updated = Array.from(
-        new Set([...existingColleges, ...newChoiceCodes])
+        new Set([...existingColleges, ...selectedCards])
       );
 
-      // Save in same format used by useMyList
-      await AsyncStorage.setItem(
-        CACHE_MY_COLLEGES_LIST,
-        JSON.stringify({
-          data: updated,
-          lastFetched: Date.now(),
-        })
-      );
+      // Use the hook's saveList function instead of direct AsyncStorage
+      await saveList(updated);
 
       // Update count
       setMovedCollegesCount(updated.length);
+
+      // Clear selection after saving
+      setSelectedCards([]);
+      setSelectionMode(false);
+
+      // Show success message
+      Alert.alert(
+        "Success",
+        `${selectedCards.length} college(s) saved to your list!`
+      );
     } catch (error) {
       console.error("Error saving colleges:", error);
+      Alert.alert("Error", "Failed to save colleges. Please try again.");
     }
   };
+
+  const cancelSelection = () => {
+    setSelectedCards([]);
+    setSelectionMode(false);
+  };
+
+  useEffect(() => {
+    if (selectedCards.length === 0) setSelectionMode(false);
+  }, [selectedCards]);
 
   const enrichedData = useMemo(() => {
     if (!smartMatchEnabled || !rank || !category) return filteredData;
@@ -278,7 +338,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
           break;
       }
 
-      if (cutoff_rank == null || Math.abs(cutoff_rank - userRank) > 500) {
+      if (cutoff_rank == null || Math.abs(cutoff_rank - userRank) > 2000) {
         return { ...item, percentage: undefined };
       }
 
@@ -294,10 +354,10 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
       }
 
       let tag: string;
-      if (percentage >= 96 && percentage <= 99) tag = "Exact";
+      if (percentage >= 96 && percentage <= 102) tag = "Exact";
       else if (percentage >= 80 && percentage < 96) tag = "Hard";
       else if (percentage < 80) tag = "Very Hard";
-      else if (percentage > 99 && percentage <= 120)
+      else if (percentage > 102 && percentage <= 120)
         tag = "Easy"; // Correct boundary
       else tag = "Very Easy";
 
@@ -344,8 +404,20 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
         data={enrichedData}
         keyExtractor={(item) => item.choice_code}
         renderItem={({ item }) => (
-          <View key={item.choice_code} style={{ marginBottom: 18 }}>
-            <AdvancedFindCollegeCard item={item} />
+          <View
+            key={item.choice_code}
+            style={[
+              styles.cardContainer,
+              selectedCards.includes(item.choice_code) &&
+                styles.selectedCardContainer,
+            ]}
+          >
+            <AdvancedFindCollegeCard
+              item={item}
+              onLongPress={handleLongPress}
+              selectionMode={selectionMode}
+              handleSelectCard={handleSelectCard}
+            />
           </View>
         )}
         ListEmptyComponent={
@@ -363,7 +435,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
         contentContainerStyle={{
           padding: 4,
           paddingTop: 16,
-          paddingBottom: 10,
+          paddingBottom: selectionMode ? 80 : 10, // Add padding for bottom save button
         }}
         ListHeaderComponent={
           <>
@@ -450,30 +522,36 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
               </View>
             </View>
 
-            {/* Smart Match */}
-            <View>
+            {/* Smart Match and Select All in same row */}
+            <View style={styles.smartMatchRow}>
               <View style={styles.smartMatchRow}>
-                <View style={styles.smartMatchRow}>
-                  <Text style={styles.smartMatchLabel}>Smart Match</Text>
-                  <Switch
-                    value={smartMatchEnabled}
-                    onValueChange={handleSmartMatchToggle}
-                    trackColor={{ false: "#ccc", true: "#99b3e6" }}
-                    thumbColor={smartMatchEnabled ? "#004aad" : "#f4f3f4"}
-                  />
-                </View>
-                {(searchText ||
-                  selectedDistricts.length > 0 ||
-                  selectedBranches.length > 0) && (
-                  <TouchableOpacity
-                    onPress={handleMoveToMyList}
-                    style={styles.addToListButton}
-                  >
-                    <BookmarkIcon size={12} />
-                    <Text style={styles.addToListButtonText}>Add to List</Text>
-                  </TouchableOpacity>
-                )}
+                <Text style={styles.smartMatchLabel}>Smart Match</Text>
+                <Switch
+                  value={smartMatchEnabled}
+                  onValueChange={handleSmartMatchToggle}
+                  trackColor={{ false: "#ccc", true: "#99b3e6" }}
+                  thumbColor={smartMatchEnabled ? "#004aad" : "#f4f3f4"}
+                />
               </View>
+
+              {/* Select All Button - Beside Smart Match */}
+              {selectionMode && (
+                <TouchableOpacity
+                  style={styles.selectAllButton}
+                  onPress={handleToggleSelectAll}
+                >
+                  <Ionicons
+                    name={
+                      selectedCards.length === enrichedData.length
+                        ? "checkbox"
+                        : "square-outline"
+                    }
+                    size={20}
+                    color="#004aad"
+                  />
+                  <Text style={styles.selectAllText}>Select All</Text>
+                </TouchableOpacity>
+              )}
             </View>
 
             {/* Result count + Clear filter */}
@@ -502,21 +580,20 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
         }
       />
 
-      {(searchText ||
-        selectedDistricts.length > 0 ||
-        selectedBranches.length > 0) && (
-        <TouchableOpacity
-          style={styles.fab}
-          activeOpacity={0.8}
-          onPress={() => router.push("/my-list")}
-        >
-          <BookmarkIcon size={24} />
-          {movedCollegesCount && movedCollegesCount > 0 && (
-            <View style={styles.fabTextContainer}>
-              <Text style={styles.fabText}>{movedCollegesCount}</Text>
-            </View>
-          )}
-        </TouchableOpacity>
+      {/* Bottom Save Button - Same as MyList component */}
+      {selectionMode && selectedCards.length > 0 && (
+        <View style={styles.bottomSaveWrapper}>
+          <TouchableOpacity
+            style={styles.bottomSaveBtn}
+            onPress={handleSaveSelectedColleges}
+            disabled={saving} // Disable button while saving
+          >
+            <Ionicons name="checkmark" size={20} color="#fff" />
+            <Text style={styles.bottomSaveText}>
+              {saving ? "Saving..." : `Save`}
+            </Text>
+          </TouchableOpacity>
+        </View>
       )}
 
       {/* Modal for Percentile & Rank */}
@@ -537,18 +614,6 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
             styles.scrollTopBtn,
             {
               opacity: fadeAnim,
-              left:
-                searchText ||
-                selectedDistricts.length > 0 ||
-                selectedBranches.length > 0
-                  ? 20
-                  : undefined,
-              right:
-                searchText ||
-                selectedDistricts.length > 0 ||
-                selectedBranches.length > 0
-                  ? undefined
-                  : 20,
             },
           ]}
         >
@@ -695,26 +760,14 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 20,
   },
+
+  // Smart Match Row with Select All button
   smartMatchRow: {
     flexDirection: "row",
-    gap: 10,
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 4,
-  },
-  addToListButton: {
-    backgroundColor: "#004aad",
-    paddingVertical: 5,
-    paddingHorizontal: 15,
-    borderRadius: 30,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  addToListButtonText: {
-    color: "#fff",
-    fontSize: 14,
-    fontFamily: "SourceSans3Medium",
+    marginBottom: 4,
   },
   smartMatchLabel: {
     fontSize: 16,
@@ -722,47 +775,59 @@ const styles = StyleSheet.create({
     color: "#004aad",
   },
 
-  fab: {
-    position: "absolute",
-    bottom: 15,
-    right: 15,
-    backgroundColor: "#004aad", // Dark blue
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+  // Select All Button
+  selectAllButton: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    elevation: 5, // Android shadow
-    shadowColor: "#000", // iOS shadow
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
+
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    gap: 6,
+  },
+  selectAllText: {
+    fontSize: 14,
+    fontFamily: "SourceSans3Medium",
+    color: "#004aad",
   },
 
-  fabTextContainer: {
-    position: "absolute",
-    top: 0,
-    left: 35,
-    backgroundColor: "#ff6600", // dark blue
+  // Card Container with Blue Border
+  cardContainer: {
+    marginBottom: 18,
     borderRadius: 12,
-    minWidth: 24,
-    height: 18,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 6,
-    zIndex: 10,
   },
-  fabText: {
-    color: "white",
-    fontSize: 12,
+  selectedCardContainer: {
+    borderWidth: 1,
+    borderColor: "#004aad",
+    borderRadius: 18, // Slightly larger to match card border
+    backgroundColor: "#f0f7ff", // Light blue background when selected
+  },
+
+  // Bottom Save Button (same as MyList component)
+  bottomSaveWrapper: {
+    position: "absolute",
+    bottom: 20,
+    right: 0,
+  },
+  bottomSaveBtn: {
+    flexDirection: "row",
+    backgroundColor: "#004aad",
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderRadius: 30,
+    elevation: 5,
+  },
+  bottomSaveText: {
+    color: "#fff",
+    marginLeft: 8,
     fontFamily: "SourceSans3Medium",
+    fontSize: 15,
   },
 
   scrollTopBtn: {
     position: "absolute",
     bottom: 20,
-    right: 20,
-    elevation: 5,
+    left: 20,
   },
 
   scrollTopTouchable: {

@@ -6,7 +6,7 @@ import { usePYQContext } from "@/context/PYQContext";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -24,19 +24,15 @@ export default function PYQDetailsPage() {
     chapterId: string;
   }>();
 
-  interface UserResponseMap {
-    [question_id: string]: string; // { "101": "A" }
-  }
-
   const { user, getToken } = useAuth();
-
-  const { pyqList, userResponses, setUserResponses } = usePYQContext();
+  const { pyqList, setUserResponses } = usePYQContext();
 
   const [index, setIndex] = useState(parseInt(currentIndex || "0", 10));
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
 
   const current = pyqList[index];
+
   if (!current) {
     return (
       <View style={styles.center}>
@@ -51,100 +47,81 @@ export default function PYQDetailsPage() {
     );
   }
 
-  const options = [current.a, current.b, current.c, current.d];
-  const correctIndex =
-    current.correct_option?.trim().toLowerCase().charCodeAt(0) - 97;
+  const options = useMemo(
+    () => [current.a, current.b, current.c, current.d],
+    [current]
+  );
+  const correctIndex = useMemo(
+    () => current.correct_option?.trim().toLowerCase().charCodeAt(0) - 97,
+    [current.correct_option]
+  );
 
   useEffect(() => {
     if (current.user_resp != null) {
-      const optionIndex =
-        current.user_resp == "A"
-          ? 0
-          : current.user_resp == "B"
-          ? 1
-          : current.user_resp == "C"
-          ? 2
-          : 3;
+      const optionIndex = current.user_resp.charCodeAt(0) - 65;
       setSelectedOption(optionIndex);
+    } else {
+      setSelectedOption(null);
+      setShowExplanation(false);
     }
   }, [current]);
 
-  const handleSelect = async (i: number) => {
-    if (selectedOption !== null) return;
+  const handleSelect = useCallback(
+    (i: number) => {
+      if (selectedOption !== null) return;
+      setSelectedOption(i);
+      setShowExplanation(true);
 
-    setSelectedOption(i);
-    setShowExplanation(true);
+      // const qid = current.id.toString();
+      // const selected = String.fromCharCode(65 + i);
 
-    const qid = current.id.toString();
-    const selected = String.fromCharCode(65 + i);
+      // setUserResponses((prev: any) => {
+      //   const updated = { ...prev, [qid]: selected };
+      //   pyqList[index].user_resp = selected;
 
-    // ✅ Update only one key, but keep full object
+      //   // Delay API call to not block UI
+      //   if (typeof requestIdleCallback !== "undefined") {
+      //     requestIdleCallback(() => sendToServer(updated));
+      //   } else {
+      //     setTimeout(() => sendToServer(updated), 150);
+      //   }
+      //   return updated;
+      // });
+    },
+    [selectedOption, index, pyqList]
+  );
 
-    setUserResponses((prev: any) => {
-      const updated = { ...prev, [qid]: selected };
-
-      pyqList[index].user_resp = selected;
-      setTimeout(() => sendToServer(updated), 100);
-
-      return updated;
-    });
+  const sendToServer = async (updatedResponses: Record<string, string>) => {
+    try {
+      const token = await getToken();
+      await fetch(UPDATE_USER_RESPONSE, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({
+          chapter_id: Number(chapterId),
+          user_id: user?.user_id,
+          responses: updatedResponses,
+        }),
+      });
+    } catch {
+      // fail silently to prioritize speed
+    }
   };
 
-  const sendToServer = async (updatedResponses: UserResponseMap) => {
-    console.log("Calling API...");
-    const token = await getToken();
-
-    await fetch(UPDATE_USER_RESPONSE, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token ? `Bearer ${token}` : "",
-      },
-      body: JSON.stringify({
-        chapter_id: Number(chapterId),
-        user_id: user?.user_id,
-        responses: updatedResponses, // ✅ sending full updated data
-      }),
-    });
-  };
-
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (index < pyqList.length - 1) {
-      setIndex(index + 1);
-      setSelectedOption(null);
-      setShowExplanation(false);
+      setIndex((prev) => prev + 1);
     }
-  };
+  }, [index, pyqList.length]);
 
-  const handlePrev = () => {
+  const handlePrev = useCallback(() => {
     if (index > 0) {
-      setIndex(index - 1);
-      setSelectedOption(null);
-      setShowExplanation(false);
+      setIndex((prev) => prev - 1);
     }
-  };
-
-  const getOptionStyle = (i: number) => {
-    if (selectedOption === null) return styles.option;
-    if (i === correctIndex) return [styles.option, styles.correctOption];
-    if (i === selectedOption && i !== correctIndex)
-      return [styles.option, styles.wrongOption];
-    return styles.option;
-  };
-
-  const getOptionIcon = (i: number) => {
-    if (selectedOption === null) return "radio-button-off";
-    if (i === correctIndex) return "checkmark-circle";
-    if (i === selectedOption && i !== correctIndex) return "close-circle";
-    return "radio-button-off";
-  };
-
-  const getOptionIconColor = (i: number) => {
-    if (selectedOption === null) return "#667eea";
-    if (i === correctIndex) return "#10b981";
-    if (i === selectedOption && i !== correctIndex) return "#ef4444";
-    return "#9ca3af";
-  };
+  }, [index]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -155,7 +132,7 @@ export default function PYQDetailsPage() {
           contentContainerStyle={styles.container}
           showsVerticalScrollIndicator={false}
         >
-          {/* Progress Indicator */}
+          {/* Progress */}
           <View style={styles.progressContainer}>
             <View style={styles.progressBar}>
               <View
@@ -170,7 +147,7 @@ export default function PYQDetailsPage() {
             </Text>
           </View>
 
-          {/* Question Card */}
+          {/* Question */}
           <View style={styles.questionCard}>
             <View style={styles.questionHeader}>
               <View style={styles.questionBadge}>
@@ -187,27 +164,14 @@ export default function PYQDetailsPage() {
           {/* Options */}
           <View style={styles.optionsContainer}>
             {options.map((opt, i) => (
-              <TouchableOpacity
+              <MemoOptionItem
                 key={i}
-                style={getOptionStyle(i)}
-                onPress={() => handleSelect(i)}
-                activeOpacity={0.8}
-              >
-                <View style={styles.optionContent}>
-                  <Ionicons
-                    name={getOptionIcon(i)}
-                    size={22}
-                    color={getOptionIconColor(i)}
-                    style={styles.optionIcon}
-                  />
-                  <View style={styles.optionTextContainer}>
-                    <Text style={styles.optionLabel}>
-                      {String.fromCharCode(65 + i)}.
-                    </Text>
-                    <MemoMathText content={opt} />
-                  </View>
-                </View>
-              </TouchableOpacity>
+                i={i}
+                opt={opt}
+                selectedOption={selectedOption}
+                correctIndex={correctIndex}
+                onSelect={handleSelect}
+              />
             ))}
           </View>
 
@@ -218,7 +182,6 @@ export default function PYQDetailsPage() {
                 <Ionicons name="bulb-outline" size={16} color="#f59e0b" />
                 <Text style={styles.explanationTitle}>Explanation</Text>
               </View>
-
               <View style={styles.explanationContent}>
                 {current.explanation_content ? (
                   <MemoMathText content={current.explanation_content} />
@@ -240,7 +203,7 @@ export default function PYQDetailsPage() {
           <View style={{ height: 80 }} />
         </ScrollView>
 
-        {/* Floating Navigation Buttons */}
+        {/* Navigation */}
         <View style={styles.navContainer}>
           <TouchableOpacity
             style={[
@@ -295,16 +258,73 @@ export default function PYQDetailsPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: "#ffffff",
-  },
+/* ✅ Memoized Option Component for extreme speed */
+const OptionItem = ({
+  i,
+  opt,
+  selectedOption,
+  correctIndex,
+  onSelect,
+}: {
+  i: number;
+  opt: string;
+  selectedOption: number | null;
+  correctIndex: number;
+  onSelect: (i: number) => void;
+}) => {
+  const isSelected = selectedOption === i;
+  const isCorrect = i === correctIndex;
 
-  progressContainer: {
-    marginBottom: 10,
-  },
+  const optionStyle = useMemo(() => {
+    if (selectedOption === null) return styles.option;
+    if (isCorrect) return [styles.option, styles.correctOption];
+    if (isSelected && !isCorrect) return [styles.option, styles.wrongOption];
+    return styles.option;
+  }, [selectedOption, isSelected, isCorrect]);
+
+  const icon = useMemo(() => {
+    if (selectedOption === null) return "radio-button-off";
+    if (isCorrect) return "checkmark-circle";
+    if (isSelected && !isCorrect) return "close-circle";
+    return "radio-button-off";
+  }, [selectedOption, isSelected, isCorrect]);
+
+  const iconColor = useMemo(() => {
+    if (selectedOption === null) return "#667eea";
+    if (isCorrect) return "#10b981";
+    if (isSelected && !isCorrect) return "#ef4444";
+    return "#9ca3af";
+  }, [selectedOption, isSelected, isCorrect]);
+
+  const handlePress = useCallback(() => onSelect(i), [i, onSelect]);
+
+  return (
+    <TouchableOpacity
+      style={optionStyle}
+      onPress={handlePress}
+      activeOpacity={0.8}
+    >
+      <View style={styles.optionContent}>
+        <Ionicons
+          name={icon}
+          size={22}
+          color={iconColor}
+          style={styles.optionIcon}
+        />
+        <View style={styles.optionTextContainer}>
+          <Text style={styles.optionLabel}>{String.fromCharCode(65 + i)}.</Text>
+          <MemoMathText content={opt} />
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+const MemoOptionItem = React.memo(OptionItem);
+
+const styles = StyleSheet.create({
+  container: { flexGrow: 1, padding: 20, backgroundColor: "#fff" },
+  progressContainer: { marginBottom: 10 },
   progressBar: {
     height: 6,
     backgroundColor: "#e2e8f0",
@@ -312,23 +332,15 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     overflow: "hidden",
   },
-  progressFill: {
-    height: "100%",
-    backgroundColor: "#004aad",
-    borderRadius: 3,
-  },
+  progressFill: { height: "100%", backgroundColor: "#004aad", borderRadius: 3 },
   progressText: {
     fontSize: 14,
     color: "#64748b",
     fontFamily: "SourceSans3Medium",
     textAlign: "center",
   },
-  questionCard: {
-    marginBottom: 20,
-  },
-  questionHeader: {
-    marginBottom: 12,
-  },
+  questionCard: { marginBottom: 20 },
+  questionHeader: { marginBottom: 12 },
   questionBadge: {
     backgroundColor: "#ebf0fa",
     padding: 2,
@@ -341,12 +353,8 @@ const styles = StyleSheet.create({
     color: "#004aad",
     fontFamily: "SourceSans3Medium",
   },
-  questionContent: {
-    minHeight: 60,
-  },
-  optionsContainer: {
-    marginBottom: 20,
-  },
+  questionContent: { minHeight: 60 },
+  optionsContainer: { marginBottom: 20 },
   option: {
     borderRadius: 16,
     padding: 12,
@@ -355,22 +363,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     marginBottom: 14,
   },
-  correctOption: {
-    borderColor: "#10b981",
-    backgroundColor: "#f0fdf9",
-  },
-  wrongOption: {
-    borderColor: "#ef4444",
-    backgroundColor: "#fef2f2",
-  },
-  optionContent: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-  },
-  optionIcon: {
-    marginRight: 12,
-    marginTop: 2,
-  },
+  correctOption: { borderColor: "#10b981", backgroundColor: "#f0fdf9" },
+  wrongOption: { borderColor: "#ef4444", backgroundColor: "#fef2f2" },
+  optionContent: { flexDirection: "row", alignItems: "flex-start" },
+  optionIcon: { marginRight: 12, marginTop: 2 },
   optionTextContainer: {
     flex: 1,
     flexDirection: "row",
@@ -402,10 +398,7 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3Medium",
     marginLeft: 4,
   },
-  explanationContent: {
-    marginTop: 4,
-    width: "100%",
-  },
+  explanationContent: { marginTop: 4, width: "100%" },
   navContainer: {
     position: "absolute",
     bottom: 20,
@@ -424,33 +417,17 @@ const styles = StyleSheet.create({
     minWidth: 80,
     justifyContent: "center",
   },
-  prevButton: {
-    backgroundColor: "#004aad",
-    borderWidth: 1,
-    borderColor: "#d9d9d9",
-  },
-  nextButton: {
-    backgroundColor: "#004aad",
-    borderWidth: 1,
-    borderColor: "#d9d9d9",
-  },
-  disabledButton: {
-    backgroundColor: "#ffffff",
-  },
+  prevButton: { backgroundColor: "#004aad" },
+  nextButton: { backgroundColor: "#004aad" },
+  disabledButton: { backgroundColor: "#ffffff" },
   navButtonText: {
     color: "#ffffff",
     fontSize: 14,
     fontFamily: "SourceSans3SemiBold",
     marginHorizontal: 4,
   },
-  disabledButtonText: {
-    color: "#9ca3af",
-  },
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+  disabledButtonText: { color: "#9ca3af" },
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
   errorContainer: {
     width: "100%",
     height: "100%",
