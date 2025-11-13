@@ -140,7 +140,7 @@ export default function CollegeDetails() {
         console.error("Error fetching branches:", error);
         setCollegeBranches([]);
       }
-    }, 2000); // 2 seconds delay
+    }, 100); // 2 seconds delay
 
     return () => clearTimeout(timer); // cleanup if component unmounts
   }, [collegeDetails]);
@@ -220,7 +220,7 @@ export default function CollegeDetails() {
             {collegeDetails?.status && (
               <View>
                 <Text style={styles.addressText}>
-                  Status: 
+                  Status:
                   {collegeDetails?.status}
                 </Text>
               </View>

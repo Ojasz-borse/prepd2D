@@ -44,24 +44,33 @@ export default function EstimatorScreen() {
 
   // Validate rank inputs (overall required; subjects optional but must be 0-100 if provided)
   useEffect(() => {
-    const checkNumberRange = (val: string) =>
-      val === "" || (Number(val) >= 0 && Number(val) <= 100);
+    const checkNumberRange = (val: string) => {
+      if (val === "") return true;
+
+      const num = Number(val);
+
+      // ✅ Must be within 0–100
+      if (isNaN(num) || num < 0 || num > 100) return false;
+
+      // ✅ Allow only up to 7 digits after decimal
+      const decimalCheck = /^(\d{1,2}(\.\d{1,7})?|100(\.0{1,7})?)$/;
+      return decimalCheck.test(val);
+    };
 
     if (!checkNumberRange(overallPercentile)) {
-      setErrMsgRank("Overall percentile must be between 0 and 100.");
+      setErrMsgRank("Percentile must be between 0 - 100, max 7 decimals.");
       return;
     }
-
     if (!checkNumberRange(physicsPercentile)) {
-      setErrMsgRank("Physics percentile must be between 0 and 100.");
+      setErrMsgRank("Percentile must be between 0 - 100, max 7 decimals.");
       return;
     }
     if (!checkNumberRange(chemistryPercentile)) {
-      setErrMsgRank("Chemistry percentile must be between 0 and 100.");
+      setErrMsgRank("Percentile must be between 0 - 100, max 7 decimals.");
       return;
     }
     if (!checkNumberRange(mathsPercentile)) {
-      setErrMsgRank("Mathematics percentile must be between 0 and 100.");
+      setErrMsgRank("Percentile must be between 0 - 100, max 7 decimals.");
       return;
     }
 
@@ -74,15 +83,15 @@ export default function EstimatorScreen() {
   ]);
 
   const difficultyOptions = [
-    { label: "Very Easy", value: "very_easy" },
+    { label: "Very Easy", value: "veryEasy" },
     { label: "Easy", value: "easy" },
     { label: "Moderate", value: "moderate" },
     { label: "Hard", value: "hard" },
-    { label: "Very Hard", value: "very_hard" },
+    { label: "Very Hard", value: "veryHard" },
   ];
 
   const isMarksValid =
-    Number(marks) > 0 &&
+    Number(marks) >= 0 &&
     Number(marks) <= 200 &&
     selectedDifficulty &&
     !errMsgMarks;
@@ -100,7 +109,12 @@ export default function EstimatorScreen() {
     if (!isRankValid) return;
     // Keep the existing predictRank call (only overall) to avoid breaking the hook.
     // If your hook supports extra fields later, you can extend this call.
-    await predictRank(Number(overallPercentile));
+    await predictRank(
+      Number(overallPercentile),
+      Number(physicsPercentile),
+      Number(chemistryPercentile),
+      Number(mathsPercentile)
+    );
     setShowResultModal(true);
   };
 
@@ -109,7 +123,7 @@ export default function EstimatorScreen() {
     if (activeTab === "marks") {
       return (
         <>
-          <Text style={styles.modalTitle}>Know This First</Text>
+          <Text style={styles.modalTitle}>Marks to Percentile — Info</Text>
           <Text style={styles.modalPoint}>• Marks must be between 1 - 200</Text>
           <Text style={styles.modalPoint}>
             • Difficulty/Shift must be selected
@@ -304,7 +318,7 @@ export default function EstimatorScreen() {
                   />
 
                   <Text style={[styles.headingText, { marginTop: 8 }]}>
-                    (Optional) Subject Percentiles
+                    Subject Percentiles
                   </Text>
 
                   <View style={{ flexDirection: "row", gap: 10 }}>

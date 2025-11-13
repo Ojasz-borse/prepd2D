@@ -40,7 +40,7 @@ export function useEstimator() {
   };
 
   // ✅ Predict Rank Function
-  const predictRank = async (overallPercentile: number) => {
+  const predictRank = async (overallPercentile: number, physicsPercentile: number, chemPercentile: number, mathPercentile:number) => {
     const token = await getToken();
     try {
       setLoading(true);
@@ -49,7 +49,7 @@ export function useEstimator() {
     const res = await fetch(PREDICT_RANK, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "", },
-        body: JSON.stringify({ overallPercentile }),
+        body: JSON.stringify({ overallPercentile, mathPercentile, physicsPercentile, chemPercentile }),
     });
 
 
