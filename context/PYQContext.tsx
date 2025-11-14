@@ -7,6 +7,7 @@ import React, {
 } from "react";
 
 export interface PYQItem {
+  question_year: string;
   id: number;
   pyq_content: string;
   a: string;

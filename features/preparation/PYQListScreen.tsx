@@ -7,7 +7,7 @@ import { usePYQContext } from "@/context/PYQContext";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState, useTransition } from "react";
 import {
   Animated,
   FlatList,
@@ -17,6 +17,50 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+type PYQCardProps = {
+  question: any;
+  index: number;
+  id: string;
+  router: any;
+};
+
+const PYQCard = React.memo(({ question, index, id, router }: PYQCardProps) => {
+  return (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() =>
+        router.push({
+          pathname: "/pyq-detail",
+          params: {
+            currentIndex: index.toString(),
+            chapterId: id.toString(),
+          },
+        })
+      }
+      activeOpacity={0.7}
+    >
+      <View style={styles.cardGradient}>
+        <View style={styles.cardHeader}>
+          <View style={styles.questionNumber}>
+            <Text style={styles.questionNumberText}>Question {index + 1}</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color="#004aad" />
+        </View>
+
+        <View style={styles.questionContent}>
+          <MathText content={question.pyq_content} />
+        </View>
+
+        <View style={styles.cardFooter}>
+          <View style={styles.optionsIndicator}>
+            <Text style={styles.optionsText}>Multiple Choice • 4 Options</Text>
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+});
 
 export default function PYQListScreen() {
   const router = useRouter();
@@ -32,12 +76,15 @@ export default function PYQListScreen() {
 
   const { pyqList, setPYQList } = usePYQContext();
 
+  const [selectedYear, setSelectedYear] = useState<string>("2025");
+  const [isPending, startTransition] = useTransition();
+
   useEffect(() => {
     const fetchPYQs = async () => {
       setPYQList([]); // ✅ reset previous chapter questions
       setLoading(true);
       const token = await getToken();
-      console.log("token", token);
+
       try {
         const response = await fetch(GET_PYQS, {
           method: "POST",
@@ -49,8 +96,16 @@ export default function PYQListScreen() {
         });
 
         const json = await response.json();
-        console.log("status", json.pyqs[0]);
-        if (json.success) setPYQList(json.pyqs);
+
+        if (json.success) {
+          // Normalize year type → always string
+          const normalized = json.pyqs.map((q: { question_year: any }) => ({
+            ...q,
+            question_year: String(q.question_year),
+          }));
+
+          setPYQList(normalized);
+        }
       } catch (err) {
         console.error("Error fetching PYQs", err);
       } finally {
@@ -92,15 +147,20 @@ export default function PYQListScreen() {
     listRef.current?.scrollToOffset({ offset: 0, animated: true });
   };
 
+  const filteredPYQs = useMemo(() => {
+    return pyqList.filter((q) => q.question_year === selectedYear);
+  }, [selectedYear, pyqList]);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f2f2f2" }}>
       <TopHeader title={title} showBackArrow={true} />
 
       <FlatList
+        key={selectedYear}
         ref={listRef}
         onScroll={handleScroll}
         scrollEventThrottle={16}
-        data={pyqList}
+        data={filteredPYQs}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
@@ -116,6 +176,49 @@ export default function PYQListScreen() {
                 </View>
               </View>
             </View>
+
+            {/* 🔽 Year Filter Horizontal Scroll */}
+            <View style={{ marginBottom: 16 }}>
+              <FlatList
+                horizontal
+                data={["2025", "2024", "2023", "2022", "2021", "2020", "2019"]}
+                keyExtractor={(item) => item}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ gap: 10 }}
+                renderItem={({ item }) => {
+                  const isActive = selectedYear === item;
+                  return (
+                    <TouchableOpacity
+                      onPress={() => {
+                        startTransition(() => {
+                          setSelectedYear(item);
+                        });
+                      }}
+                      activeOpacity={0.7}
+                      style={{
+                        paddingHorizontal: 20,
+                        paddingVertical: 6,
+                        borderRadius: 20,
+                        backgroundColor: isActive ? "#004aad" : "#fff",
+                        borderWidth: isActive ? 0 : 1,
+                        borderColor: "#d9d9d9",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          color: isActive ? "#fff" : "#333",
+                          fontFamily: "SourceSans3Medium",
+                        }}
+                      >
+                        {item}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            </View>
+
             {true && (
               <LinearGradient
                 colors={["#3399ff", "#004aad"]}
@@ -136,7 +239,7 @@ export default function PYQListScreen() {
           </>
         }
         ListEmptyComponent={
-          loading ? (
+          loading || isPending ? (
             <>
               <PyqQuestionCardSkeleton />
               <PyqQuestionCardSkeleton />
@@ -153,42 +256,7 @@ export default function PYQListScreen() {
           )
         }
         renderItem={({ item, index }) => (
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() =>
-              router.push({
-                pathname: "/pyq-detail",
-                params: {
-                  currentIndex: index.toString(),
-                  chapterId: id.toString(),
-                },
-              })
-            }
-            activeOpacity={0.7}
-          >
-            <View style={styles.cardGradient}>
-              <View style={styles.cardHeader}>
-                <View style={styles.questionNumber}>
-                  <Text style={styles.questionNumberText}>
-                    Question {index + 1}
-                  </Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color="#004aad" />
-              </View>
-
-              <View style={styles.questionContent}>
-                <MathText content={item.pyq_content} />
-              </View>
-
-              <View style={styles.cardFooter}>
-                <View style={styles.optionsIndicator}>
-                  <Text style={styles.optionsText}>
-                    Multiple Choice • 4 Options
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
+          <PYQCard question={item} index={index} id={id} router={router} />
         )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
