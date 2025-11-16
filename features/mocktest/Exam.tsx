@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Dropdown } from "react-native-element-dropdown"; // ✅
+import CustomDropdown from "./CustomDropdown";
 
 interface PYQItem {
   id: number;
@@ -196,7 +196,7 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
               {!sectionLocked && (
                 <View
                   style={{
-                    width: 180,
+                    width: 200,
                     flexDirection: "row",
                     gap: 8,
                     alignItems: "center",
@@ -211,19 +211,13 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
                   >
                     Section
                   </Text>
-                  <Dropdown
-                    style={styles.dropdown}
+                  <CustomDropdown
                     data={[
                       { label: "Physics", value: "physics" },
                       { label: "Chemistry", value: "chemistry" },
                       { label: "Mathematics", value: "maths" },
                     ]}
                     value={section}
-                    labelField="label"
-                    valueField="value"
-                    placeholderStyle={styles.dropdownText}
-                    selectedTextStyle={styles.dropdownText}
-                    itemTextStyle={styles.dropdownText}
                     onChange={(item) => {
                       setSection(item.value);
                       if (item.value === "maths") setSectionLocked(true);
@@ -383,19 +377,51 @@ const styles = StyleSheet.create({
   markText: { fontSize: 12, color: "#333" },
 
   dropdown: {
-    height: 22,
-    width: 120,
+    height: 28,
+    width: 130,
     borderWidth: 1,
     borderColor: "#bfbfbf",
     borderRadius: 4,
-    paddingHorizontal: 6,
+    paddingHorizontal: 8,
     backgroundColor: "#fff",
   },
-  dropdownText: {
+
+  dropdownPlaceholder: {
     fontSize: 12,
-    fontFamily: "SourceSans3Medium",
+    color: "#666",
+  },
+
+  dropdownSelectedText: {
+    fontSize: 12,
     color: "#333",
-    textTransform: "capitalize",
+    fontFamily: "SourceSans3Medium",
+  },
+
+  dropdownItemText: {
+    fontSize: 12,
+    color: "#333",
+    fontFamily: "SourceSans3Regular",
+  },
+
+  dropdownContainer: {
+    borderWidth: 1,
+    borderColor: "#bfbfbf",
+    borderRadius: 4,
+    marginTop: 4,
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+
+  dropdownItemContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
   },
 
   qHeader: { marginBottom: 6 },

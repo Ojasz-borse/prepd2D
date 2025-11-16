@@ -53,24 +53,24 @@ export default function EstimatorScreen() {
       if (isNaN(num) || num < 0 || num > 100) return false;
 
       // ✅ Allow only up to 7 digits after decimal
-      const decimalCheck = /^(\d{1,2}(\.\d{1,7})?|100(\.0{1,7})?)$/;
+      const decimalCheck = /^(\d{1,2}(\.\d{0,7})?|100(\.0{0,7})?)$/;
       return decimalCheck.test(val);
     };
 
     if (!checkNumberRange(overallPercentile)) {
-      setErrMsgRank("Percentile must be between 0 - 100, max 7 decimals.");
+      setErrMsgRank("Percentile must be between 0 - 100");
       return;
     }
     if (!checkNumberRange(physicsPercentile)) {
-      setErrMsgRank("Percentile must be between 0 - 100, max 7 decimals.");
+      setErrMsgRank("Percentile must be between 0 - 100");
       return;
     }
     if (!checkNumberRange(chemistryPercentile)) {
-      setErrMsgRank("Percentile must be between 0 - 100, max 7 decimals.");
+      setErrMsgRank("Percentile must be between 0 - 100");
       return;
     }
     if (!checkNumberRange(mathsPercentile)) {
-      setErrMsgRank("Percentile must be between 0 - 100, max 7 decimals.");
+      setErrMsgRank("Percentile must be between 0 - 100");
       return;
     }
 
@@ -81,6 +81,36 @@ export default function EstimatorScreen() {
     chemistryPercentile,
     mathsPercentile,
   ]);
+
+  const handlePercentileInput = (
+    text: string,
+    setState: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    if (text === "") {
+      setState("");
+      return;
+    }
+
+    // Keep only digits and one dot
+    let sanitized = text.replace(/[^0-9.]/g, "");
+    const parts = sanitized.split(".");
+
+    // Prevent multiple dots
+    if (parts.length > 2) {
+      sanitized = parts[0] + "." + parts[1];
+    }
+
+    // Limit to 7 decimal digits
+    if (parts[1] && parts[1].length > 7) {
+      sanitized = parts[0] + "." + parts[1].slice(0, 7);
+    }
+
+    // Clamp max value to 100
+    const num = Number(sanitized);
+    if (!isNaN(num) && num > 100) sanitized = "100";
+
+    setState(sanitized);
+  };
 
   const difficultyOptions = [
     { label: "Very Easy", value: "veryEasy" },
@@ -230,7 +260,10 @@ export default function EstimatorScreen() {
                   <FloatingLabelInput
                     label="Enter Marks"
                     value={marks}
-                    onChangeText={setMarks}
+                    onChangeText={(text) => {
+                      const sanitized = text.replace(/\./g, "");
+                      setMarks(sanitized);
+                    }}
                     keyboardType="number-pad"
                   />
 
@@ -313,7 +346,9 @@ export default function EstimatorScreen() {
                   <FloatingLabelInput
                     label="Overall Percentile"
                     value={overallPercentile}
-                    onChangeText={setOverallPercentile}
+                    onChangeText={(text) =>
+                      handlePercentileInput(text, setOverallPercentile)
+                    }
                     keyboardType="number-pad"
                   />
 
@@ -326,7 +361,9 @@ export default function EstimatorScreen() {
                       <FloatingLabelInput
                         label="Physics"
                         value={physicsPercentile}
-                        onChangeText={setPhysicsPercentile}
+                        onChangeText={(text) =>
+                          handlePercentileInput(text, setPhysicsPercentile)
+                        }
                         keyboardType="number-pad"
                       />
                     </View>
@@ -334,7 +371,9 @@ export default function EstimatorScreen() {
                       <FloatingLabelInput
                         label="Chemistry"
                         value={chemistryPercentile}
-                        onChangeText={setChemistryPercentile}
+                        onChangeText={(text) =>
+                          handlePercentileInput(text, setChemistryPercentile)
+                        }
                         keyboardType="number-pad"
                       />
                     </View>
@@ -342,7 +381,9 @@ export default function EstimatorScreen() {
                       <FloatingLabelInput
                         label="Mathematics"
                         value={mathsPercentile}
-                        onChangeText={setMathsPercentile}
+                        onChangeText={(text) =>
+                          handlePercentileInput(text, setMathsPercentile)
+                        }
                         keyboardType="number-pad"
                       />
                     </View>
@@ -375,7 +416,11 @@ export default function EstimatorScreen() {
 
         {/* Result Modal (same modal for both tabs) */}
         <Modal visible={showResultModal} transparent animationType="fade">
-          <View style={styles.resultModalBg}>
+          <TouchableOpacity
+            activeOpacity={1}
+            style={styles.modalBg}
+            onPress={() => setShowInfo(false)}
+          >
             <View style={styles.resultBox}>
               <TouchableOpacity
                 style={styles.closeBtn}
@@ -393,7 +438,11 @@ export default function EstimatorScreen() {
               )}
 
               {rank && activeTab === "rank" && (
-                <Text style={styles.resultText}>📊 Estimated Rank: {rank}</Text>
+                <>
+                  <Text style={{ fontSize: 100, opacity: 0.8 }}>🏅</Text>
+                  <Text style={styles.resultText}>{rank}</Text>
+                  <Text style={styles.resultTextSub}>Estimated Rank</Text>
+                </>
               )}
 
               {/* If user used marks -> rank prediction (both available) show both */}
@@ -408,7 +457,7 @@ export default function EstimatorScreen() {
                 </View>
               )}
             </View>
-          </View>
+          </TouchableOpacity>
         </Modal>
 
         {/* Info modal */}

@@ -4,10 +4,9 @@ import TopHeader from "@/components/TopHeader";
 import { GET_PYQS } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import { usePYQContext } from "@/context/PYQContext";
-import { FontAwesome5, Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useMemo, useState, useTransition } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Animated,
   FlatList,
@@ -16,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Dropdown } from "react-native-element-dropdown";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type PYQCardProps = {
@@ -24,6 +24,13 @@ type PYQCardProps = {
   id: string;
   router: any;
 };
+
+export interface PYQLite {
+  question_year: string;
+  id: number;
+  pyq_content: string;
+  user_resp: string | null;
+}
 
 const PYQCard = React.memo(({ question, index, id, router }: PYQCardProps) => {
   return (
@@ -56,11 +63,67 @@ const PYQCard = React.memo(({ question, index, id, router }: PYQCardProps) => {
           <View style={styles.optionsIndicator}>
             <Text style={styles.optionsText}>Multiple Choice • 4 Options</Text>
           </View>
+          {question.user_resp && (
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+            >
+              <Text
+                style={{ fontFamily: "SourceSans3Medium", color: "#004aad" }}
+              >
+                Answered
+              </Text>
+
+              <Ionicons name="checkmark-circle" size={18} color="#004aad" />
+            </View>
+          )}
         </View>
       </View>
     </TouchableOpacity>
   );
 });
+
+interface AnalysisResult {
+  total: number;
+  answered: number;
+  correct: number;
+  accuracy: number;
+}
+
+export interface PYQItem {
+  question_year: string;
+  id: number;
+  pyq_content: string;
+  a: string;
+  b: string;
+  c: string;
+  d: string;
+  correct_option: string;
+  explanation_content: string;
+  user_resp: string | null;
+}
+
+export const getPYQAnalysis = (pyqList: PYQItem[]): AnalysisResult => {
+  const total = pyqList.length;
+
+  const answered = pyqList.filter(
+    (q) => q.user_resp !== null && q.user_resp !== ""
+  ).length;
+
+  const correct = pyqList.filter(
+    (q) =>
+      q.user_resp &&
+      q.user_resp.trim().toLowerCase() === q.correct_option.trim().toLowerCase()
+  ).length;
+
+  const accuracy = answered > 0 ? (correct / answered) * 100 : 0;
+
+  return {
+    total,
+    answered,
+    correct,
+    accuracy: Number(accuracy.toFixed(2)),
+  };
+};
 
 export default function PYQListScreen() {
   const router = useRouter();
@@ -72,12 +135,14 @@ export default function PYQListScreen() {
 
   const [loading, setLoading] = useState(true);
   const { user, getToken } = useAuth();
+
+  const [pyqListLite, setPyqListLite] = useState<PYQLite[]>([]);
+
   const fadeAnim = useState(new Animated.Value(0))[0];
 
   const { pyqList, setPYQList } = usePYQContext();
 
   const [selectedYear, setSelectedYear] = useState<string>("2025");
-  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     const fetchPYQs = async () => {
@@ -99,12 +164,14 @@ export default function PYQListScreen() {
 
         if (json.success) {
           // Normalize year type → always string
-          const normalized = json.pyqs.map((q: { question_year: any }) => ({
-            ...q,
+          const normalized = json.pyqs.map((q: any) => ({
+            id: q.id,
             question_year: String(q.question_year),
+            pyq_content: q.pyq_content, // Only required field
+            user_resp: q.user_resp,
           }));
-
-          setPYQList(normalized);
+          setPyqListLite(normalized);
+          setPYQList(json.pyqs);
         }
       } catch (err) {
         console.error("Error fetching PYQs", err);
@@ -148,15 +215,14 @@ export default function PYQListScreen() {
   };
 
   const filteredPYQs = useMemo(() => {
-    return pyqList.filter((q) => q.question_year === selectedYear);
-  }, [selectedYear, pyqList]);
+    return pyqListLite.filter((q) => q.question_year === selectedYear);
+  }, [selectedYear, pyqListLite]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f2f2f2" }}>
       <TopHeader title={title} showBackArrow={true} />
 
       <FlatList
-        key={selectedYear}
         ref={listRef}
         onScroll={handleScroll}
         scrollEventThrottle={16}
@@ -177,69 +243,108 @@ export default function PYQListScreen() {
               </View>
             </View>
 
-            {/* 🔽 Year Filter Horizontal Scroll */}
+            {/* 🔽 Year Filter Dropdown */}
             <View style={{ marginBottom: 16 }}>
-              <FlatList
-                horizontal
-                data={["2025", "2024", "2023", "2022", "2021", "2020", "2019"]}
-                keyExtractor={(item) => item}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ gap: 10 }}
-                renderItem={({ item }) => {
-                  const isActive = selectedYear === item;
-                  return (
-                    <TouchableOpacity
-                      onPress={() => {
-                        startTransition(() => {
-                          setSelectedYear(item);
-                        });
-                      }}
-                      activeOpacity={0.7}
-                      style={{
-                        paddingHorizontal: 20,
-                        paddingVertical: 6,
-                        borderRadius: 20,
-                        backgroundColor: isActive ? "#004aad" : "#fff",
-                        borderWidth: isActive ? 0 : 1,
-                        borderColor: "#d9d9d9",
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 14,
-                          color: isActive ? "#fff" : "#333",
-                          fontFamily: "SourceSans3Medium",
-                        }}
-                      >
-                        {item}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                }}
+              <Dropdown
+                style={styles.dropdown}
+                labelField="label"
+                valueField="value"
+                placeholder="Select Year"
+                placeholderStyle={styles.dropdownText}
+                selectedTextStyle={styles.dropdownText}
+                itemTextStyle={styles.dropdownText}
+                data={[
+                  { label: "2025", value: "2025" },
+                  { label: "2024", value: "2024" },
+                  { label: "2023", value: "2023" },
+                  { label: "2022", value: "2022" },
+                  { label: "2021", value: "2021" },
+                  { label: "2020", value: "2020" },
+                  { label: "2019", value: "2019" },
+                ]}
+                value={selectedYear}
+                onChange={(item) => setSelectedYear(item.value)}
               />
             </View>
 
-            {true && (
-              <LinearGradient
-                colors={["#3399ff", "#004aad"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.analysisTab}
-              >
-                <Text style={styles.analysisTabTitle}>
-                  Chapter Analysis{"  "}
-                  <FontAwesome5 name="magic" size={12} color="#fff" />
-                </Text>
-                <Text style={styles.analysisTabText}>
-                  Finish the remaining questions to unlock your Chapter
-                  Analysis!
-                </Text>
-              </LinearGradient>
+            {getPYQAnalysis(pyqList).answered > 0 && (
+              <View style={styles.analysisTab}>
+                <View style={styles.cutoffWrapper}>
+                  <View
+                    style={[
+                      styles.cutoffBox,
+                      {
+                        backgroundColor: "#e6f5ff",
+                        borderWidth: 1,
+                        borderColor: "#0099ff80",
+                      },
+                    ]}
+                  >
+                    <Text style={[styles.cutoffCategory, { color: "#0099ff" }]}>
+                      Total
+                    </Text>
+                    <Text style={styles.cutoffValue}>
+                      {getPYQAnalysis(pyqList).total}
+                    </Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.cutoffBox,
+                      {
+                        backgroundColor: "#fffae6",
+                        borderWidth: 1,
+                        borderColor: "#e6b80080",
+                      },
+                    ]}
+                  >
+                    <Text style={[styles.cutoffCategory, { color: "#e6b800" }]}>
+                      Answered
+                    </Text>
+                    <Text style={styles.cutoffValue}>
+                      {getPYQAnalysis(pyqList).answered}
+                    </Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.cutoffBox,
+                      {
+                        backgroundColor: "#f0fdf9",
+                        borderWidth: 1,
+                        borderColor: "#10b98180",
+                      },
+                    ]}
+                  >
+                    <Text style={[styles.cutoffCategory, { color: "#10b981" }]}>
+                      Correct
+                    </Text>
+                    <Text style={styles.cutoffValue}>
+                      {getPYQAnalysis(pyqList).correct}
+                    </Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.cutoffBox,
+                      {
+                        backgroundColor: "#fff5e6",
+                        borderWidth: 1,
+                        borderColor: "#ff660080",
+                      },
+                    ]}
+                  >
+                    <Text style={[styles.cutoffCategory, { color: "#ff6600" }]}>
+                      Correct
+                    </Text>
+                    <Text style={styles.cutoffValue}>
+                      {getPYQAnalysis(pyqList).correct} %
+                    </Text>
+                  </View>
+                </View>
+              </View>
             )}
           </>
         }
         ListEmptyComponent={
-          loading || isPending ? (
+          loading ? (
             <>
               <PyqQuestionCardSkeleton />
               <PyqQuestionCardSkeleton />
@@ -281,12 +386,10 @@ const styles = StyleSheet.create({
   },
 
   analysisTab: {
-    borderRadius: 14,
-    padding: 10,
     marginBottom: 20,
   },
   analysisTabTitle: {
-    color: "#fff",
+    color: "#004aad",
     fontSize: 16,
     fontFamily: "SourceSans3Medium",
   },
@@ -316,6 +419,18 @@ const styles = StyleSheet.create({
     color: "#64748b",
     fontFamily: "SourceSans3Medium",
     textAlign: "center",
+  },
+  dropdown: {
+    height: 45,
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    backgroundColor: "#ebf0fa",
+    fontFamily: "SourceSans3Medium",
+  },
+  dropdownText: {
+    fontSize: 16,
+    fontFamily: "SourceSans3Medium",
+    color: "#333",
   },
   listContent: {
     padding: 16,
@@ -374,6 +489,7 @@ const styles = StyleSheet.create({
   },
   cardFooter: {
     flexDirection: "row",
+    justifyContent: "space-between",
   },
   optionsIndicator: {
     borderWidth: 1,
@@ -430,5 +546,31 @@ const styles = StyleSheet.create({
     shadowOpacity: 10,
     shadowOffset: { width: 4, height: 6 },
     shadowRadius: 3,
+  },
+
+  cutoffWrapper: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  cutoffBox: {
+    backgroundColor: "#e6f1ff",
+    borderRadius: 16,
+    paddingVertical: 4,
+    minWidth: 82,
+    alignItems: "center",
+  },
+  cutoffCategory: {
+    fontSize: 10,
+    color: "#0A5BD3",
+    letterSpacing: 0.4,
+    fontFamily: "SourceSans3Medium",
+  },
+  cutoffValue: {
+    fontSize: 16,
+    color: "#0F172A",
+    fontFamily: "SourceSans3SemiBold",
+    marginTop: -2,
   },
 });

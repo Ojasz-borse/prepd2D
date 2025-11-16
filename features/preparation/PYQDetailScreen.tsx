@@ -72,21 +72,21 @@ export default function PYQDetailsPage() {
       setSelectedOption(i);
       setShowExplanation(true);
 
-      // const qid = current.id.toString();
-      // const selected = String.fromCharCode(65 + i);
+      const qid = current.id.toString();
+      const selected = String.fromCharCode(65 + i);
 
-      // setUserResponses((prev: any) => {
-      //   const updated = { ...prev, [qid]: selected };
-      //   pyqList[index].user_resp = selected;
+      setUserResponses((prev: any) => {
+        const updated = { ...prev, [qid]: selected };
+        pyqList[index].user_resp = selected;
 
-      //   // Delay API call to not block UI
-      //   if (typeof requestIdleCallback !== "undefined") {
-      //     requestIdleCallback(() => sendToServer(updated));
-      //   } else {
-      //     setTimeout(() => sendToServer(updated), 150);
-      //   }
-      //   return updated;
-      // });
+        // Delay API call to not block UI
+        if (typeof requestIdleCallback !== "undefined") {
+          requestIdleCallback(() => sendToServer(updated));
+        } else {
+          setTimeout(() => sendToServer(updated), 150);
+        }
+        return updated;
+      });
     },
     [selectedOption, index, pyqList]
   );

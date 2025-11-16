@@ -19,7 +19,7 @@ export interface College {
   name: string;
   district: string;
   is_government: boolean;
-  status: string;
+  status?: string;
 }
 
 interface NormalFindCollegeProps {

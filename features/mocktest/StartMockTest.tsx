@@ -2,10 +2,17 @@ import { useAuth } from "@/context/AuthContext";
 import { useMockTests } from "@/hooks/useMockTests";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons"; // Icons
 import NavigationBar from "expo-navigation-bar";
-import { useLocalSearchParams } from "expo-router";
+import {
+  router,
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+} from "expo-router";
 import * as ScreenOrientation from "expo-screen-orientation";
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
+  BackHandler,
   Image,
   Platform,
   StatusBar,
@@ -37,6 +44,9 @@ const StartMockTest = () => {
   const { testid } = useLocalSearchParams();
 
   const { fetchMockTestQuestions } = useMockTests();
+
+  const navigation = useNavigation();
+  const exitPromptShownRef = React.useRef(false);
 
   useEffect(() => {
     const loadQuestions = async () => {
@@ -117,6 +127,60 @@ const StartMockTest = () => {
       console.log("Error hiding nav bar:", e);
     }
   };
+
+  const exitGuard = React.useRef(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (section < 1) return;
+
+      const onBackPress = () => {
+        if (exitGuard.current) return true; // already showing alert
+
+        exitGuard.current = true;
+
+        showExitAlert(() => {
+          exitGuard.current = false;
+          router.back();
+        });
+
+        return true; // block default
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
+
+      return () => {
+        backHandler.remove();
+        exitGuard.current = false;
+      };
+    }, [section])
+  );
+
+  function showExitAlert(onConfirm: () => void) {
+    Alert.alert(
+      "Exit Test?",
+      "Are you sure you want to exit? Your progress will not be saved.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+          onPress: () => {
+            exitGuard.current = false;
+          },
+        },
+        {
+          text: "Exit",
+          style: "destructive",
+          onPress: () => {
+            onConfirm();
+          },
+        },
+      ]
+    );
+  }
 
   return (
     <View style={styles.container}>
