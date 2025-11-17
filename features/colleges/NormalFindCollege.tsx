@@ -6,6 +6,7 @@ import React, { useMemo, useState } from "react";
 import {
   Animated,
   FlatList,
+  Modal,
   StyleSheet,
   Text,
   TextInput,
@@ -64,6 +65,14 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
   const [searchText, setSearchText] = useState("");
   const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
   const [selectedType, setSelectedType] = useState("");
+
+  const firstCardRef = React.useRef<View>(null);
+  const [firstCardLayout, setFirstCardLayout] = useState<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null>(null);
 
   const filteredData = useMemo(() => {
     const search = searchText.toLowerCase();
@@ -141,7 +150,22 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
         scrollEventThrottle={16}
         data={filteredData}
         keyExtractor={(item) => item.college_code}
-        renderItem={({ item }) => <NormalFindCollegeCard college={item} />}
+        renderItem={({ item, index }) => (
+          <View
+            ref={index === 0 ? firstCardRef : undefined} // only attach ref to first card
+            onLayout={() => {
+              if (index === 0 && firstCardRef.current) {
+                firstCardRef.current.measure(
+                  (fx, fy, width, height, px, py) => {
+                    setFirstCardLayout({ x: px, y: py, width, height });
+                  }
+                );
+              }
+            }}
+          >
+            <NormalFindCollegeCard college={item} />
+          </View>
+        )}
         ListEmptyComponent={
           loading ? (
             <>
@@ -258,6 +282,67 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
           </TouchableOpacity>
         </Animated.View>
       )}
+
+      <Modal visible={true} transparent animationType="fade">
+        <View style={styles.overlay}>
+          {firstCardLayout && (
+            <>
+              <View
+                style={{
+                  position: "absolute",
+                  top: firstCardLayout.y + firstCardLayout.height + 20, // below the card
+                  left: firstCardLayout.x + firstCardLayout.width / 2 - 120, // center tooltip
+                  width: 240,
+                  backgroundColor: "#fff",
+                  borderRadius: 12,
+                  padding: 12,
+                  shadowColor: "#000",
+                  shadowOpacity: 0.2,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowRadius: 4,
+                  elevation: 5,
+                }}
+              >
+                <Text
+                  style={{ fontFamily: "SourceSans3Medium", color: "#333" }}
+                >
+                  Click on the college to see details
+                </Text>
+              </View>
+
+              <Ionicons
+                name="arrow-down"
+                size={24}
+                color="#fd0404"
+                style={{
+                  position: "relative",
+                  top: firstCardLayout.y + firstCardLayout.height + 100, // move above tooltip
+                }}
+              />
+
+              <View
+                style={{
+                  position: "absolute",
+                  top: firstCardLayout.y,
+                  left: firstCardLayout.x,
+                  width: firstCardLayout.width,
+                  height: firstCardLayout.height,
+                }}
+              >
+                <NormalFindCollegeCard
+                  college={{
+                    college_code: "03012",
+                    name: "Veermata Jijabai Technological Institute(VJTI), Matunga, Mumbai",
+                    district: "Mumbai",
+                    is_government: true,
+                    status: "Autonomous",
+                  }}
+                />
+              </View>
+            </>
+          )}
+        </View>
+      </Modal>
     </>
   );
 };
@@ -406,5 +491,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 10,
     shadowOffset: { width: 4, height: 6 },
     shadowRadius: 3,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.6)", // your overlay
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

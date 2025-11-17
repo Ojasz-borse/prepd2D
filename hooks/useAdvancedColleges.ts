@@ -23,6 +23,7 @@ interface CollegeBranch {
   is_autonomous: boolean;
   is_government: boolean;
   name: string;
+  status: string;
   standard_cutoff_data: StandardCutoffData[];
   Open: number | null;
   considered_category_open: string | null;
@@ -141,7 +142,7 @@ export function useAdvancedColleges() {
           is_autonomous: b.is_autonomous,
           is_government: b.is_government,
           name: b.name,
-          status: "", // optional, empty for now
+          status: b.status, // optional, empty for now
         });
       }
     }

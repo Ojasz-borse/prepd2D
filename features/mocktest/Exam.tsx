@@ -1,9 +1,11 @@
 import MathText from "@/components/MathText";
 import StatusCounter from "@/components/StatusCounter";
 import { useAuth } from "@/context/AuthContext";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -20,6 +22,15 @@ interface PYQItem {
   c: string;
   d: string;
   correct_option: string;
+}
+
+interface UserAnswer {
+  id: number;
+  section: "physics" | "chemistry" | "maths";
+  question: string;
+  options: { a: string; b: string; c: string; d: string };
+  correct_option: string;
+  user_choice: string | null;
 }
 
 interface ExamProps {
@@ -55,6 +66,8 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
   const [sectionLocked, setSectionLocked] = useState(false);
 
   const [remainingSeconds, setRemainingSeconds] = useState(180 * 60); // 3 hours in seconds
+
+  const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -94,6 +107,51 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
 
   const handleSelect = (opt: string) => {
     setAnswers({ ...answers, [currentQ.id]: opt });
+
+    setUserAnswers((prev) => {
+      const existsIndex = prev.findIndex((ua) => ua.id === currentQ.id);
+      const entry: UserAnswer = {
+        id: currentQ.id,
+        section,
+        question: currentQ.pyq_content,
+        options: { a: currentQ.a, b: currentQ.b, c: currentQ.c, d: currentQ.d },
+        correct_option: currentQ.correct_option,
+        user_choice: opt,
+      };
+
+      if (existsIndex !== -1) {
+        const newArr = [...prev];
+        newArr[existsIndex] = entry;
+        return newArr;
+      } else {
+        return [...prev, entry];
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (remainingSeconds <= 0) {
+      submitTest();
+    }
+  }, [remainingSeconds]);
+
+  const handleSubmit = () => {
+    if (remainingSeconds > 0) {
+      Alert.alert("Submit Test", "Do you really want to submit the test?", [
+        { text: "Cancel", style: "cancel" },
+        { text: "Yes", onPress: submitTest },
+      ]);
+    } else {
+      submitTest();
+    }
+  };
+
+  const submitTest = () => {
+    console.log("Submitted Answers: ", userAnswers);
+    router.push({
+      pathname: "/result",
+      params: { data: JSON.stringify(userAnswers) },
+    });
   };
 
   const goNext = () => {
@@ -295,7 +353,7 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
 
         <TouchableOpacity
           style={[styles.bottomBtn, { backgroundColor: "green" }]}
-          onPress={() => console.log("Submit TestClicked")}
+          onPress={handleSubmit}
         >
           <Text style={styles.bottomBtnText}>Submit Test</Text>
         </TouchableOpacity>

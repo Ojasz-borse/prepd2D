@@ -17,6 +17,7 @@ export interface PYQItem {
   correct_option: string;
   explanation_content: string;
   user_resp: string | null;
+  img_url?: string;
 }
 
 export interface UserResponseMap {

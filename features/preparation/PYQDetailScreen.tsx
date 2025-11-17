@@ -8,6 +8,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -158,6 +159,18 @@ export default function PYQDetailsPage() {
             </View>
             <View style={styles.questionContent}>
               <MemoMathText content={current.pyq_content} />
+              {current.img_url && (
+                <Image
+                  source={{ uri: current.img_url }}
+                  style={{
+                    width: "80%",
+                    height: 200,
+                    margin: "auto",
+                    paddingVertical: 10,
+                  }}
+                  resizeMode="cover"
+                />
+              )}
             </View>
           </View>
 
