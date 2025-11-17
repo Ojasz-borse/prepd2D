@@ -77,6 +77,7 @@ export function useAdvancedColleges() {
   const loadColleges = useCallback(async () => {
     try {
       setBranchesLoading(true);
+      setCollegesLoading(true)
 
       // 1. Load cache
       const cached = await AsyncStorage.getItem(CACHE_COLLEGE_BRANCHES);

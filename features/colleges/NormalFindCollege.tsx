@@ -1,12 +1,12 @@
 import SearchIcon from "@/assets/icons/SearchIcon";
 import NormalFindCollegeCard from "@/components/NormalFindCollegeCard";
 import NormalFindCollegeCardSkeleton from "@/components/NormalFindCollegeCardSkeleton";
+import NormalFindCollegeToturial from "@/components/NormalFindCollegeToturial";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useMemo, useState } from "react";
 import {
   Animated,
   FlatList,
-  Modal,
   StyleSheet,
   Text,
   TextInput,
@@ -282,67 +282,7 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
           </TouchableOpacity>
         </Animated.View>
       )}
-
-      <Modal visible={true} transparent animationType="fade">
-        <View style={styles.overlay}>
-          {firstCardLayout && (
-            <>
-              <View
-                style={{
-                  position: "absolute",
-                  top: firstCardLayout.y + firstCardLayout.height + 20, // below the card
-                  left: firstCardLayout.x + firstCardLayout.width / 2 - 120, // center tooltip
-                  width: 240,
-                  backgroundColor: "#fff",
-                  borderRadius: 12,
-                  padding: 12,
-                  shadowColor: "#000",
-                  shadowOpacity: 0.2,
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowRadius: 4,
-                  elevation: 5,
-                }}
-              >
-                <Text
-                  style={{ fontFamily: "SourceSans3Medium", color: "#333" }}
-                >
-                  Click on the college to see details
-                </Text>
-              </View>
-
-              <Ionicons
-                name="arrow-down"
-                size={24}
-                color="#fd0404"
-                style={{
-                  position: "relative",
-                  top: firstCardLayout.y + firstCardLayout.height + 100, // move above tooltip
-                }}
-              />
-
-              <View
-                style={{
-                  position: "absolute",
-                  top: firstCardLayout.y,
-                  left: firstCardLayout.x,
-                  width: firstCardLayout.width,
-                  height: firstCardLayout.height,
-                }}
-              >
-                <NormalFindCollegeCard
-                  college={{
-                    college_code: "03012",
-                    name: "Veermata Jijabai Technological Institute(VJTI), Matunga, Mumbai",
-                    district: "Mumbai",
-                    is_government: true,
-                    status: "Autonomous",
-                  }}
-                />
-              </View>
-            </>
-          )}
-        </View>
-      </Modal>
+      <NormalFindCollegeToturial cardLayout={firstCardLayout} />
     </>
   );
 };

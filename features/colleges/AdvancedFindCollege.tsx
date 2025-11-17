@@ -1,6 +1,7 @@
 import SearchIcon from "@/assets/icons/SearchIcon";
 import AdvancedFindCollegeCard from "@/components/AdvancedFindCollegeCard";
 import AdvancedFindCollegeCardSkeleton from "@/components/AdvancedFindCollegeCardSkeleton";
+import AdvancedFindCollegeToturial from "@/components/AdvancedFindCollegeToturial";
 import SmartMatchModal from "@/components/SmartMatchModel";
 import { CACHE_MY_COLLEGES_LIST } from "@/constants/cacheStorageConfig";
 import { useMyList } from "@/hooks/useMyList";
@@ -97,6 +98,14 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
   const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
   const [movedCollegesCount, setMovedCollegesCount] = useState<number>();
+
+  const firstCardRef = React.useRef<View>(null);
+  const [firstCardLayout, setFirstCardLayout] = useState<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null>(null);
 
   // Smart Match
   const [smartMatchEnabled, setSmartMatchEnabled] = useState(false);
@@ -403,7 +412,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
         scrollEventThrottle={16}
         data={enrichedData}
         keyExtractor={(item) => item.choice_code}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <View
             key={item.choice_code}
             style={[
@@ -411,6 +420,16 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
               selectedCards.includes(item.choice_code) &&
                 styles.selectedCardContainer,
             ]}
+            ref={index === 0 ? firstCardRef : undefined} // only attach ref to first card
+            onLayout={() => {
+              if (index === 0 && firstCardRef.current) {
+                firstCardRef.current.measure(
+                  (fx, fy, width, height, px, py) => {
+                    setFirstCardLayout({ x: px, y: py, width, height });
+                  }
+                );
+              }
+            }}
           >
             <AdvancedFindCollegeCard
               item={item}
@@ -625,6 +644,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
           </TouchableOpacity>
         </Animated.View>
       )}
+      <AdvancedFindCollegeToturial cardLayout={firstCardLayout} />
     </>
   );
 };
