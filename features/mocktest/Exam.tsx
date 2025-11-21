@@ -69,6 +69,13 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
 
   const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
 
+  // ✅ filter questions based on section
+  const filteredQuestions = (() => {
+    if (section === "physics") return questions.slice(0, 50);
+    if (section === "chemistry") return questions.slice(50, 100);
+    return questions.slice(100, 150);
+  })();
+
   useEffect(() => {
     const timer = setInterval(() => {
       setRemainingSeconds((prev) => {
@@ -83,6 +90,16 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [section]);
+
+  useEffect(() => {
+    if (remainingSeconds <= 0) {
+      submitTest();
+    }
+  }, [remainingSeconds]);
+
   if (questions.length === 0) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -92,19 +109,9 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
     );
   }
 
-  // ✅ filter questions based on section
-  const filteredQuestions = (() => {
-    if (section === "physics") return questions.slice(0, 50);
-    if (section === "chemistry") return questions.slice(50, 100);
-    return questions.slice(100, 150);
-  })();
-
-  useEffect(() => {
-    setCurrentIndex(0);
-  }, [section]);
-
   const currentQ = filteredQuestions[currentIndex];
-
+  if (!currentQ) return null;
+  
   const handleSelect = (opt: string) => {
     setAnswers({ ...answers, [currentQ.id]: opt });
 
@@ -129,11 +136,7 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
     });
   };
 
-  useEffect(() => {
-    if (remainingSeconds <= 0) {
-      submitTest();
-    }
-  }, [remainingSeconds]);
+  
 
   const handleSubmit = () => {
     if (remainingSeconds > 0) {

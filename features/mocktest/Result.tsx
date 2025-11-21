@@ -21,8 +21,13 @@ interface UserAnswer {
 
 const Result = () => {
   const { data } = useLocalSearchParams<{ data: string }>();
-  const userAnswers: UserAnswer[] = data ? JSON.parse(data) : [];
-
+  const userAnswers: UserAnswer[] = data
+    ? JSON.parse(data).map((ua: UserAnswer) => ({
+        ...ua,
+        user_choice: ua.user_choice ? ua.user_choice.toUpperCase() : null,
+      }))
+    : [];
+    
   // Lock orientation to portrait
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
@@ -45,14 +50,13 @@ const Result = () => {
 
   // Compute stats
   const stats = {
-    physics: { total: 0, answered: 0, correct: 0, wrong: 0 },
-    chemistry: { total: 0, answered: 0, correct: 0, wrong: 0 },
-    maths: { total: 0, answered: 0, correct: 0, wrong: 0 },
+    physics: { total: 50, answered: 0, correct: 0, wrong: 0 },
+    chemistry: { total: 50, answered: 0, correct: 0, wrong: 0 },
+    maths: { total: 50, answered: 0, correct: 0, wrong: 0 },
   };
 
   userAnswers.forEach((ua) => {
     const s = stats[ua.section];
-    s.total += 1;
     if (ua.user_choice) s.answered += 1;
     if (ua.user_choice === ua.correct_option) s.correct += 1;
     else if (ua.user_choice) s.wrong += 1;

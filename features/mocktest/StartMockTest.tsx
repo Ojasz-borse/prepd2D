@@ -57,61 +57,93 @@ const StartMockTest = () => {
     loadQuestions();
   }, [testid]);
 
+  // useEffect(() => {
+  //   const setupFullscreen = async () => {
+  //     try {
+  //       // Lock in landscape
+  //       await ScreenOrientation.lockAsync(
+  //         ScreenOrientation.OrientationLock.LANDSCAPE
+  //       );
+
+  //       // Hide status bar
+  //       StatusBar.setHidden(true, "none");
+
+  //       // ✅ Only run NavigationBar code on Android
+  //       if (Platform.OS === "android" && NavigationBar) {
+  //         await NavigationBar.setVisibilityAsync("hidden");
+  //         await NavigationBar.setBehaviorAsync("overlay-swipe");
+  //         await NavigationBar.setPositionAsync("absolute");
+  //         await NavigationBar.setBackgroundColorAsync("#00000000");
+
+  //         setTimeout(async () => {
+  //           await NavigationBar.setVisibilityAsync("hidden");
+  //         }, 100);
+  //       }
+  //     } catch (e) {
+  //       console.log("Fullscreen setup error:", e);
+  //     }
+  //   };
+
+  //   setupFullscreen();
+
+  //   const subscription = ScreenOrientation.addOrientationChangeListener(
+  //     async (o) => {
+  //       if (
+  //         o.orientationInfo.orientation !==
+  //           ScreenOrientation.Orientation.LANDSCAPE_LEFT &&
+  //         o.orientationInfo.orientation !==
+  //           ScreenOrientation.Orientation.LANDSCAPE_RIGHT
+  //       ) {
+  //         await ScreenOrientation.lockAsync(
+  //           ScreenOrientation.OrientationLock.LANDSCAPE
+  //         );
+  //       }
+
+  //       // ✅ Hide nav bar only on Android
+  //       if (Platform.OS === "android" && NavigationBar) {
+  //         await NavigationBar.setVisibilityAsync("hidden");
+  //       }
+  //     }
+  //   );
+
+  //   return () => {
+  //     subscription.remove();
+  //     StatusBar.setHidden(false);
+
+  //     ScreenOrientation.unlockAsync();
+
+  //     if (Platform.OS === "android" && NavigationBar) {
+  //       NavigationBar.setVisibilityAsync("visible");
+  //     }
+  //   };
+  // }, []);
+
   useEffect(() => {
-    const setupFullscreen = async () => {
-      try {
-        // Lock in landscape
-        await ScreenOrientation.lockAsync(
-          ScreenOrientation.OrientationLock.LANDSCAPE
-        );
+    const lockLandscape = async () => {
+      // Force Landscape immediately
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+      
+      // Hide Status Bar
+      StatusBar.setHidden(true, "none");
 
-        // Hide status bar
-        StatusBar.setHidden(true, "none");
-
-        // ✅ Only run NavigationBar code on Android
-        if (Platform.OS === "android" && NavigationBar) {
-          await NavigationBar.setVisibilityAsync("hidden");
-          await NavigationBar.setBehaviorAsync("overlay-swipe");
-          await NavigationBar.setPositionAsync("absolute");
-          await NavigationBar.setBackgroundColorAsync("#00000000");
-
-          setTimeout(async () => {
-            await NavigationBar.setVisibilityAsync("hidden");
-          }, 100);
-        }
-      } catch (e) {
-        console.log("Fullscreen setup error:", e);
+      // Hide Android Navigation Bar (Soft keys)
+      if (Platform.OS === "android" && NavigationBar) {
+        await NavigationBar.setVisibilityAsync("hidden");
+        await NavigationBar.setBehaviorAsync("overlay-swipe");
       }
     };
 
-    setupFullscreen();
+    lockLandscape();
 
-    const subscription = ScreenOrientation.addOrientationChangeListener(
-      async (o) => {
-        if (
-          o.orientationInfo.orientation !==
-            ScreenOrientation.Orientation.LANDSCAPE_LEFT &&
-          o.orientationInfo.orientation !==
-            ScreenOrientation.Orientation.LANDSCAPE_RIGHT
-        ) {
-          await ScreenOrientation.lockAsync(
-            ScreenOrientation.OrientationLock.LANDSCAPE
-          );
-        }
-
-        // ✅ Hide nav bar only on Android
-        if (Platform.OS === "android" && NavigationBar) {
-          await NavigationBar.setVisibilityAsync("hidden");
-        }
-      }
-    );
-
+    // CLEANUP: Run this when leaving the page
     return () => {
-      subscription.remove();
+      // Force back to Portrait
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+      
+      // Show Status Bar
       StatusBar.setHidden(false);
 
-      ScreenOrientation.unlockAsync();
-
+      // Show Android Navigation Bar
       if (Platform.OS === "android" && NavigationBar) {
         NavigationBar.setVisibilityAsync("visible");
       }
