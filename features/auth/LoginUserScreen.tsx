@@ -43,7 +43,7 @@ const LoginUserScreen: React.FC = () => {
       setModalMessage("Login Successful!");
       setTimeout(() => {
         setModalVisible(false);
-        router.replace("/");
+        router.replace("/home");
       }, 1000);
     } catch (err: any) {
       setLoading(false);
