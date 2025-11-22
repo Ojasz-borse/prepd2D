@@ -956,9 +956,884 @@
     "subject": 1,
     "class": 2
   },
-  
   {
-    "id": 25,
+      "id": 18,
+      "chapter_no": 6,
+      "chapter_name": "Superposition of Waves",
+      "weightage": 2,
+      "topics": [
+          {
+              "topic": "Superposition of Waves",
+              "sub_topic": [
+                  "Superposition of Two Wave Pulses of Equal Amplitude and Same Phase Moving towards Each Other",
+                  "Superposition of Two Wave Pulses of Equal Amplitude and Opposite Phases Moving towards Each Other",
+                  "Amplitude of the Resultant Wave Produced due to Superposition of Two Waves"
+              ]
+          },
+          {
+              "topic": "Progressive Waves",
+              "sub_topic": [
+                  "Properties of progressive waves"
+              ]
+          },
+          {
+              "topic": "Reflection of Waves",
+              "sub_topic": []
+          },
+          {
+              "topic": "Stationary Waves",
+              "sub_topic": [
+                  "Formation of Stationary Waves",
+                  "Equation of Stationary Wave on a Stretched String",
+                  "Condition for node",
+                  "Condition for antinode",
+                  "Properties of Stationary Waves",
+                  "Comparison of Progressive Waves and Stationary Waves"
+              ]
+          },
+          {
+              "topic": "Free and Forced Vibrations",
+              "sub_topic": []
+          },
+          {
+              "topic": "Harmonics and Overtones",
+              "sub_topic": [
+                  "End Correction",
+                  "Vibrations of air column in a pipe closed at one end",
+                  "Vibrations of air column in a pipe open at both ends",
+                  "Practical Determination of End Connection",
+                  "Vibrations Produced in a String",
+                  "Laws of a Vibrating String",
+                  "Law of length",
+                  "Law of tension",
+                  "Law of linear density"
+              ]
+          },
+          {
+              "topic": "Sonometer",
+              "sub_topic": [
+                  "Verification of first law of a vibrating string",
+                  "Verification of second law of a vibrating string",
+                  "Verification of third law of a vibrating string"
+              ]
+          },
+          {
+              "topic": "Beats",
+              "sub_topic": [
+                  "Analytical method to determine beat frequency",
+                  "Applications of beats"
+              ]
+          },
+          {
+              "topic": "Characteristics of Sound",
+              "sub_topic": [
+                  "Loudness",
+                  "Pitch",
+                  "Quality or timbre"
+              ]
+          },
+          {
+              "topic": "Musical Instruments",
+              "sub_topic": [
+                  "Stringed instruments",
+                  "Wind instruments",
+                  "Percussion instruments"
+              ]
+          }
+      ],
+      "subject": 1,
+      "class": 2
+  },
+  {
+      "id": 19,
+      "chapter_no": 7,
+      "chapter_name": "Wave Optics",
+      "weightage": 3,
+      "topics": [
+          {
+              "topic": "Introduction of Wave Optics",
+              "sub_topic": [
+                  "Wave Optics",
+                  "Newton's Corpuscular Theory of light",
+                  "Maxwell's Electromagnetic Theory",
+                  "Huygens' Wave Theory of light",
+                  "Merits of Huygens' Wave Theory",
+                  "Limitations of Huygens' wave theory",
+                  "Properties of Luminiferous Ether"
+              ]
+          },
+          {
+              "topic": "Nature of Light",
+              "sub_topic": [
+                  "Corpuscular Nature",
+                  "Wave Nature",
+                  "Dual Nature of Light",
+                  "Ray optics or geometrical optics",
+                  "Wave optics or physical optics",
+                  "Particle nature of light"
+              ]
+          },
+          {
+              "topic": "Light as a Wave",
+              "sub_topic": []
+          },
+          {
+              "topic": "Huygens' Theory",
+              "sub_topic": [
+                  "Primary and Secondary Sources of Light",
+                  "Wavefront",
+                  "Huygens' Principle"
+              ]
+          },
+          {
+              "topic": "Reflection of Light at a Plane Surface",
+              "sub_topic": []
+          },
+          {
+              "topic": "Refraction of Light at a Plane Boundary Between Two Media",
+              "sub_topic": [
+                  "Dependence of Wavelength on the Refractive Index of the Medium"
+              ]
+          },
+          {
+              "topic": "Polarization",
+              "sub_topic": [
+                  "Polarization by Reflection: Brewster's Law",
+                  "Polarization by Scattering"
+              ]
+          },
+          {
+              "topic": "Interference",
+              "sub_topic": []
+          },
+          {
+              "topic": "Diffraction of Light",
+              "sub_topic": [
+                  "Fresnel and Fraunhofer Diffraction",
+                  "Experimental set up for Fraunhofer diffraction",
+                  "Fraunhofer Diffraction at a Single Slit",
+                  "Comparison of Young's Double Slit Interference Pattern and Single Slit Diffraction Pattern",
+                  "Double slit diffraction pattern"
+              ]
+          },
+          {
+              "topic": "Resolving Power",
+              "sub_topic": [
+                  "Rayleigh's Criterion for Limit of Resolution (or for Resolving Power)",
+                  "Resolving Power of a Microscope",
+                  "Resolving Power of a Telescope"
+              ]
+          }
+      ],
+      "subject": 1,
+      "class": 2
+  },
+  {
+      "id": 20,
+      "chapter_no": 8,
+      "chapter_name": "Electrostatics",
+      "weightage": 3,
+      "topics": [
+          {
+              "topic": "Introduction to Electrostatics",
+              "sub_topic": []
+          },
+          {
+              "topic": "Application of Gauss' Law",
+              "sub_topic": [
+                  "Electric Field Intensity due to Uniformly Charged Spherical Shell or Hollow Sphere",
+                  "Electric Field Intensity due to an Infinitely Long Straight Charged Wire",
+                  "Electric Field due to a Charged Infinite Plane Sheet"
+              ]
+          },
+          {
+              "topic": "Electric Potential and Potential Energy",
+              "sub_topic": [
+                  "Expression for potential energy",
+                  "Units of potential energy",
+                  "Concept of Potential",
+                  "Relation between electric field and electric potential",
+                  "Zero potential"
+              ]
+          },
+          {
+              "topic": "Electric Potential Due to a Point Charge, a Dipole and a System of Charges",
+              "sub_topic": [
+                  "Electric potential due to a point charge",
+                  "Electric potential due to an electric dipole",
+                  "Electrostatics potential due to a system of charges"
+              ]
+          },
+          {
+              "topic": "Equipotential Surfaces",
+              "sub_topic": [
+                  "Equipotential surface",
+                  "Properties of equipotential surface",
+                  "Shapes of equipotential surface due to various charge distributions"
+              ]
+          },
+          {
+              "topic": "Electrical Energy of Two Point Charges and of a Dipole in an Electrostatic Field",
+              "sub_topic": [
+                  "Potential energy of a system of 2 point charges",
+                  "Potential energy for a system of N point charges",
+                  "Potential energy of a single charge in an external field",
+                  "Potential energy of a system of two charges in an external field",
+                  "Potential energy of a dipole in an external field"
+              ]
+          },
+          {
+              "topic": "Conductors and Insulators, Free Charges and Bound Charges Inside a Conductor",
+              "sub_topic": [
+                  "Conductors and Insulators",
+                  "Free charges and Bound charges inside materials"
+              ]
+          },
+          {
+              "topic": "Dielectrics and Electric Polarisation",
+              "sub_topic": [
+                  "Polar dielectrics",
+                  "Non Polar dielectrics",
+                  "Polarization of a non-polar dielectric in an external electric field",
+                  "Polarization of a polar dielectric in an external electric field",
+                  "Reduction of electric field due to polarization of a dielectric"
+              ]
+          },
+          {
+              "topic": "Capacitors and Capacitance, Combination of Capacitors in Series and Parallel",
+              "sub_topic": [
+                  "Uses of Capacitors",
+                  "Principle of a capacitor",
+                  "Combination of Capacitors",
+                  "Capacitors in series",
+                  "Capacitors in Parallel"
+              ]
+          },
+          {
+              "topic": "Capacitance of a Parallel Plate Capacitor with and Without Dielectric Medium Between the Plates",
+              "sub_topic": [
+                  "Capacitance of parallel plate capacitor without dielectric medium",
+                  "Capacitance of parallel plate capacitor with dielectric slab between the plates"
+              ]
+          },
+          {
+              "topic": "Displacement Current",
+              "sub_topic": [
+                  "Need for displacement current",
+                  "Ampere-Maxwell's circuital law",
+                  "Displacement current",
+                  "Conduction current",
+                  "Origin of electromagnetic waves",
+                  "Maxwell's equations",
+                  "Gauss' law in electrostatics",
+                  "Gauss' law in magnetism",
+                  "Faraday's law of electromagnetic induction",
+                  "Ampere - Maxwell's law"
+              ]
+          },
+          {
+              "topic": "Energy Stored in a Capacitor",
+              "sub_topic": []
+          },
+          {
+              "topic": "Van De Graaff Generator",
+              "sub_topic": [
+                  "Principle"
+              ]
+          }
+      ],
+      "subject": 1,
+      "class": 2
+  },
+  {
+      "id": 21,
+      "chapter_no": 9,
+      "chapter_name": "Current Electricity",
+      "weightage": 3,
+      "topics": [
+          {
+              "topic": "Current Electricity",
+              "sub_topic": []
+          },
+          {
+              "topic": "Kirchhoff's Laws of Electrical Network",
+              "sub_topic": [
+                  "Kirchhoff's First Law: (Current law/Junction law)",
+                  "Kirchhoff's Voltage Law"
+              ]
+          },
+          {
+              "topic": "Wheatstone Bridge",
+              "sub_topic": [
+                  "Wheatstone bridge",
+                  "Balanced bridge",
+                  "Unbalanced bridge"
+              ]
+          },
+          {
+              "topic": "Potentiometer",
+              "sub_topic": [
+                  "Potentiometer Principle",
+                  "Applications to measure potential difference",
+                  "To Compare emf. of Cells",
+                  "To Find Internal Resistance (r) of a Cell",
+                  "Application of potentiometer",
+                  "Voltage Divider",
+                  "Audio Control",
+                  "Potentiometer as a senor",
+                  "Advantages of a Potentiometer Over a Voltmeter",
+                  "Merits",
+                  "Demerits"
+              ]
+          },
+          {
+              "topic": "Galvanometer",
+              "sub_topic": [
+                  "Galvanometer as an Ammeter",
+                  "Galvanometer as a Voltmeter"
+              ]
+          }
+      ],
+      "subject": 1,
+      "class": 2
+  },
+  {
+      "id": 22,
+      "chapter_no": 10,
+      "chapter_name": "Magnetic Fields Due to Electric Current",
+      "weightage": 2,
+      "topics": [
+          {
+              "topic": "Magnetic Fields Due to Electric Current",
+              "sub_topic": []
+          },
+          {
+              "topic": "Magnetic Force",
+              "sub_topic": [
+                  "Sources and fields",
+                  "Magnetic Field, Lorentz Force",
+                  "Magnetic force on a current-carrying conductor"
+              ]
+          },
+          {
+              "topic": "Cyclotron Motion",
+              "sub_topic": [
+                  "Cyclotron Accelerator"
+              ]
+          },
+          {
+              "topic": "Helical Motion",
+              "sub_topic": []
+          },
+          {
+              "topic": "Magnetic Force on a Wire Carrying a Current",
+              "sub_topic": [
+                  "Straight wire",
+                  "Arbitrarily shaped wire"
+              ]
+          },
+          {
+              "topic": "Force on a Closed Circuit in a Magnetic Field",
+              "sub_topic": []
+          },
+          {
+              "topic": "Torque on a Current Loop in Magnetic Field",
+              "sub_topic": [
+                  "Torque on a rectangular current loop in a uniform magnetic field",
+                  "Circular current loop as a magnetic dipole",
+                  "The magnetic dipole moment of a revolving electron"
+              ]
+          },
+          {
+              "topic": "Magnetic Dipole Moment",
+              "sub_topic": []
+          },
+          {
+              "topic": "Magnetic Potential Energy of a Dipole",
+              "sub_topic": []
+          },
+          {
+              "topic": "Magnetic Field Due to a Current: Biot-savart Law",
+              "sub_topic": [
+                  "Current in a straight, long wire"
+              ]
+          },
+          {
+              "topic": "Force of Attraction Between Two Long Parallel Wires",
+              "sub_topic": []
+          },
+          {
+              "topic": "Magnetic Field Produced by a Current in a Circular Arc of a Wire",
+              "sub_topic": []
+          },
+          {
+              "topic": "Axial Magnetic Field Produced by Current in a Circular Loop",
+              "sub_topic": []
+          },
+          {
+              "topic": "Magnetic Lines for a Current Loop",
+              "sub_topic": []
+          },
+          {
+              "topic": "Ampere's Law",
+              "sub_topic": []
+          },
+          {
+              "topic": "Magnetic Field of a Solenoid and a Toroid",
+              "sub_topic": [
+                  "Magnetic field due to a long straight solenoid",
+                  "Magnetic field due to a toroidal solenoid"
+              ]
+          }
+      ],
+      "subject": 1,
+      "class": 2
+  },
+  {
+      "id": 23,
+      "chapter_no": 11,
+      "chapter_name": "Magnetic Materials",
+      "weightage": 1,
+      "topics": [
+          {
+              "topic": "Magnetic Materials",
+              "sub_topic": []
+          },
+          {
+              "topic": "Torque Acting on a Magnetic Dipole in a Uniform Magnetic Field",
+              "sub_topic": [
+                  "Location of Magnetic poles of a Current Carrying Loop"
+              ]
+          },
+          {
+              "topic": "Origin of Magnetism in Materials",
+              "sub_topic": [
+                  "Magnetic Moment of an Electron Revolving Around the Nucleus of an Atom"
+              ]
+          },
+          {
+              "topic": "Magnetization and Magnetic Intensity",
+              "sub_topic": []
+          },
+          {
+              "topic": "Magnetic Properties of Materials",
+              "sub_topic": [
+                  "Classification of magnetic material: Diamagnetic, Paramagnetic, Ferromagnetic",
+                  "Atomic theory of magnetism",
+                  "Magnetism on the basis of electron theory",
+                  "Diamagnetism",
+                  "Paramagnetism",
+                  "Ferromagnetism"
+              ]
+          },
+          {
+              "topic": "Hysteresis",
+              "sub_topic": []
+          },
+          {
+              "topic": "Permanent Magnet and Electromagnet",
+              "sub_topic": [
+                  "Permanent magnet",
+                  "Electromagnets and factors affecting their strengths",
+                  "Difference between Permanent magnet and electromagnet",
+                  "Advantage of an electromagnet over a permanent magnet"
+              ]
+          },
+          {
+              "topic": "Magnetic Shielding",
+              "sub_topic": []
+          }
+      ],
+      "subject": 1,
+      "class": 2
+  },
+  {
+      "id": 24,
+      "chapter_no": 12,
+      "chapter_name": "Electromagnetic Induction",
+      "weightage": 3,
+      "topics": [
+          {
+              "topic": "Electromagnetic Induction",
+              "sub_topic": [
+                  "Electromagnetic Induction",
+                  "Demonstration of the phenomenon of electromagnetic induction",
+                  "Faraday's explanation of Electromagnetic Induction"
+              ]
+          },
+          {
+              "topic": "Faraday's Laws of Electromagnetic Induction",
+              "sub_topic": [
+                  "Faraday's laws of Electromagnetic Induction",
+                  "Factors affecting the magnitude of induced e.m.f.",
+                  "The direction of induced e.m.f.",
+                  "Fleming's right-hand rule",
+                  "Lenz's Law and Faraday's Law"
+              ]
+          },
+          {
+              "topic": "Lenz's Law",
+              "sub_topic": [
+                  "Applications of Lenz's law",
+                  "Motion of a Magnet Toward a Loop",
+                  "Energy Conservation in Lenz's Law",
+                  "Lenz's Law and Faraday's Law"
+              ]
+          },
+          {
+              "topic": "Flux of the Field",
+              "sub_topic": []
+          },
+          {
+              "topic": "Motional Electromotive Force (e.m.f.)",
+              "sub_topic": [
+                  "Translational motion of a conductor",
+                  "Motional emf in a rotating bar"
+              ]
+          },
+          {
+              "topic": "Induced Emf in a Stationary Coil in a Changing Magnetic Field",
+              "sub_topic": []
+          },
+          {
+              "topic": "Generators",
+              "sub_topic": []
+          },
+          {
+              "topic": "Back Emf and Back Torque",
+              "sub_topic": []
+          },
+          {
+              "topic": "Induction and Energy Transfer",
+              "sub_topic": []
+          },
+          {
+              "topic": "Eddy Currents",
+              "sub_topic": [
+                  "Eddy Current",
+                  "Drawbacks",
+                  "Applications",
+                  "Dead-beat galvanometer",
+                  "Electric-brakes",
+                  "Induction furnace",
+                  "Speedometer",
+                  "Energy meter",
+                  "Induction motor"
+              ]
+          },
+          {
+              "topic": "Inductance",
+              "sub_topic": [
+                  "Self Inductance",
+                  "Self Induction",
+                  "Factors affecting self inductance (L)",
+                  "Mutual Inductance",
+                  "Mutual Induction",
+                  "Factors affecting mutual inductance (M)",
+                  "Relation between M, L1, and L2.",
+                  "Two coils in series",
+                  "Two coils in parallel"
+              ]
+          },
+          {
+              "topic": "Energy Stored in a Magnetic Field",
+              "sub_topic": []
+          },
+          {
+              "topic": "Energy Density of a Magnetic Field",
+              "sub_topic": []
+          },
+          {
+              "topic": "Transformers",
+              "sub_topic": [
+                  "Transformer",
+                  "Principle of transformer",
+                  "Efficiency of transformer (eta)",
+                  "Losses in transformer",
+                  "Cu loss (I2R)",
+                  "Eddy current loss",
+                  "Hysteresis loss",
+                  "Magnetic flux leakage",
+                  "Humming losses"
+              ]
+          }
+      ],
+      "subject": 1,
+      "class": 2
+  },
+  {
+      "id": 25,
+      "chapter_no": 13,
+      "chapter_name": "AC Circuits",
+      "weightage": 3,
+      "topics": [
+          {
+              "topic": "AC Circuits",
+              "sub_topic": []
+          },
+          {
+              "topic": "A.C. Generator",
+              "sub_topic": [
+                  "A.C. Generator (A. C. dynamo)",
+                  "Principle of A.C. generator"
+              ]
+          },
+          {
+              "topic": "Average and RMS Values",
+              "sub_topic": [
+                  "Average or mean value of AC",
+                  "Root-mean-square (or rms) value"
+              ]
+          },
+          {
+              "topic": "Phasors",
+              "sub_topic": []
+          },
+          {
+              "topic": "Different Types of AC Circuits",
+              "sub_topic": [
+                  "AC voltage applied to a resistor",
+                  "AC voltage applied to an Inductor",
+                  "AC voltage applied to a capacitor",
+                  "AC circuit containing resistance inductance and capacitance in series (LCR circuit)"
+              ]
+          },
+          {
+              "topic": "Power in AC Circuits",
+              "sub_topic": [
+                  "Average power associated with resistance (power in AC circuit with resistance)",
+                  "Average power associated with an inductor",
+                  "Average power associated with a capacitor",
+                  "Average power in LCR Circuit"
+              ]
+          },
+          {
+              "topic": "LC Oscillations",
+              "sub_topic": []
+          },
+          {
+              "topic": "Electric Resonance",
+              "sub_topic": [
+                  "Series resonance circuit",
+                  "Parallel resonance circuit"
+              ]
+          },
+          {
+              "topic": "Sharpness of Resonance: Q Factor",
+              "sub_topic": []
+          },
+          {
+              "topic": "Choke Coil",
+              "sub_topic": []
+          }
+      ],
+      "subject": 1,
+      "class": 2
+  },
+  {
+      "id": 26,
+      "chapter_no": 14,
+      "chapter_name": "Dual Nature of Radiation and Matter",
+      "weightage": 2,
+      "topics": [
+          {
+              "topic": "Dual Nature of Radiation and Matter",
+              "sub_topic": []
+          },
+          {
+              "topic": "The Photoelectric Effect",
+              "sub_topic": [
+                  "Experimental Set-up of Photoelectric Effect",
+                  "Observations from Experiments on Photoelectric Effect",
+                  "Failure of Wave Theory to Explain the Observations from Experiments on Photoelectric Effect",
+                  "Einstein's Postulate of Quantization of Energy and the Photoelectric Equation",
+                  "Dual behaviour of electromagnetic spectrum"
+              ]
+          },
+          {
+              "topic": "Wave-particle Duality of Electromagnetic Radiation",
+              "sub_topic": []
+          },
+          {
+              "topic": "Photo Cell",
+              "sub_topic": []
+          },
+          {
+              "topic": "De Broglie Hypothesis",
+              "sub_topic": []
+          },
+          {
+              "topic": "Davisson and Germer Experiment",
+              "sub_topic": []
+          },
+          {
+              "topic": "Wave-particle Duality of Matter",
+              "sub_topic": []
+          }
+      ],
+      "subject": 1,
+      "class": 2
+  },
+  {
+      "id": 27,
+      "chapter_no": 15,
+      "chapter_name": "Structure of Atoms and Nuclei",
+      "weightage": 2,
+      "topics": [
+          {
+              "topic": "Structure of Atoms and Nuclei",
+              "sub_topic": []
+          },
+          {
+              "topic": "Thomson's Atomic Model",
+              "sub_topic": []
+          },
+          {
+              "topic": "Geiger-marsden Experiment",
+              "sub_topic": []
+          },
+          {
+              "topic": "Rutherford's Atomic Model",
+              "sub_topic": [
+                  "Difficulties with Rutherford's Model"
+              ]
+          },
+          {
+              "topic": "Atomic Spectra",
+              "sub_topic": []
+          },
+          {
+              "topic": "Bohr's Atomic Model",
+              "sub_topic": [
+                  "Wave particle duality of electromagnetic radiation",
+                  "Line emission spectrum of hydrogen",
+                  "Radii of the Orbits",
+                  "Energy of the Electrons",
+                  "Limitations of Bohr's Model",
+                  "De Broglie's Explanation"
+              ]
+          },
+          {
+              "topic": "Atomic Nucleus",
+              "sub_topic": [
+                  "Constituents of a Nucleus",
+                  "Units for measuring masses of atoms and subatomic particles",
+                  "Sizes of Nuclei",
+                  "Nuclear Forces"
+              ]
+          },
+          {
+              "topic": "Nuclear Binding Energy",
+              "sub_topic": [
+                  "Binding energy",
+                  "Binding energy per nucleon",
+                  "Binding energy curve",
+                  "Importance of binding energy curve"
+              ]
+          },
+          {
+              "topic": "Radioactive Decays",
+              "sub_topic": [
+                  "Alpha Decay",
+                  "Beta Decay",
+                  "Gamma Decay"
+              ]
+          },
+          {
+              "topic": "Law of Radioactive Decay",
+              "sub_topic": []
+          },
+          {
+              "topic": "Nuclear Energy",
+              "sub_topic": []
+          }
+      ],
+      "subject": 1,
+      "class": 2
+  },
+  {
+      "id": 28,
+      "chapter_no": 16,
+      "chapter_name": "Semiconductor Devices",
+      "weightage": 2,
+      "topics": [
+          {
+              "topic": "Semiconductor Devices",
+              "sub_topic": []
+          },
+          {
+              "topic": "p-n Junction Diode as a Rectifier",
+              "sub_topic": [
+                  "Half Wave Rectifier",
+                  "Full Wave Rectifier",
+                  "Ripple Factor",
+                  "Filter circuits",
+                  "A capacitor filter"
+              ]
+          },
+          {
+              "topic": "Special Purpose Junction Diodes",
+              "sub_topic": [
+                  "Zener Diode"
+              ]
+          },
+          {
+              "topic": "Bipolar Junction Transistor (BJT)",
+              "sub_topic": [
+                  "Emitter",
+                  "Base",
+                  "Collector",
+                  "Depletion region",
+                  "Current",
+                  "Resistance",
+                  "Working of a p-n-p transistor",
+                  "Transistor configuration",
+                  "The Common Emitter (CE) Configuration",
+                  "The Common Emitter (CE) characteristic",
+                  "Transistor as an Amplifier",
+                  "Working of the amplifier"
+              ]
+          },
+          {
+              "topic": "Logic Gates",
+              "sub_topic": [
+                  "NOT Gate",
+                  "OR Gate",
+                  "AND Gate",
+                  "NAND Gate",
+                  "NOR Gate",
+                  "Exclusive OR/ X-OR Gate"
+              ]
+          },
+          {
+              "topic": "Junction Break Down",
+              "sub_topic": [
+                  "Zener Breakdown",
+                  "Zener Diode Characteristic",
+                  "Zener diode as a voltage regulator",
+                  "Working of a Zener Regulator",
+                  "Applications of Zener Diode",
+                  "Photo Diode",
+                  "Solar Cell or Photovoltaic Cell",
+                  "Structure of a Solar Cell",
+                  "Working of a solar cell",
+                  "V-I Characteristic of solar Cell or Photovoltaic cell",
+                  "Criteria for selection of material for solar cell",
+                  "Use of Solar cell",
+                  "Light Emitting Diode / LED",
+                  "Working of a LED",
+                  "I-V Characteristics Light Emitting Diodes",
+                  "Advantages of LED",
+                  "Disadvantages of LED",
+                  "Application of LED"
+              ]
+          }
+      ],
+      "subject": 1,
+      "class": 2
+  },
+  {
+    "id": 29,
     "chapter_no": 1,
     "chapter_name": "Some Basic Concepts of Chemistry",
     "weightage": 1,
@@ -1004,7 +1879,7 @@
     "class": 1
   },
   {
-    "id": 26,
+    "id": 30,
     "chapter_no": 2,
     "chapter_name": "Structure of Atom",
     "weightage": 2,
@@ -1042,7 +1917,7 @@
     "class": 1
   },
   {
-    "id": 27,
+    "id": 31,
     "chapter_no": 3,
     "chapter_name": "Chemical Bonding",
     "weightage": 1,
@@ -1108,7 +1983,7 @@
     "class": 1
   },
   {
-    "id": 28,
+    "id": 32,
     "chapter_no": 4,
     "chapter_name": "Redox Reactions",
     "weightage": 1,
@@ -1134,7 +2009,7 @@
     "class": 1
   },
   {
-    "id": 29,
+    "id": 33,
     "chapter_no": 5,
     "chapter_name": "Elements of Group 1 and Group 2",
     "weightage": 1,
@@ -1156,7 +2031,7 @@
     "class": 1
   },
   {
-    "id": 30,
+    "id": 34,
     "chapter_no": 6,
     "chapter_name": "States of Matter: Gaseous and Liquid States",
     "weightage": 1,
@@ -1202,7 +2077,7 @@
     "class": 1
   },
   {
-    "id": 31,
+    "id": 35,
     "chapter_no": 7,
     "chapter_name": "Adsorption and Colloids",
     "weightage": 1,
@@ -1244,7 +2119,7 @@
     "class": 1
   },
   {
-    "id": 32,
+    "id": 36,
     "chapter_no": 8,
     "chapter_name": "Basic Principles of Organic Chemistry",
     "weightage": 2,
@@ -1278,7 +2153,7 @@
     "class": 1
   },
   {
-    "id": 33,
+    "id": 37,
     "chapter_no": 9,
     "chapter_name": "Hydrocarbons",
     "weightage": 1,
@@ -1300,7 +2175,7 @@
     "class": 1
   },
   {
-    "id": 34,
+    "id": 38,
     "chapter_no": 10,
     "chapter_name": "Chemistry in Everyday Life",
     "weightage": 1,
@@ -1321,34 +2196,8 @@
     "subject": 2,
     "class": 1
   }, 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
   {
-    "id": 35,
+    "id": 39,
     "chapter_no": 1,
     "chapter_name": "Solid State",
     "weightage": 3,
@@ -1398,7 +2247,7 @@
     "class": 2
   },
   {
-    "id": 36,
+    "id": 40,
     "chapter_no": 2,
     "chapter_name": "Solutions",
     "weightage": 3,
@@ -1452,7 +2301,7 @@
     "class": 2
   },
   {
-    "id": 37,
+    "id": 41,
     "chapter_no": 3,
     "chapter_name": "Ionic Equilibria",
     "weightage": 2,
@@ -1502,7 +2351,7 @@
     "class": 2
   },
   {
-    "id": 38,
+    "id": 42,
     "chapter_no": 4,
     "chapter_name": "Chemical Thermodynamics",
     "weightage": 3,
@@ -1556,7 +2405,7 @@
     "class": 2
   },
   {
-    "id": 39,
+    "id": 43,
     "chapter_no": 5,
     "chapter_name": "Electrochemistry",
     "weightage": 2,
@@ -1614,7 +2463,7 @@
     "class": 2
   },
   {
-    "id": 40,
+    "id": 44,
     "chapter_no": 6,
     "chapter_name": "Chemical Kinetics",
     "weightage": 2,
@@ -1655,16 +2504,738 @@
     "subject": 2,
     "class": 2
   },
-
-
-
-
-
-
-
-
   {
-    "id": 41,
+    "id": 45,
+    "chapter_no": 7,
+    "chapter_name": "Elements of Groups 16, 17, and 18",
+    "weightage": 4,
+    "topics": [
+      {
+        "topic": "Occurrence of Elements of Groups 16, 17 and 18",
+        "sub_topic": []
+      },
+      {
+        "topic": "Electronic Configuration of Elements of Group 16, 17 and 18",
+        "sub_topic": []
+      },
+      {
+        "topic": "Atomic and Physical Properties of Elements of Group 16, 17 and 18",
+        "sub_topic": [
+          "Atomic properties of Group 16, 17 and 18 elements",
+          "Physical properties of group 16, 17 and 18 elements"
+        ]
+      },
+      {
+        "topic": "P - Block Group 16 Elements",
+        "sub_topic": [
+          "Anomalous Behaviour of Oxygen",
+          "Compounds of Sulphur"
+        ]
+      },
+      {
+        "topic": "P - Block Group 17 Elements",
+        "sub_topic": [
+          "Anomalous Behaviour of Fluorine",
+          "Interhalogen Compounds"
+        ]
+      },
+      {
+        "topic": "Chemical Properties of Elements of Groups 16, 17 and 18",
+        "sub_topic": [
+          "Oxidation state",
+          "Chemical Reactivity towards hydrogen",
+          "Reactivity towards oxygen",
+          "Reactivity towards halogens",
+          "Reactivity towards metals"
+        ]
+      },
+      {
+        "topic": "Allotropy",
+        "sub_topic": [
+          "Allotropes of sulfur"
+        ]
+      },
+      {
+        "topic": "Oxoacids",
+        "sub_topic": [
+          "Oxoacids of sulfur",
+          "Oxoacids of halogens"
+        ]
+      },
+      {
+        "topic": "Oxygen and Compounds of Oxygen",
+        "sub_topic": [
+          "Dioxygen",
+          "Simple Oxides",
+          "Ozone"
+        ]
+      },
+      {
+        "topic": "Chlorine and Compounds of Chlorine",
+        "sub_topic": [
+          "Chlorine",
+          "Hydrogen Chloride"
+        ]
+      },
+      {
+        "topic": "Compounds of Xenon",
+        "sub_topic": [
+          "Compounds of Xenon",
+          "Xenon fluorides",
+          "Xenon difluoride (XeF2)",
+          "Xenon tetrafluoride (XeF4)",
+          "Xenon hexafluoride (XeF6)",
+          "Xenon oxides",
+          "Xenon trioxide (XeO3)",
+          "Xenon tetraoxide (XeO4)",
+          "XeOF4 and XeO2F2"
+        ]
+      }
+    ],
+    "subject": 2,
+    "class": 2
+  },
+  {
+    "id": 46,
+    "chapter_no": 8,
+    "chapter_name": "Transition and Inner Transition Elements",
+    "weightage": 3,
+    "topics": [
+      {
+        "topic": "Transition (D Block) Elements",
+        "sub_topic": []
+      },
+      {
+        "topic": "Trends in Atomic Properties of the First Transition Series",
+        "sub_topic": [
+          "Atomic and ionic radii",
+          "Ionisation Enthalpy",
+          "Metallic character",
+          "Magnetic Properties",
+          "Colour",
+          "Catalytic Properties",
+          "Formation of interstitial compounds",
+          "Formation of Alloys"
+        ]
+      },
+      {
+        "topic": "Compounds of Mn and Cr",
+        "sub_topic": [
+          "Preparation of potassium permaganate",
+          "Chemical properties of KMnO4",
+          "Uses of KMnO4",
+          "K2Cr2O7: Preparation of potassium dichromate",
+          "Chemical properties of K2Cr2O7"
+        ]
+      },
+      {
+        "topic": "Common Properties of d Block Elements",
+        "sub_topic": []
+      },
+      {
+        "topic": "Extraction of Metals",
+        "sub_topic": [
+          "Metallurgy",
+          "Extraction of Iron from Haematite ore using Blast furnace"
+        ]
+      },
+      {
+        "topic": "Metallurgy",
+        "sub_topic": [
+          "Metallurgy",
+          "Pyrometallurgy",
+          "Hydrometallurgy",
+          "Electrometallurgy",
+          "Basic principles of metallurgy",
+          "Terminology in metallurgy",
+          "Metallurgical process involve three main steps"
+        ]
+      },
+      {
+        "topic": "Inner transition (f block) elements",
+        "sub_topic": [
+          "Lanthanoids and Actinoids"
+        ]
+      },
+      {
+        "topic": "Position in the Periodic Table - d-block Elements",
+        "sub_topic": [
+          "Occurrence and characteristics of transition metals"
+        ]
+      },
+      {
+        "topic": "Electronic Configuration",
+        "sub_topic": []
+      },
+      {
+        "topic": "Oxidation States of First Transition Series",
+        "sub_topic": []
+      },
+      {
+        "topic": "Physical Properties of First Transition Series",
+        "sub_topic": []
+      },
+      {
+        "topic": "Properties of Lanthanoids",
+        "sub_topic": [
+          "Electronic configuration",
+          "Oxidation state",
+          "Colour and Spectra",
+          "Atomic and ionic radii (Lanthanoid Contraction)"
+        ]
+      },
+      {
+        "topic": "F-block Elements",
+        "sub_topic": [
+          "The Actinoids Electronic Configurations, Ionic Sizes, Oxidation States, General Characteristics and Comparison with Lanthanoids between lanthanoids and actinoids"
+        ]
+      },
+      {
+        "topic": "Applications of Actinoids",
+        "sub_topic": []
+      },
+      {
+        "topic": "Postactinoid Elements",
+        "sub_topic": []
+      }
+    ],
+    "subject": 2,
+    "class": 2
+  },
+  {
+    "id": 47,
+    "chapter_no": 9,
+    "chapter_name": "Coordination Compounds",
+    "weightage": 2,
+    "topics": [
+      {
+        "topic": "Coordination Compounds",
+        "sub_topic": []
+      },
+      {
+        "topic": "Types of Ligands",
+        "sub_topic": [
+          "Monodentate ligands",
+          "Polydentate ligands",
+          "Ambidentate ligand"
+        ]
+      },
+      {
+        "topic": "Terms Used in Coordination Chemistry",
+        "sub_topic": [
+          "Coordination sphere",
+          "Charge number of complex ion and oxidation state of metal ion",
+          "Coordination number (C.N.) of central metal ion",
+          "Double salt and coordination complex",
+          "Werner theory of coordination complexes"
+        ]
+      },
+      {
+        "topic": "Classification of Complexes",
+        "sub_topic": [
+          "Classification on the basis of types of ligands",
+          "Classification on the basis of charge on the complex"
+        ]
+      },
+      {
+        "topic": "IUPAC Nomenclature of Coordination Compounds",
+        "sub_topic": []
+      },
+      {
+        "topic": "Effective Atomic Number (EAN) Rule",
+        "sub_topic": []
+      },
+      {
+        "topic": "Isomerism in Coordination Compounds",
+        "sub_topic": [
+          "Stereoisomers",
+          "Structural isomers (Constitutional isomers)",
+          "Optical Isomerism"
+        ]
+      },
+      {
+        "topic": "Stability of Coordination Compounds",
+        "sub_topic": [
+          "Stability of coordination compounds",
+          "Factors which govern stability of the complex",
+          "Charge to size ratio of the metal ion",
+          "Nature of the ligand",
+          "Stability of chelates"
+        ]
+      },
+      {
+        "topic": "Theories of Bonding in Complexes",
+        "sub_topic": [
+          "Valence bond theory (VBT)",
+          "Octahedral, complexes",
+          "Tetrahedral complex",
+          "Square planar complex",
+          "Limitations of VBT",
+          "Crystal Field theory (CFT)",
+          "Factors affecting Crystal Field Splitting parameter (∆0)",
+          "Colour of the octahedral complexes",
+          "Tetrahedral complexes"
+        ]
+      },
+      {
+        "topic": "Applications of Coordination Compounds",
+        "sub_topic": []
+      }
+    ],
+    "subject": 2,
+    "class": 2
+  },
+  {
+    "id": 48,
+    "chapter_no": 10,
+    "chapter_name": "Halogen Derivatives",
+    "weightage": 3,
+    "topics": [
+      {
+        "topic": "Introduction of Halogen Derivatives",
+        "sub_topic": []
+      },
+      {
+        "topic": "Classification of Halogen Derivatives",
+        "sub_topic": [
+          "Classification of monohalogen compounds"
+        ]
+      },
+      {
+        "topic": "Nomenclature of Halogen Derivatives",
+        "sub_topic": []
+      },
+      {
+        "topic": "Methods of Preparation of Alkyl Halides",
+        "sub_topic": [
+          "From alcohol",
+          "From hydrocarbon",
+          "Halogen exchange",
+          "Electrophilic substitution",
+          "Sandmeyer's reaction"
+        ]
+      },
+      {
+        "topic": "Physical Properties",
+        "sub_topic": [
+          "Nature of intermolecular forces",
+          "Boiling point",
+          "Solubility"
+        ]
+      },
+      {
+        "topic": "Optical Isomerism in Halogen Derivatives",
+        "sub_topic": [
+          "Chiral atom and molecular chirality",
+          "Plane polarized light",
+          "Optical activity",
+          "Enantiomers",
+          "Representation of configuration of molecules"
+        ]
+      },
+      {
+        "topic": "Chemical Properties",
+        "sub_topic": [
+          "Laboratory test of haloalkanes",
+          "Nucleophilic substitution reactions of haloalkanes",
+          "Mechanism of SN reaction",
+          "Factors influencing SN1 and SN2 mechanism",
+          "Elimination reaction : Dehydrohalogenation"
+        ]
+      },
+      {
+        "topic": "Uses and Environmental Effects of Some Polyhalogen Compounds",
+        "sub_topic": [
+          "Dichloromethane/methylene chloride (CH2Cl2)",
+          "Chloroform/trichloromethane (CHCl3)",
+          "Carbon tetrachloride/tetrachloromethane (CCl4)",
+          "Idoform or triiodomethane (CHI3)",
+          "Freons",
+          "Dichlorodiphenyltrichloroethane (DDT)"
+        ]
+      },
+      {
+        "topic": "Reaction with Active Metals",
+        "sub_topic": [
+          "Reaction of haloarenes"
+        ]
+      }
+    ],
+    "subject": 2,
+    "class": 2
+  },
+  {
+    "id": 49,
+    "chapter_no": 11,
+    "chapter_name": "Alcohols, Phenols, and Ethers",
+    "weightage": 3,
+    "topics": [
+      {
+        "topic": "Alcohols, Phenols and Ethers",
+        "sub_topic": []
+      },
+      {
+        "topic": "Classification of Alcohols, Phenols and Ethers",
+        "sub_topic": [
+          "Mono, di, tri and polyhydric compounds",
+          "Classification of Ethers"
+        ]
+      },
+      {
+        "topic": "Nomenclature of Alcohols, Phenols and Ethers",
+        "sub_topic": []
+      },
+      {
+        "topic": "Alcohols and Phenols",
+        "sub_topic": []
+      },
+      {
+        "topic": "Ethers",
+        "sub_topic": []
+      },
+      {
+        "topic": "Uses of Alcohols, Phenols and Ethers",
+        "sub_topic": []
+      }
+    ],
+    "subject": 2,
+    "class": 2
+  },
+  {
+    "id": 50,
+    "chapter_no": 12,
+    "chapter_name": "Aldehydes, Ketones, and Carboxylic Acids",
+    "weightage": 3,
+    "topics": [
+      {
+        "topic": "Aldehydes and Ketones",
+        "sub_topic": []
+      },
+      {
+        "topic": "Classification of Aldehydes, Ketones and Carboxylic Acids",
+        "sub_topic": []
+      },
+      {
+        "topic": "Nomenclature of Aldehydes, Ketones and Carboxylic Acids",
+        "sub_topic": [
+          "Nomenclature of aldehydes and carboxylic acid",
+          "Trivial and IUPAC names of ketones"
+        ]
+      },
+      {
+        "topic": "Preparation of Aldehydes and Ketones",
+        "sub_topic": [
+          "Methods for the preparation of aldehydes and ketones",
+          "By oxidation of alcohols",
+          "By dehydrogenation of alcohols",
+          "From hydrocarbons",
+          "By ozonolysis of alkenes",
+          "By hydration of alkynes"
+        ]
+      },
+      {
+        "topic": "Preparation of Carboxylic Acids",
+        "sub_topic": [
+          "From nitriles and amides",
+          "From acyl chloride and anhydrides",
+          "From esters",
+          "From alkyl benzene",
+          "From alkenes",
+          "From Grignard reagent"
+        ]
+      },
+      {
+        "topic": "Physical Properties of Aldehydes and Ketones",
+        "sub_topic": []
+      },
+      {
+        "topic": "Physical Properties of Carboxylic Acids",
+        "sub_topic": []
+      },
+      {
+        "topic": "Polarity of Carbonyl Group",
+        "sub_topic": [
+          "Reactivity of aldehydes and ketones"
+        ]
+      },
+      {
+        "topic": "Chemical Properties of Aldehydes and Ketones",
+        "sub_topic": [
+          "Laboratory tests for aldehydes and ketones",
+          "Chemical reactions of aldehydes and ketones with nucleophile",
+          "Oxidation and reduction reactions of aldehydes and ketones",
+          "Electrophilic substitution reactions"
+        ]
+      },
+      {
+        "topic": "Chemical Properties of Carboxylic Acids",
+        "sub_topic": [
+          "Acidic character of carboxylic acids",
+          "Laboratory tests for carboxyl (-COOH) group",
+          "Formation of acyl chloride",
+          "Reaction with ammonia",
+          "Formation of acid anhydride",
+          "Decarboxylation of carboxylic acids",
+          "Reduction of carboxylic acids"
+        ]
+      }
+    ],
+    "subject": 2,
+    "class": 2
+  },
+  {
+    "id": 51,
+    "chapter_no": 13,
+    "chapter_name": "Amines",
+    "weightage": 3,
+    "topics": [
+      {
+        "topic": "Introduction of Amines",
+        "sub_topic": []
+      },
+      {
+        "topic": "Classification of Amines",
+        "sub_topic": [
+          "Classification of amines",
+          "Aliphatic amines",
+          "Aromatic amines"
+        ]
+      },
+      {
+        "topic": "Nomenclature of Amines",
+        "sub_topic": [
+          "Common names",
+          "IUPAC names"
+        ]
+      },
+      {
+        "topic": "Amines",
+        "sub_topic": [
+          "Preparation of Amines",
+          "From alkyl halides (by ammonolysis/Hoffmann's ammonolysis method)",
+          "Gabriel phthalimide synthesis",
+          "From alkyl cyanides, amides, and nitro compounds",
+          "From amides (By Hoffmann bromamide degradation)",
+          "Additional methods for the preparation of amines"
+        ]
+      },
+      {
+        "topic": "Physical Properties of Amines",
+        "sub_topic": []
+      },
+      {
+        "topic": "Basicity of Amines",
+        "sub_topic": [
+          "Basic strength of aliphatic amines",
+          "Basicity of arylamines"
+        ]
+      },
+      {
+        "topic": "Chemical Properties of Amines",
+        "sub_topic": []
+      },
+      {
+        "topic": "Reactions of Arene Diazonium Salts",
+        "sub_topic": [
+          "Reactions involving displacement of diazo group",
+          "Reactions involving retention of diazo group: (Coupling reactions)"
+        ]
+      },
+      {
+        "topic": "Reaction with Arenesulfonyl Chloride",
+        "sub_topic": []
+      },
+      {
+        "topic": "Electrophilic Aromatic Substitution in Aromatic Amines",
+        "sub_topic": []
+      }
+    ],
+    "subject": 2,
+    "class": 2
+  },
+  {
+    "id": 52,
+    "chapter_no": 14,
+    "chapter_name": "Biomolecules",
+    "weightage": 2,
+    "topics": [
+      {
+        "topic": "Biomolecules in Living System",
+        "sub_topic": []
+      },
+      {
+        "topic": "Biomolecules in the Cell",
+        "sub_topic": [
+          "Carbohydrates",
+          "Types of Carbohydrates based on sugar unit",
+          "Monosaccharides",
+          "Oligosaccharides",
+          "Disaccharides",
+          "Trisaccharides",
+          "Tetrasaccharides",
+          "Polysaccharides",
+          "Biological significance of Carbohydrates",
+          "Nomenclature of monosaccharides",
+          "Glucose",
+          "Structure and properties of glucose",
+          "Optical isomerism in glucose",
+          "Ring structure of glucose",
+          "Reducing nature of glucose",
+          "Representation of Fructose structure",
+          "Proteins",
+          "Functions of proteins",
+          "Nucleic Acids",
+          "Nucleotides",
+          "Structure of DNA",
+          "Ribonucleic Acid (RNA)",
+          "DNA double helix",
+          "Types of RNA molecules",
+          "Biological functions of nucleic acids"
+        ]
+      },
+      {
+        "topic": "Principal Molecules of the Living World",
+        "sub_topic": []
+      }
+    ],
+    "subject": 2,
+    "class": 2
+  },
+  {
+    "id": 53,
+    "chapter_no": 15,
+    "chapter_name": "Introduction to Polymer Chemistry",
+    "weightage": 2,
+    "topics": [
+      {
+        "topic": "Introduction to Polymer Chemistry",
+        "sub_topic": []
+      },
+      {
+        "topic": "Classification of Polymers",
+        "sub_topic": [
+          "Classification of polymers on the basis of source or origin",
+          "Classification of polymers on the basis of structure",
+          "Classification of polymers on the basis of mode of polymerization",
+          "Classification of polymers on the basis of intermolecular forces",
+          "Classification of polymers on the basis of type of different monomers",
+          "Classification of polymers on the basis of biodegradability"
+        ]
+      },
+      {
+        "topic": "Polymers",
+        "sub_topic": [
+          "Some Important Polymers",
+          "Rubber",
+          "Polythene",
+          "Teflon",
+          "Polyacrylonitrile",
+          "Polyamide polymers",
+          "Polyesters",
+          "Phenol - formaldehyde and related polymers",
+          "Buna-S rubber",
+          "Neoprene",
+          "Viscose rayon"
+        ]
+      },
+      {
+        "topic": "Molecular Mass and Degree of Polymerization of Polymers",
+        "sub_topic": []
+      },
+      {
+        "topic": "Biodegradable Polymers",
+        "sub_topic": [
+          "Poly beta-hydroxybutyrate - co-beta-hydroxy valerate (PHBV)",
+          "Nylon 2- nylon 6",
+          "Biodegradable and non-biodegradable polymers"
+        ]
+      },
+      {
+        "topic": "Commercially Important Polymers",
+        "sub_topic": []
+      }
+    ],
+    "subject": 2,
+    "class": 2
+  },
+  {
+    "id": 54,
+    "chapter_no": 16,
+    "chapter_name": "Green Chemistry and Nanochemistry",
+    "weightage": 1,
+    "topics": [
+      {
+        "topic": "Green Chemistry and Nanochemistry",
+        "sub_topic": []
+      },
+      {
+        "topic": "Concept of Sustainable Development",
+        "sub_topic": [
+          "Case Study - Indira Gandhi Canal (Nahar) Command Area",
+          "Measures for Promotion of Sustainable Development"
+        ]
+      },
+      {
+        "topic": "Principles of Green Chemistry",
+        "sub_topic": [
+          "Prevention of waste or by products",
+          "Atom economy",
+          "Less hazardous chemical synthesis",
+          "Desigining Safer Chemicals",
+          "Use Safer solvent and auxilaries",
+          "Design for energy efficiency",
+          "Use of renewable feedstocks",
+          "Reduce derivatives : [Minimization of steps]",
+          "Use of catalysis",
+          "Design for degradation",
+          "Real-time Analysis Pollution Prevention",
+          "Safer chemistry for Accident prevention"
+        ]
+      },
+      {
+        "topic": "The Role of Green Chemistry",
+        "sub_topic": []
+      },
+      {
+        "topic": "Introduction to Nanochemistry",
+        "sub_topic": []
+      },
+      {
+        "topic": "Characteristic Features of Nanoparticles",
+        "sub_topic": [
+          "Colour",
+          "Surface area",
+          "Catalytic activity",
+          "Mechanical properties",
+          "Electrical conductivity"
+        ]
+      },
+      {
+        "topic": "Synthesis of Nanomaterials",
+        "sub_topic": [
+          "Wet chemical synthesis of Nanomaterials",
+          "Analysis or characterization of nanomaterials",
+          "Photographs of instruments"
+        ]
+      },
+      {
+        "topic": "History of Nanotechnology",
+        "sub_topic": []
+      },
+      {
+        "topic": "Applications of Nanomaterials",
+        "sub_topic": []
+      },
+      {
+        "topic": "Nanoparticles and Nanotechnology",
+        "sub_topic": []
+      }
+    ],
+    "subject": 2,
+    "class": 2
+  },
+  {
+    "id": 55,
     "chapter_no": 1,
     "chapter_name": "Trigonometry - II",
     "weightage": 1,
@@ -1702,7 +3273,7 @@
     "class": 1
   },
   {
-    "id": 42,
+    "id": 56,
     "chapter_no": 2,
     "chapter_name": "Straight Line",
     "weightage": 1,
@@ -1748,7 +3319,7 @@
     "class": 1
   },
   {
-    "id": 43,
+    "id": 57,
     "chapter_no": 3,
     "chapter_name": "Circle",
     "weightage": 1,
@@ -1790,7 +3361,7 @@
     "class": 1
   },
   {
-    "id": 44,
+    "id": 58,
     "chapter_no": 4,
     "chapter_name": "Conic Sections",
     "weightage": 1,
@@ -1812,7 +3383,7 @@
     "class": 1
   },
   {
-    "id": 45,
+    "id": 59,
     "chapter_no": 5,
     "chapter_name": "Probability",
     "weightage": 1,
@@ -1862,7 +3433,7 @@
     "class": 1
   },
   {
-    "id": 46,
+    "id": 60,
     "chapter_no": 6,
     "chapter_name": "Complex Numbers",
     "weightage": 1,
@@ -1928,7 +3499,7 @@
     "class": 1
   },
   {
-    "id": 47,
+    "id": 61,
     "chapter_no": 7,
     "chapter_name": "Permutations and Combinations",
     "weightage": 1,
@@ -1958,7 +3529,7 @@
     "class": 1
   },
   {
-    "id": 48,
+    "id": 62,
     "chapter_no": 8,
     "chapter_name": "Functions",
     "weightage": 1,
@@ -1976,7 +3547,7 @@
     "class": 1
   },
   {
-    "id": 49,
+    "id": 63,
     "chapter_no": 9,
     "chapter_name": "Limits",
     "weightage": 1,
@@ -2014,7 +3585,7 @@
     "class": 1
   },
   {
-    "id": 50,
+    "id": 64,
     "chapter_no": 10,
     "chapter_name": "Continuity",
     "weightage": 1,
@@ -2054,7 +3625,7 @@
 
 
   {
-    "id": 51,
+    "id": 65,
     "chapter_no": 1,
     "chapter_name": "Mathematical Logic",
     "weightage": 2,
@@ -2108,7 +3679,7 @@
     "class": 2
   },
   {
-    "id": 52,
+    "id": 66,
     "chapter_no": 2,
     "chapter_name": "Matrices",
     "weightage": 3,
@@ -2130,7 +3701,7 @@
     "class": 2
   },
   {
-    "id": 53,
+    "id": 67,
     "chapter_no": 3,
     "chapter_name": "Trigonometric Functions",
     "weightage": 3,
@@ -2152,7 +3723,7 @@
     "class": 2
   },
   {
-    "id": 54,
+    "id": 68,
     "chapter_no": 4,
     "chapter_name": "Pair of Straight Lines",
     "weightage": 2,
@@ -2198,7 +3769,7 @@
     "class": 2
   },
   {
-    "id": 55,
+    "id": 69,
     "chapter_no": 5,
     "chapter_name": "Vectors",
     "weightage": 4,
@@ -2284,7 +3855,7 @@
     "class": 2
   },
   {
-    "id": 56,
+    "id": 70,
     "chapter_no": 6,
     "chapter_name": "Line and Plane",
     "weightage": 4,
@@ -2322,7 +3893,7 @@
     "class": 2
   },
   {
-    "id": 57,
+    "id": 71,
     "chapter_no": 7,
     "chapter_name": "Linear Programming",
     "weightage": 1,
@@ -2364,7 +3935,7 @@
     "class": 2
   },
   {
-    "id": 58,
+    "id": 72,
     "chapter_no": 8,
     "chapter_name": "Differentiation",
     "weightage": 3,
@@ -2410,7 +3981,7 @@
     "class": 2
   },
   {
-    "id": 59,
+    "id": 73,
     "chapter_no": 9,
     "chapter_name": "Applications of Derivatives",
     "weightage": 2,
@@ -2452,7 +4023,7 @@
     "class": 2
   },
   {
-    "id": 60,
+    "id": 74,
     "chapter_no": 10,
     "chapter_name": "Indefinite Integration",
     "weightage": 3,
@@ -2490,7 +4061,7 @@
     "class": 2
   },
   {
-    "id": 61,
+    "id": 75,
     "chapter_no": 11,
     "chapter_name": "Definite Integration",
     "weightage": 3,
@@ -2520,7 +4091,7 @@
     "class": 2
   },
   {
-    "id": 62,
+    "id": 76,
     "chapter_no": 12,
     "chapter_name": "Application of Definite Integration",
     "weightage": 2,
@@ -2542,7 +4113,7 @@
     "class": 2
   },
   {
-    "id": 63,
+    "id": 77,
     "chapter_no": 13,
     "chapter_name": "Differential Equations",
     "weightage": 4,
@@ -2576,7 +4147,7 @@
     "class": 2
   },
   {
-    "id": 64,
+    "id": 78,
     "chapter_no": 14,
     "chapter_name": "Probability Distribution",
     "weightage": 2,
@@ -2594,7 +4165,7 @@
     "class": 2
   },
   {
-    "id": 65,
+    "id": 79,
     "chapter_no": 15,
     "chapter_name": "Binomial Distribution",
     "weightage": 2,
@@ -2619,6 +4190,4 @@
     "subject": 3,
     "class": 2
   }
-
-
 ]

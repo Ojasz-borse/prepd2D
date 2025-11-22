@@ -10,8 +10,8 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React, { useEffect } from "react";
-import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Platform, StyleSheet, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HomeTabIcon from "../assets/icons/HomeTabIcon";
 import { colors } from "../constants/theme";
@@ -21,16 +21,28 @@ const Tab = createBottomTabNavigator();
 export default function Home() {
   const router = useRouter();
   const { checkAuth } = useAuth();
-
+  const [isVerifying, setIsVerifying] = useState(true);
+  
   useEffect(() => {
     const verify = async () => {
       const isSignedIn = await checkAuth();
       if (!isSignedIn) {
         router.replace("/");
       }
+      else{
+        setIsVerifying(false);
+      }
     };
     verify();
   }, []);
+
+  if (isVerifying) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#f2f2f2" }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f2f2f2" }}>
