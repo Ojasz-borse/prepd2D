@@ -1,14 +1,16 @@
+import MathText from "@/components/MathText";
 import { router, useLocalSearchParams } from "expo-router";
 import * as ScreenOrientation from "expo-screen-orientation";
 import React, { useEffect } from "react";
 import {
   BackHandler,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface UserAnswer {
   id: number;
@@ -19,6 +21,8 @@ interface UserAnswer {
   user_choice: string | null;
 }
 
+const MemoMathText = React.memo(MathText);
+
 const Result = () => {
   const { data } = useLocalSearchParams<{ data: string }>();
   const userAnswers: UserAnswer[] = data
@@ -27,7 +31,7 @@ const Result = () => {
         user_choice: ua.user_choice ? ua.user_choice.toUpperCase() : null,
       }))
     : [];
-    
+
   // Lock orientation to portrait
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
@@ -82,6 +86,16 @@ const Result = () => {
     if (accuracy >= 60) return "#eab308";
     if (accuracy >= 40) return "#f97316";
     return "#ef4444";
+  };
+
+  const [expanded, setExpanded] = React.useState({
+    physics: false,
+    chemistry: false,
+    maths: false,
+  });
+
+  const toggleSection = (section: "physics" | "chemistry" | "maths") => {
+    setExpanded((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
   return (
@@ -193,60 +207,82 @@ const Result = () => {
               </View>
 
               {/* Questions List */}
+
               <View style={styles.questionsContainer}>
-                <Text style={styles.questionsTitle}>Question Details</Text>
-                {userAnswers
-                  .filter((ua) => ua.section === section)
-                  .map((ua, i) => (
-                    <View
-                      key={ua.id}
-                      style={[
-                        styles.questionCard,
-                        ua.user_choice === ua.correct_option
-                          ? styles.correctCard
-                          : styles.wrongCard,
-                      ]}
-                    >
-                      <Text style={styles.questionNumber}>Q{i + 1}</Text>
-                      <Text style={styles.questionText}>{ua.question}</Text>
-                      <View style={styles.answerRow}>
-                        <Text style={styles.answerLabel}>Your choice:</Text>
-                        <Text
+                <TouchableOpacity onPress={() => toggleSection(section)}>
+                  <Text style={styles.showToggle}>
+                    {expanded[section] ? "Show Less" : "Show More"}
+                  </Text>
+                </TouchableOpacity>
+                {expanded[section] && (
+                  <>
+                    {userAnswers
+                      .filter((ua) => ua.section === section)
+                      .map((ua, i) => (
+                        <View
+                          key={ua.id}
                           style={[
-                            styles.answerValue,
+                            styles.questionCard,
                             ua.user_choice === ua.correct_option
-                              ? styles.correctText
-                              : styles.wrongText,
+                              ? styles.correctCard
+                              : styles.wrongCard,
                           ]}
                         >
-                          {ua.user_choice || "Not attempted"}
-                        </Text>
-                      </View>
-                      <View style={styles.answerRow}>
-                        <Text style={styles.answerLabel}>Correct answer:</Text>
-                        <Text style={[styles.answerValue, styles.correctText]}>
-                          {ua.correct_option}
-                        </Text>
-                      </View>
-                      <View style={styles.statusIndicator}>
-                        {ua.user_choice === ua.correct_option ? (
-                          <Text style={[styles.statusText, styles.correctText]}>
-                            ✓ Correct
+                          <Text style={styles.questionNumber}>Q{i + 1}</Text>
+                          <Text style={styles.questionText}>
+                            <MemoMathText content={ua.question} />
                           </Text>
-                        ) : ua.user_choice ? (
-                          <Text style={[styles.statusText, styles.wrongText]}>
-                            ✗ Incorrect
-                          </Text>
-                        ) : (
-                          <Text
-                            style={[styles.statusText, styles.notAttemptedText]}
-                          >
-                            ○ Not Attempted
-                          </Text>
-                        )}
-                      </View>
-                    </View>
-                  ))}
+                          <View style={styles.answerRow}>
+                            <Text style={styles.answerLabel}>Your choice:</Text>
+                            <Text
+                              style={[
+                                styles.answerValue,
+                                ua.user_choice === ua.correct_option
+                                  ? styles.correctText
+                                  : styles.wrongText,
+                              ]}
+                            >
+                              {ua.user_choice || "Not attempted"}
+                            </Text>
+                          </View>
+                          <View style={styles.answerRow}>
+                            <Text style={styles.answerLabel}>
+                              Correct answer:
+                            </Text>
+                            <Text
+                              style={[styles.answerValue, styles.correctText]}
+                            >
+                              {ua.correct_option}
+                            </Text>
+                          </View>
+                          <View style={styles.statusIndicator}>
+                            {ua.user_choice === ua.correct_option ? (
+                              <Text
+                                style={[styles.statusText, styles.correctText]}
+                              >
+                                Correct
+                              </Text>
+                            ) : ua.user_choice ? (
+                              <Text
+                                style={[styles.statusText, styles.wrongText]}
+                              >
+                                Incorrect
+                              </Text>
+                            ) : (
+                              <Text
+                                style={[
+                                  styles.statusText,
+                                  styles.notAttemptedText,
+                                ]}
+                              >
+                                Not Attempted
+                              </Text>
+                            )}
+                          </View>
+                        </View>
+                      ))}
+                  </>
+                )}
               </View>
             </View>
           );
@@ -259,11 +295,12 @@ const Result = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#f2f2f2",
   },
   scrollView: {
     flex: 1,
     padding: 16,
+    backgroundColor: "#fff",
   },
   header: {
     alignItems: "center",
@@ -271,30 +308,26 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   title: {
-    fontSize: 28,
-    fontWeight: "bold",
+    fontSize: 18,
     color: "#1e293b",
     fontFamily: "SourceSans3Medium",
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#64748b",
     fontFamily: "SourceSans3Medium",
   },
   overallCard: {
-    backgroundColor: "white",
+    backgroundColor: "#fff",
     borderRadius: 16,
-    padding: 20,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#d9d9d9",
   },
   overallTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: "SourceSans3Medium",
     color: "#1e293b",
     textAlign: "center",
@@ -311,12 +344,10 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "white",
   },
   accuracyText: {
     fontSize: 24,
     fontFamily: "SourceSans3Medium",
-    fontWeight: "bold",
   },
   accuracyLabel: {
     fontSize: 12,
@@ -334,7 +365,6 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 20,
     fontFamily: "SourceSans3Medium",
-    fontWeight: "bold",
     color: "#1e293b",
   },
   statLabel: {
@@ -344,15 +374,12 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   sectionCard: {
-    backgroundColor: "white",
+    backgroundColor: "#fff",
     borderRadius: 16,
-    padding: 20,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#d9d9d9",
   },
   sectionHeader: {
     flexDirection: "row",
@@ -363,13 +390,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontFamily: "SourceSans3Medium",
-    fontWeight: "bold",
     color: "#1e293b",
   },
   sectionAccuracy: {
     fontSize: 16,
     fontFamily: "SourceSans3Medium",
-    fontWeight: "bold",
   },
   sectionStats: {
     flexDirection: "row",
@@ -385,7 +410,6 @@ const styles = StyleSheet.create({
   sectionStatNumber: {
     fontSize: 16,
     fontFamily: "SourceSans3Medium",
-    fontWeight: "bold",
     color: "#1e293b",
   },
   sectionStatLabel: {
@@ -400,7 +424,6 @@ const styles = StyleSheet.create({
   questionsTitle: {
     fontSize: 16,
     fontFamily: "SourceSans3Medium",
-    fontWeight: "bold",
     color: "#1e293b",
     marginBottom: 12,
   },
@@ -408,20 +431,16 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
-    borderLeftWidth: 4,
   },
   correctCard: {
     backgroundColor: "#f0fdf4",
-    borderLeftColor: "#22c55e",
   },
   wrongCard: {
     backgroundColor: "#fef2f2",
-    borderLeftColor: "#ef4444",
   },
   questionNumber: {
     fontSize: 14,
     fontFamily: "SourceSans3Medium",
-    fontWeight: "bold",
     color: "#475569",
     marginBottom: 4,
   },
@@ -433,6 +452,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   answerRow: {
+    width: 100,
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 4,
@@ -444,8 +464,7 @@ const styles = StyleSheet.create({
   },
   answerValue: {
     fontSize: 12,
-    fontFamily: "SourceSans3Medium",
-    fontWeight: "bold",
+    fontFamily: "SourceSans3Bold",
   },
   statusIndicator: {
     marginTop: 8,
@@ -453,7 +472,6 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 12,
     fontFamily: "SourceSans3Medium",
-    fontWeight: "bold",
   },
   correctText: {
     color: "#22c55e",
@@ -463,6 +481,15 @@ const styles = StyleSheet.create({
   },
   notAttemptedText: {
     color: "#64748b",
+  },
+  showToggle: {
+    fontSize: 14,
+    color: "#0099ff",
+    textDecorationLine: "underline",
+    alignSelf: "flex-start",
+    fontFamily: "SourceSans3Medium",
+    marginTop: -20,
+    marginBottom: 10,
   },
 });
 

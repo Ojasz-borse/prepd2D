@@ -48,6 +48,7 @@ const NormalFindCollegeCard: React.FC<NormalFindCollegeCardProps> = ({
       </View>
       <Text style={styles.collegeName}>{college.name}</Text>
       <Text style={styles.statusText}>Status: {college.status}</Text>
+      <Text style={styles.viewMoreText}>View more</Text>
     </TouchableOpacity>
   );
 };
@@ -92,5 +93,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#004aad",
     fontFamily: "SourceSans3Medium",
+  },
+  viewMoreText: {
+    fontSize: 12,
+    color: "#0099ff",
+    fontFamily: "SourceSans3Medium",
+    marginLeft: "auto",
   },
 });

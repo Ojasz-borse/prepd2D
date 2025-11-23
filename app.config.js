@@ -3,12 +3,12 @@ import 'dotenv/config';
 
 export default {
     expo: {
-        name: "PrepAcademy",
-        slug: "PrepAcademy",
+        name: "PrepCET",
+        slug: "",
         version: "1.0.0",
         orientation: "portrait",
         icon: "./assets/images/icon.png",
-        scheme: "prepacademy",
+        scheme: "prepcet",
         userInterfaceStyle: "automatic",
         ios: {
             supportsTablet: true
@@ -16,7 +16,7 @@ export default {
         android: {
             adaptiveIcon: {
                 foregroundImage: "./assets/images/adaptive-icon.png",
-                backgroundColor: "#ffffff"
+                backgroundColor: "#004aad"
             },
             edgeToEdgeEnabled: true,
             package: "com.anonymous.PrepAcademy"

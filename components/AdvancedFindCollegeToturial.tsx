@@ -134,6 +134,7 @@ const AdvancedFindCollegeToturial: React.FC<Props> = ({ cardLayout }) => {
                   width: cardLayout.width,
                   height: cardLayout.height,
                 }}
+                pointerEvents="none"
               >
                 <AdvancedFindCollegeCard
                   item={{

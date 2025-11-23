@@ -160,8 +160,13 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({
               </Text>
             </View>
           ))}
+          <View style={styles.moreCutoffBox}>
+            <Text style={styles.cutoffCategory}>More</Text>
+            <Text style={styles.cutoffCategory}>Cuttoff</Text>
+          </View>
         </View>
       )}
+      {/* <Text style={styles.viewMoreText}>View more</Text> */}
     </TouchableOpacity>
   );
 };
@@ -208,7 +213,7 @@ const styles = StyleSheet.create({
   cutoffWrapper: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 10,
+    gap: 8,
     marginTop: 8,
     alignItems: "center",
   },
@@ -217,6 +222,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 4,
     minWidth: 50,
+    alignItems: "center",
+  },
+  moreCutoffBox: {
+    backgroundColor: "#e6f1ff",
+    borderRadius: 8,
+    paddingVertical: 4,
+    minWidth: 42,
     alignItems: "center",
   },
   cutoffCategory: {
@@ -274,5 +286,12 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     fontFamily: "SourceSans3Medium",
     fontSize: 12,
+  },
+  viewMoreText: {
+    marginTop: 10,
+    fontSize: 12,
+    color: "#0099ff",
+    fontFamily: "SourceSans3Medium",
+    marginLeft: "auto",
   },
 });

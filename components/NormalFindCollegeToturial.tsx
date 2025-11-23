@@ -76,7 +76,7 @@ const NormalFindCollegeToturial: React.FC<NormalFindCollegeToturialProps> = ({
             <Text style={styles.topMessage}>
               {canClose
                 ? "Click anywhere to continue"
-                : `Tap available in ${countdown}s`}
+                : `Continue in ${countdown}s`}
             </Text>
           </View>
 
@@ -123,6 +123,7 @@ const NormalFindCollegeToturial: React.FC<NormalFindCollegeToturialProps> = ({
               width: cardLayout.width,
               height: cardLayout.height,
             }}
+            pointerEvents="none"
           >
             <NormalFindCollegeCard
               college={{
