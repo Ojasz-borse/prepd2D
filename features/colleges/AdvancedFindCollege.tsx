@@ -57,6 +57,7 @@ interface AdvancedFindCollegeProps {
   branches: CollegeBranch[];
   loading: boolean;
   error: string | null;
+  isActive: boolean;
 }
 
 interface DropdownItemProps {
@@ -93,6 +94,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
   branches,
   loading,
   error,
+  isActive,
 }) => {
   const [searchText, setSearchText] = useState("");
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
@@ -644,7 +646,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
           </TouchableOpacity>
         </Animated.View>
       )}
-      <AdvancedFindCollegeToturial cardLayout={firstCardLayout} />
+      {isActive && <AdvancedFindCollegeToturial cardLayout={firstCardLayout} />}
     </>
   );
 };

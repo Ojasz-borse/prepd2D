@@ -1,5 +1,6 @@
 // AdvancedFindCollegeToturial.tsx
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
@@ -25,6 +26,18 @@ const AdvancedFindCollegeToturial: React.FC<Props> = ({ cardLayout }) => {
   const [canContinue, setCanContinue] = useState(false);
 
   const handAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const checkTutorial = async () => {
+      const shown = await AsyncStorage.getItem(
+        "advancedFindCollegeTutorialShown"
+      );
+      if (!shown) {
+        setVisible(true); // show tutorial only if not shown before
+      }
+    };
+    checkTutorial();
+  }, []);
 
   // 🔄 Animate hand
   useEffect(() => {
@@ -64,7 +77,7 @@ const AdvancedFindCollegeToturial: React.FC<Props> = ({ cardLayout }) => {
 
   if (!visible || !cardLayout) return null;
 
-  const onOverlayPress = () => {
+  const onOverlayPress = async () => {
     if (!canContinue) return;
 
     if (step === 1) {
@@ -74,6 +87,7 @@ const AdvancedFindCollegeToturial: React.FC<Props> = ({ cardLayout }) => {
 
     if (step === 2) {
       setVisible(false); // close tutorial
+      await AsyncStorage.setItem("advancedFindCollegeTutorialShown", "true");
     }
   };
 

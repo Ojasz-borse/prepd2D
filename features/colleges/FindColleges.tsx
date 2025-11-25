@@ -91,6 +91,7 @@ export default function FindColleges() {
               colleges={colleges}
               loading={collegesLoading}
               error={branchesError}
+               isActive={activeTab === "normal"}
             />
           </View>
           <View
@@ -103,6 +104,7 @@ export default function FindColleges() {
               branches={branches}
               loading={branchesLoading}
               error={branchesError}
+              isActive={activeTab === "advanced"}
             />
           </View>
         </View>

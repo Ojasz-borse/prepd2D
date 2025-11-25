@@ -4,7 +4,7 @@ import 'dotenv/config';
 export default {
     expo: {
         name: "PrepCET",
-        slug: "",
+        slug: "prepcet",
         version: "1.0.0",
         orientation: "portrait",
         icon: "./assets/images/icon.png",
@@ -16,10 +16,10 @@ export default {
         android: {
             adaptiveIcon: {
                 foregroundImage: "./assets/images/adaptive-icon.png",
-                backgroundColor: "#004aad"
+                backgroundColor: "#ffffff"
             },
             edgeToEdgeEnabled: true,
-            package: "com.anonymous.PrepAcademy"
+            package: "com.anonymous.PrepCET"
         },
         web: {
             bundler: "metro",
@@ -37,7 +37,7 @@ export default {
         extra: {
             SERVER_URL: process.env.SERVER_URL,
             eas: {
-                projectId: "7683fa74-ce9f-4e10-8d94-747c11bf92eb"
+                projectId: "cc19cd71-5c57-4e2c-98ee-b48dddb896a3"
             }
         },
     },

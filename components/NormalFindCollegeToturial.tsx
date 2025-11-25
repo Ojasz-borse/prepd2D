@@ -1,6 +1,7 @@
 // NormalFindCollegeToturial.tsx
 import NormalFindCollegeCard from "@/components/NormalFindCollegeCard";
 import { FontAwesome5 } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
@@ -26,6 +27,18 @@ const NormalFindCollegeToturial: React.FC<NormalFindCollegeToturialProps> = ({
   const [visible, setVisible] = useState(true);
   const [canClose, setCanClose] = useState(false);
   const [countdown, setCountdown] = useState(5);
+
+  useEffect(() => {
+    const checkTutorial = async () => {
+      const shown = await AsyncStorage.getItem(
+        "normalFindCollegeTutorialShown"
+      );
+      if (!shown) {
+        setVisible(true); // show tutorial only if not shown before
+      }
+    };
+    checkTutorial();
+  }, []);
 
   const handAnim = useRef(new Animated.Value(0)).current;
 
@@ -63,8 +76,10 @@ const NormalFindCollegeToturial: React.FC<NormalFindCollegeToturialProps> = ({
 
   if (!visible || !cardLayout) return null;
 
-  const handlePress = () => {
+  const handlePress = async () => {
     if (canClose) setVisible(false);
+
+    await AsyncStorage.setItem("normalFindCollegeTutorialShown", "true");
   };
 
   return (

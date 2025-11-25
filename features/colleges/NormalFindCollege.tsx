@@ -27,6 +27,7 @@ interface NormalFindCollegeProps {
   colleges: College[];
   loading: boolean;
   error: string | null;
+  isActive: boolean;
 }
 
 interface DropdownItemProps {
@@ -61,10 +62,12 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
   colleges,
   loading,
   error,
+  isActive
 }) => {
   const [searchText, setSearchText] = useState("");
   const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
   const [selectedType, setSelectedType] = useState("");
+  
 
   const firstCardRef = React.useRef<View>(null);
   const [firstCardLayout, setFirstCardLayout] = useState<{
