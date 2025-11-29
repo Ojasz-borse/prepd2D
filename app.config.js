@@ -10,15 +10,21 @@ export default {
         icon: "./assets/images/icon.png",
         scheme: "prepcet",
         userInterfaceStyle: "automatic",
+        splash: {
+            image: "./assets/images/icon.png",
+            resizeMode: "contain",
+            backgroundColor: "#ffffff"
+        },
         ios: {
             supportsTablet: true
         },
         android: {
             adaptiveIcon: {
-                foregroundImage: "./assets/images/adaptive-icon.png",
+                foregroundImage: "./assets/images/icon.png",
                 backgroundColor: "#ffffff"
             },
             edgeToEdgeEnabled: true,
+            softwareKeyboardLayoutMode: "resize",
             package: "com.anonymous.PrepCET"
         },
         web: {
@@ -37,7 +43,7 @@ export default {
         extra: {
             SERVER_URL: process.env.SERVER_URL,
             eas: {
-                projectId: "cc19cd71-5c57-4e2c-98ee-b48dddb896a3"
+                projectId: "d659fd19-f78f-466b-b5e5-d74fc1c2a947"
             }
         },
     },

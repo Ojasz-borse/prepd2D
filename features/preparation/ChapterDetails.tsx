@@ -1,7 +1,8 @@
 import TopHeader from "@/components/TopHeader";
 import syllabusData from "@/dataConfig/chapters.json";
 import { useLocalSearchParams } from "expo-router";
-import React, { useMemo } from "react";
+import * as ScreenCapture from "expo-screen-capture";
+import React, { useEffect, useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -13,6 +14,14 @@ export default function ChapterDetails() {
   const chapter = useMemo(() => {
     return syllabusData.find((c) => c.id.toString() === id);
   }, [id]);
+
+  useEffect(() => {
+    ScreenCapture.preventScreenCaptureAsync();
+
+    return () => {
+      ScreenCapture.allowScreenCaptureAsync();
+    };
+  }, []);
 
   if (!chapter) {
     return (
@@ -169,7 +178,7 @@ const styles = StyleSheet.create({
 
   topicContainer: {
     marginTop: 16,
-    paddingBottom: 40 
+    paddingBottom: 40,
   },
   topic: {
     borderWidth: 1,

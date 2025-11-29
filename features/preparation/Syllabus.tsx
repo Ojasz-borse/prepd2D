@@ -2,6 +2,7 @@ import SearchIcon from "@/assets/icons/SearchIcon";
 import syllabusData from "@/dataConfig/chapters.json";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import * as ScreenCapture from "expo-screen-capture";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Animated,
@@ -60,6 +61,14 @@ export default function Syllabus() {
 
   useEffect(() => {
     setChaptersData(syllabusData);
+  }, []);
+
+  useEffect(() => {
+    ScreenCapture.preventScreenCaptureAsync();
+
+    return () => {
+      ScreenCapture.allowScreenCaptureAsync();
+    };
   }, []);
 
   const filteredData = useMemo(() => {

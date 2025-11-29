@@ -15,9 +15,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "../constants/theme";
-import { useAuth } from "../context/AuthContext"; // adjust path if needed
+import { useAuth } from "../context/AuthContext";
 
-// Add this just below imports
 const avatarColors = ["#F06292", "#64B5F6", "#81C784", "#FFD54F", "#BA68C8"];
 
 const getAvatarColor = (name?: string) => {
@@ -36,8 +35,11 @@ interface TopHeaderProps {
 const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { user, logout } = useAuth(); // assuming logout is provided
+  const { user, logout } = useAuth();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
   const slideAnim = useRef(new Animated.Value(-SCREEN_WIDTH * 0.8)).current;
 
   const initials = (user?.first_name?.[0] || "") + (user?.last_name?.[0] || "");
@@ -65,7 +67,6 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
     <>
       {/* ===== Top Header ===== */}
       <View style={styles.topHeader}>
-        {/* Left side — Profile Icon or Back Arrow */}
         <View style={styles.sideContainer}>
           {showBackArrow ? (
             <TouchableOpacity
@@ -90,34 +91,24 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
           )}
         </View>
 
-        {/* Center Title */}
         <Text numberOfLines={1} style={styles.headerTitle}>
           {title}
         </Text>
 
-        {/* Right Empty Side */}
         <View style={styles.sideContainer} />
       </View>
 
-      {/* ===== Drawer Modal ===== */}
-
-      <Modal
-        transparent
-        visible={isDrawerOpen}
-        animationType="none"
-        onRequestClose={closeDrawer}
-      >
-        {/* Overlay */}
+      {/* ===== Drawer ===== */}
+      <Modal transparent visible={isDrawerOpen} animationType="none">
         <Pressable style={styles.overlay} onPress={closeDrawer} />
 
-        {/* Animated Drawer */}
         <Animated.View
           style={[
             styles.drawerContainer,
             {
               transform: [{ translateX: slideAnim }],
               paddingTop: insets.top,
-              paddingBottom: insets.bottom + 10, // extra for bottom nav
+              paddingBottom: insets.bottom + 10,
             },
           ]}
         >
@@ -134,20 +125,10 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
               </Text>
             </View>
             <View style={{ marginLeft: 12 }}>
-              <Text
-                style={styles.drawerName}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
+              <Text style={styles.drawerName}>
                 {user?.first_name} {user?.last_name}
               </Text>
-              <Text
-                style={styles.drawerEmail}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {user?.email}
-              </Text>
+              <Text style={styles.drawerEmail}>{user?.email}</Text>
             </View>
           </View>
 
@@ -178,13 +159,39 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
             </TouchableOpacity>
           </View>
 
-          {/* Logout Button */}
+          {/* ===== Help + Logout Section ===== */}
           <View style={styles.logoutContainer}>
+            {/* ⭐ NEW — HELP BUTTON */}
             <TouchableOpacity
               style={styles.drawerItem}
               onPress={() => {
                 closeDrawer();
-                logout?.();
+                router.push("/help");
+              }}
+            >
+              <Ionicons name="help-circle-outline" size={22} color="#3399ff" />
+              <Text style={[styles.drawerItemText, { color: "#3399ff" }]}>
+                Help & Support
+              </Text>
+            </TouchableOpacity>
+
+            {/* Logout Button */}
+            <TouchableOpacity
+              style={[
+                styles.drawerItem,
+                {
+                  marginTop: 6,
+                  backgroundColor: "#E5393520",
+                  padding: 10,
+                  borderRadius: 25,
+                  width: 110,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                },
+              ]}
+              onPress={() => {
+                setShowLogoutConfirm(true); // open confirmation
               }}
             >
               <Ionicons name="log-out-outline" size={22} color="#E53935" />
@@ -195,6 +202,90 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
           </View>
         </Animated.View>
       </Modal>
+
+      {/* ===== Logout Confirmation Modal ===== */}
+      <Modal transparent visible={showLogoutConfirm} animationType="fade">
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={{
+              width: "80%",
+              backgroundColor: "#fff",
+              padding: 20,
+              borderRadius: 16,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: "SourceSans3Medium",
+                color: colors.textDark,
+                marginBottom: 10,
+              }}
+            >
+              Are you sure you want to logout?
+            </Text>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginTop: 20,
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => setShowLogoutConfirm(false)}
+                style={{
+                  paddingVertical: 10,
+                  paddingHorizontal: 30,
+                  borderRadius: 25,
+                  backgroundColor: "#eee",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: "SourceSans3Medium",
+                    color: "#333",
+                  }}
+                >
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  setShowLogoutConfirm(false);
+                  closeDrawer();
+                  logout?.();
+                }}
+                style={{
+                  paddingVertical: 10,
+                  paddingHorizontal: 30,
+                  borderRadius: 25,
+                  backgroundColor: "#E53935",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: "SourceSans3Medium",
+                    color: "#fff",
+                  }}
+                >
+                  Logout
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };
@@ -202,7 +293,6 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
 export default TopHeader;
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#f2f2f2" },
   topHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -212,12 +302,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
     backgroundColor: "#fff",
-    shadowColor: "#d3d3d3",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
     elevation: 4,
-    zIndex: 10,
   },
   sideContainer: {
     width: 40,
@@ -227,9 +312,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 16,
     color: colors.textDark,
-    textAlign: "center",
     fontFamily: "SourceSans3Medium",
-    flexShrink: 1,
   },
   profileButton: {
     alignItems: "center",
@@ -262,11 +345,9 @@ const styles = StyleSheet.create({
     left: 0,
     width: SCREEN_WIDTH * 0.8,
     backgroundColor: "#fff",
-    elevation: 10,
     shadowColor: "#000",
     shadowOpacity: 0.3,
-    shadowOffset: { width: 2, height: 0 },
-    shadowRadius: 4,
+    elevation: 10,
     justifyContent: "space-between",
   },
   drawerHeader: {
@@ -274,8 +355,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 20,
     paddingHorizontal: 15,
-    borderBottomColor: "#eee",
     borderBottomWidth: 1,
+    borderBottomColor: "#eee",
   },
   drawerProfileCircle: {
     width: 50,
@@ -291,15 +372,14 @@ const styles = StyleSheet.create({
   },
   drawerName: {
     fontSize: 16,
-    color: colors.textDark,
     fontFamily: "SourceSans3SemiBold",
+    color: colors.textDark,
     width: 200,
   },
   drawerEmail: {
     fontSize: 13,
     color: "#666",
     marginTop: 2,
-    fontFamily: "SourceSans3Medium",
     width: 200,
   },
   drawerContent: {
@@ -314,19 +394,19 @@ const styles = StyleSheet.create({
   },
   drawerItemText: {
     fontSize: 15,
-    color: colors.textDark,
     fontFamily: "SourceSans3SemiBold",
+    color: colors.textDark,
   },
   section: {
     fontSize: 12,
     color: "gray",
-    fontFamily: "SourceSans3Medium",
     marginTop: 30,
+    fontFamily: "SourceSans3Medium",
   },
   logoutContainer: {
     borderTopWidth: 1,
     borderTopColor: "#eee",
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 14,
   },
 });

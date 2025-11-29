@@ -146,10 +146,8 @@ export default function CollegeDetails() {
   }, [collegeDetails]);
 
   useEffect(() => {
-    // Prevent screenshot when this screen is mounted
-    // ScreenCapture.preventScreenCaptureAsync();
+    ScreenCapture.preventScreenCaptureAsync();
 
-    // Allow again when leaving screen
     return () => {
       ScreenCapture.allowScreenCaptureAsync();
     };

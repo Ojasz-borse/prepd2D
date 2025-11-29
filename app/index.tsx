@@ -82,8 +82,7 @@ export default function Index() {
       <View style={styles.container}>
         {/* Centered Title */}
         <View style={styles.titleWrapper}>
-          <Text style={styles.title}>PrepAcademy</Text>
-          <Text style={styles.subtitle}>MHT CET</Text>
+          <Text style={styles.title}>Welcome to PrepCET</Text>
         </View>
 
         {/* Buttons at bottom center */}

@@ -166,6 +166,10 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
       }
     };
     loadStoredColleges();
+  }, []);
+
+  useEffect(() => {
+    ScreenCapture.preventScreenCaptureAsync();
 
     return () => {
       ScreenCapture.allowScreenCaptureAsync();

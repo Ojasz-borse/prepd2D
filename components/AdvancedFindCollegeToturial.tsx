@@ -19,7 +19,7 @@ interface Props {
 
 const AdvancedFindCollegeToturial: React.FC<Props> = ({ cardLayout }) => {
   const [step, setStep] = useState(1);
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
 
   // For countdown
   const [countdown, setCountdown] = useState(5);

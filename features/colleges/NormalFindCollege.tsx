@@ -3,7 +3,8 @@ import NormalFindCollegeCard from "@/components/NormalFindCollegeCard";
 import NormalFindCollegeCardSkeleton from "@/components/NormalFindCollegeCardSkeleton";
 import NormalFindCollegeToturial from "@/components/NormalFindCollegeToturial";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import React, { useMemo, useState } from "react";
+import * as ScreenCapture from "expo-screen-capture";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Animated,
   FlatList,
@@ -62,12 +63,11 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
   colleges,
   loading,
   error,
-  isActive
+  isActive,
 }) => {
   const [searchText, setSearchText] = useState("");
   const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
   const [selectedType, setSelectedType] = useState("");
-  
 
   const firstCardRef = React.useRef<View>(null);
   const [firstCardLayout, setFirstCardLayout] = useState<{
@@ -107,6 +107,14 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
   const listRef = React.useRef<FlatList>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    ScreenCapture.preventScreenCaptureAsync();
+
+    return () => {
+      ScreenCapture.allowScreenCaptureAsync();
+    };
+  }, []);
 
   const handleScroll = (e: any) => {
     const y = e.nativeEvent.contentOffset.y;

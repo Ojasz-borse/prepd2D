@@ -4,7 +4,8 @@ import PyqChapterCardSkeleton from "@/components/PyqChapterCardSkeleton";
 import { usePYQS } from "@/hooks/usePYQS"; // ⬅️ our new hook
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useMemo, useState } from "react";
+import * as ScreenCapture from "expo-screen-capture";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Animated,
   FlatList,
@@ -51,6 +52,14 @@ export default function PYQ() {
   const [searchText, setSearchText] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
+
+  useEffect(() => {
+    ScreenCapture.preventScreenCaptureAsync();
+
+    return () => {
+      ScreenCapture.allowScreenCaptureAsync();
+    };
+  }, []);
 
   // 🔍 Filtering logic (maps numeric subject/class IDs)
   const filteredData = useMemo(() => {

@@ -191,7 +191,7 @@ export default function EstimatorScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <TopHeader title="Estimator" showBackArrow={false} />
+        <TopHeader title="Estimator" showBackArrow={true} />
 
         {/* Tabs */}
         <View style={styles.tabContainer}>

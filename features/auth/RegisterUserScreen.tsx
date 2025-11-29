@@ -472,7 +472,7 @@ const RegisterUserScreen: React.FC = () => {
 
 // Styles (unchanged)
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#004aad" },
+  safeArea: { flex: 1, backgroundColor: "#f2f2f2" },
   whiteCard: {
     flex: 1,
     backgroundColor: "#fff",

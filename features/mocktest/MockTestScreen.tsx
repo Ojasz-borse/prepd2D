@@ -83,7 +83,7 @@ const MockTestScreen = () => {
           }}
         >
           <View style={styles.centerBox}>
-            <Text style={styles.analysisText}>Analysis Coming Soon...</Text>
+            <Text style={styles.analysisText}>Analysis Coming Soon</Text>
           </View>
         </View>
       </View>
@@ -168,5 +168,6 @@ const styles = StyleSheet.create({
   analysisText: {
     fontSize: 16,
     color: "#333",
+    fontFamily: "SourceSans3Medium",
   },
 });

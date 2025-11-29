@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { usePYQContext } from "@/context/PYQContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import * as ScreenCapture from "expo-screen-capture";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Animated,
@@ -143,6 +144,14 @@ export default function PYQListScreen() {
   const { pyqList, setPYQList } = usePYQContext();
 
   const [selectedYear, setSelectedYear] = useState<string>("2025");
+
+  useEffect(() => {
+    ScreenCapture.preventScreenCaptureAsync();
+
+    return () => {
+      ScreenCapture.allowScreenCaptureAsync();
+    };
+  }, []);
 
   useEffect(() => {
     const fetchPYQs = async () => {

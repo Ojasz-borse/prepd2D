@@ -24,7 +24,7 @@ interface NormalFindCollegeToturialProps {
 const NormalFindCollegeToturial: React.FC<NormalFindCollegeToturialProps> = ({
   cardLayout,
 }) => {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   const [canClose, setCanClose] = useState(false);
   const [countdown, setCountdown] = useState(5);
 

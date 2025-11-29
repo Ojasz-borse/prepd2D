@@ -1,7 +1,7 @@
+import MockTestCardSkeleton from "@/components/MockTestCardSkeleton";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
-  ActivityIndicator,
   FlatList,
   StyleSheet,
   Text,
@@ -68,7 +68,14 @@ const MockTestList: React.FC<MockTestListProps> = ({
       )}
       ListEmptyComponent={
         loading ? (
-          <ActivityIndicator size="large" style={{ marginTop: 40 }} />
+          <>
+            <MockTestCardSkeleton />
+            <MockTestCardSkeleton />
+            <MockTestCardSkeleton />
+            <MockTestCardSkeleton />
+            <MockTestCardSkeleton />
+            <MockTestCardSkeleton />
+          </>
         ) : (
           <Text style={styles.noResult}>No tests available</Text>
         )

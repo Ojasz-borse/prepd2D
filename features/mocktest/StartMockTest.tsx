@@ -8,6 +8,7 @@ import {
   useLocalSearchParams,
   useNavigation,
 } from "expo-router";
+import * as ScreenCapture from "expo-screen-capture";
 import * as ScreenOrientation from "expo-screen-orientation";
 import React, { useEffect, useState } from "react";
 import {
@@ -56,6 +57,14 @@ const StartMockTest = () => {
 
     loadQuestions();
   }, [testid]);
+
+  useEffect(() => {
+    ScreenCapture.preventScreenCaptureAsync();
+
+    return () => {
+      ScreenCapture.allowScreenCaptureAsync();
+    };
+  }, []);
 
   // useEffect(() => {
   //   const setupFullscreen = async () => {
@@ -121,8 +130,10 @@ const StartMockTest = () => {
   useEffect(() => {
     const lockLandscape = async () => {
       // Force Landscape immediately
-      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-      
+      await ScreenOrientation.lockAsync(
+        ScreenOrientation.OrientationLock.LANDSCAPE
+      );
+
       // Hide Status Bar
       StatusBar.setHidden(true, "none");
 
@@ -138,8 +149,10 @@ const StartMockTest = () => {
     // CLEANUP: Run this when leaving the page
     return () => {
       // Force back to Portrait
-      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-      
+      ScreenOrientation.lockAsync(
+        ScreenOrientation.OrientationLock.PORTRAIT_UP
+      );
+
       // Show Status Bar
       StatusBar.setHidden(false);
 

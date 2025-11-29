@@ -91,7 +91,7 @@ export default function FindColleges() {
               colleges={colleges}
               loading={collegesLoading}
               error={branchesError}
-               isActive={activeTab === "normal"}
+              isActive={activeTab === "normal"}
             />
           </View>
           <View

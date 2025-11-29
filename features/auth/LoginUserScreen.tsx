@@ -137,7 +137,7 @@ const LoginUserScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#004aad" },
+  safeArea: { flex: 1, backgroundColor: "#f2f2f2" },
   whiteCard: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 10 },
   centerWrapper: {
     flex: 1,
@@ -164,7 +164,6 @@ const styles = StyleSheet.create({
   confirmButtonText: {
     color: "#999",
     fontSize: 14,
-    fontWeight: "600",
     fontFamily: "SourceSans3Medium",
   },
   confirmButtonTextActive: { color: "#fff" },

@@ -6,6 +6,7 @@ import { usePYQContext } from "@/context/PYQContext";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
+import * as ScreenCapture from "expo-screen-capture";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Image,
@@ -31,6 +32,14 @@ export default function PYQDetailsPage() {
   const [index, setIndex] = useState(parseInt(currentIndex || "0", 10));
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
+
+  useEffect(() => {
+    ScreenCapture.preventScreenCaptureAsync();
+
+    return () => {
+      ScreenCapture.allowScreenCaptureAsync();
+    };
+  }, []);
 
   const current = pyqList[index];
 
