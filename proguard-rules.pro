@@ -1,0 +1,7 @@
+-keep class com.swmansion.** { *; }
+-keep class com.facebook.** { *; }
+-keep class expo.modules.** { *; }
+-keep class com.google.firebase.** { *; }
+-keep class androidx.** { *; }
+-dontwarn kotlinx.**
+-dontwarn com.facebook.react.**

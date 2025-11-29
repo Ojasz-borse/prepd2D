@@ -25,7 +25,13 @@ export default {
             },
             edgeToEdgeEnabled: true,
             softwareKeyboardLayoutMode: "resize",
-            package: "com.anonymous.PrepCET"
+            package: "com.anonymous.PrepCET",
+
+            permissions: [],
+       
+            enableProguardInReleaseBuilds: true,
+
+            proguardRules: "./proguard-rules.pro"
         },
         web: {
             bundler: "metro",
