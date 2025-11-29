@@ -5,7 +5,7 @@ export default {
     expo: {
         name: "PrepCET",
         slug: "prepcet",
-        version: "1.0.0",
+        version: "1.3.0",
         orientation: "portrait",
         icon: "./assets/images/icon.png",
         scheme: "prepcet",
@@ -19,6 +19,7 @@ export default {
             supportsTablet: true
         },
         android: {
+            versionCode: 4,
             adaptiveIcon: {
                 foregroundImage: "./assets/images/icon.png",
                 backgroundColor: "#ffffff"
@@ -27,11 +28,19 @@ export default {
             softwareKeyboardLayoutMode: "resize",
             package: "com.anonymous.PrepCET",
 
-            permissions: [],
-       
+            // CHANGE 1: Use 'blockedPermissions' instead of 'excludedPermissions'
+            permissions: [], 
+            blockedPermissions: [
+                "android.permission.READ_MEDIA_IMAGES",
+                "android.permission.READ_MEDIA_VIDEO",
+                "android.permission.READ_MEDIA_AUDIO",
+                "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+                "android.permission.READ_EXTERNAL_STORAGE",
+                "android.permission.WRITE_EXTERNAL_STORAGE"
+            ],
+            
             enableProguardInReleaseBuilds: true,
-
-            proguardRules: "./proguard-rules.pro"
+            // proguardRules: "./proguard-rules.pro" // Only keep this if you actually have a custom file
         },
         web: {
             bundler: "metro",
