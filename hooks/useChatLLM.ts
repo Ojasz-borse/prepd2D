@@ -44,6 +44,12 @@ export function useChatLLM(userContext: { name: string; email: string }) {
       setMessages((prev) => [...prev, reply]);
     } catch (error) {
       console.error("Error fetching reply:", error);
+       const errorMessage: Message = {
+    role: "assistant",
+    content: "", 
+  };
+
+  setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setLoading(false);
     }

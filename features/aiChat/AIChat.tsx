@@ -8,7 +8,8 @@ import {
 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import * as ScreenCapture from "expo-screen-capture";
-import React, { useEffect, useRef, useState } from "react";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -22,10 +23,10 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Markdown from "react-native-markdown-display";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-// 🧭 Modern Header
 const TopHeader = ({
   onBack,
   onRefresh,
@@ -37,7 +38,6 @@ const TopHeader = ({
     <TouchableOpacity onPress={onBack} style={{ paddingHorizontal: 8 }}>
       <Ionicons name="arrow-back" size={24} color="#1a1a1a" />
     </TouchableOpacity>
-
     <View
       style={{
         position: "absolute",
@@ -51,7 +51,6 @@ const TopHeader = ({
         PrepAI
       </Text>
     </View>
-
     <TouchableOpacity onPress={onRefresh} style={styles.headerButton}>
       <MaterialCommunityIcons name="refresh" size={22} color="#004aad" />
       <Text
@@ -73,7 +72,6 @@ const AIChat: React.FC = () => {
     name: user?.first_name || "",
     email: user?.email || "",
   });
-
   const [input, setInput] = useState("");
   const [hasStartedChat, setHasStartedChat] = useState(false);
   const [displayedMessages, setDisplayedMessages] = useState<any[]>([]);
@@ -84,21 +82,19 @@ const AIChat: React.FC = () => {
     const timer = setTimeout(() => {
       setShowBanner(false);
     }, 30000);
-
     return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
     ScreenCapture.preventScreenCaptureAsync();
-
     return () => {
       ScreenCapture.allowScreenCaptureAsync();
     };
   }, []);
 
   const scrollViewRef = useRef<ScrollView>(null);
+  const keyboardAwareRef = useRef<any>(null);
   const router = useRouter();
-
   const dot1 = useRef(new Animated.Value(0)).current;
   const dot2 = useRef(new Animated.Value(0)).current;
   const dot3 = useRef(new Animated.Value(0)).current;
@@ -152,10 +148,8 @@ const AIChat: React.FC = () => {
 
   useEffect(() => {
     if (messages.length === 0) return;
-
     const last = messages[messages.length - 1];
 
-    // Check for error in message
     if (
       last.role === "assistant" &&
       (!last.content || last.content.trim().length === 0)
@@ -168,12 +162,10 @@ const AIChat: React.FC = () => {
     const isAlreadyDisplayed = displayedMessages.some(
       (msg) => msg.content === last.content
     );
-
     if (!isAlreadyDisplayed) {
       setDisplayedMessages((prev) => [...prev, last]);
     }
 
-    // Smooth auto-scroll with delay
     setTimeout(() => {
       scrollViewRef.current?.scrollToEnd({ animated: true });
     }, 200);
@@ -181,17 +173,15 @@ const AIChat: React.FC = () => {
 
   const handleSend = () => {
     if (!input.trim() || loading) return;
-    setError(false); // Reset error on new message
+    setError(false);
     sendMessage(input);
     setInput("");
     setHasStartedChat(true);
     Keyboard.dismiss();
 
-    // Smooth scroll after sending
-    setTimeout(
-      () => scrollViewRef.current?.scrollToEnd({ animated: true }),
-      300
-    );
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 300);
   };
 
   const handleRefresh = () => {
@@ -203,12 +193,9 @@ const AIChat: React.FC = () => {
 
   const renderMessage = (item: any, index: number) => {
     const isUser = item.role === "user";
-
-    // Check for empty or error content
     const hasError = !item.content || item.content.trim().length === 0;
-
     const safeContent = hasError
-      ? "⚠️ Something went wrong at our end. Please try to refresh and ask again."
+      ? "Oops! Something went wrong at our end!"
       : item.content;
 
     return (
@@ -223,7 +210,6 @@ const AIChat: React.FC = () => {
           style={[
             styles.messageBubble,
             isUser ? styles.userBubble : styles.assistantBubble,
-            hasError && !isUser && styles.errorBubble,
           ]}
         >
           {!isUser ? (
@@ -245,165 +231,176 @@ const AIChat: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top"]}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.container}>
-          <TopHeader
-            onBack={() => {
-              if (router.canGoBack()) router.back();
-              else router.replace("/home");
-            }}
-            onRefresh={handleRefresh}
-          />
+    <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
+      <View style={styles.container}>
+        <TopHeader
+          onBack={() => {
+            if (router.canGoBack()) router.back();
+            else router.replace("/home");
+          }}
+          onRefresh={handleRefresh}
+        />
 
-          {/* Auto-delete Banner */}
-          {showBanner && (
-            <View style={styles.bannerContainer}>
-              <MaterialCommunityIcons
-                name="clock-outline"
-                size={14}
-                color="#f57c00"
-              />
-              <Text style={styles.bannerText}>
-                Messages auto-delete in 48 hours
-              </Text>
-            </View>
-          )}
+        {showBanner && (
+          <View style={styles.bannerContainer}>
+            <MaterialCommunityIcons
+              name="clock-outline"
+              size={14}
+              color="#f57c00"
+            />
+            <Text style={styles.bannerText}>
+              Messages auto-delete in 48 hours
+            </Text>
+          </View>
+        )}
 
-          {/* Chat Area */}
-          <View style={styles.chatArea}>
-            {!hasStartedChat ? (
-              <View style={styles.welcomeContainer}>
-                <View style={styles.welcomeIcon}>
-                  <FontAwesome5 name="magic" size={28} color="#004aad" />
+        <KeyboardAwareScrollView
+          ref={keyboardAwareRef}
+          style={styles.chatArea}
+          contentContainerStyle={styles.chatAreaContent}
+          enableOnAndroid={true}
+          enableAutomaticScroll={Platform.OS === "ios"}
+          extraScrollHeight={Platform.OS === "ios" ? 20 : 40}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          extraHeight={Platform.OS === "android" ? 100 : 0}
+        >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={{ flex: 1 }}>
+              {!hasStartedChat ? (
+                <View style={styles.welcomeContainer}>
+                  <View style={styles.welcomeIcon}>
+                    <FontAwesome5 name="magic" size={28} color="#004aad" />
+                  </View>
+                  <Text style={styles.welcomeTitle}>
+                    Hi {user?.first_name || "there"}! 👋
+                  </Text>
+                  <Text style={styles.welcomeSubtitle}>
+                    How can I assist you today?
+                  </Text>
+                  <View style={styles.suggestionsContainer}>
+                    <TouchableOpacity
+                      style={styles.suggestionChip}
+                      onPress={() => {
+                        setInput("Show me colleges for ");
+                      }}
+                    >
+                      <Text style={styles.suggestionText}>
+                        💡 Show colleges for
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.suggestionChip}
+                      onPress={() => {
+                        setInput("Give PYQs on ");
+                      }}
+                    >
+                      <Text style={styles.suggestionText}>
+                        🎯 Give me PYQ's on
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <Text style={styles.welcomeTitle}>
-                  Hi {user?.first_name || "there"}! 👋
-                </Text>
-                <Text style={styles.welcomeSubtitle}>
-                  How can I assist you today?
-                </Text>
-                <View style={styles.suggestionsContainer}>
-                  <TouchableOpacity
-                    style={styles.suggestionChip}
-                    onPress={() => {
-                      setInput("Show me colleges for ");
-                    }}
-                  >
-                    <Text style={styles.suggestionText}>
-                      💡 Show colleges for
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.suggestionChip}
-                    onPress={() => {
-                      setInput("Give PYQs on ");
-                    }}
-                  >
-                    <Text style={styles.suggestionText}>
-                      🎯 Give me PYQ's on
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ) : (
-              <ScrollView
-                ref={scrollViewRef}
-                style={styles.messagesContainer}
-                contentContainerStyle={styles.messagesContent}
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-                scrollEventThrottle={16}
-                nestedScrollEnabled={true}
-                onContentSizeChange={() =>
-                  scrollViewRef.current?.scrollToEnd({ animated: true })
-                }
-              >
-                {displayedMessages.map((msg, idx) => renderMessage(msg, idx))}
-
-                {loading && (
-                  <View
-                    style={[
-                      styles.messageWrapper,
-                      styles.assistantMessageWrapper,
-                    ]}
-                  >
+              ) : (
+                <ScrollView
+                  ref={scrollViewRef}
+                  style={styles.messagesContainer}
+                  contentContainerStyle={styles.messagesContent}
+                  showsVerticalScrollIndicator={false}
+                  keyboardShouldPersistTaps="handled"
+                  scrollEventThrottle={16}
+                  nestedScrollEnabled={true}
+                  onContentSizeChange={() =>
+                    scrollViewRef.current?.scrollToEnd({ animated: true })
+                  }
+                >
+                  {displayedMessages.map((msg, idx) => renderMessage(msg, idx))}
+                  {loading && (
                     <View
                       style={[
-                        styles.messageBubble,
-                        styles.assistantBubble,
-                        styles.loadingBubble,
+                        styles.messageWrapper,
+                        styles.assistantMessageWrapper,
                       ]}
                     >
-                      <View style={styles.typingIndicator}>
-                        <Animated.View
-                          style={[styles.typingDot, { opacity: dot1 }]}
-                        />
-                        <Animated.View
-                          style={[styles.typingDot, { opacity: dot2 }]}
-                        />
-                        <Animated.View
-                          style={[styles.typingDot, { opacity: dot3 }]}
-                        />
+                      <View
+                        style={[
+                          styles.messageBubble,
+                          styles.assistantBubble,
+                          styles.loadingBubble,
+                        ]}
+                      >
+                        <View style={styles.typingIndicator}>
+                          <Animated.View
+                            style={[styles.typingDot, { opacity: dot1 }]}
+                          />
+                          <Animated.View
+                            style={[styles.typingDot, { opacity: dot2 }]}
+                          />
+                          <Animated.View
+                            style={[styles.typingDot, { opacity: dot3 }]}
+                          />
+                        </View>
                       </View>
                     </View>
-                  </View>
-                )}
-
-                {/* Error Banner */}
-                {error && !loading && (
-                  <View style={styles.errorBanner}>
-                    <MaterialCommunityIcons
-                      name="alert-circle"
-                      size={16}
-                      color="#d32f2f"
-                    />
-                    <Text style={styles.errorBannerText}>
-                      Failed to get response. Try refreshing.
-                    </Text>
-                  </View>
-                )}
-              </ScrollView>
-            )}
-          </View>
-
-          {/* Input Area */}
-          <View style={styles.inputWrapper}>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Type your message..."
-                placeholderTextColor="#888"
-                value={input}
-                onChangeText={setInput}
-                multiline
-                maxLength={2000}
-              />
-
-              <TouchableOpacity
-                onPress={handleSend}
-                disabled={loading || !input.trim()}
-              >
-                <View
-                  style={[
-                    styles.sendButton,
-                    {
-                      backgroundColor:
-                        loading || !input.trim() ? "#d9d9d9" : "#004aad",
-                    },
-                  ]}
-                >
-                  {loading ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <UpArrowIcon size={20} />
                   )}
-                </View>
-              </TouchableOpacity>
+
+                  {error && !loading && (
+                    <View style={styles.errorBanner}>
+                      <MaterialCommunityIcons
+                        name="alert-circle"
+                        size={16}
+                        color="#d32f2f"
+                      />
+                      <Text style={styles.errorBannerText}>
+                        Try refreshing Or Wait for some time
+                      </Text>
+                    </View>
+                  )}
+                </ScrollView>
+              )}
             </View>
+          </TouchableWithoutFeedback>
+        </KeyboardAwareScrollView>
+
+        <View style={styles.inputWrapper}>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Type your message..."
+              placeholderTextColor="#888"
+              value={input}
+              onChangeText={setInput}
+              multiline
+              maxLength={2000}
+              onFocus={() => {
+                setTimeout(() => {
+                  keyboardAwareRef.current?.scrollToEnd({ animated: true });
+                }, 100);
+              }}
+            />
+            <TouchableOpacity
+              onPress={handleSend}
+              disabled={loading || !input.trim()}
+            >
+              <View
+                style={[
+                  styles.sendButton,
+                  {
+                    backgroundColor:
+                      loading || !input.trim() ? "#d9d9d9" : "#004aad",
+                  },
+                ]}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <UpArrowIcon size={20} />
+                )}
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
-      </TouchableWithoutFeedback>
+      </View>
     </SafeAreaView>
   );
 };
@@ -418,9 +415,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
+    flexDirection: "column",
   },
-
-  // Header
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -439,8 +435,6 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 25,
   },
-
-  // Banner
   bannerContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -455,19 +449,19 @@ const styles = StyleSheet.create({
     color: "#f57c00",
     fontFamily: "SourceSans3Medium",
   },
-
-  // Chat Area
   chatArea: {
     flex: 1,
     backgroundColor: "#ffffff",
   },
-
-  // Welcome Screen
+  chatAreaContent: {
+    flexGrow: 1,
+  },
   welcomeContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 32,
+    minHeight: 400,
   },
   welcomeIcon: {
     width: 80,
@@ -509,15 +503,13 @@ const styles = StyleSheet.create({
     color: "#333",
     fontFamily: "SourceSans3Medium",
   },
-
-  // Messages
   messagesContainer: {
     flex: 1,
   },
   messagesContent: {
     paddingHorizontal: 16,
     paddingTop: 16,
-    paddingBottom: 100, // Space for input
+    paddingBottom: 16,
   },
   messageWrapper: {
     flexDirection: "row",
@@ -530,8 +522,6 @@ const styles = StyleSheet.create({
   assistantMessageWrapper: {
     justifyContent: "flex-start",
   },
-
-  // Message Bubbles
   messageBubble: {
     maxWidth: "75%",
     paddingHorizontal: 16,
@@ -555,15 +545,15 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#fff",
     lineHeight: 22,
+    fontFamily: "SourceSans3Medium",
   },
-
-  // Error Styles
   errorBubble: {
     backgroundColor: "#ffebee",
     borderColor: "#ef5350",
   },
   errorText: {
-    color: "#c62828",
+    fontFamily: "SourceSans3Medium",
+    color: "#000000",
     fontSize: 15,
     lineHeight: 22,
   },
@@ -583,8 +573,6 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3Medium",
     flex: 1,
   },
-
-  // Typing Indicator
   typingIndicator: {
     flexDirection: "row",
     alignItems: "center",
@@ -597,17 +585,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#004aad50",
     opacity: 0.4,
   },
-
-  // Input Section - FIXED
   inputWrapper: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
     backgroundColor: "#ffffff",
     borderTopWidth: 1,
     borderTopColor: "#f0f0f0",
-    paddingBottom: Platform.OS === "ios" ? 0 : 12,
+    paddingBottom: Platform.OS === "ios" ? 8 : 10,
   },
   inputContainer: {
     flexDirection: "row",
