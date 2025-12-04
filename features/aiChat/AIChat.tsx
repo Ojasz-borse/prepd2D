@@ -12,6 +12,7 @@ import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
   Animated,
   Keyboard,
   Platform,
@@ -232,6 +233,11 @@ const AIChat: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
+    <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1 }}
+      >
+       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.container}>
         <TopHeader
           onBack={() => {
@@ -254,18 +260,8 @@ const AIChat: React.FC = () => {
           </View>
         )}
 
-        <KeyboardAwareScrollView
-          ref={keyboardAwareRef}
-          style={styles.chatArea}
-          contentContainerStyle={styles.chatAreaContent}
-          enableOnAndroid={true}
-          enableAutomaticScroll={Platform.OS === "ios"}
-          extraScrollHeight={Platform.OS === "ios" ? 20 : 40}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          extraHeight={Platform.OS === "android" ? 100 : 0}
-        >
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        
+         
             <View style={{ flex: 1 }}>
               {!hasStartedChat ? (
                 <View style={styles.welcomeContainer}>
@@ -359,8 +355,6 @@ const AIChat: React.FC = () => {
                 </ScrollView>
               )}
             </View>
-          </TouchableWithoutFeedback>
-        </KeyboardAwareScrollView>
 
         <View style={styles.inputWrapper}>
           <View style={styles.inputContainer}>
@@ -401,6 +395,8 @@ const AIChat: React.FC = () => {
           </View>
         </View>
       </View>
+      </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

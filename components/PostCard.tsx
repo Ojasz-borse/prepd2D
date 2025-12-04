@@ -123,6 +123,14 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 0.5,
     borderBottomColor: "#d3d3d3",
+    margin: 20,
+
+
+    borderRadius: 16,
+   
+    borderWidth: 1,
+    borderColor: "#d9d9d9",
+   
   },
 
   headerRow: {
@@ -140,32 +148,32 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     color: "#004aad",
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: "SourceSans3Medium",
   },
   headerTextContainer: {
     flexDirection: "column",
   },
   postedBy: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: "SourceSans3SemiBold",
     color: "#000",
   },
   postTime: {
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: "SourceSans3Medium",
     color: "#7e7e7e",
   },
 
   title: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: "SourceSans3SemiBold",
     color: "#000",
     marginBottom: 6,
     marginTop: 6,
   },
   text: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: "SourceSans3Medium",
     color: "#737373",
     marginBottom: 8,

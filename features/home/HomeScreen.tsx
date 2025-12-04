@@ -10,7 +10,8 @@ export default function HomeScreen() {
   const { news, loading } = useNews();
 
   return (
-    <>
+    <View style={styles.container}>
+
       <TopHeader title="Home" showBackArrow={false} />
 
       <FlatList
@@ -38,7 +39,7 @@ export default function HomeScreen() {
         }
         showsVerticalScrollIndicator={false}
       />
-    </>
+    </View>
   );
 }
 

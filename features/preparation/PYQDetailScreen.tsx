@@ -200,26 +200,34 @@ export default function PYQDetailsPage() {
           {/* Explanation */}
           {showExplanation && (
             <View style={styles.explanationBox}>
-              <View style={styles.explanationHeader}>
-                <Ionicons name="bulb-outline" size={16} color="#f59e0b" />
-                <Text style={styles.explanationTitle}>Explanation</Text>
-              </View>
-              <View style={styles.explanationContent}>
-                {current.explanation_content ? (
-                  <MemoMathText content={current.explanation_content} />
-                ) : (
-                  <Text
-                    style={{
-                      fontSize: 15,
-                      color: "#222",
-                      fontFamily: "SourceSans3Medium",
-                    }}
-                  >
-                    No Explanation Found
-                  </Text>
-                )}
-              </View>
-            </View>
+  <View style={styles.explanationHeader}>
+    <Ionicons name="bulb-outline" size={16} color="#f59e0b" />
+    <Text style={styles.explanationTitle}>Explanation</Text>
+  </View>
+
+  <ScrollView
+    horizontal
+    showsHorizontalScrollIndicator={true}
+    contentContainerStyle={{ paddingVertical: 5 }}
+  >
+    <View style={{ minWidth: "100%" }}>
+      {current.explanation_content ? (
+        <MemoMathText content={current.explanation_content} />
+      ) : (
+        <Text
+          style={{
+            fontSize: 15,
+            color: "#222",
+            fontFamily: "SourceSans3Medium",
+          }}
+        >
+          No Explanation Found
+        </Text>
+      )}
+    </View>
+  </ScrollView>
+</View>
+
           )}
 
           <View style={{ height: 80 }} />
@@ -408,6 +416,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
     borderColor: "#fef3c7",
+    overflowX: "auto",
+whiteSpace: "nowrap",
+
+
   },
   explanationHeader: {
     flexDirection: "row",

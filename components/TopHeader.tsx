@@ -302,7 +302,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
     backgroundColor: "#fff",
-    elevation: 4,
   },
   sideContainer: {
     width: 40,
