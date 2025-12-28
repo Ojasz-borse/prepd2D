@@ -15,6 +15,7 @@ import {
   LOGIN,
   SIGNUP_REQUEST_OTP,
   SIGNUP_VERIFY_OTP,
+  VERIFY_LOGIN,
 } from "@/constants/config";
 import { registerForPushNotificationsAsync } from "@/services/notificationService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -28,6 +29,7 @@ type User = {
   first_name: string;
   last_name: string;
   group: string;
+  is_subscribed: boolean;
 };
 
 type AuthContextType = {
@@ -91,8 +93,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setUserToken(data.token);
         setUser(data.user);
 
-        console.log("token", data.token);
-        console.log("user", data.user);
+        // console.log("token", data.token);
+        // console.log("user", data.user);
 
         router.replace("/home");
         registerForPushNotificationsAsync(data.token);
@@ -141,8 +143,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setUserToken(data.token);
       setUser(data.user);
 
-      console.log("token", data.token);
-      console.log("user", data.user);
+      // console.log("token", data.token);
+      // console.log("user", data.user);
 
       router.replace("/home");
     } else {
@@ -166,7 +168,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       // Success
-      console.log("OTP sent:", data.message);
+      // console.log("OTP sent:", data.message);
       return data; // optional, you can return the message or any other data
     } catch (error: any) {
       console.error("Error sending OTP:", error.message);
@@ -188,7 +190,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         throw new Error(data.message || "Failed to verify OTP");
       }
 
-      console.log("OTP verified:", data.message);
+      // console.log("OTP verified:", data.message);
       return data; // return success message
     } catch (error: any) {
       console.error("Error verifying OTP:", error.message);
@@ -210,7 +212,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         throw new Error(data.message || "Failed to reset password");
       }
 
-      console.log("Password reset successful:", data.message);
+      // console.log("Password reset successful:", data.message);
       return data; // return success message for UI
     } catch (error: any) {
       console.error("Error resetting password:", error.message);
@@ -232,13 +234,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const checkAuth = async (): Promise<boolean> => {
-    const token = await SecureStore.getItemAsync(AUTH_TOKEN);
-    if (token) {
-      setUserToken(token);
-      return true; // ✅ signed in
-    } else {
-      setUserToken(null);
-      return false; // ❌ not signed in
+    try {
+      setLoading(true);
+      const token = await SecureStore.getItemAsync(AUTH_TOKEN);
+      if (!token) {
+        setUserToken(null);
+        return false;
+      }
+
+      // Hit the API to verify the token
+      const response = await fetch(VERIFY_LOGIN, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.valid === true) {
+        setUserToken(token);
+        setLoading(false);
+        return true; // ✅ signed in and valid
+      } else {
+        // Token is invalid or user logged in from another device
+        console.warn("Session invalid, logging out:", data.message || "Unauthorized");
+        await logout();
+        setLoading(false);
+        return false; // ❌ session invalid
+      }
+    } catch (error) {
+      console.error("Error during checkAuth:", error);
+      // In case of network error, we might want to stay logged in or logout.
+      // Usually, it's safer to logout if we can't verify the session.
+      // But for better UX during temporary network issues, we could return the current state.
+      // However, the requirement says "if got valid false then... logout".
+      // We'll treat errors as invalid session for now to be safe.
+      await logout();
+      setLoading(false);
+      return false;
     }
   };
 

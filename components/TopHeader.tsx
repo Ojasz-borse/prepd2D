@@ -29,10 +29,11 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 
 interface TopHeaderProps {
   title: string;
-  showBackArrow: boolean;
+  showBackArrow?: boolean;
 }
 
 const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
+  // console.log(showBackArrow)
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { user, logout } = useAuth();
@@ -40,7 +41,7 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
 
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  const slideAnim = useRef(new Animated.Value(-SCREEN_WIDTH * 0.8)).current;
+  const slideAnim = useRef(new Animated.Value(SCREEN_WIDTH * 0.8)).current;
 
   const initials = (user?.first_name?.[0] || "") + (user?.last_name?.[0] || "");
 
@@ -55,7 +56,7 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
 
   const closeDrawer = () => {
     Animated.timing(slideAnim, {
-      toValue: -SCREEN_WIDTH * 0.8,
+      toValue: SCREEN_WIDTH * 0.8,
       duration: 300,
       useNativeDriver: true,
     }).start(() => {
@@ -69,33 +70,43 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
       <View style={styles.topHeader}>
         <View style={styles.sideContainer}>
           {showBackArrow ? (
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={{ marginLeft: -10 }}
-            >
-              <Ionicons name="arrow-back" size={22} color={colors.textDark} />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity style={styles.profileButton} onPress={openDrawer}>
-              <View
-                style={[
-                  styles.profileCircle,
-                  { backgroundColor: getAvatarColor(user?.first_name) },
-                ]}
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <TouchableOpacity
+                onPress={() => router.back()}
+
               >
-                <Text style={styles.profileInitials}>
-                  {initials.toUpperCase()}
-                </Text>
-              </View>
-            </TouchableOpacity>
+                <Ionicons name="arrow-back" size={20} color={colors.textDark} />
+              </TouchableOpacity>
+              <Text style={styles.headerTitle}>
+                {title}
+              </Text>
+            </View>
+
+          ) : (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+
+              <Text style={styles.headerTitle}>
+                {title}
+              </Text>
+            </View>
           )}
         </View>
 
-        <Text numberOfLines={1} style={styles.headerTitle}>
-          {title}
-        </Text>
 
-        <View style={styles.sideContainer} />
+        <View style={styles.sideContainer} >
+          <TouchableOpacity style={styles.profileButton} onPress={openDrawer}>
+            <View
+              style={[
+                styles.profileCircle,
+                { backgroundColor: getAvatarColor(user?.first_name) },
+              ]}
+            >
+              <Text style={styles.profileInitials}>
+                {initials.toUpperCase()}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* ===== Drawer ===== */}
@@ -134,7 +145,7 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
 
           {/* Drawer Content */}
           <View style={styles.drawerContent}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.drawerItem}
               onPress={() => {
                 closeDrawer();
@@ -143,10 +154,10 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
             >
               <ChecklistIcon size={22} />
               <Text style={styles.drawerItemText}>My List</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
-            <Text style={styles.section}>Tools</Text>
-
+            {/* <Text style={styles.section}>Tools</Text> */}
+            {/* 
             <TouchableOpacity
               style={styles.drawerItem}
               onPress={() => {
@@ -156,7 +167,7 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
             >
               <EstimatorTabIcon size={18} focused={false} />
               <Text style={styles.drawerItemText}>Estimator</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
           {/* ===== Help + Logout Section ===== */}
@@ -299,19 +310,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 16,
     height: 60,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
     backgroundColor: "#fff",
+
   },
   sideContainer: {
-    width: 40,
     alignItems: "center",
     justifyContent: "center",
   },
   headerTitle: {
-    fontSize: 16,
-    color: colors.textDark,
-    fontFamily: "SourceSans3Medium",
+    fontSize: 18,
+    color: "#404040",
+    fontFamily: "SourceSans3SemiBold",
   },
   profileButton: {
     alignItems: "center",
@@ -341,7 +350,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     bottom: 0,
-    left: 0,
+    right: 0,
     width: SCREEN_WIDTH * 0.8,
     backgroundColor: "#fff",
     shadowColor: "#000",

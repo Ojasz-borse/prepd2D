@@ -119,7 +119,7 @@ const LoginUserScreen: React.FC = () => {
                 </TouchableOpacity>
               </View>
             </View>
-            <Text>om</Text>
+
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>

@@ -5,6 +5,8 @@ import * as ScreenCapture from "expo-screen-capture";
 import React, { useEffect, useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+
 
 export default function ChapterDetails() {
   const { id } = useLocalSearchParams<{
@@ -35,55 +37,87 @@ export default function ChapterDetails() {
     <SafeAreaView style={{ flex: 1 }}>
       <TopHeader title="Chapter Details" showBackArrow={true} />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.subRow}>
-          <Text style={styles.subText}>
-            {chapter.subject === 1
-              ? "Physics"
-              : chapter.subject === 2
-              ? "Chemistry"
-              : "Mathematics"}
-          </Text>
-          <Text style={styles.subText}>
-            {chapter.class === 1 ? "11th" : "12th"}
-          </Text>
-        </View>
+        <LinearGradient
+          colors={["#f8fafc", "#e6f1ff", "#e8dcff"]}
+          locations={[0, 0.5, 1]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.container}
+        >
+          <View style={{ marginHorizontal: 16, marginBottom: 16 }}>
+            <View style={styles.card}>
 
-        <Text style={styles.chapterText}>
-          {chapter.chapter_no}. {chapter.chapter_name}
-        </Text>
 
-        <View style={styles.bottomSubRow}>
-          <View style={styles.bottomSubRowView}>
-            <Text style={styles.bottomSubRowText}>
-              Weightage: {chapter.weightage}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.topicContainer}>
-          {chapter.topics.map((e, i) => (
-            <View key={i} style={styles.topic}>
-              <Text style={styles.topicText}>{e.topic}</Text>
-              {e.sub_topic && (
-                <View style={{ marginTop: 4 }}>
-                  {e.sub_topic.map((e, i) => {
-                    return <Text style={styles.subtopicText}>- {e}</Text>;
-                  })}
+              <View style={styles.subRow}>
+                <View style={styles.subjectTag}>
+                  <Text style={styles.subText}>
+                    {chapter.subject === 1
+                      ? "Physics"
+                      : chapter.subject === 2
+                        ? "Chemistry"
+                        : "Mathematics"}
+                  </Text>
                 </View>
-              )}
+                <View style={styles.subjectTag}>
+                  <Text style={styles.subText}>
+                    {chapter.class === 1 ? "11th" : "12th"}
+                  </Text>
+                </View>
+              </View>
+
+
+              <Text style={styles.chapterTitle}>
+                {chapter.chapter_no}. {chapter.chapter_name}
+              </Text>
+
+              <View style={styles.bottomSubRow}>
+                <View style={styles.bottomSubRowView}>
+                  <Text style={styles.bottomSubRowText}>
+                    Weightage: {chapter.weightage}
+                  </Text>
+                </View>
+              </View>
+
+
+              <View style={styles.topicContainer}>
+                {chapter.topics.map((e, i) => (
+                  <View key={i} style={styles.topic}>
+                    <Text style={styles.topicText}>{e.topic}</Text>
+                    {e.sub_topic && (
+                      <View style={{ marginTop: 4 }}>
+                        {e.sub_topic.map((e, i) => {
+                          return <Text key={i} style={styles.subtopicText}>- {e}</Text>;
+                        })}
+                      </View>
+                    )}
+                  </View>
+                ))}
+              </View>
             </View>
-          ))}
-        </View>
+          </View>
+        </LinearGradient>
       </ScrollView>
+
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-
+    flex: 1,
     backgroundColor: "#ffffff",
+
+  },
+
+  card: {
+    backgroundColor: "#fff",
+    width: "100%",
+    alignSelf: "center",
+    borderRadius: 18,
+    padding: 12,
+    marginTop: 16,
+
+
   },
   centered: {
     flex: 1,
@@ -102,21 +136,30 @@ const styles = StyleSheet.create({
     borderColor: "#d9d9d9",
     marginBottom: 16,
   },
-  chapterText: {
-    fontSize: 16,
+  chapterTitle: {
+    flex: 1,
+    fontSize: 17,
     color: "#000",
-    marginTop: 2,
-    fontWeight: "600",
-    fontFamily: "SourceSans3Medium",
+    fontFamily: "SourceSans3SemiBold",
+    marginRight: 8,
   },
   subRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 20,
+    gap: 8,
+  },
+  subjectTag: {
+    backgroundColor: "#f0f7d4",
+    borderWidth: 1,
+    borderColor: "#b6cf4f",
+    borderRadius: 99,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
   },
   subText: {
-    fontSize: 14,
-    color: "#004aad",
+    fontSize: 12,
+    color: "#8b9e3dff",
     fontFamily: "SourceSans3Medium",
   },
   noResult: {
@@ -130,12 +173,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 6,
     alignItems: "center",
+    marginTop: 8,
   },
   bottomSubRowView: {
-    backgroundColor: "#ebf0fa",
-    padding: 2,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#004aad",
+    paddingVertical: 2,
     paddingHorizontal: 10,
-    borderRadius: 8,
+    borderRadius: 99,
     marginTop: 8,
   },
   bottomSubRowText: {
@@ -166,9 +212,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   topicTitle: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 20,
     color: "#000",
+    fontFamily: "SourceSans3Medium",
   },
   subItem: {
     fontSize: 14,
@@ -183,14 +229,14 @@ const styles = StyleSheet.create({
   topic: {
     borderWidth: 1,
     borderColor: "#d9d9d9",
-    paddingHorizontal: 8,
-    paddingVertical: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
     borderRadius: 8,
     marginBottom: 10,
   },
   topicText: {
     width: "auto",
-    fontSize: 14,
+    fontSize: 16,
     color: "#000000",
     fontFamily: "SourceSans3Medium",
   },

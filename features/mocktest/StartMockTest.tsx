@@ -169,7 +169,7 @@ const StartMockTest = () => {
         await NavigationBar.setVisibilityAsync("hidden");
       }
     } catch (e) {
-      console.log("Error hiding nav bar:", e);
+      // console.log("Error hiding nav bar:", e);
     }
   };
 

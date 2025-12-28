@@ -39,30 +39,41 @@ const MockTestList: React.FC<MockTestListProps> = ({
       renderItem={({ item }) => (
         <TouchableOpacity
           style={styles.card}
-          onPress={() =>
-            router.push({
-              pathname: "/start-mock-test",
-              params: { testid: item.id.toString() },
-            })
-          }
+          // onPress={() =>
+          //   router.push({
+          //     pathname: "/start-mock-test",
+          //     params: { testid: item.id.toString() },
+          //   })
+          // }
+          activeOpacity={0.7}
         >
-          <Text style={styles.title}>{item.title}</Text>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginTop: 6,
-            }}
-          >
-            <Text style={styles.subtitle}>
-              <Text style={styles.subtitleText}>{item.shift_time}</Text>
-            </Text>
+          <View style={styles.subRow}>
+            <View style={styles.subjectTag}>
+              <Text style={styles.subText}>{item.shift_time}</Text>
+            </View>
 
-            <Text style={styles.subtitle}>
-              <Text style={styles.subtitleText}>
+            <View style={styles.subjectTag}>
+              <Text style={styles.subText}>
                 {item.shift_date} {item.shift_year}
               </Text>
-            </Text>
+            </View>
+          </View>
+
+          <View style={styles.titleRow}>
+            <Text style={styles.title}>{item.title}</Text>
+            <View>
+              <TouchableOpacity
+                style={styles.solveButton}
+              // onPress={() =>
+              //   router.push({
+              //     pathname: "/start-mock-test",
+              //     params: { testid: item.id.toString() },
+              //   })
+              // }
+              >
+                <Text style={styles.solveButtonText}>Solve</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </TouchableOpacity>
       )}
@@ -101,28 +112,51 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 12,
     borderWidth: 1,
-    borderColor: "#d9d9d9",
+    borderColor: "#e2e8f0",
     backgroundColor: "#fff",
-    marginBottom: 15,
+    marginBottom: 16,
+  },
+  subRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    gap: 8,
+  },
+  subjectTag: {
+    backgroundColor: "#f0f7d4",
+    borderWidth: 1,
+    borderColor: "#b6cf4f",
+    borderRadius: 99,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+  },
+  subText: {
+    fontSize: 12,
+    color: "#8b9e3dff",
+    fontFamily: "SourceSans3Medium",
+  },
+  titleRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
   },
   title: {
-    fontSize: 16,
+    flex: 1,
+    fontSize: 17,
     color: "#000",
-    marginTop: 2,
-    fontWeight: "600",
-    fontFamily: "SourceSans3Medium",
+    fontFamily: "SourceSans3SemiBold",
+    marginRight: 8,
   },
-
-  subtitle: {
-    backgroundColor: "#ebf0fa",
-    padding: 2,
-    paddingHorizontal: 10,
-    borderRadius: 8,
+  solveButton: {
+    backgroundColor: "#ff5e32",
+    paddingHorizontal: 18,
+    paddingVertical: 6,
+    borderRadius: 999,
   },
-  subtitleText: {
-    fontSize: 12,
-    color: "#004aad",
-    fontFamily: "SourceSans3Medium",
+  solveButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontFamily: "SourceSans3SemiBold",
   },
   noResult: {
     textAlign: "center",

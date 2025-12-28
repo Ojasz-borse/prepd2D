@@ -1,5 +1,3 @@
-import GovernmentCollegeIcon from "@/assets/icons/GovernmentCollegeIcon";
-import PrivateCollegeIcon from "@/assets/icons/PrivateCollegeIcon";
 import { router } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -9,7 +7,7 @@ export interface College {
   name: string;
   district: string;
   is_government: boolean;
-  status: string;
+  status?: string;
 }
 
 interface NormalFindCollegeCardProps {
@@ -22,33 +20,53 @@ const NormalFindCollegeCard: React.FC<NormalFindCollegeCardProps> = ({
   return (
     <TouchableOpacity
       key={college.college_code}
-      style={styles.card3D}
-      onPress={() =>
-        router.push({
-          pathname: "../college-details",
-          params: {
-            college_code: college.college_code,
-          },
-        })
-      }
+      style={styles.cardContainer}
+      // onPress={() =>
+      //   router.push({
+      //     pathname: "../college-details",
+      //     params: {
+      //       college_code: college.college_code,
+      //     },
+      //   })
+      // }
       activeOpacity={0.7}
     >
-      <View style={styles.subRow}>
-        <Text style={styles.subText}>{college.college_code}</Text>
-        <View style={styles.typeRow}>
-          {college.is_government ? (
-            <GovernmentCollegeIcon size={16} />
-          ) : (
-            <PrivateCollegeIcon size={16} />
-          )}
-          <Text style={styles.subText}>
+      {/* Top Metadata Row (Greenish Pills) */}
+      <View style={styles.topRow}>
+        <View style={styles.greenTag}>
+          <Text style={styles.greenTagText}>{college.college_code}</Text>
+        </View>
+        <View style={styles.greenTag}>
+          <Text style={styles.greenTagText}>
             {college.is_government ? "Govt" : "Pvt"}
           </Text>
         </View>
       </View>
-      <Text style={styles.collegeName}>{college.name}</Text>
-      <Text style={styles.statusText}>Status: {college.status}</Text>
-      <Text style={styles.viewMoreText}>View more</Text>
+
+      {/* Title & View Button Row */}
+      <View style={styles.titleRow}>
+        <Text style={styles.collegeName}>
+          {college.name}
+        </Text>
+        <TouchableOpacity
+          style={styles.viewButton}
+        // onPress={() =>
+        //   router.push({
+        //     pathname: "../college-details",
+        //     params: { college_code: college.college_code },
+        //   })
+        // }
+        >
+          <Text style={styles.viewButtonText}>View</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Bottom Status (Blue Pill) */}
+      <View style={styles.bottomRow}>
+        <View style={styles.statusPill}>
+          <Text style={styles.statusPillText}>{college.status || "N/A"}</Text>
+        </View>
+      </View>
     </TouchableOpacity>
   );
 };
@@ -56,48 +74,75 @@ const NormalFindCollegeCard: React.FC<NormalFindCollegeCardProps> = ({
 export default React.memo(NormalFindCollegeCard);
 
 const styles = StyleSheet.create({
-  card3D: {
+  cardContainer: {
     width: "100%",
     backgroundColor: "#fff",
     borderRadius: 16,
-    padding: 12,
-    marginBottom: 16,
+    padding: 14,
+    marginBottom: 20,
     borderWidth: 1,
-    borderColor: "#d9d9d9",
+    borderColor: "#e2e8f0",
   },
-  collegeName: {
-    fontSize: 16,
-    color: "#000",
-    fontFamily: "SourceSans3Medium",
-    marginTop: 2,
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+    gap: 8,
   },
-  statusText: {
+  greenTag: {
+    backgroundColor: "#f0f7d4",
+    borderWidth: 1,
+    borderColor: "#b6cf4f",
+    borderRadius: 99,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+  },
+  greenTagText: {
     fontSize: 12,
-    color: "#888",
+    color: "#8b9e3dff",
     fontFamily: "SourceSans3Medium",
-    marginTop: 2,
   },
-  subRow: {
+  titleRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 4,
+    gap: 12,
   },
-  typeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    width: 50,
-    gap: 4,
+  collegeName: {
+    flex: 1,
+    fontSize: 17,
+    color: "#000",
+    fontFamily: "SourceSans3SemiBold",
   },
-  subText: {
+  viewButton: {
+    backgroundColor: "#ff5e32",
+    paddingHorizontal: 18,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  viewButtonText: {
+    color: "#fff",
     fontSize: 14,
+    fontFamily: "SourceSans3SemiBold",
+  },
+  bottomRow: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    marginTop: 12,
+  },
+  statusPill: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#004aad",
+    paddingVertical: 2,
+    paddingHorizontal: 10,
+    borderRadius: 99,
+    marginTop: 8,
+  },
+  statusPillText: {
+    fontSize: 12,
     color: "#004aad",
     fontFamily: "SourceSans3Medium",
-  },
-  viewMoreText: {
-    fontSize: 12,
-    color: "#0099ff",
-    fontFamily: "SourceSans3Medium",
-    marginLeft: "auto",
   },
 });

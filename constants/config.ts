@@ -4,6 +4,7 @@ const extra = Constants.expoConfig?.extra || {};
 export const SIGNUP_REQUEST_OTP = `${extra.SERVER_URL}/api/auth/signup/request-otp`;
 export const SIGNUP_VERIFY_OTP = `${extra.SERVER_URL}/api/auth/signup/verify-otp`;
 export const LOGIN = `${extra.SERVER_URL}/api/auth/login`;
+export const VERIFY_LOGIN = `${extra.SERVER_URL}/api/auth/verify-login`;
 
 export const FORGOT_PASSWORD_REQUEST_OTP = `${extra.SERVER_URL}/api/auth/forgot-password/request-otp`;
 export const FORGOT_PASSWORD_VERIFY_OTP = `${extra.SERVER_URL}/api/auth/forgot-password/verify-otp`;
@@ -25,6 +26,12 @@ export const MY_LIST_API_URL = `${extra.SERVER_URL}/api/my-option-form`;
 export const GET_PYQS = `${extra.SERVER_URL}/api/pyqs/chapter/id`;
 
 export const GET_PYQ_CHAPTERS = `${extra.SERVER_URL}/api/pyqs/chapter`;
+
+export const GET_NOTES_CHAPTERS = `${extra.SERVER_URL}/api/notes/chapter`;
+
+export const GET_NOTES = `${extra.SERVER_URL}/api/notes`;
+
+export const GET_NOTES_CHAPTER_ID = `${extra.SERVER_URL}/api/notes/chapter/id`;
 
 export const UPDATE_USER_RESPONSE = `${extra.SERVER_URL}/api/pyqs/chapter/userResponse`;
 

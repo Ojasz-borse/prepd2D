@@ -36,19 +36,22 @@ export default function PyqChapterCardSkeleton() {
 
   return (
     <View style={styles.chapterTag}>
-      {/* Subject + Class */}
+      {/* Subject + Class Pills */}
       <View style={styles.subRow}>
-        <SkeletonBox style={{ width: 70, height: 12 }} />
-        <SkeletonBox style={{ width: 40, height: 12 }} />
+        <SkeletonBox style={{ width: 80, height: 22, borderRadius: 99 }} />
+        <SkeletonBox style={{ width: 50, height: 22, borderRadius: 99 }} />
       </View>
 
-      {/* Chapter name */}
-      <SkeletonBox style={{ width: "85%", height: 14, marginVertical: 6 }} />
+      {/* Chapter Name + Solve Button */}
+      <View style={styles.titleRow}>
+        <SkeletonBox style={{ width: "60%", height: 16, borderRadius: 4 }} />
+        <SkeletonBox style={{ width: 65, height: 28, borderRadius: 999 }} />
+      </View>
 
-      {/* Bottom row */}
+      {/* Bottom row (Stats) */}
       <View style={styles.bottomSubRow}>
-        <SkeletonBox style={{ width: 110, height: 12 }} />
-        <SkeletonBox style={{ width: 90, height: 12 }} />
+        <SkeletonBox style={{ width: 100, height: 20, borderRadius: 99 }} />
+        <SkeletonBox style={{ width: 80, height: 20, borderRadius: 99 }} />
       </View>
     </View>
   );
@@ -61,21 +64,28 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#d9d9d9",
+    borderColor: "#e2e8f0",
     backgroundColor: "#fff",
   },
   subRow: {
     flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 12,
+  },
+  titleRow: {
+    flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 6,
+    alignItems: "center",
+    marginBottom: 12,
   },
   bottomSubRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 6,
+    alignItems: "center",
+    gap: 8,
+    marginTop: 4,
   },
   skeletonBox: {
     backgroundColor: "#e0e0e0",
-    borderRadius: 4,
   },
 });

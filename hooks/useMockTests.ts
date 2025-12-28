@@ -95,12 +95,12 @@ export function useMockTests() {
   const fetchMockTestQuestions = useCallback(
     async (testId: string) => {
 
-      console.log("fetching with",testId);
+      // console.log("fetching with",testId);
       try {
         const token = await getToken();
 
-        console.log("token", token);
-        console.log("API", GET_MOCK_TEST_QUESTIONS)
+        // console.log("token", token);
+        // console.log("API", GET_MOCK_TEST_QUESTIONS)
 
         const res = await fetchWithRetry(
           GET_MOCK_TEST_QUESTIONS,
@@ -116,7 +116,7 @@ export function useMockTests() {
           1000
         );
 
-        console.log("res", res);
+        // console.log("res", res);
 
         const data = await res.json();
         if (!data.success || !data.questions)

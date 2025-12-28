@@ -1,5 +1,4 @@
-import ExternalLinkIcon from "@/assets/icons/ExternalLinkIcon";
-import ShareIcon from "@/assets/icons/ShareIcon";
+import { Feather } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
   Linking,
@@ -9,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface PostCardProps {
   created_at: string;
@@ -16,6 +16,18 @@ interface PostCardProps {
   news_heading: string;
   news_url: string;
 }
+
+// Reusable gradient wrapper
+const GradientBox = ({ children, style }: any) => (
+  <LinearGradient
+    colors={["#f8fafc90", "#e6f1ff90", "#e8dcff90"]}
+    start={{ x: 0, y: 0 }}
+    end={{ x: 1, y: 1 }}
+    style={[styles.gradientContent, style]}
+  >
+    {children}
+  </LinearGradient>
+);
 
 export default function PostCard({
   created_at,
@@ -25,7 +37,7 @@ export default function PostCard({
 }: PostCardProps) {
   const [expanded, setExpanded] = useState(false);
 
-  const maxChars = 200;
+  const maxChars = 120;
   const isLongText = news_desc.length > maxChars;
   const displayText =
     expanded || !isLongText
@@ -34,12 +46,11 @@ export default function PostCard({
 
   const handleShare = async () => {
     try {
-      const message = `${news_heading}\n\n${news_desc}${
-        news_url ? `\n\nRead more: ${news_url}` : ""
-      }`;
+      const message = `${news_heading}\n\n${news_desc}${news_url ? `\n\nRead more: ${news_url}` : ""
+        }`;
       await Share.share({ message });
     } catch (error) {
-      console.log("Error sharing:", error);
+      // console.log("Error sharing:", error);
     }
   };
 
@@ -54,7 +65,7 @@ export default function PostCard({
   function timeAgo(dateString: string) {
     const now = new Date();
     const date = new Date(dateString);
-    const diff = (now.getTime() - date.getTime()) / 1000; // diff in seconds
+    const diff = (now.getTime() - date.getTime()) / 1000;
 
     if (diff < 60) return "just now";
     if (diff < 3600) {
@@ -74,42 +85,50 @@ export default function PostCard({
   }
 
   return (
-    <View style={styles.container}>
-      {/* Row: Profile + Posted by + Time */}
-      <View style={styles.headerRow}>
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>PC</Text>
+    <View style={styles.shadowWrapper}>
+      <View style={styles.container}>
+
+        {/* Header Row */}
+        {/*  <View style={styles.headerRow}>
+         
+          <GradientBox style={styles.badge}>
+            <Text style={styles.badgeText}>PC</Text>
+          </GradientBox>
+
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.postedBy}>PrepCET Admin</Text>
+            <Text style={styles.postTime}>{timeAgo(created_at)}</Text>
+          </View>
         </View>
-        <View style={styles.headerTextContainer}>
-          <Text style={styles.postedBy}>PrepCET Admin</Text>
-          <Text style={styles.postTime}>{timeAgo(created_at)}</Text>
-        </View>
-      </View>
+*/}
+        {/* Title */}
+        <Text style={styles.title}>{news_heading}</Text>
 
-      {/* Title */}
-      <Text style={styles.title}>{news_heading}</Text>
+        {/* News text */}
+        <Text style={styles.text}>
+          <Text>{displayText}</Text>
+          {isLongText && (
+            <Text style={styles.viewMore} onPress={() => setExpanded(!expanded)}>
+              {expanded ? " View less" : " View more"}
+            </Text>
+          )}
+        </Text>
 
-      {/* Post Text with view more/less */}
-      <Text style={styles.text}>
-        <Text>{displayText}</Text>
-        {isLongText && (
-          <Text style={styles.viewMore} onPress={() => setExpanded(!expanded)}>
-            {expanded ? " View less" : " View more"}
-          </Text>
-        )}
-      </Text>
+        {/* Bottom Row */}
+        <View style={styles.bottomRow}>
+          <View style={{ flexDirection: "row", gap: 16 }}>
 
-      {/* Bottom row: Visit link (left) + Share icon (right) */}
-      <View style={styles.bottomRow}>
-        <View style={{ flexDirection: "row", gap: 8 }}>
-          <TouchableOpacity style={styles.linkRow} onPress={handleOpenLink}>
-            {/* <Text style={styles.linkText}>visit </Text> */}
-            <ExternalLinkIcon size={16} />
-          </TouchableOpacity>
+            {/* Visit button */}
+            <TouchableOpacity onPress={handleOpenLink}>
+              <Feather name="external-link" size={18} color="#141414" />
+            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.linkRow} onPress={handleShare}>
-            <ShareIcon size={16} />
-          </TouchableOpacity>
+            {/* Share button */}
+            <TouchableOpacity onPress={handleShare}>
+              <Feather name="share-2" size={18} color="#141414" />
+            </TouchableOpacity>
+
+          </View>
         </View>
       </View>
     </View>
@@ -117,20 +136,22 @@ export default function PostCard({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: 1,
+  shadowWrapper: {
     backgroundColor: "#fff",
     padding: 16,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#d3d3d3",
-    margin: 20,
-
-
-    borderRadius: 16,
-   
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#d9d9d9",
-   
+    borderColor: "#e2e8f0",
+  },
+
+  container: {
+
+  },
+
+  gradientContent: {
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
   },
 
   headerRow: {
@@ -138,19 +159,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 6,
   },
+
   badge: {
-    backgroundColor: "#f0f4fb",
     marginRight: 10,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    alignSelf: "flex-start",
   },
+
   badgeText: {
     color: "#004aad",
     fontSize: 16,
     fontFamily: "SourceSans3Medium",
   },
+
   headerTextContainer: {
     flexDirection: "column",
   },
@@ -166,53 +185,37 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: "SourceSans3SemiBold",
-    color: "#000",
-    marginBottom: 6,
-    marginTop: 6,
+    color: "#004aad",
+    marginBottom: 8,
   },
+
   text: {
     fontSize: 14,
     fontFamily: "SourceSans3Medium",
     color: "#737373",
     marginBottom: 8,
   },
+
   viewMore: {
     fontSize: 14,
     color: "#004aad",
     fontFamily: "SourceSans3Medium",
   },
-  shareBadge: {
-    backgroundColor: "#f0f4fb",
-    paddingRight: 12,
-    borderRadius: 99,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    alignSelf: "flex-start",
-  },
 
   bottomRow: {
     flexDirection: "row",
-    justifyContent: "flex-end",
+    justifyContent: "flex-start",
     alignItems: "center",
+    marginTop: 12,
   },
+
   linkRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#f0f4fb",
-    paddingRight: 12,
     borderRadius: 99,
     paddingHorizontal: 10,
     paddingVertical: 10,
-    alignSelf: "flex-start",
-  },
-  linkText: {
-    color: "#004aad",
-    fontFamily: "SourceSans3Medium",
-    fontSize: 14,
-    lineHeight: 18,
-    textDecorationLine: "underline",
-    marginLeft: 4,
+    flexDirection: "row",
+    alignItems: "center",
   },
 });

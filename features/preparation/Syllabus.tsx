@@ -1,4 +1,5 @@
 import SearchIcon from "@/assets/icons/SearchIcon";
+import SyllabusChapterCardSkeleton from "@/components/SyllabusChapterCardSkeleton";
 import syllabusData from "@/dataConfig/chapters.json";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -6,7 +7,7 @@ import * as ScreenCapture from "expo-screen-capture";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Animated,
-  FlatList,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -58,9 +59,14 @@ export default function Syllabus() {
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
   const [chaptersData, setChaptersData] = useState<Chapter[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setChaptersData(syllabusData);
+    // Simulate loading for skeleton
+    setTimeout(() => {
+      setChaptersData(syllabusData);
+      setLoading(false);
+    }, 1000);
   }, []);
 
   useEffect(() => {
@@ -94,7 +100,7 @@ export default function Syllabus() {
     });
   }, [chaptersData, searchText, selectedSubject, selectedClasses]);
 
-  const listRef = React.useRef<FlatList>(null);
+  const listRef = React.useRef<ScrollView>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
@@ -118,7 +124,7 @@ export default function Syllabus() {
   };
 
   const scrollToTop = () => {
-    listRef.current?.scrollToOffset({ offset: 0, animated: true });
+    listRef.current?.scrollTo({ y: 0, animated: true });
   };
 
   const clearFilters = () => {
@@ -128,176 +134,194 @@ export default function Syllabus() {
   };
 
   const handleChapterPress = (chapter: Chapter) => {
-    const title = `${chapter.chapter_no}. ${
-      chapter.subject === 1
-        ? "Physics"
-        : chapter.subject === 2
+    const title = `${chapter.chapter_no}. ${chapter.subject === 1
+      ? "Physics"
+      : chapter.subject === 2
         ? "Chemistry"
         : "Mathematics"
-    }`;
+      }`;
     router.push({
       pathname: "/chapter-details",
       params: { id: chapter.id.toString() },
     });
   };
 
+  // ✅ Normal render
   return (
     <>
-      <FlatList
+      <ScrollView
         ref={listRef}
         onScroll={handleScroll}
         scrollEventThrottle={16}
-        data={filteredData}
-        keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => handleChapterPress(item)}
-            activeOpacity={0.7}
-          >
-            <View style={styles.chapterTag}>
-              <View style={styles.subRow}>
-                <Text style={styles.subText}>
-                  {item.subject === 1
-                    ? "Physics"
-                    : item.subject === 2
-                    ? "Chemistry"
-                    : "Mathematics"}
+      >
+        {/* 🔍 Search bar */}
+        <View style={styles.searchContainer}>
+          <SearchIcon size={18} focused={false} />
+          <TextInput
+            style={styles.searchBar}
+            placeholder="Search by chapter name"
+            placeholderTextColor="#777"
+            value={searchText}
+            onChangeText={setSearchText}
+          />
+        </View>
+
+        {/* 🎓 Filters */}
+        <View style={styles.filterRow}>
+          <View style={{ flex: 0.5 }}>
+            <Dropdown
+              style={styles.dropdown}
+              data={[
+                { label: "Physics", value: "Physics" },
+                { label: "Chemistry", value: "Chemistry" },
+                { label: "Maths", value: "Maths" },
+              ]}
+              labelField="label"
+              valueField="value"
+              value={selectedSubject}
+              placeholder="Subject"
+              onChange={(item) => setSelectedSubject(item.value)}
+              placeholderStyle={styles.dropdownText}
+              selectedTextStyle={styles.dropdownText}
+              itemTextStyle={styles.dropdownText}
+            />
+          </View>
+
+          <View style={{ flex: 0.5 }}>
+            <MultiSelect
+              style={styles.dropdown}
+              data={[
+                { label: "11th", value: "11th" },
+                { label: "12th", value: "12th" },
+              ]}
+              labelField="label"
+              valueField="value"
+              placeholder="Select Class"
+              value={selectedClasses}
+              onChange={(items) => setSelectedClasses(items as string[])}
+              renderItem={(item) =>
+                renderDropdownItem(item, selectedClasses)
+              }
+              visibleSelectedItem={false}
+              placeholderStyle={styles.dropdownText}
+              selectedTextStyle={styles.dropdownText}
+              itemTextStyle={styles.dropdownText}
+            />
+            {selectedClasses.length > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>
+                  {selectedClasses.length}
                 </Text>
-                <Text style={styles.subText}>
-                  {item.class === 1 ? "11th" : "12th"}
-                </Text>
               </View>
+            )}
+          </View>
+        </View>
 
-              <Text style={styles.chapterText}>
-                {item.chapter_no}. {item.chapter_name}
-              </Text>
-
-              <View style={styles.bottomSubRow}>
-                <View style={styles.bottomSubRowView}>
-                  <Text style={styles.bottomSubRowText}>
-                    Weightage: {item.weightage}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.topicContainer}>
-                {item.topics
-                  .slice(0, 5)
-                  .map((e: { topic: string }, i: number) => (
-                    <View key={i} style={styles.topic}>
-                      <Text style={styles.topicText}>{e.topic}</Text>
-                    </View>
-                  ))}
-
-                {item.topics.length > 5 && (
-                  <View style={styles.topic}>
-                    <Text style={[styles.topicText, { color: "#007BFF" }]}>
-                      +{item.topics.length - 5} more
-                    </Text>
-                  </View>
-                )}
-              </View>
-            </View>
-          </TouchableOpacity>
-        )}
-        ListEmptyComponent={
-          <Text style={styles.noResult}>No chapters found</Text>
-        }
-        contentContainerStyle={{
-          padding: 4,
-          paddingTop: 16,
-          paddingBottom: 10,
-        }}
-        ListHeaderComponent={
-          <>
-            <View style={styles.searchContainer}>
-              <SearchIcon size={18} focused={false} />
-              <TextInput
-                style={styles.searchBar}
-                placeholder="Search by chapter name"
-                placeholderTextColor="#777"
-                value={searchText}
-                onChangeText={setSearchText}
+        {/* Clear Filters Button */}
+        {(searchText ||
+          selectedClasses.length > 0 ||
+          selectedSubject) && (
+            <TouchableOpacity
+              style={styles.clearFilterBtn}
+              onPress={clearFilters}
+            >
+              <MaterialCommunityIcons
+                name="filter-off"
+                size={16}
+                color="#99b3e6"
               />
-            </View>
+              <Text style={styles.clearFilterText}>Clear Filters</Text>
+            </TouchableOpacity>
+          )}
 
-            <View style={styles.filterRow}>
-              <View style={{ flex: 0.5 }}>
-                <Dropdown
-                  style={styles.dropdown}
-                  data={[
-                    { label: "Physics", value: "Physics" },
-                    { label: "Chemistry", value: "Chemistry" },
-                    { label: "Maths", value: "Maths" },
-                  ]}
-                  labelField="label"
-                  valueField="value"
-                  value={selectedSubject}
-                  placeholder="Subject"
-                  onChange={(item) => setSelectedSubject(item.value)}
-                  placeholderStyle={styles.dropdownText}
-                  selectedTextStyle={styles.dropdownText}
-                  itemTextStyle={styles.dropdownText}
-                />
-              </View>
+        {/* Results Container */}
+        <View style={styles.resultsContainer}>
+          {/* 🧮 Result Count */}
+          <View style={styles.resultRow}>
+            <Text style={styles.resultCount}>
+              Total Chapters: {filteredData.length}
+            </Text>
+          </View>
 
-              <View style={{ width: 8 }} />
+          {loading ? (
+            <>
+              <SyllabusChapterCardSkeleton />
+              <SyllabusChapterCardSkeleton />
+              <SyllabusChapterCardSkeleton />
+              <SyllabusChapterCardSkeleton />
+              <SyllabusChapterCardSkeleton />
+            </>
+          ) : filteredData.length === 0 ? (
+            <Text style={styles.noResult}>No chapters found</Text>
+          ) : (
+            filteredData.map((item) => (
+              <TouchableOpacity
+                key={item.id}
 
-              <View style={{ flex: 0.5 }}>
-                <MultiSelect
-                  style={styles.dropdown}
-                  data={[
-                    { label: "11th", value: "11th" },
-                    { label: "12th", value: "12th" },
-                  ]}
-                  labelField="label"
-                  valueField="value"
-                  placeholder="Select Class"
-                  value={selectedClasses}
-                  onChange={(items) => setSelectedClasses(items as string[])}
-                  renderItem={(item) =>
-                    renderDropdownItem(item, selectedClasses)
-                  }
-                  visibleSelectedItem={false}
-                  placeholderStyle={styles.dropdownText}
-                  selectedTextStyle={styles.dropdownText}
-                  itemTextStyle={styles.dropdownText}
-                />
-                {selectedClasses.length > 0 && (
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>
-                      {selectedClasses.length}
-                    </Text>
+                activeOpacity={0.7}
+              >
+                <View style={styles.chapterTag}>
+                  <View style={styles.subRow}>
+                    <View style={styles.subjectTag}>
+                      <Text style={styles.subText}>
+                        {item.subject === 1
+                          ? "Physics"
+                          : item.subject === 2
+                            ? "Chemistry"
+                            : "Mathematics"}
+                      </Text>
+                    </View>
+                    <View style={styles.subjectTag}>
+                      <Text style={styles.subText}>
+                        {item.class === 1 ? "11th" : "12th"}
+                      </Text>
+                    </View>
                   </View>
-                )}
-              </View>
-            </View>
 
-            <View style={styles.resultRow}>
-              <Text style={styles.resultCount}>
-                Total Chapters: {filteredData.length}
-              </Text>
+                  <View style={styles.titleRow}>
+                    <Text style={styles.chapterTitle}>
+                      {item.chapter_no}. {item.chapter_name}
+                    </Text>
+                    <View>
+                      <TouchableOpacity style={styles.solveButton} onPress={() => handleChapterPress(item)}>
+                        <Text style={styles.solveButtonText}>View</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
 
-              {(searchText ||
-                selectedClasses.length > 0 ||
-                selectedSubject) && (
-                <TouchableOpacity
-                  style={styles.clearFilterBtn}
-                  onPress={clearFilters}
-                >
-                  <MaterialCommunityIcons
-                    name="filter-off"
-                    size={16}
-                    color="#99b3e6"
-                  />
-                  <Text style={styles.clearFilterText}>Clear Filters</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          </>
-        }
-      />
+                  <View style={styles.bottomSubRow}>
+                    <View style={styles.bottomSubRowView}>
+                      <Text style={styles.bottomSubRowText}>
+                        Weightage: {item.weightage}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.topicContainer}>
+                    {item.topics
+                      .slice(0, 5)
+                      .map((e: { topic: string }, i: number) => (
+                        <View key={i} style={styles.topic}>
+                          <Text style={styles.topicText}>{e.topic}</Text>
+                        </View>
+                      ))}
+
+                    {item.topics.length > 5 && (
+                      <View style={styles.topic}>
+                        <Text style={[styles.topicText, { color: "#007BFF" }]}>
+                          +{item.topics.length - 5} more
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))
+          )}
+        </View>
+      </ScrollView>
+
       {showScrollTop && (
         <Animated.View style={[styles.scrollTopBtn, { opacity: fadeAnim }]}>
           <TouchableOpacity
@@ -333,10 +357,13 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#ebf0fa",
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#d6e0f5",
     borderRadius: 20,
     paddingHorizontal: 12,
     marginBottom: 12,
+    marginTop: 20,
   },
   searchBar: {
     flex: 1,
@@ -349,12 +376,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 16,
+    gap: 8,
   },
   dropdown: {
     height: 45,
     borderRadius: 20,
     paddingHorizontal: 16,
-    backgroundColor: "#ebf0fa",
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#d6e0f5",
     fontFamily: "SourceSans3Medium",
   },
   dropdownText: {
@@ -363,22 +393,26 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   resultRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 14,
-    marginHorizontal: 4,
-    marginTop: 10,
+    marginBottom: 12,
+  },
+  resultsContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    marginTop: 8,
+    padding: 12,
+    marginBottom: 20,
   },
   resultCount: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: "SourceSans3SemiBold",
-    color: "#444",
+    color: "#004aad",
   },
   clearFilterBtn: {
     flexDirection: "row",
     alignItems: "center",
-    marginRight: 4,
+    alignSelf: "flex-end",
+    marginTop: 8,
+    marginBottom: 8,
   },
   clearFilterText: {
     fontSize: 14,
@@ -418,24 +452,49 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 12,
     borderWidth: 1,
-    borderColor: "#d9d9d9",
+    borderColor: "#e2e8f0",
     marginBottom: 16,
   },
-  chapterText: {
-    fontSize: 16,
+  titleRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  chapterTitle: {
+    flex: 1,
+    fontSize: 17,
     color: "#000",
-    marginTop: 2,
-    fontWeight: "600",
-    fontFamily: "SourceSans3Medium",
+    fontFamily: "SourceSans3SemiBold",
+    marginRight: 8,
+  },
+  solveButton: {
+    backgroundColor: "#ff5e32",
+    paddingHorizontal: 18,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  solveButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontFamily: "SourceSans3SemiBold",
   },
   subRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 20,
+    gap: 8,
+  },
+  subjectTag: {
+    backgroundColor: "#f0f7d4",
+    borderWidth: 1,
+    borderColor: "#b6cf4f",
+    borderRadius: 99,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
   },
   subText: {
-    fontSize: 14,
-    color: "#004aad",
+    fontSize: 12,
+    color: "#8b9e3dff",
     fontFamily: "SourceSans3Medium",
   },
   noResult: {
@@ -451,10 +510,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bottomSubRowView: {
-    backgroundColor: "#ebf0fa",
-    padding: 2,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#004aad",
+    paddingVertical: 2,
     paddingHorizontal: 10,
-    borderRadius: 8,
+    borderRadius: 99,
     marginTop: 8,
   },
   bottomSubRowText: {
@@ -488,7 +549,6 @@ const styles = StyleSheet.create({
     right: 20,
     elevation: 5,
   },
-
   scrollTopTouchable: {
     backgroundColor: "#e6e6e6", // Same blue shade used in app
     width: 46,

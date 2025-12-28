@@ -1,22 +1,132 @@
 import FloatingLabelInput from "@/components/FloatingLabelInput";
 import TopHeader from "@/components/TopHeader";
 import { useEstimator } from "@/hooks/useEstimator";
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Ionicons, Feather } from "@expo/vector-icons";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState, useRef } from "react";
+import {
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  LayoutChangeEvent,
+  PanResponder,
+} from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../constants/theme";
+import { LinearGradient } from "expo-linear-gradient";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
+import { useAuth } from "@/context/AuthContext";
+import Reanimated, {
+  FadeIn,
+  FadeOut,
+  SlideInDown,
+  SlideOutDown
+} from 'react-native-reanimated';
+
+
+const EstimatorLanding = ({ onTabChange }: { onTabChange: (tab: "marks" | "rank") => void }) => {
+  const items = [
+    { title: "Percentile from Marks", icon: "stats-chart-outline", tab: "marks" as const },
+    { title: "Rank from Percentile", icon: "trophy-outline", tab: "rank" as const },
+  ];
+
+  return (
+    <View style={styles.card}>
+      <Text style={styles.heading}>Quick Access</Text>
+
+      <View style={styles.gridContainer}>
+        {items.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            activeOpacity={0.7}
+            style={styles.gridItem}
+            onPress={() => onTabChange(item.tab)}
+          >
+            <View style={[
+              styles.iconBox,
+              {
+                backgroundColor:
+                  item.title === "Percentile from Marks" ? "#ff5e3220" :
+                    "#004aad20",
+              },
+            ]}>
+              <Ionicons name={item.icon as any} size={24} color={
+                item.title === "Percentile from Marks" ? "#ff5e32" :
+                  "#004aad"
+              } />
+            </View>
+            <Text style={styles.gridTitle}>{item.title}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
+};
 
 export default function EstimatorScreen() {
   const { percentile, rank, loading, error, predictPercentile, predictRank } =
     useEstimator();
+  const { user } = useAuth();
 
-  const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"marks" | "rank">("marks");
+  const { tab } = useLocalSearchParams();
+  const [activeTab, setActiveTab] = useState<"all" | "marks" | "rank">("all");
 
-  // Marks tab states
+  useEffect(() => {
+    if (tab === "marks" || tab === "rank") {
+      setActiveTab(tab as "marks" | "rank");
+    }
+  }, [tab]);
+
+  // Tab Measurement Logic
+  const [tabMeasurements, setTabMeasurements] = useState<{ [key: string]: { x: number; width: number } }>({});
+  const indicatorX = useSharedValue(0);
+  const indicatorWidth = useSharedValue(0);
+
+  useEffect(() => {
+    const measurement = tabMeasurements[activeTab];
+    if (measurement) {
+      indicatorX.value = withSpring(measurement.x, { mass: 0.5, stiffness: 120, damping: 15 });
+      indicatorWidth.value = withSpring(measurement.width, { mass: 0.5, stiffness: 120, damping: 15 });
+    }
+  }, [activeTab, tabMeasurements]);
+
+  const onTabLayout = (tab: string, event: LayoutChangeEvent) => {
+    const { x, width } = event.nativeEvent.layout;
+    setTabMeasurements((prev) => {
+      if (prev[tab]?.x === x && prev[tab]?.width === width) return prev;
+      return { ...prev, [tab]: { x, width } };
+    });
+  };
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) =>
+        Math.abs(gestureState.dx) > 20,
+      onPanResponderRelease: (_, gestureState) => {
+        if (gestureState.dx > 50) {
+          if (activeTab === "rank") setActiveTab("marks");
+          else if (activeTab === "marks") setActiveTab("all");
+        } else if (gestureState.dx < -50) {
+          if (activeTab === "all") setActiveTab("marks");
+          else if (activeTab === "marks") setActiveTab("rank");
+        }
+      },
+    })
+  ).current;
+
+  const indicatorStyle = useAnimatedStyle(() => {
+    return {
+      width: indicatorWidth.value,
+      transform: [{ translateX: indicatorX.value }],
+    };
+  });
   const [marks, setMarks] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<any>(null);
   const [errMsgMarks, setErrMsgMarks] = useState("");
@@ -31,6 +141,17 @@ export default function EstimatorScreen() {
   // Shared UI state
   const [showInfo, setShowInfo] = useState(false);
   const [showResultModal, setShowResultModal] = useState(false);
+
+  const [showLock, setShowLock] = useState(false);
+
+  useEffect(() => {
+    if (!loading && user && !user.is_subscribed) {
+      const timer = setTimeout(() => {
+        setShowLock(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, user]);
 
   useEffect(() => {
     if (Number(marks) < 0) {
@@ -190,72 +311,106 @@ export default function EstimatorScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
+      <LinearGradient
+        colors={["#f8fafc", "#e6f1ff", "#e8dcff"]}
+        locations={[0, 0.5, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.container}
+      >
         <TopHeader title="Estimator" showBackArrow={true} />
 
         {/* Tabs */}
         <View style={styles.tabContainer}>
+          <Animated.View style={[styles.movingIndicatorContainer, indicatorStyle]}>
+            <View style={styles.movingIndicator} />
+          </Animated.View>
+
           <TouchableOpacity
-            style={[styles.tab, activeTab === "marks" && styles.activeTab]}
-            onPress={() => setActiveTab("marks")}
+            style={styles.tab}
+            onPress={() => setActiveTab("all")}
+            onLayout={(e) => onTabLayout("all", e)}
           >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === "marks" && styles.activeTabText,
-              ]}
-            >
+            <Text style={[styles.tabText, activeTab === "all" && styles.activeTabText]}>
+              All
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.tab}
+            onPress={() => setActiveTab("marks")}
+            onLayout={(e) => onTabLayout("marks", e)}
+          >
+            <Text style={[styles.tabText, activeTab === "marks" && styles.activeTabText]}>
               Marks to Percentile
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.tab, activeTab === "rank" && styles.activeTab]}
+            style={styles.tab}
             onPress={() => setActiveTab("rank")}
+            onLayout={(e) => onTabLayout("rank", e)}
           >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === "rank" && styles.activeTabText,
-              ]}
-            >
+            <Text style={[styles.tabText, activeTab === "rank" && styles.activeTabText]}>
               Percentile to Rank
             </Text>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.contentWrapper}>
+        <View style={styles.contentWrapper} {...panResponder.panHandlers}>
+          {activeTab === "all" && (
+            <View style={{ paddingHorizontal: 16 }}>
+              {/* Banner */}
+              <LinearGradient
+                colors={["#004aad", "#0073e6"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.banner}
+              >
+                <View style={styles.bannerContent}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.bannerTitle}>Estimate Your Score!</Text>
+                    <Text style={styles.bannerSubtitle}>
+                      Predict your percentile and rank based on your performance.
+                    </Text>
+                  </View>
+                  <View style={styles.bannerIcon}>
+                    <Feather name="bar-chart-2" size={36} color="#fff" />
+                  </View>
+                </View>
+              </LinearGradient>
+
+              <EstimatorLanding onTabChange={setActiveTab} />
+            </View>
+          )}
           {activeTab === "marks" && (
             <>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginBottom: 10,
-                }}
-              >
-                <View>
-                  {error && <Text style={styles.errorText}>{error}</Text>}
-                  {errMsgMarks && (
+              <View style={styles.centerContainer}>
+                <View style={styles.cardContainer}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: 16,
+                    }}
+                  >
+                    <Text style={styles.headingText}>Enter your Marks</Text>
+                    <TouchableOpacity
+                      onPress={() => setShowInfo(true)}
+                    >
+                      <Ionicons
+                        name="information-circle-outline"
+                        size={24}
+                        color={colors.primary}
+                      />
+                    </TouchableOpacity>
+                  </View>
+
+                  {!!error && <Text style={styles.errorText}>{error}</Text>}
+                  {!!errMsgMarks && (
                     <Text style={styles.errorText}>{errMsgMarks}</Text>
                   )}
-                </View>
-
-                <TouchableOpacity
-                  onPress={() => setShowInfo(true)}
-                  style={{ marginBottom: 6 }}
-                >
-                  <Ionicons
-                    name="information-circle-outline"
-                    size={24}
-                    color={colors.primary}
-                  />
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.centerContainer}>
-                <View style={styles.contentBox}>
-                  <Text style={styles.headingText}>Enter your Marks</Text>
 
                   <FloatingLabelInput
                     label="Enter Marks"
@@ -267,7 +422,7 @@ export default function EstimatorScreen() {
                     keyboardType="number-pad"
                   />
 
-                  <Text style={styles.headingText}>
+                  <Text style={[styles.headingText, { marginTop: 12 }]}>
                     Select Shift Difficulty
                   </Text>
 
@@ -305,43 +460,65 @@ export default function EstimatorScreen() {
                   </View>
                 </View>
               </View>
+
+              {showLock && (
+                <Reanimated.View
+                  entering={FadeIn.duration(400)}
+                  style={styles.lockScreenContainer}
+                >
+                  <Reanimated.View
+                    entering={SlideInDown.duration(600)}
+                    style={styles.content}
+                  >
+                    <View style={styles.handle} />
+
+                    <View style={styles.iconContainer}>
+                      <View style={styles.lockCircle}>
+                        <Ionicons name="lock-closed" size={40} color="#fff" />
+                      </View>
+                    </View>
+
+                    <Text style={styles.title}>Percentile from Marks coming soon</Text>
+                    <Text style={styles.description}>
+                      You can now calculate you estimatted percentile from marks, just have to wait for some time
+                    </Text>
+
+                  </Reanimated.View>
+                </Reanimated.View>
+              )}
             </>
           )}
 
           {activeTab === "rank" && (
             <>
-              {/* Top row: info button on LEFT and errors on RIGHT */}
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginBottom: 10,
-                  alignItems: "center",
-                }}
-              >
-                <View style={{ marginBottom: 10 }}>
-                  {error && <Text style={styles.errorText}>{error}</Text>}
-                  {errMsgRank && (
+              <View style={styles.centerContainer}>
+                <View style={styles.cardContainer}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: 16,
+                    }}
+                  >
+                    <Text style={styles.headingText}>
+                      Enter Overall Percentile
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => setShowInfo(true)}
+                    >
+                      <Ionicons
+                        name="information-circle-outline"
+                        size={24}
+                        color={colors.primary}
+                      />
+                    </TouchableOpacity>
+                  </View>
+
+                  {!!error && <Text style={styles.errorText}>{error}</Text>}
+                  {!!errMsgRank && (
                     <Text style={styles.errorText}>{errMsgRank}</Text>
                   )}
-                </View>
-                <TouchableOpacity
-                  onPress={() => setShowInfo(true)}
-                  style={{ marginBottom: 6 }}
-                >
-                  <Ionicons
-                    name="information-circle-outline"
-                    size={24}
-                    color={colors.primary}
-                  />
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.centerContainer}>
-                <View style={styles.contentBox}>
-                  <Text style={styles.headingText}>
-                    Enter your Overall Percentile
-                  </Text>
 
                   <FloatingLabelInput
                     label="Overall Percentile"
@@ -352,12 +529,12 @@ export default function EstimatorScreen() {
                     keyboardType="number-pad"
                   />
 
-                  <Text style={[styles.headingText, { marginTop: 8 }]}>
-                    Subject Percentiles
+                  <Text style={[styles.headingText, { marginTop: 16 }]}>
+                    Subject Percentiles (Optional)
                   </Text>
 
                   <View style={{ flexDirection: "row", gap: 10 }}>
-                    <View style={{ width: "30%" }}>
+                    <View style={{ flex: 1 }}>
                       <FloatingLabelInput
                         label="Physics"
                         value={physicsPercentile}
@@ -367,7 +544,7 @@ export default function EstimatorScreen() {
                         keyboardType="number-pad"
                       />
                     </View>
-                    <View style={{ width: "30%" }}>
+                    <View style={{ flex: 1 }}>
                       <FloatingLabelInput
                         label="Chemistry"
                         value={chemistryPercentile}
@@ -377,7 +554,7 @@ export default function EstimatorScreen() {
                         keyboardType="number-pad"
                       />
                     </View>
-                    <View style={{ width: "34%" }}>
+                    <View style={{ flex: 1.1 }}>
                       <FloatingLabelInput
                         label="Mathematics"
                         value={mathsPercentile}
@@ -410,6 +587,33 @@ export default function EstimatorScreen() {
                   </View>
                 </View>
               </View>
+
+
+              {showLock && (
+                <Reanimated.View
+                  entering={FadeIn.duration(400)}
+                  style={styles.lockScreenContainer}
+                >
+                  <Reanimated.View
+                    entering={SlideInDown.duration(600)}
+                    style={styles.content}
+                  >
+                    <View style={styles.handle} />
+
+                    <View style={styles.iconContainer}>
+                      <View style={styles.lockCircle}>
+                        <Ionicons name="lock-closed" size={40} color="#fff" />
+                      </View>
+                    </View>
+
+                    <Text style={styles.title}>Rank from Percentile coming soon</Text>
+                    <Text style={styles.description}>
+                      You can now calculate you estimatted rank from percentile, just have to wait forsome time
+                    </Text>
+
+                  </Reanimated.View>
+                </Reanimated.View>
+              )}
             </>
           )}
         </View>
@@ -419,7 +623,7 @@ export default function EstimatorScreen() {
           <TouchableOpacity
             activeOpacity={1}
             style={styles.modalBg}
-            onPress={() => setShowInfo(false)}
+            onPress={() => setShowResultModal(false)}
           >
             <View style={styles.resultBox}>
               <TouchableOpacity
@@ -429,7 +633,7 @@ export default function EstimatorScreen() {
                 <Ionicons name="close" size={22} color="#333" />
               </TouchableOpacity>
 
-              {percentile && activeTab === "marks" && (
+              {!!(percentile && activeTab === "marks") && (
                 <>
                   <Text style={{ fontSize: 100, opacity: 0.8 }}>🏅</Text>
                   <Text style={styles.resultText}>{percentile.toFixed(2)}</Text>
@@ -437,24 +641,12 @@ export default function EstimatorScreen() {
                 </>
               )}
 
-              {rank && activeTab === "rank" && (
+              {!!(rank && activeTab === "rank") && (
                 <>
                   <Text style={{ fontSize: 100, opacity: 0.8 }}>🏅</Text>
                   <Text style={styles.resultText}>{rank}</Text>
                   <Text style={styles.resultTextSub}>Estimated Rank</Text>
                 </>
-              )}
-
-              {/* If user used marks -> rank prediction (both available) show both */}
-              {percentile && rank && (
-                <View style={{ marginTop: 12, alignItems: "center" }}>
-                  <Text style={styles.resultTextSub}>
-                    Percentile: {percentile.toFixed(2)}
-                  </Text>
-                  <Text style={[styles.resultTextSub, { marginTop: 6 }]}>
-                    Rank: {rank}
-                  </Text>
-                </View>
               )}
             </View>
           </TouchableOpacity>
@@ -479,7 +671,7 @@ export default function EstimatorScreen() {
             </View>
           </TouchableOpacity>
         </Modal>
-      </View>
+      </LinearGradient>
     </SafeAreaView>
   );
 }
@@ -492,49 +684,69 @@ const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: "row",
     borderBottomWidth: 1,
-    borderBottomColor: "#d3d3d3",
+    borderBottomColor: "#d3d3d350",
     backgroundColor: "#fff",
+    marginTop: -10,
+    paddingHorizontal: 16,
+    gap: 24,
+    position: 'relative',
   },
   tab: {
-    flex: 1,
-    paddingVertical: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 4,
     alignItems: "center",
     justifyContent: "center",
-    borderBottomWidth: 2,
-    borderBottomColor: "#fff",
+    zIndex: 1,
   },
-  activeTab: { borderBottomColor: colors.primary },
+  movingIndicatorContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    height: 3,
+    zIndex: 0,
+  },
+  movingIndicator: {
+    height: 3,
+    width: "100%",
+    backgroundColor: colors.primary,
+    borderRadius: 2,
+  },
   tabText: {
-    fontSize: 16,
-    color: colors.textDark,
-    fontFamily: "SourceSans3Medium",
+    fontSize: 17,
+    color: "#737373",
+    fontFamily: "SourceSans3SemiBold",
   },
   activeTabText: { color: colors.primary },
 
-  contentWrapper: { flex: 1, padding: 16 },
+  contentWrapper: { flex: 1 },
+
+  cardContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 20,
+    width: "100%",
+
+  },
 
   /* center content vertically */
   centerContainer: {
     flex: 1,
-    justifyContent: "center",
-    marginTop: -40,
+    paddingHorizontal: 16,
+    paddingTop: 24,
   },
 
   contentBox: { marginBottom: 20 },
 
   errorText: {
-    color: "red",
-    textAlign: "right",
-    marginRight: 20,
-    marginTop: 4,
-    fontSize: 14,
+    color: "#e11d48",
+    fontSize: 13,
     fontFamily: "SourceSans3Medium",
+    marginBottom: 8,
   },
   headingText: {
-    fontSize: 16,
-    color: "#000",
-    marginBottom: 18,
-    fontFamily: "SourceSans3Medium",
+    fontSize: 18,
+    color: "#1e293b",
+    fontFamily: "SourceSans3SemiBold",
   },
 
   dropdown: {
@@ -554,18 +766,17 @@ const styles = StyleSheet.create({
 
   buttonWrapper: { width: "100%", alignItems: "flex-end" },
   confirmButton: {
-    backgroundColor: "#e0e0e0",
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-    marginTop: 60,
+    backgroundColor: "#e2e8f0",
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 14,
+    marginTop: 32,
   },
   confirmButtonActive: { backgroundColor: colors.primary },
   confirmButtonText: {
-    color: "#999",
-    fontSize: 14,
-    fontWeight: "600",
-    fontFamily: "SourceSans3Medium",
+    color: "#94a3b8",
+    fontSize: 16,
+    fontFamily: "SourceSans3SemiBold",
   },
   confirmButtonTextActive: { color: "#fff" },
 
@@ -622,5 +833,163 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3Medium",
     marginBottom: 6,
     color: "#333",
+  },
+  card: {
+    backgroundColor: "#fff",
+    width: "100%",
+    alignSelf: "center",
+    borderRadius: 18,
+    padding: 12,
+    marginTop: 16,
+  },
+  heading: {
+    fontSize: 18,
+    fontFamily: "SourceSans3SemiBold",
+    color: "#004aad",
+    marginBottom: 16,
+  },
+  gridContainer: {
+    flexDirection: "column",
+    flexWrap: "wrap",
+    gap: 12,
+  },
+  gridItem: {
+    width: "100%",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+  },
+  iconBox: {
+    padding: 12,
+    borderRadius: 12,
+  },
+  gridTitle: {
+    fontSize: 16,
+    fontFamily: "SourceSans3SemiBold",
+    color: "#2E2E32",
+  },
+  banner: {
+    borderRadius: 20,
+    padding: 20,
+    marginTop: 20,
+    marginBottom: 4,
+  },
+  bannerContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  bannerTitle: {
+    fontSize: 20,
+    fontFamily: "SourceSans3Bold",
+    color: "#fff",
+    marginBottom: 4,
+  },
+  bannerSubtitle: {
+    fontSize: 14,
+    fontFamily: "SourceSans3Medium",
+    color: "#e6f1ff",
+    lineHeight: 20,
+    paddingRight: 10,
+  },
+  bannerIcon: {
+    backgroundColor: "rgba(255,255,255,0.2)",
+    padding: 10,
+    borderRadius: 15,
+  },
+
+
+
+  lockScreenContainer: {
+    flex: 1,
+    backgroundColor: "#00000050",
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    bottom: 0,
+    zIndex: 9999,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  content: {
+    width: "100%",
+    position: "absolute",
+    left: 0,
+    bottom: 0,
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    padding: 24,
+    paddingBottom: 40,
+    alignItems: 'center',
+
+  },
+  handle: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#e2e8f0',
+    borderRadius: 2,
+    marginBottom: 20,
+  },
+  iconContainer: {
+    marginBottom: 20,
+  },
+  lockCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#004aad',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#004aad',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  title: {
+    fontSize: 24,
+    fontFamily: 'SourceSans3Bold',
+    color: '#004aad',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  description: {
+    fontSize: 16,
+    fontFamily: 'SourceSans3Medium',
+    color: '#64748b',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 30,
+    paddingHorizontal: 10,
+  },
+  subscribeButton: {
+    width: '100%',
+    height: 56,
+    backgroundColor: '#004aad',
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  subscribeButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontFamily: 'SourceSans3SemiBold',
+  },
+  closeButton: {
+    paddingVertical: 12,
+  },
+  closeButtonText: {
+    color: '#94a3b8',
+    fontSize: 16,
+    fontFamily: 'SourceSans3Medium',
   },
 });

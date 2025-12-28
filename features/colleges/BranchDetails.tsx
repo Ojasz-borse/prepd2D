@@ -53,7 +53,7 @@ export default function BranchDetails() {
   useEffect(() => {
     if (!choice_code) return;
 
-    console.log("choice code", choice_code);
+    // console.log("choice code", choice_code);
 
     const fetchBranchDetails = async () => {
       const GET_BRANCH_DETAILS_URL = `${GET_COLLEGE_BRANCHES}/${choice_code}`;

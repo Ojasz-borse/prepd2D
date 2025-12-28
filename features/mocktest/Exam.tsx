@@ -111,7 +111,7 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
 
   const currentQ = filteredQuestions[currentIndex];
   if (!currentQ) return null;
-  
+
   const handleSelect = (opt: string) => {
     setAnswers({ ...answers, [currentQ.id]: opt });
 
@@ -136,7 +136,7 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
     });
   };
 
-  
+
 
   const handleSubmit = () => {
     if (remainingSeconds > 0) {
@@ -150,7 +150,7 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
   };
 
   const submitTest = () => {
-    console.log("Submitted Answers: ", userAnswers);
+    // console.log("Submitted Answers: ", userAnswers);
     router.push({
       pathname: "/result",
       params: { data: JSON.stringify(userAnswers) },
@@ -200,8 +200,8 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
             {section === "physics"
               ? "Physics"
               : section === "chemistry"
-              ? "Chemistry"
-              : "Mathematics"}
+                ? "Chemistry"
+                : "Mathematics"}
           </Text>
 
           <ScrollView contentContainerStyle={styles.paletteGrid}>
@@ -218,8 +218,8 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
                     section === "physics"
                       ? i + 1
                       : section === "chemistry"
-                      ? i + 51
-                      : i + 101
+                        ? i + 51
+                        : i + 101
                   }
                   status={getStatus(q.id)}
                   size={0.7}

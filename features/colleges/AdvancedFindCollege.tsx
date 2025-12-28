@@ -1,7 +1,6 @@
 import SearchIcon from "@/assets/icons/SearchIcon";
 import AdvancedFindCollegeCard from "@/components/AdvancedFindCollegeCard";
 import AdvancedFindCollegeCardSkeleton from "@/components/AdvancedFindCollegeCardSkeleton";
-import AdvancedFindCollegeToturial from "@/components/AdvancedFindCollegeToturial";
 import SmartMatchModal from "@/components/SmartMatchModel";
 import { CACHE_MY_COLLEGES_LIST } from "@/constants/cacheStorageConfig";
 import { useMyList } from "@/hooks/useMyList";
@@ -101,14 +100,6 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
   const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
   const [movedCollegesCount, setMovedCollegesCount] = useState<number>();
 
-  const firstCardRef = React.useRef<View>(null);
-  const [firstCardLayout, setFirstCardLayout] = useState<{
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  } | null>(null);
-
   // Smart Match
   const [smartMatchEnabled, setSmartMatchEnabled] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -176,7 +167,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
     };
   }, []);
 
-  const listRef = React.useRef<FlatList>(null);
+  const listRef = React.useRef<FlatList<CollegeBranch>>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
@@ -372,8 +363,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
       if (percentage >= 96 && percentage <= 102) tag = "Exact";
       else if (percentage >= 80 && percentage < 96) tag = "Hard";
       else if (percentage < 80) tag = "Very Hard";
-      else if (percentage > 102 && percentage <= 120)
-        tag = "Easy"; // Correct boundary
+      else if (percentage > 102 && percentage <= 120) tag = "Easy";
       else tag = "Very Easy";
 
       return {
@@ -410,6 +400,139 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
     );
   }
 
+  const renderHeader = () => (
+    <View style={styles.headerContent}>
+      {/* Search Bar */}
+      <View style={styles.searchContainer}>
+        <SearchIcon size={18} focused={false} />
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Search by college or branch"
+          placeholderTextColor="#777"
+          value={searchText}
+          onChangeText={setSearchText}
+        />
+      </View>
+
+      {/* Filters Row */}
+      <View style={styles.filterRow}>
+        {/* Branch MultiSelect */}
+        <View style={[styles.pickerWrapper, { flex: 0.5 }]}>
+          <MultiSelect
+            style={styles.dropdown}
+            data={collegeBranches.map((b) => ({
+              label: b.charAt(0).toUpperCase() + b.slice(1).toLowerCase(),
+              value: b,
+            }))}
+            labelField="label"
+            valueField="value"
+            placeholder="Branches"
+            placeholderStyle={styles.dropdownText}
+            selectedTextStyle={styles.dropdownText}
+            itemTextStyle={styles.dropdownText}
+            value={selectedBranches}
+            onChange={(items) => setSelectedBranches(items as string[])}
+            renderItem={(item) => {
+              const isSelected = selectedBranches.includes(item.value);
+              return (
+                <DropdownItem label={item.label} isSelected={isSelected} />
+              );
+            }}
+            visibleSelectedItem={false}
+          />
+          {selectedBranches.length > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{selectedBranches.length}</Text>
+            </View>
+          )}
+        </View>
+
+        {/* District MultiSelect */}
+        <View style={[styles.pickerWrapper, { flex: 0.5 }]}>
+          <MultiSelect
+            style={styles.dropdown}
+            data={districts.map((d) => ({
+              label: d.charAt(0).toUpperCase() + d.slice(1).toLowerCase(),
+              value: d,
+            }))}
+            labelField="label"
+            valueField="value"
+            placeholder="Districts"
+            placeholderStyle={styles.dropdownText}
+            selectedTextStyle={styles.dropdownText}
+            itemTextStyle={styles.dropdownText}
+            value={selectedDistricts}
+            onChange={(items) => setSelectedDistricts(items as string[])}
+            renderItem={(item) => renderDropdownItem(item, selectedDistricts)}
+            visibleSelectedItem={false}
+          />
+          {selectedDistricts.length > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{selectedDistricts.length}</Text>
+            </View>
+          )}
+        </View>
+      </View>
+
+      {/* Smart Match and Select All in same card */}
+      <View style={styles.smartMatchCard}>
+        <View style={styles.smartMatchToggle}>
+          <Text style={styles.smartMatchLabel}>Smart Match</Text>
+          <Switch
+            value={smartMatchEnabled}
+            onValueChange={handleSmartMatchToggle}
+            trackColor={{ false: "#ccc", true: "#99b3e6" }}
+            thumbColor={smartMatchEnabled ? "#004aad" : "#f4f3f4"}
+            disabled={true}
+          />
+        </View>
+
+        {/* Select All Button */}
+        {selectionMode && (
+          <TouchableOpacity
+            style={styles.selectAllButton}
+            onPress={handleToggleSelectAll}
+          >
+            <Ionicons
+              name={
+                selectedCards.length === enrichedData.length
+                  ? "checkbox"
+                  : "square-outline"
+              }
+              size={20}
+              color="#004aad"
+            />
+            <Text style={styles.selectAllText}>Select All</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* Clear filter */}
+      {(searchText ||
+        selectedDistricts.length > 0 ||
+        selectedBranches.length > 0) && (
+          <TouchableOpacity
+            style={styles.clearFilterBtn}
+            onPress={clearFilters}
+          >
+            <MaterialCommunityIcons
+              name="filter-off"
+              size={16}
+              color="#99b3e6"
+            />
+            <Text style={styles.clearFilterText}>Clear Filters</Text>
+          </TouchableOpacity>
+        )}
+
+      {/* Result Count (styled as top of card) */}
+      <View style={styles.resultCountContainer}>
+        <Text style={styles.resultCount}>
+          Total Results: {enrichedData.length}
+        </Text>
+      </View>
+    </View>
+  );
+
   return (
     <>
       <FlatList
@@ -418,24 +541,13 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
         scrollEventThrottle={16}
         data={enrichedData}
         keyExtractor={(item) => item.choice_code}
-        renderItem={({ item, index }) => (
+        renderItem={({ item }) => (
           <View
-            key={item.choice_code}
             style={[
               styles.cardContainer,
               selectedCards.includes(item.choice_code) &&
-                styles.selectedCardContainer,
+              styles.selectedCardContainer,
             ]}
-            ref={index === 0 ? firstCardRef : undefined} // only attach ref to first card
-            onLayout={() => {
-              if (index === 0 && firstCardRef.current) {
-                firstCardRef.current.measure(
-                  (fx, fy, width, height, px, py) => {
-                    setFirstCardLayout({ x: px, y: py, width, height });
-                  }
-                );
-              }
-            }}
           >
             <AdvancedFindCollegeCard
               item={item}
@@ -445,173 +557,37 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
             />
           </View>
         )}
+        ListHeaderComponent={renderHeader}
+        ListFooterComponent={<View style={styles.listFooter} />}
         ListEmptyComponent={
           loading ? (
-            <>
+            <View style={styles.resultsContainerSkeleton}>
               <AdvancedFindCollegeCardSkeleton />
               <AdvancedFindCollegeCardSkeleton />
               <AdvancedFindCollegeCardSkeleton />
-            </>
+            </View>
           ) : (
-            <Text style={styles.noResult}>No colleges found</Text>
+            <View style={styles.resultsContainerSkeleton}>
+              <Text style={styles.noResult}>No colleges found</Text>
+            </View>
           )
         }
+        // Optimization props
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        removeClippedSubviews={true}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          padding: 4,
-          paddingTop: 16,
-          paddingBottom: selectionMode ? 80 : 10, // Add padding for bottom save button
-        }}
-        ListHeaderComponent={
-          <>
-            {/* Search Bar */}
-            <View style={styles.searchContainer}>
-              <SearchIcon size={18} focused={false} />
-              <TextInput
-                style={styles.searchBar}
-                placeholder="Search by college or branch"
-                placeholderTextColor="#777"
-                value={searchText}
-                onChangeText={setSearchText}
-              />
-            </View>
-
-            {/* Filters Row */}
-            <View style={styles.filterRow}>
-              {/* Branch MultiSelect */}
-              <View style={[styles.pickerWrapper, { flex: 0.5 }]}>
-                <MultiSelect
-                  style={styles.dropdown}
-                  data={collegeBranches.map((b) => ({
-                    label: b.charAt(0).toUpperCase() + b.slice(1).toLowerCase(),
-                    value: b,
-                  }))}
-                  labelField="label"
-                  valueField="value"
-                  placeholder="Branches"
-                  placeholderStyle={styles.dropdownText}
-                  selectedTextStyle={styles.dropdownText}
-                  itemTextStyle={styles.dropdownText}
-                  value={selectedBranches}
-                  onChange={(items) => setSelectedBranches(items as string[])}
-                  renderItem={(item) => {
-                    const isSelected = selectedBranches.includes(item.value);
-                    return (
-                      <DropdownItem
-                        label={item.label}
-                        isSelected={isSelected}
-                      />
-                    );
-                  }}
-                  visibleSelectedItem={false}
-                />
-                {selectedBranches.length > 0 && (
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>
-                      {selectedBranches.length}
-                    </Text>
-                  </View>
-                )}
-              </View>
-
-              <View style={{ marginHorizontal: 5 }} />
-
-              {/* District MultiSelect */}
-              <View style={[styles.pickerWrapper, { flex: 0.5 }]}>
-                <MultiSelect
-                  style={styles.dropdown}
-                  data={districts.map((d) => ({
-                    label: d.charAt(0).toUpperCase() + d.slice(1).toLowerCase(),
-                    value: d,
-                  }))}
-                  labelField="label"
-                  valueField="value"
-                  placeholder="Districts"
-                  placeholderStyle={styles.dropdownText}
-                  selectedTextStyle={styles.dropdownText}
-                  itemTextStyle={styles.dropdownText}
-                  value={selectedDistricts}
-                  onChange={(items) => setSelectedDistricts(items as string[])}
-                  renderItem={(item) =>
-                    renderDropdownItem(item, selectedDistricts)
-                  }
-                  visibleSelectedItem={false}
-                />
-                {selectedDistricts.length > 0 && (
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>
-                      {selectedDistricts.length}
-                    </Text>
-                  </View>
-                )}
-              </View>
-            </View>
-
-            {/* Smart Match and Select All in same row */}
-            <View style={styles.smartMatchRow}>
-              <View style={styles.smartMatchRow}>
-                <Text style={styles.smartMatchLabel}>Smart Match</Text>
-                <Switch
-                  value={smartMatchEnabled}
-                  onValueChange={handleSmartMatchToggle}
-                  trackColor={{ false: "#ccc", true: "#99b3e6" }}
-                  thumbColor={smartMatchEnabled ? "#004aad" : "#f4f3f4"}
-                />
-              </View>
-
-              {/* Select All Button - Beside Smart Match */}
-              {selectionMode && (
-                <TouchableOpacity
-                  style={styles.selectAllButton}
-                  onPress={handleToggleSelectAll}
-                >
-                  <Ionicons
-                    name={
-                      selectedCards.length === enrichedData.length
-                        ? "checkbox"
-                        : "square-outline"
-                    }
-                    size={20}
-                    color="#004aad"
-                  />
-                  <Text style={styles.selectAllText}>Select All</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-
-            {/* Result count + Clear filter */}
-            <View style={styles.resultRow}>
-              <Text style={styles.resultCount}>
-                Total Results: {enrichedData.length}
-              </Text>
-
-              {(searchText ||
-                selectedDistricts.length > 0 ||
-                selectedBranches.length > 0) && (
-                <TouchableOpacity
-                  style={styles.clearFilterBtn}
-                  onPress={clearFilters}
-                >
-                  <MaterialCommunityIcons
-                    name="filter-off"
-                    size={16}
-                    color="#99b3e6"
-                  />
-                  <Text style={styles.clearFilterText}>Clear Filters</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          </>
-        }
+        contentContainerStyle={styles.listContainer}
       />
 
-      {/* Bottom Save Button - Same as MyList component */}
+      {/* Bottom Save Button */}
       {selectionMode && selectedCards.length > 0 && (
         <View style={styles.bottomSaveWrapper}>
           <TouchableOpacity
             style={styles.bottomSaveBtn}
             onPress={handleSaveSelectedColleges}
-            disabled={saving} // Disable button while saving
+            disabled={saving}
           >
             <Ionicons name="checkmark" size={20} color="#fff" />
             <Text style={styles.bottomSaveText}>
@@ -634,14 +610,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
         setCategory={setCategory}
       />
       {showScrollTop && (
-        <Animated.View
-          style={[
-            styles.scrollTopBtn,
-            {
-              opacity: fadeAnim,
-            },
-          ]}
-        >
+        <Animated.View style={[styles.scrollTopBtn, { opacity: fadeAnim }]}>
           <TouchableOpacity
             onPress={scrollToTop}
             style={styles.scrollTopTouchable}
@@ -650,7 +619,6 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
           </TouchableOpacity>
         </Animated.View>
       )}
-      {isActive && <AdvancedFindCollegeToturial cardLayout={firstCardLayout} />}
     </>
   );
 };
@@ -658,22 +626,17 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
 export default AdvancedFindCollege;
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 4,
-    paddingTop: 16,
-    paddingBottom: 10,
+  listContainer: {
+
+  },
+  headerContent: {
+    marginBottom: 8,
   },
   centerContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    fontFamily: "SourceSans3Medium",
-    color: "#004aad",
   },
   errorText: {
     fontSize: 16,
@@ -685,10 +648,13 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#ebf0fa",
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#d6e0f5",
     borderRadius: 20,
     paddingHorizontal: 12,
     marginBottom: 12,
+    marginTop: 8,
   },
   searchBar: {
     flex: 1,
@@ -700,26 +666,22 @@ const styles = StyleSheet.create({
   filterRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 16,
+    marginBottom: 8,
+    gap: 8,
   },
   pickerWrapper: { marginHorizontal: 0 },
   dropdown: {
     height: 45,
     borderRadius: 20,
     paddingHorizontal: 16,
-    backgroundColor: "#ebf0fa",
-    textTransform: "capitalize",
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#d6e0f5",
   },
   dropdownText: {
     fontSize: 16,
     fontFamily: "SourceSans3Medium",
     color: "#333",
-    textTransform: "capitalize",
-  },
-  item: {
-    paddingVertical: 15,
-    paddingHorizontal: 15,
-    fontFamily: "SourceSans3Medium",
   },
   itemRow: {
     flexDirection: "row",
@@ -727,35 +689,51 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 12,
   },
-
-  removeText: {
-    fontSize: 14,
-    color: "#721c24",
-    fontWeight: "bold",
-  },
   itemText: {
     fontSize: 16,
     color: "#333",
     fontFamily: "SourceSans3Medium",
   },
+  resultsContainerSkeleton: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 12,
+    marginBottom: 20,
+  },
+  resultCountContainer: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderBottomWidth: 0,
+    borderColor: "#fff",
 
+  },
+  listFooter: {
+    height: 40,
+    backgroundColor: "#fff",
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderTopWidth: 0,
+    borderColor: "#fff",
+  },
   resultRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 14,
-    marginHorizontal: 4,
-    marginTop: 10,
+    marginBottom: 12,
   },
   resultCount: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: "SourceSans3SemiBold",
-    color: "#444",
+    color: "#004aad",
   },
   clearFilterBtn: {
     flexDirection: "row",
     alignItems: "center",
-    marginRight: 4,
+    alignSelf: "flex-end",
+    marginTop: 4,
+    marginBottom: 8,
   },
   clearFilterText: {
     fontSize: 14,
@@ -763,13 +741,12 @@ const styles = StyleSheet.create({
     color: "#99b3e6",
     marginLeft: 2,
   },
-
   badge: {
     position: "relative",
     top: -32,
     left: "60%",
-    backgroundColor: "#004aad", // your given color
-    borderRadius: 9999, // full rounded
+    backgroundColor: "#004aad",
+    borderRadius: 9999,
     paddingHorizontal: 8,
     paddingVertical: 2,
     alignSelf: "flex-start",
@@ -787,13 +764,23 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 
-  // Smart Match Row with Select All button
-  smartMatchRow: {
+  // Smart Match Card
+  smartMatchCard: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 4,
-    marginBottom: 4,
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 2,
+    marginVertical: 12,
+    marginBottom: 20,
+  },
+  smartMatchToggle: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 8,
   },
   smartMatchLabel: {
     fontSize: 16,
@@ -805,11 +792,7 @@ const styles = StyleSheet.create({
   selectAllButton: {
     flexDirection: "row",
     alignItems: "center",
-
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    gap: 6,
+    gap: 4,
   },
   selectAllText: {
     fontSize: 14,
@@ -819,41 +802,51 @@ const styles = StyleSheet.create({
 
   // Card Container with Blue Border
   cardContainer: {
-    marginBottom: 18,
-    borderRadius: 12,
+    backgroundColor: "#fff",
+    paddingHorizontal: 12,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: "#fff",
+    marginTop: -9
   },
   selectedCardContainer: {
-    borderWidth: 1,
-    borderColor: "#004aad",
-    borderRadius: 18, // Slightly larger to match card border
-    backgroundColor: "#f0f7ff", // Light blue background when selected
+    borderRadius: 16,
+    backgroundColor: "#ebf0fa",
   },
 
   // Bottom Save Button (same as MyList component)
   bottomSaveWrapper: {
     position: "absolute",
     bottom: 20,
-    right: 0,
+    left: 20,
+    right: 20,
+    alignItems: "center",
   },
   bottomSaveBtn: {
-    flexDirection: "row",
     backgroundColor: "#004aad",
-    paddingHorizontal: 24,
-    paddingVertical: 10,
-    borderRadius: 30,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 30,
+    paddingVertical: 12,
+    borderRadius: 25,
+    gap: 8,
     elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   bottomSaveText: {
-    color: "#fff",
-    marginLeft: 8,
-    fontFamily: "SourceSans3Medium",
-    fontSize: 15,
+    color: "white",
+    fontSize: 16,
+    fontFamily: "SourceSans3SemiBold",
   },
 
   scrollTopBtn: {
     position: "absolute",
     bottom: 20,
-    left: 20,
+    right: 20,
+    elevation: 5,
   },
 
   scrollTopTouchable: {

@@ -131,7 +131,7 @@ export default function CollegeDetails() {
 
         const data = await res.json();
         if (data.success) {
-          console.log("branches", data.college.branches);
+          // console.log("branches", data.college.branches);
           setCollegeBranches(data.college.branches || []);
         } else {
           setCollegeBranches([]);

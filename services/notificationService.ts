@@ -40,19 +40,19 @@ export async function registerForPushNotificationsAsync(authToken: string | null
       throw new Error("Expo Project ID not found. Add it in app.json under extra.eas.projectId");
     }
 
-    
+
 
     // Get Expo Push Token
     const expoPushToken = (
       await Notifications.getExpoPushTokenAsync({ projectId })
     ).data;
-    console.log("Got Expo Push Token:", expoPushToken);
+    // console.log("Got Expo Push Token:", expoPushToken);
 
 
-    console.log("📱 Expo Project ID:", Constants?.expoConfig?.extra?.eas?.projectId);
-console.log("📲 Got Expo Push Token:", expoPushToken);
+    // console.log("📱 Expo Project ID:", Constants?.expoConfig?.extra?.eas?.projectId);
+    // console.log("📲 Got Expo Push Token:", expoPushToken);
 
-console.log("auth token", authToken);
+    // console.log("auth token", authToken);
 
     // Send token to backend
     const response = await fetch(SAVE_PUSH_TOKEN, {
@@ -64,14 +64,14 @@ console.log("auth token", authToken);
       body: JSON.stringify({ token: expoPushToken }),
     });
 
-    console.log("response", response);
+    // console.log("response", response);
 
     const result = await response.json();
     if (!response.ok) {
       throw new Error(result.message || "Failed to save push token");
     }
 
-    console.log("Token saved successfully:", result.message);
+    // console.log("Token saved successfully:", result.message);
     return expoPushToken;
   } catch (error) {
     console.error("Error in registerForPushNotificationsAsync:", error);

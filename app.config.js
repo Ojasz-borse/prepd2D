@@ -5,7 +5,7 @@ export default {
     expo: {
         name: "PrepCET",
         slug: "prepcet",
-        version: "1.3.0",
+        version: "1.7.0",
         orientation: "portrait",
         icon: "./assets/images/icon.png",
         scheme: "prepcet",
@@ -19,7 +19,7 @@ export default {
             supportsTablet: true
         },
         android: {
-            versionCode: 4,
+            versionCode: 7,
             adaptiveIcon: {
                 foregroundImage: "./assets/images/icon.png",
                 backgroundColor: "#ffffff"
@@ -29,7 +29,7 @@ export default {
             package: "com.anonymous.PrepCET",
 
             // CHANGE 1: Use 'blockedPermissions' instead of 'excludedPermissions'
-            permissions: [], 
+            permissions: [],
             blockedPermissions: [
                 "android.permission.READ_MEDIA_IMAGES",
                 "android.permission.READ_MEDIA_VIDEO",
@@ -38,7 +38,7 @@ export default {
                 "android.permission.READ_EXTERNAL_STORAGE",
                 "android.permission.WRITE_EXTERNAL_STORAGE"
             ],
-            
+
             enableProguardInReleaseBuilds: true,
             // proguardRules: "./proguard-rules.pro" // Only keep this if you actually have a custom file
         },

@@ -64,7 +64,7 @@ export default function ProfileView() {
 
   const handleClearAll = () => {
     // 👉 your clear-all logic here
-    console.log("Cleared all colleges");
+    // console.log("Cleared all colleges");
     setVisibleModal(false);
   };
 

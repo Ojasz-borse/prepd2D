@@ -29,7 +29,7 @@ const formatINR = (value: number) => {
 
 export default function CollegeFees({ fees }: Props) {
   useEffect(() => {
-    console.log("fees", fees);
+    // console.log("fees", fees);
   }, [fees]);
 
   // pick the first available key as default
@@ -46,9 +46,9 @@ export default function CollegeFees({ fees }: Props) {
   // build dropdown options dynamically from available keys
   const categories = fees
     ? Object.keys(fees).map((key) => ({
-        label: categoryMap[key] || key, // fallback to key if not mapped
-        value: key,
-      }))
+      label: categoryMap[key] || key, // fallback to key if not mapped
+      value: key,
+    }))
     : [];
 
   const activeFees = activeKey && fees ? fees[activeKey] : null;

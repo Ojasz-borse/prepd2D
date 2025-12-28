@@ -1,59 +1,179 @@
 import TopHeader from "@/components/TopHeader";
 import { colors } from "@/constants/theme";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
+  LayoutChangeEvent,
   PanResponder,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
+  UIManager,
   View,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
+
+if (Platform.OS === 'android') {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
 import PYQ from "./PYQ";
 import Syllabus from "./Syllabus";
+import Notes from "./Notes";
+
+import { Ionicons, Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+
+const PopularSearches = ({ onTabChange }: { onTabChange: (tab: "notes" | "pyq" | "syllabus") => void }) => {
+  const router = useRouter();
+
+  const items = [
+    { title: "Notes", icon: "document-text-outline", tab: "notes" as const },
+    { title: "PYQ", icon: "book-outline", tab: "pyq" as const },
+    { title: "Syllabus", icon: "clipboard-outline", tab: "syllabus" as const },
+  ];
+
+  return (
+    <View style={styles.card}>
+      <Text style={styles.heading}>Quick Access</Text>
+
+      <View style={styles.gridContainer}>
+        {items.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            activeOpacity={0.7}
+            style={styles.gridItem}
+            onPress={() => onTabChange(item.tab)}
+          >
+            <View style={[
+              styles.iconBox,
+              {
+                backgroundColor:
+                  item.title === "Notes" ? "#ff5e3220" :
+                    item.title === "PYQ" ? "#004aad20" :
+                      item.title === "Syllabus" ? "#b6cf4f20" :
+                        "#fff",
+              },
+            ]}>
+              <Ionicons name={item.icon as any} size={24} color={
+                item.title === "Notes" ? "#ff5e32" :
+                  item.title === "PYQ" ? "#004aad" :
+                    "#b6cf4f"
+              } />
+            </View>
+            <Text style={styles.gridTitle}>{item.title}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
+};
 
 export default function Preparation() {
-  const [activeTab, setActiveTab] = useState<"pyq" | "syllabus">("pyq");
+  const [activeTab, setActiveTab] = useState<
+    "all" | "notes" | "pyq" | "syllabus"
+  >("all");
+
+  // Store layout for each tab { x, width }
+  const [tabMeasurements, setTabMeasurements] = useState<{ [key: string]: { x: number; width: number } }>({});
+
+  const indicatorX = useSharedValue(0);
+  const indicatorWidth = useSharedValue(0);
+
+  // Map tabs to keys
+  const tabs: ("all" | "notes" | "pyq" | "syllabus")[] = ["all", "notes", "pyq", "syllabus"];
+
+  useEffect(() => {
+    const measurement = tabMeasurements[activeTab];
+    if (measurement) {
+      indicatorX.value = withSpring(measurement.x, { mass: 0.5, stiffness: 120, damping: 15 });
+      indicatorWidth.value = withSpring(measurement.width, { mass: 0.5, stiffness: 120, damping: 15 });
+    }
+  }, [activeTab, tabMeasurements]);
+
+  const onTabLayout = (tab: string, event: LayoutChangeEvent) => {
+    const { x, width } = event.nativeEvent.layout;
+    setTabMeasurements((prev) => {
+      // Only update if changed to avoid loop (though layout usually stable)
+      if (prev[tab]?.x === x && prev[tab]?.width === width) return prev;
+      return { ...prev, [tab]: { x, width } };
+    });
+  };
 
   const panResponder = useRef(
     PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gestureState) => {
-        return Math.abs(gestureState.dx) > 20;
-      },
+      onMoveShouldSetPanResponder: (_, gestureState) =>
+        Math.abs(gestureState.dx) > 20,
       onPanResponderRelease: (_, gestureState) => {
         if (gestureState.dx > 50) {
-          // swipe right
           if (activeTab === "syllabus") setActiveTab("pyq");
+          else if (activeTab === "pyq") setActiveTab("notes");
+          else if (activeTab === "notes") setActiveTab("all");
         } else if (gestureState.dx < -50) {
-          // swipe left
-          if (activeTab === "pyq") setActiveTab("syllabus");
+          if (activeTab === "all") setActiveTab("notes");
+          else if (activeTab === "notes") setActiveTab("pyq");
+          else if (activeTab === "pyq") setActiveTab("syllabus");
         }
       },
     })
   ).current;
 
-  return (
-    <View style={styles.container}>
-      <TopHeader title="Preparation" showBackArrow={false} />
+  const handleTabChange = (tab: "all" | "notes" | "pyq" | "syllabus") => {
+    setActiveTab(tab);
+  };
 
-      {/* Tabs */}
+  const indicatorStyle = useAnimatedStyle(() => {
+    return {
+      width: indicatorWidth.value,
+      transform: [{ translateX: indicatorX.value }],
+    };
+  });
+
+  return (
+    <LinearGradient
+      colors={["#f8fafc", "#e6f1ff", "#e8dcff"]}
+      locations={[0, 0.5, 1]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.container}
+    >
+      {/* Keep Top Header */}
+      <TopHeader title="Preparation" />
+
       <View style={styles.tabContainer}>
+        {/* Animated Indicator */}
+        {/* Only render indicator if we have measurement for at least the first tab or active tab to avoid jumping from 0 */}
+        <Animated.View style={[
+          styles.movingIndicatorContainer,
+          indicatorStyle
+        ]}>
+          <View style={styles.movingIndicator} />
+        </Animated.View>
+
         <TouchableOpacity
-          style={[styles.tab, activeTab === "pyq" && styles.activeTab]}
-          onPress={() => setActiveTab("pyq")}
+          style={styles.tab}
+          onPress={() => handleTabChange("all")}
+          onLayout={(e) => onTabLayout("all", e)}
         >
           <Text
-            style={[
-              styles.tabText,
-              activeTab === "pyq" && styles.activeTabText,
-            ]}
+            style={[styles.tabText, activeTab === "all" && styles.activeTabText]}
           >
-            PYQ
+            All
           </Text>
         </TouchableOpacity>
 
+
         <TouchableOpacity
-          style={[styles.tab, activeTab === "syllabus" && styles.activeTab]}
-          onPress={() => setActiveTab("syllabus")}
+          style={styles.tab}
+          onPress={() => handleTabChange("syllabus")}
+          onLayout={(e) => onTabLayout("syllabus", e)}
         >
           <Text
             style={[
@@ -64,55 +184,209 @@ export default function Preparation() {
             Syllabus
           </Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.tab}
+          onPress={() => handleTabChange("notes")}
+          onLayout={(e) => onTabLayout("notes", e)}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === "notes" && styles.activeTabText,
+            ]}
+          >
+            Notes
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.tab}
+          onPress={() => handleTabChange("pyq")}
+          onLayout={(e) => onTabLayout("pyq", e)}
+        >
+          <Text
+            style={[styles.tabText, activeTab === "pyq" && styles.activeTabText]}
+          >
+            PYQ
+          </Text>
+        </TouchableOpacity>
+
       </View>
 
-      {/* Swipeable Content */}
+      {/* Content */}
       <View style={styles.contentWrapper} {...panResponder.panHandlers}>
-        <View style={{ flex: 1 }}>
-          <View
-            style={{ flex: 1, display: activeTab === "pyq" ? "flex" : "none" }}
-          >
+        {activeTab === "all" && (
+          <View style={{ paddingHorizontal: 16 }}>
+            {/* Banner */}
+            <LinearGradient
+              colors={["#004aad", "#0073e6"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.banner}
+            >
+              <View style={styles.bannerContent}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.bannerTitle}>Start Your Prep!</Text>
+                  <Text style={styles.bannerSubtitle}>
+                    Access Notes, PYQs, and Syllabus all in one place.
+                  </Text>
+                </View>
+                <View style={styles.bannerIcon}>
+                  <Feather name="book-open" size={36} color="#fff" />
+                </View>
+              </View>
+            </LinearGradient>
+
+            <PopularSearches onTabChange={handleTabChange} />
+          </View>
+        )}
+        {activeTab === "notes" && (
+          <View style={{ paddingHorizontal: 16 }}>
+            <Notes />
+          </View>
+        )}
+        {activeTab === "pyq" && (
+          <View style={{ paddingHorizontal: 12 }}>
             <PYQ />
           </View>
-
-          <View
-            style={{
-              flex: 1,
-              display: activeTab === "syllabus" ? "flex" : "none",
-            }}
-          >
+        )}
+        {activeTab === "syllabus" && (
+          <View style={{ paddingHorizontal: 12 }}>
             <Syllabus />
           </View>
-        </View>
+        )}
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
+  container: {
+    flex: 1,
+  },
+
+  mainTitle: {
+    fontSize: 22,
+    fontFamily: "SourceSans3Bold",
+    color: colors.textDark,
+    paddingHorizontal: 16,
+  },
 
   tabContainer: {
     flexDirection: "row",
     borderBottomWidth: 1,
-    borderBottomColor: "#d3d3d3",
+    borderBottomColor: "#d3d3d350",
     backgroundColor: "#fff",
+    marginTop: -10,
+    paddingHorizontal: 16,
+    gap: 24, // Restored gap
+    position: 'relative',
   },
   tab: {
-    flex: 1,
-    paddingVertical: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 4,
     alignItems: "center",
     justifyContent: "center",
-    borderBottomWidth: 2,
-    borderBottomColor: "#fff",
+    // flex: 1 removed
+    zIndex: 1,
   },
-  activeTab: { borderBottomColor: colors.primary },
+  movingIndicatorContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0, // start from far left
+    height: 3,
+    // alignItems: 'center', // removed, let width handle it
+    // justifyContent: 'center',
+    zIndex: 0,
+  },
+  movingIndicator: {
+    height: 3,
+    width: "100%", // Fill the animated width
+    backgroundColor: colors.primary,
+    borderRadius: 2,
+  },
   tabText: {
-    fontSize: 16,
-    color: colors.textDark,
-    fontFamily: "SourceSans3Medium",
+    fontSize: 17,
+    color: "#737373",
+    fontFamily: "SourceSans3SemiBold",
   },
   activeTabText: { color: colors.primary },
 
-  contentWrapper: { flex: 1, paddingHorizontal: 12, paddingTop: 8 },
+  /* Content */
+  contentWrapper: {
+    flex: 1,
+  },
+
+
+
+  card: {
+    backgroundColor: "#fff",
+    width: "100%",
+    alignSelf: "center",
+    borderRadius: 18,
+    padding: 12,
+    marginTop: 16,
+
+  },
+  heading: {
+    fontSize: 18,
+    fontFamily: "SourceSans3SemiBold",
+    color: "#004aad",
+    marginBottom: 16,
+  },
+  gridContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+  },
+  gridItem: {
+    width: "48%", // 2 in a row
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+  },
+  iconBox: {
+    padding: 12,
+    borderRadius: 12,
+  },
+  gridTitle: {
+    fontSize: 16,
+    fontFamily: "SourceSans3SemiBold",
+    color: "#2E2E32",
+  },
+  banner: {
+    borderRadius: 20,
+    padding: 20,
+    marginTop: 20,
+    marginBottom: 4,
+  },
+  bannerContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  bannerTitle: {
+    fontSize: 20,
+    fontFamily: "SourceSans3Bold",
+    color: "#fff",
+    marginBottom: 4,
+  },
+  bannerSubtitle: {
+    fontSize: 14,
+    fontFamily: "SourceSans3Medium",
+    color: "#e6f1ff",
+    lineHeight: 20,
+    paddingRight: 10,
+  },
+  bannerIcon: {
+    backgroundColor: "rgba(255,255,255,0.2)",
+    padding: 10,
+    borderRadius: 15,
+  },
 });

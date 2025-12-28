@@ -18,7 +18,7 @@ export function useEstimator() {
       setLoading(true);
       setError(null);
 
-      console.log("PREDICT_PERCENTILE", PREDICT_PERCENTILE);
+      // console.log("PREDICT_PERCENTILE", PREDICT_PERCENTILE);
 
       const res = await fetch(PREDICT_PERCENTILE, {
         method: "POST",
@@ -40,17 +40,17 @@ export function useEstimator() {
   };
 
   // ✅ Predict Rank Function
-  const predictRank = async (overallPercentile: number, physicsPercentile: number, chemPercentile: number, mathPercentile:number) => {
+  const predictRank = async (overallPercentile: number, physicsPercentile: number, chemPercentile: number, mathPercentile: number) => {
     const token = await getToken();
     try {
       setLoading(true);
       setError(null);
 
-    const res = await fetch(PREDICT_RANK, {
+      const res = await fetch(PREDICT_RANK, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "", },
         body: JSON.stringify({ overallPercentile, mathPercentile, physicsPercentile, chemPercentile }),
-    });
+      });
 
 
       if (!res.ok) throw new Error("Failed to predict rank");

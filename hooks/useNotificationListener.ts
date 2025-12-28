@@ -20,13 +20,13 @@ export function useNotificationListener() {
     // When a notification is received in foreground
     const notificationListener =
       Notifications.addNotificationReceivedListener(notification => {
-        console.log("📩 Notification Received:", notification);
+        // console.log("📩 Notification Received:", notification);
       });
 
     // When user taps a notification
     const responseListener =
       Notifications.addNotificationResponseReceivedListener(response => {
-        console.log("👆 Notification tapped:", response);
+        // console.log("👆 Notification tapped:", response);
       });
 
     // ✅ cleanup on unmount

@@ -1,7 +1,7 @@
 import SearchIcon from "@/assets/icons/SearchIcon";
 import NormalFindCollegeCard from "@/components/NormalFindCollegeCard";
 import NormalFindCollegeCardSkeleton from "@/components/NormalFindCollegeCardSkeleton";
-import NormalFindCollegeToturial from "@/components/NormalFindCollegeToturial";
+
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as ScreenCapture from "expo-screen-capture";
 import React, { useEffect, useMemo, useState } from "react";
@@ -68,14 +68,6 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
   const [searchText, setSearchText] = useState("");
   const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
   const [selectedType, setSelectedType] = useState("");
-
-  const firstCardRef = React.useRef<View>(null);
-  const [firstCardLayout, setFirstCardLayout] = useState<{
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  } | null>(null);
 
   const filteredData = useMemo(() => {
     const search = searchText.toLowerCase();
@@ -153,6 +145,96 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
     );
   }
 
+  const renderHeader = () => (
+    <View style={styles.headerContent}>
+      {/* Search bar */}
+      <View style={styles.searchContainer}>
+        <SearchIcon size={18} focused={false} />
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Search by name, code, or type"
+          placeholderTextColor="#777"
+          value={searchText}
+          onChangeText={setSearchText}
+        />
+      </View>
+
+      {/* Filters */}
+      <View style={styles.filterRow}>
+        {/* District MultiSelect */}
+        <View style={[styles.pickerWrapper, { flex: 0.5 }]}>
+          <MultiSelect
+            style={styles.dropdown}
+            data={districts.map((d) => ({
+              label: d.charAt(0).toUpperCase() + d.slice(1).toLowerCase(),
+              value: d,
+            }))}
+            labelField="label"
+            valueField="value"
+            placeholder="Districts"
+            placeholderStyle={styles.dropdownText}
+            selectedTextStyle={styles.dropdownText}
+            itemTextStyle={styles.dropdownText}
+            value={selectedDistricts}
+            onChange={(items) => setSelectedDistricts(items as string[])}
+            renderItem={(item) =>
+              renderDropdownItem(item, selectedDistricts)
+            }
+            visibleSelectedItem={false}
+          />
+          {selectedDistricts.length > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>
+                {selectedDistricts.length}
+              </Text>
+            </View>
+          )}
+        </View>
+
+        <View style={{ flex: 0.5 }}>
+          <Dropdown
+            style={styles.dropdown}
+            data={[
+              { label: "College Type", value: "" },
+              { label: "Govt", value: "Govt" },
+              { label: "Pvt", value: "Pvt" },
+            ]}
+            labelField="label"
+            valueField="value"
+            value={selectedType}
+            onChange={(item) => setSelectedType(item.value)}
+            placeholder="College Type"
+            placeholderStyle={styles.dropdownText}
+            selectedTextStyle={styles.dropdownText}
+            itemTextStyle={styles.dropdownText}
+          />
+        </View>
+      </View>
+
+      {/* Clear filter button (moved inside header view) */}
+      {(searchText || selectedDistricts.length > 0 || selectedType) && (
+        <TouchableOpacity
+          style={styles.clearFilterBtn}
+          onPress={clearFilters}
+        >
+          <MaterialCommunityIcons
+            name="filter-off"
+            size={16}
+            color="#99b3e6"
+          />
+          <Text style={styles.clearFilterText}>Clear Filters</Text>
+        </TouchableOpacity>
+      )}
+
+      {/* Result Count (styled as top of card) */}
+      <View style={styles.resultCountContainer}>
+        <Text style={styles.resultCount}>
+          Total Results: {filteredData.length}
+        </Text>
+      </View>
+    </View>
+  );
+
   return (
     <>
       <FlatList
@@ -161,128 +243,37 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
         scrollEventThrottle={16}
         data={filteredData}
         keyExtractor={(item) => item.college_code}
-        renderItem={({ item, index }) => (
-          <View
-            ref={index === 0 ? firstCardRef : undefined} // only attach ref to first card
-            onLayout={() => {
-              if (index === 0 && firstCardRef.current) {
-                firstCardRef.current.measure(
-                  (fx, fy, width, height, px, py) => {
-                    setFirstCardLayout({ x: px, y: py, width, height });
-                  }
-                );
-              }
-            }}
-          >
+        renderItem={({ item }) => (
+          <View style={styles.itemWrapper}>
             <NormalFindCollegeCard college={item} />
           </View>
         )}
+        ListHeaderComponent={renderHeader}
+        ListFooterComponent={<View style={styles.listFooter} />}
         ListEmptyComponent={
           loading ? (
-            <>
+            <View style={styles.resultsContainer}>
               <NormalFindCollegeCardSkeleton />
               <NormalFindCollegeCardSkeleton />
               <NormalFindCollegeCardSkeleton />
               <NormalFindCollegeCardSkeleton />
-            </>
+            </View>
           ) : (
-            <Text style={styles.noResult}>No colleges found</Text>
+            <View style={styles.resultsContainer}>
+              <Text style={styles.noResult}>No colleges found</Text>
+            </View>
           )
         }
+        // Optimization props
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        removeClippedSubviews={true}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          padding: 4,
-          paddingTop: 16,
-          paddingBottom: 10,
-        }}
-        ListHeaderComponent={
-          <>
-            {/* Search bar */}
-            <View style={styles.searchContainer}>
-              <SearchIcon size={18} focused={false} />
-              <TextInput
-                style={styles.searchBar}
-                placeholder="Search by name, code, or type"
-                placeholderTextColor="#777"
-                value={searchText}
-                onChangeText={setSearchText}
-              />
-            </View>
-
-            {/* Filters */}
-            <View style={styles.filterRow}>
-              {/* District MultiSelect */}
-              <View style={[styles.pickerWrapper, { flex: 0.5 }]}>
-                <MultiSelect
-                  style={styles.dropdown}
-                  data={districts.map((d) => ({
-                    label: d.charAt(0).toUpperCase() + d.slice(1).toLowerCase(),
-                    value: d,
-                  }))}
-                  labelField="label"
-                  valueField="value"
-                  placeholder="Districts"
-                  placeholderStyle={styles.dropdownText}
-                  selectedTextStyle={styles.dropdownText}
-                  itemTextStyle={styles.dropdownText}
-                  value={selectedDistricts}
-                  onChange={(items) => setSelectedDistricts(items as string[])}
-                  renderItem={(item) =>
-                    renderDropdownItem(item, selectedDistricts)
-                  }
-                  visibleSelectedItem={false}
-                />
-                {selectedDistricts.length > 0 && (
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>
-                      {selectedDistricts.length}
-                    </Text>
-                  </View>
-                )}
-              </View>
-              <View style={{ width: 8 }} />
-              <View style={{ flex: 0.5 }}>
-                <Dropdown
-                  style={styles.dropdown}
-                  data={[
-                    { label: "College Type", value: "" },
-                    { label: "Govt", value: "Govt" },
-                    { label: "Pvt", value: "Pvt" },
-                  ]}
-                  labelField="label"
-                  valueField="value"
-                  value={selectedType}
-                  onChange={(item) => setSelectedType(item.value)}
-                  placeholderStyle={styles.dropdownText}
-                  selectedTextStyle={styles.dropdownText}
-                  itemTextStyle={styles.dropdownText}
-                />
-              </View>
-            </View>
-
-            {/* Result count + Clear filter */}
-            <View style={styles.resultRow}>
-              <Text style={styles.resultCount}>
-                Total Results: {filteredData.length}
-              </Text>
-
-              {(searchText || selectedDistricts.length > 0 || selectedType) && (
-                <TouchableOpacity
-                  style={styles.clearFilterBtn}
-                  onPress={clearFilters}
-                >
-                  <MaterialCommunityIcons
-                    name="filter-off"
-                    size={16}
-                    color="#99b3e6"
-                  />
-                  <Text style={styles.clearFilterText}>Clear Filters</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          </>
-        }
+        contentContainerStyle={styles.listContainer}
+        stickyHeaderIndices={[]} // Optional: set to [0] if you want the search bar to stick
       />
+
       {showScrollTop && (
         <Animated.View style={[styles.scrollTopBtn, { opacity: fadeAnim }]}>
           <TouchableOpacity
@@ -293,7 +284,6 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
           </TouchableOpacity>
         </Animated.View>
       )}
-      <NormalFindCollegeToturial cardLayout={firstCardLayout} />
     </>
   );
 };
@@ -301,22 +291,25 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
 export default NormalFindCollege;
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 4,
-    paddingTop: 16,
-    paddingBottom: 10,
+  listContainer: {
+
+  },
+  headerContent: {
+    marginBottom: 8,
+  },
+  itemWrapper: {
+    backgroundColor: "#fff",
+    paddingHorizontal: 12,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: "#fff",
+    marginTop: -9,
   },
   centerContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    fontFamily: "SourceSans3Medium",
-    color: "#004aad",
   },
   errorText: {
     fontSize: 16,
@@ -328,10 +321,13 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#ebf0fa",
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#d6e0f5",
     borderRadius: 20,
     paddingHorizontal: 12,
     marginBottom: 12,
+    marginTop: 8,
   },
   searchBar: {
     flex: 1,
@@ -343,39 +339,59 @@ const styles = StyleSheet.create({
   filterRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 16,
+    marginBottom: 8,
+    gap: 8,
   },
   dropdown: {
     height: 45,
     borderRadius: 20,
     paddingHorizontal: 16,
-    backgroundColor: "#ebf0fa",
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#d6e0f5",
     fontFamily: "SourceSans3Medium",
-    textTransform: "capitalize",
   },
   dropdownText: {
     fontSize: 16,
     fontFamily: "SourceSans3Medium",
     color: "#333",
-    textTransform: "capitalize",
   },
-  resultRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 14,
-    marginHorizontal: 4,
-    marginTop: 10,
+  resultsContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 12,
+  },
+  resultCountContainer: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    padding: 12,
+    marginTop: 8,
+    borderWidth: 1,
+    borderBottomWidth: 0,
+    borderColor: "#fff", // Match side borders
   },
   resultCount: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: "SourceSans3SemiBold",
-    color: "#444",
+    color: "#004aad",
+  },
+  listFooter: {
+    height: 40,
+    backgroundColor: "#fff",
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderTopWidth: 0,
+    borderColor: "#fff",
   },
   clearFilterBtn: {
     flexDirection: "row",
     alignItems: "center",
-    marginRight: 4,
+    alignSelf: "flex-end",
+    marginTop: 4,
+    marginBottom: 8,
   },
   clearFilterText: {
     fontSize: 14,
@@ -383,28 +399,24 @@ const styles = StyleSheet.create({
     color: "#99b3e6",
     marginLeft: 2,
   },
-
   itemRow: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 15,
     paddingHorizontal: 12,
   },
-
   itemText: {
     fontSize: 16,
     color: "#333",
     fontFamily: "SourceSans3Medium",
   },
-
   pickerWrapper: { marginHorizontal: 0 },
-
   badge: {
     position: "relative",
     top: -32,
     left: 110,
-    backgroundColor: "#004aad", // your given color
-    borderRadius: 9999, // full rounded
+    backgroundColor: "#004aad",
+    borderRadius: 9999,
     paddingHorizontal: 8,
     paddingVertical: 2,
     alignSelf: "flex-start",
@@ -414,7 +426,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: "SourceSans3Medium",
   },
-
   noResult: {
     fontSize: 16,
     color: "#777",
@@ -428,9 +439,8 @@ const styles = StyleSheet.create({
     right: 20,
     elevation: 5,
   },
-
   scrollTopTouchable: {
-    backgroundColor: "#e6e6e6", // Same blue shade used in app
+    backgroundColor: "#e6e6e6",
     width: 46,
     height: 46,
     borderRadius: 16,
@@ -442,11 +452,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 10,
     shadowOffset: { width: 4, height: 6 },
     shadowRadius: 3,
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.6)", // your overlay
-    justifyContent: "center",
-    alignItems: "center",
   },
 });

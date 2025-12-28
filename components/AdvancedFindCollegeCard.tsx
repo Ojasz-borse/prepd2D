@@ -1,5 +1,3 @@
-import GovernmentCollegeIcon from "@/assets/icons/GovernmentCollegeIcon";
-import PrivateCollegeIcon from "@/assets/icons/PrivateCollegeIcon";
 import { router } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -25,15 +23,6 @@ interface StandardCutoffData {
   percentile: number;
 }
 
-// ----------------- META -----------------
-const TYPE_META: Record<
-  string,
-  { label: string; Icon: React.ComponentType<any> }
-> = {
-  Govt: { label: "Govt", Icon: GovernmentCollegeIcon },
-  Pvt: { label: "Pvt", Icon: PrivateCollegeIcon },
-};
-
 interface Props {
   item: CollegeBranch;
   quickView?: boolean;
@@ -49,105 +38,77 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({
   selectionMode,
   handleSelectCard,
 }) => {
-  const meta = item.is_government ? TYPE_META.Govt : TYPE_META.Pvt;
-  const TypeIcon = meta.Icon;
-
   return (
     <TouchableOpacity
       key={item.choice_code}
-      style={styles.card3D}
-      onLongPress={onLongPress ? () => onLongPress(item.choice_code) : () => {}}
-      onPress={() => {
-        if (selectionMode) {
-          handleSelectCard && handleSelectCard(item.choice_code);
-        } else {
-          router.push({
-            pathname: "../branch-details",
-            params: { choice_code: item.choice_code },
-          });
-        }
-      }}
+      style={styles.cardContainer}
+      onLongPress={onLongPress ? () => onLongPress(item.choice_code) : () => { }}
+      // onPress={() => {
+      //   if (selectionMode) {
+      //     handleSelectCard && handleSelectCard(item.choice_code);
+      //   } else {
+      //     router.push({
+      //       pathname: "../branch-details",
+      //       params: { choice_code: item.choice_code },
+      //     });
+      //   }
+      // }}
       activeOpacity={0.7}
     >
+      {/* Smart Match Tags (if any) */}
       {(item.tag || item.percentage) && (
-        <View style={styles.smartMatch}>
+        <View style={styles.smartMatchRow}>
           {item.tag && (
-            <Text
-              style={[
-                styles.smartMatchText,
-                {
-                  backgroundColor:
-                    item.tag === "Exact"
-                      ? "#2ecc71"
-                      : item.tag === "Very Hard"
-                      ? "#ef4444"
-                      : item.tag === "Hard"
-                      ? "#f97316"
-                      : item.tag === "Easy"
-                      ? "#facc15"
-                      : item.tag === "Very Easy"
-                      ? "#a3e635"
-                      : "#d3d3d3", // fallback
-                },
-              ]}
-            >
-              {item.tag}
-            </Text>
+            <View style={[styles.statusTag, { backgroundColor: getTagColor(item.tag) }]}>
+              <Text style={styles.statusTagText}>{item.tag}</Text>
+            </View>
           )}
-
           {item.percentage && item.percentage <= 100 && (
-            <Text
-              style={[
-                styles.smartMatchNormalText,
-                {
-                  color:
-                    item.tag === "Exact"
-                      ? "#2ecc71"
-                      : item.tag === "Very Hard"
-                      ? "#ef4444"
-                      : item.tag === "Hard"
-                      ? "#f97316"
-                      : item.tag === "Easy"
-                      ? "#facc15"
-                      : item.tag === "Very Easy"
-                      ? "#a3e635"
-                      : "#000000", // fallback
-                },
-              ]}
-            >
-              {item.percentage}%
-            </Text>
+            <View style={styles.percentageTag}>
+              <Text style={[styles.percentageText, { color: getTagColor(item.tag || "") }]}>
+                {item.percentage}%
+              </Text>
+            </View>
           )}
         </View>
       )}
-      {/* Top Row */}
-      <View style={styles.subRow}>
-        <Text style={styles.subText}>{item.choice_code}</Text>
-        <View style={styles.typeRow}>
-          {!quickView && (
-            <>
-              <TypeIcon size={16} />
-              <Text style={styles.subText}>{meta.label}</Text>
-            </>
-          )}
+
+      {/* Top Metadata Row (Greenish Pills) */}
+      <View style={styles.topRow}>
+        <View style={styles.greenTag}>
+          <Text style={styles.greenTagText}>{item.choice_code}</Text>
+        </View>
+        <View style={styles.greenTag}>
+          <Text style={styles.greenTagText}>
+            {item.is_government ? "Govt" : "Pvt"}
+          </Text>
         </View>
       </View>
 
-      {/* Branch */}
-      <Text style={styles.collegeName}>{item.branch_name}</Text>
-
-      {/* College */}
-      {!quickView && <Text style={styles.districtText}>{item.name}</Text>}
-
-      {quickView && (
-        <Text style={styles.districtText}>
-          {item.name
-            .split(" ")
-            .map((word) => word[0])
-            .join("")
-            .toUpperCase()}
+      {/* Branch & View Button Row */}
+      <View style={styles.titleRow}>
+        <Text style={styles.branchName}>
+          {item.branch_name}
         </Text>
-      )}
+        {!selectionMode && (
+          <TouchableOpacity
+            style={styles.viewButton}
+          // onPress={() =>
+          //   router.push({
+          //     pathname: "../branch-details",
+          //     params: { choice_code: item.choice_code },
+          //   })
+          // }
+          >
+            <Text style={styles.viewButtonText}>View</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* College Name */}
+      <View style={styles.collegeRow}>
+        <Text style={styles.collegePillText}>{item.name}</Text>
+      </View>
 
       {/* Cutoff Grid */}
       {!quickView && (
@@ -160,62 +121,124 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({
               </Text>
             </View>
           ))}
-          <View style={styles.moreCutoffBox}>
-            <Text style={styles.cutoffCategory}>More</Text>
-            <Text style={styles.cutoffCategory}>Cuttoff</Text>
-          </View>
         </View>
       )}
-      {/* <Text style={styles.viewMoreText}>View more</Text> */}
     </TouchableOpacity>
   );
+};
+
+// Helper for tag colors
+const getTagColor = (tag: string) => {
+  switch (tag) {
+    case "Exact": return "#2ecc71";
+    case "Very Hard": return "#ef4444";
+    case "Hard": return "#f97316";
+    case "Easy": return "#facc15";
+    case "Very Easy": return "#a3e635";
+    default: return "#d3d3d3";
+  }
 };
 
 export default React.memo(AdvancedFindCollegeCard);
 
 const styles = StyleSheet.create({
-  card3D: {
+  cardContainer: {
     width: "100%",
-    borderRadius: 16,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#d9d9d9",
     backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
   },
-  subRow: {
+  smartMatchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 10,
+    marginTop: -4,
+  },
+  statusTag: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  statusTagText: {
+    color: "#fff",
+    fontSize: 11,
+    fontFamily: "SourceSans3Bold",
+  },
+  percentageTag: {
+    backgroundColor: "#f2f2f2",
+    borderWidth: 0.5,
+    borderColor: "#d9d9d9",
+    paddingHorizontal: 8,
+    paddingVertical: 1,
+    borderRadius: 6,
+  },
+  percentageText: {
+    fontSize: 11,
+    fontFamily: "SourceSans3Bold",
+  },
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 14,
+    gap: 8,
+  },
+  greenTag: {
+    backgroundColor: "#f0f7d4",
+    borderWidth: 1,
+    borderColor: "#b6cf4f",
+    borderRadius: 99,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+  },
+  greenTagText: {
+    fontSize: 12,
+    color: "#8b9e3dff",
+    fontFamily: "SourceSans3Medium",
+  },
+  titleRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 8,
+    gap: 12,
   },
-  typeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  subText: {
-    fontSize: 14,
-    color: "#004aad",
-    fontFamily: "SourceSans3Medium",
-  },
-  collegeName: {
-    fontSize: 16,
+  branchName: {
+    flex: 1,
+    fontSize: 17,
     color: "#000",
-    marginTop: 2,
-    fontWeight: "600",
-    fontFamily: "SourceSans3Medium",
+    fontFamily: "SourceSans3SemiBold",
   },
-  districtText: {
+  viewButton: {
+    backgroundColor: "#ff5e32",
+    paddingHorizontal: 16,
+    paddingVertical: 5,
+    borderRadius: 99,
+  },
+  viewButtonText: {
+    color: "#fff",
+    fontSize: 13,
+    fontFamily: "SourceSans3SemiBold",
+  },
+  collegeRow: {
+    flexDirection: "row",
+    marginBottom: 12,
+  },
+
+  collegePillText: {
     fontSize: 14,
-    color: "#666",
-    marginTop: 2,
+    color: "#141414",
     fontFamily: "SourceSans3Medium",
   },
   cutoffWrapper: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
-    marginTop: 8,
     alignItems: "center",
+    marginTop: 4,
   },
   cutoffBox: {
     backgroundColor: "#f8fafc",
@@ -224,15 +247,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 4,
     minWidth: 50,
-    alignItems: "center",
-  },
-  moreCutoffBox: {
-    backgroundColor: "#f8fafc",
-    borderColor: "#e2e8f0",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingVertical: 4,
-    minWidth: 42,
     alignItems: "center",
   },
   cutoffCategory: {
@@ -246,56 +260,5 @@ const styles = StyleSheet.create({
     color: "#0F172A",
     fontFamily: "SourceSans3Bold",
     marginTop: -2,
-  },
-  rankValue: {
-    fontSize: 10,
-    fontFamily: "SourceSans3SemiBold",
-    color: "#666",
-    marginTop: -2,
-  },
-  chance: {
-    backgroundColor: "#e6b800",
-    borderRadius: 25,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  chanceText: {
-    color: "#fff",
-    fontSize: 9,
-    fontFamily: "SourceSans3SemiBold",
-  },
-  smartMatch: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: -22,
-    marginBottom: 5,
-    marginLeft: 2,
-    marginRight: 2,
-    gap: 10,
-  },
-  smartMatchText: {
-    color: "#ffffff",
-    paddingHorizontal: 8,
-    borderRadius: 6,
-    fontFamily: "SourceSans3Bold",
-    fontSize: 12,
-  },
-  smartMatchNormalText: {
-    color: "#ccc",
-    backgroundColor: "#f2f2f2",
-    borderWidth: 0.5,
-    borderColor: "#d9d9d9",
-    paddingHorizontal: 8,
-    borderRadius: 6,
-    fontFamily: "SourceSans3Medium",
-    fontSize: 12,
-  },
-  viewMoreText: {
-    marginTop: 10,
-    fontSize: 12,
-    color: "#0099ff",
-    fontFamily: "SourceSans3Medium",
-    marginLeft: "auto",
   },
 });
