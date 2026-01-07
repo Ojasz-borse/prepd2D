@@ -1,11 +1,11 @@
 import MathText from "@/components/MathText";
-import PyqQuestionCardSkeleton from "@/components/PyqQuestionCardSkeleton";
+import SyllabusChapterCardSkeleton from "@/components/SyllabusChapterCardSkeleton";
 import TopHeader from "@/components/TopHeader";
 import { GET_NOTES } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
+import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import * as ScreenCapture from "expo-screen-capture";
 import React, { useEffect, useState } from "react";
 import {
     Animated,
@@ -69,13 +69,7 @@ export default function NotesListScreen() {
     const [showScrollTop, setShowScrollTop] = useState(false);
     const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
-    useEffect(() => {
-        ScreenCapture.preventScreenCaptureAsync();
-
-        return () => {
-            ScreenCapture.allowScreenCaptureAsync();
-        };
-    }, []);
+    usePreventScreenCapture();
 
     useEffect(() => {
         const fetchNotes = async () => {
@@ -155,9 +149,11 @@ export default function NotesListScreen() {
                 ListEmptyComponent={
                     loading ? (
                         <>
-                            <PyqQuestionCardSkeleton />
-                            <PyqQuestionCardSkeleton />
-                            <PyqQuestionCardSkeleton />
+                            <SyllabusChapterCardSkeleton />
+                            <SyllabusChapterCardSkeleton />
+                            <SyllabusChapterCardSkeleton />
+                            <SyllabusChapterCardSkeleton />
+                            <SyllabusChapterCardSkeleton />
                         </>
                     ) : (
                         <View style={styles.noResultsContainer}>

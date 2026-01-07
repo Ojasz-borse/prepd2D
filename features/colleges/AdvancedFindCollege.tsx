@@ -4,6 +4,7 @@ import AdvancedFindCollegeCardSkeleton from "@/components/AdvancedFindCollegeCar
 import SmartMatchModal from "@/components/SmartMatchModel";
 import { CACHE_MY_COLLEGES_LIST } from "@/constants/cacheStorageConfig";
 import { useMyList } from "@/hooks/useMyList";
+import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ScreenCapture from "expo-screen-capture";
@@ -159,13 +160,8 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
     loadStoredColleges();
   }, []);
 
-  useEffect(() => {
-    ScreenCapture.preventScreenCaptureAsync();
+  usePreventScreenCapture();
 
-    return () => {
-      ScreenCapture.allowScreenCaptureAsync();
-    };
-  }, []);
 
   const listRef = React.useRef<FlatList<CollegeBranch>>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);

@@ -1,9 +1,10 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import MathJaxSvg from "react-native-mathjax-svg";
 
 interface MathRendererProps {
   content: string;
+  textStyle?: any;
 }
 
 interface TextSegment {
@@ -14,7 +15,7 @@ interface TextSegment {
   isNewline?: boolean;
 }
 
-const MathRenderer: React.FC<MathRendererProps> = ({ content }) => {
+const MathRenderer: React.FC<MathRendererProps> = ({ content, textStyle }) => {
   if (!content) {
     return (
       <View>
@@ -23,17 +24,16 @@ const MathRenderer: React.FC<MathRendererProps> = ({ content }) => {
     );
   }
 
-  // Split by math expressions (preserve them)
-  const splitByMath = (text: string): Array<{ type: "math" | "text"; content: string; isBlock?: boolean }> => {
-    const parts: Array<{ type: "math" | "text"; content: string; isBlock?: boolean }> = [];
+  // Split by math and images (preserve them)
+  const splitContent = (text: string): Array<{ type: "math" | "text" | "image"; content: string; isBlock?: boolean; alt?: string }> => {
+    const parts: Array<{ type: "math" | "text" | "image"; content: string; isBlock?: boolean; alt?: string }> = [];
     let currentPos = 0;
-    
-    // Match $$ ... $$ (block math) and $ ... $ (inline math)
-    const mathRegex = /(\$\$[\s\S]+?\$\$|\$[^\$\n]+?\$)/g;
+
+    // Match $$ ... $$ (block math), $ ... $ (inline math), and ![alt](url) (images)
+    const combinedRegex = /(\$\$[\s\S]+?\$\$|\$[^\$\n]+?\$|!\[.*?\]\(.*?\))/g;
     let match;
 
-    while ((match = mathRegex.exec(text)) !== null) {
-      // Add text before math
+    while ((match = combinedRegex.exec(text)) !== null) {
       if (match.index > currentPos) {
         parts.push({
           type: "text",
@@ -41,19 +41,30 @@ const MathRenderer: React.FC<MathRendererProps> = ({ content }) => {
         });
       }
 
-      // Add math
-      const mathContent = match[0];
-      const isBlock = mathContent.startsWith("$$");
-      parts.push({
-        type: "math",
-        content: mathContent.replace(/^\$\$?|\$\$?$/g, "").trim(),
-        isBlock,
-      });
+      const found = match[0];
+      if (found.startsWith("![")) {
+        // Handle Image
+        const imgMatch = found.match(/!\[(.*?)\]\((.*?)\)/);
+        if (imgMatch) {
+          parts.push({
+            type: "image",
+            alt: imgMatch[1],
+            content: imgMatch[2],
+          });
+        }
+      } else {
+        // Handle Math
+        const isBlock = found.startsWith("$$");
+        parts.push({
+          type: "math",
+          content: found.replace(/^\$\$?|\$\$?$/g, "").trim(),
+          isBlock,
+        });
+      }
 
-      currentPos = match.index + match[0].length;
+      currentPos = match.index + found.length;
     }
 
-    // Add remaining text
     if (currentPos < text.length) {
       parts.push({
         type: "text",
@@ -67,10 +78,10 @@ const MathRenderer: React.FC<MathRendererProps> = ({ content }) => {
   // Parse markdown in text (non-math) segments
   const parseMarkdown = (text: string): TextSegment[] => {
     const segments: TextSegment[] = [];
-    
+
     // Remove HTML tags
     text = text.replace(/<\/?[^>]+(>|$)/g, "");
-    
+
     let i = 0;
     let currentText = "";
     let bold = false;
@@ -155,7 +166,7 @@ const MathRenderer: React.FC<MathRendererProps> = ({ content }) => {
     return segments;
   };
 
-  const parts = splitByMath(content);
+  const parts = splitContent(content);
 
   return (
     <View style={styles.container}>
@@ -175,6 +186,17 @@ const MathRenderer: React.FC<MathRendererProps> = ({ content }) => {
               </MathJaxSvg>
             </View>
           );
+        } else if (part.type === "image") {
+          return (
+            <View key={idx} style={styles.imageContainer}>
+              <Image
+                source={{ uri: part.content }}
+                style={styles.image}
+                resizeMode="contain"
+              />
+              {part.alt ? <Text style={styles.altText}>{part.alt}</Text> : null}
+            </View>
+          );
         } else {
           const segments = parseMarkdown(part.content);
           return (
@@ -188,18 +210,18 @@ const MathRenderer: React.FC<MathRendererProps> = ({ content }) => {
                 }
 
                 if (!segment.text.trim()) return null;
-                
-                const textStyles = [styles.questionText];
-                
+
+                const combinedTextStyles = [styles.questionText, textStyle];
+
                 if (segment.code) {
-                  textStyles.push(styles.code);
+                  combinedTextStyles.push(styles.code);
                 } else {
-                  if (segment.bold) textStyles.push(styles.bold);
-                  if (segment.italic) textStyles.push(styles.italic);
+                  if (segment.bold) combinedTextStyles.push(styles.bold);
+                  if (segment.italic) combinedTextStyles.push(styles.italic);
                 }
 
                 return (
-                  <Text key={`${idx}-${segIdx}`} style={textStyles}>
+                  <Text key={`${idx}-${segIdx}`} style={combinedTextStyles}>
                     {segment.text}
                   </Text>
                 );
@@ -221,7 +243,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   questionText: {
-    fontSize: 15,
+    fontSize: 17,
     color: "#222",
     fontFamily: "SourceSans3Medium",
   },
@@ -242,7 +264,6 @@ const styles = StyleSheet.create({
   inlineMathContainer: {
     marginHorizontal: 0,
     marginTop: 4,
-
   },
   blockMathContainer: {
     width: "100%",
@@ -253,5 +274,19 @@ const styles = StyleSheet.create({
   newline: {
     width: "100%",
     height: 4,
+  },
+  imageContainer: {
+    width: "90%",
+    alignItems: "center",
+  },
+  image: {
+    width: "100%",
+    height: 180,
+  },
+  altText: {
+    fontSize: 12,
+    color: "#666",
+    fontFamily: "SourceSans3Medium",
+    marginTop: 4,
   },
 });

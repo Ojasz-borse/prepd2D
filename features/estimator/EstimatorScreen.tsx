@@ -29,6 +29,7 @@ import Reanimated, {
   SlideInDown,
   SlideOutDown
 } from 'react-native-reanimated';
+import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 
 
 const EstimatorLanding = ({ onTabChange }: { onTabChange: (tab: "marks" | "rank") => void }) => {
@@ -83,6 +84,8 @@ export default function EstimatorScreen() {
       setActiveTab(tab as "marks" | "rank");
     }
   }, [tab]);
+
+  usePreventScreenCapture();
 
   // Tab Measurement Logic
   const [tabMeasurements, setTabMeasurements] = useState<{ [key: string]: { x: number; width: number } }>({});

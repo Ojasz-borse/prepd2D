@@ -27,6 +27,7 @@ if (Platform.OS === 'android') {
 import PYQ from "./PYQ";
 import Syllabus from "./Syllabus";
 import Notes from "./Notes";
+import { usePYQS } from "@/hooks/usePYQS";
 
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -80,6 +81,7 @@ export default function Preparation() {
   const [activeTab, setActiveTab] = useState<
     "all" | "notes" | "pyq" | "syllabus"
   >("all");
+  const { pyqs, loading, error, reload } = usePYQS();
 
   // Store layout for each tab { x, width }
   const [tabMeasurements, setTabMeasurements] = useState<{ [key: string]: { x: number; width: number } }>({});
@@ -242,13 +244,13 @@ export default function Preparation() {
           </View>
         )}
         {activeTab === "notes" && (
-          <View style={{ paddingHorizontal: 16 }}>
-            <Notes />
+          <View style={{ paddingHorizontal: 12 }}>
+            <Notes pyqs={pyqs} loading={loading} error={error} reload={reload} />
           </View>
         )}
         {activeTab === "pyq" && (
           <View style={{ paddingHorizontal: 12 }}>
-            <PYQ />
+            <PYQ pyqs={pyqs} loading={loading} error={error} reload={reload} />
           </View>
         )}
         {activeTab === "syllabus" && (

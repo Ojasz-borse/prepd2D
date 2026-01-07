@@ -253,6 +253,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const data = await response.json();
 
+
+
       if (response.ok && data.valid === true) {
         setUserToken(token);
         setLoading(false);

@@ -10,6 +10,7 @@ import TopHeader from "@/components/TopHeader";
 import { GET_COLLEGES } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import CollegeFees from "@/features/colleges/CollegeFees";
+import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import * as ScreenCapture from "expo-screen-capture";
 import React, { useEffect, useState } from "react";
@@ -145,13 +146,8 @@ export default function CollegeDetails() {
     return () => clearTimeout(timer); // cleanup if component unmounts
   }, [collegeDetails]);
 
-  useEffect(() => {
-    ScreenCapture.preventScreenCaptureAsync();
+  usePreventScreenCapture();
 
-    return () => {
-      ScreenCapture.allowScreenCaptureAsync();
-    };
-  }, []);
 
   const handleOpenLink = (url: string) => {
     if (url) {

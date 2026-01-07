@@ -2,10 +2,10 @@ import SearchIcon from "@/assets/icons/SearchIcon";
 
 import PyqChapterCardSkeleton from "@/components/PyqChapterCardSkeleton";
 import { useAuth } from "@/context/AuthContext";
-import { usePYQS } from "@/hooks/usePYQS"; // ⬅️ our new hook
+import { Chapter } from "@/hooks/usePYQS";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import * as ScreenCapture from "expo-screen-capture";
+import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Animated,
@@ -60,10 +60,16 @@ const renderDropdownItem = (
   return <DropdownItem label={item.label} isSelected={isSelected} />;
 };
 
-export default function PYQ() {
+interface PYQProps {
+  pyqs: Chapter[];
+  loading: boolean;
+  error: string | null;
+  reload: () => Promise<void>;
+}
+
+export default function PYQ({ pyqs, loading, error, reload }: PYQProps) {
   const router = useRouter();
   const { user } = useAuth();
-  const { pyqs: chaptersData, loading, error, reload } = usePYQS(); // ⬅️ from hook
 
   const [searchText, setSearchText] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<string>("");
@@ -79,13 +85,7 @@ export default function PYQ() {
     }
   }, [loading, user]);
 
-  useEffect(() => {
-    ScreenCapture.preventScreenCaptureAsync();
-
-    return () => {
-      ScreenCapture.allowScreenCaptureAsync();
-    };
-  }, []);
+  usePreventScreenCapture();
 
   // 🔍 Filtering logic (maps numeric subject/class IDs)
   const filteredData = useMemo(() => {
@@ -102,7 +102,7 @@ export default function PYQ() {
       2: "12th",
     };
 
-    return chaptersData.filter((chapter) => {
+    return pyqs.filter((chapter) => {
       const subjectName = subjectMap[chapter.subject];
       const className = classMap[chapter.class];
 
@@ -114,7 +114,7 @@ export default function PYQ() {
 
       return matchesSubject && matchesClass && matchesSearch;
     });
-  }, [chaptersData, searchText, selectedSubject, selectedClasses]);
+  }, [pyqs, searchText, selectedSubject, selectedClasses]);
 
   const listRef = React.useRef<ScrollView>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -156,8 +156,7 @@ export default function PYQ() {
     chapter_no: number,
     subject: number
   ) => {
-    const title = `${chapter_no}. ${subject === 1 ? "Physics" : subject === 2 ? "Chemistry" : "Mathematics"
-      }`;
+    const title = `${subject === 1 ? "Physics" : subject === 2 ? "Chemistry" : "Mathematics"}`;
     router.push({
       pathname: "/pyq-list",
       params: { id: id, chapter_name: chapter_name, title },
@@ -326,8 +325,17 @@ export default function PYQ() {
                       {item.chapter_no}. {item.chapter_name}
                     </Text>
                     <View>
-                      <TouchableOpacity style={styles.solveButton}>
-                        <Text style={styles.solveButtonText}>Solve</Text>
+                      <TouchableOpacity style={styles.solveButton} onPress={() =>
+                        handleChapterPress(
+                          item.id,
+                          item.chapter_name,
+                          item.chapter_no,
+                          item.subject
+                        )
+                      }>
+                        <Text style={styles.solveButtonText}
+
+                        >Solve</Text>
                       </TouchableOpacity>
                     </View>
                   </View>

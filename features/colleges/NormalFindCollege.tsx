@@ -1,6 +1,7 @@
 import SearchIcon from "@/assets/icons/SearchIcon";
 import NormalFindCollegeCard from "@/components/NormalFindCollegeCard";
 import NormalFindCollegeCardSkeleton from "@/components/NormalFindCollegeCardSkeleton";
+import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as ScreenCapture from "expo-screen-capture";
@@ -100,13 +101,7 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
   const [showScrollTop, setShowScrollTop] = useState(false);
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    ScreenCapture.preventScreenCaptureAsync();
-
-    return () => {
-      ScreenCapture.allowScreenCaptureAsync();
-    };
-  }, []);
+  usePreventScreenCapture();
 
   const handleScroll = (e: any) => {
     const y = e.nativeEvent.contentOffset.y;

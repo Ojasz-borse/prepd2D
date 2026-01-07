@@ -33,9 +33,9 @@ interface PYQContextType {
 
 const PYQContext = createContext<PYQContextType>({
   pyqList: [],
-  setPYQList: () => {},
+  setPYQList: () => { },
   userResponses: {},
-  setUserResponses: () => {},
+  setUserResponses: () => { },
 });
 
 export const usePYQContext = () => useContext(PYQContext);
@@ -45,11 +45,13 @@ export const PYQProvider = ({ children }: { children: ReactNode }) => {
   const [userResponses, setUserResponses] = useState<UserResponseMap>({});
 
   useEffect(() => {
+    // console.log("pyqList", pyqList);
     const mapped: UserResponseMap = {};
     pyqList.forEach((q) => {
       if (q.user_resp !== null) mapped[q.id] = q.user_resp;
     });
     setUserResponses(mapped);
+    console.log("userResponses", userResponses);
   }, [pyqList]);
 
   return (

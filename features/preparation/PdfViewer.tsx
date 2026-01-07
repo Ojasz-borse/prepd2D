@@ -1,7 +1,8 @@
 import TopHeader from "@/components/TopHeader";
+import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
-import * as ScreenCapture from "expo-screen-capture";
+
 import React, { useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -11,8 +12,7 @@ export default function PdfViewer() {
     const { url, title } = useLocalSearchParams<{ url: string; title: string }>();
     const [loading, setLoading] = useState(true);
 
-    // Prevent screenshots while this screen is active
-    ScreenCapture.usePreventScreenCapture();
+    usePreventScreenCapture();
 
     if (!url) {
         return (

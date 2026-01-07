@@ -1,6 +1,7 @@
 import SearchIcon from "@/assets/icons/SearchIcon";
 import SyllabusChapterCardSkeleton from "@/components/SyllabusChapterCardSkeleton";
 import syllabusData from "@/dataConfig/chapters.json";
+import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import * as ScreenCapture from "expo-screen-capture";
@@ -68,14 +69,7 @@ export default function Syllabus() {
       setLoading(false);
     }, 1000);
   }, []);
-
-  useEffect(() => {
-    ScreenCapture.preventScreenCaptureAsync();
-
-    return () => {
-      ScreenCapture.allowScreenCaptureAsync();
-    };
-  }, []);
+  usePreventScreenCapture();
 
   const filteredData = useMemo(() => {
     const search = searchText.toLowerCase();

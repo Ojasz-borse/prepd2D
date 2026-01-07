@@ -1,29 +1,32 @@
 import MathText from "@/components/MathText";
-import PyqQuestionCardSkeleton from "@/components/PyqQuestionCardSkeleton";
 import TopHeader from "@/components/TopHeader";
 import { GET_PYQS } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import { usePYQContext } from "@/context/PYQContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import * as ScreenCapture from "expo-screen-capture";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Animated,
-  FlatList,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { Dropdown } from "react-native-element-dropdown";
+
 import { SafeAreaView } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+import QuestionCardSkeleton from "@/components/QuestionCardSkeleton";
+import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 
 type PYQCardProps = {
   question: any;
   index: number;
   id: string;
   router: any;
+  selectedYear: string;
+  isSolved: boolean;
 };
 
 export interface PYQLite {
@@ -33,51 +36,53 @@ export interface PYQLite {
   user_resp: string | null;
 }
 
-const PYQCard = React.memo(({ question, index, id, router }: PYQCardProps) => {
+const PYQCard = React.memo(({ question, index, id, router, selectedYear, isSolved }: PYQCardProps) => {
+  const handleSolve = () => {
+    router.push({
+      pathname: "/pyq-detail",
+      params: {
+        currentIndex: index.toString(),
+        chapterId: id.toString(),
+        selectedYear: selectedYear,
+      },
+    });
+  };
+
   return (
     <TouchableOpacity
-      style={styles.card}
-      onPress={() =>
-        router.push({
-          pathname: "/pyq-detail",
-          params: {
-            currentIndex: index.toString(),
-            chapterId: id.toString(),
-          },
-        })
-      }
+      style={styles.chapterTag}
+      onPress={handleSolve}
       activeOpacity={0.7}
     >
-      <View style={styles.cardGradient}>
-        <View style={styles.cardHeader}>
-          <View style={styles.questionNumber}>
-            <Text style={styles.questionNumberText}>Question {index + 1}</Text>
+      <View style={styles.titleRow}>
+        <View style={styles.questionTag}>
+          <Text style={styles.questionTagText}>Question {index + 1}</Text>
+        </View>
+
+        <View><Text style={{
+          fontSize: 12,
+          color: "#009933",
+          fontFamily: "SourceSans3SemiBold",
+        }}>{isSolved && "Solved"}</Text></View>
+      </View>
+
+      <View style={styles.questionContent}>
+        <MathText
+          content={question.pyq_content}
+        // baseStyle={styles.questionText}
+        />
+      </View>
+
+      <View style={styles.bottomSubRow}>
+        <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 12 }}>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>Multiple Choice • 4 Options</Text>
           </View>
-          <Ionicons name="chevron-forward" size={20} color="#004aad" />
-        </View>
 
-        <View style={styles.questionContent}>
-          <MathText content={question.pyq_content} />
         </View>
-
-        <View style={styles.cardFooter}>
-          <View style={styles.optionsIndicator}>
-            <Text style={styles.optionsText}>Multiple Choice • 4 Options</Text>
-          </View>
-          {question.user_resp && (
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-            >
-              <Text
-                style={{ fontFamily: "SourceSans3Medium", color: "#004aad" }}
-              >
-                Answered
-              </Text>
-
-              <Ionicons name="checkmark-circle" size={18} color="#004aad" />
-            </View>
-          )}
-        </View>
+        <TouchableOpacity style={styles.solveButton} onPress={handleSolve}>
+          <Text style={styles.solveButtonText}>Solve</Text>
+        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
@@ -137,66 +142,93 @@ export default function PYQListScreen() {
   const [loading, setLoading] = useState(true);
   const { user, getToken } = useAuth();
 
-  const [pyqListLite, setPyqListLite] = useState<PYQLite[]>([]);
-
+  const [pyqCache, setPyqCache] = useState<Record<string, { lite: PYQLite[], full: any[] }>>({});
+  const [selectedYear, setSelectedYear] = useState<string>("2025");
+  const { pyqList, setPYQList, userResponses } = usePYQContext();
   const fadeAnim = useState(new Animated.Value(0))[0];
 
-  const { pyqList, setPYQList } = usePYQContext();
+  usePreventScreenCapture();
 
-  const [selectedYear, setSelectedYear] = useState<string>("2025");
 
-  useEffect(() => {
-    ScreenCapture.preventScreenCaptureAsync();
 
-    return () => {
-      ScreenCapture.allowScreenCaptureAsync();
-    };
-  }, []);
+  const fetchPYQs = async (year: string) => {
+    // If already in cache, just update the context and lite list
+    if (pyqCache[year]) {
+      setPYQList(pyqCache[year].full);
+      return;
+    }
 
-  useEffect(() => {
-    const fetchPYQs = async () => {
-      setPYQList([]); // ✅ reset previous chapter questions
-      setLoading(true);
-      const token = await getToken();
+    setLoading(true);
+    const token = await getToken();
 
-      try {
-        const response = await fetch(GET_PYQS, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-          body: JSON.stringify({ chapter_id: id, user_id: user?.user_id }),
-        });
+    try {
+      const response = await fetch(GET_PYQS, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({
+          chapter_id: id,
+          user_id: user?.user_id,
+          year: year
+        }),
+      });
 
-        const json = await response.json();
+      const json = await response.json();
 
-        if (json.success) {
-          // Normalize year type → always string
-          const normalized = json.pyqs.map((q: any) => ({
-            id: q.id,
-            question_year: String(q.question_year),
-            pyq_content: q.pyq_content, // Only required field
-            user_resp: q.user_resp,
-          }));
-          setPyqListLite(normalized);
-          setPYQList(json.pyqs);
-        }
-      } catch (err) {
-        console.error("Error fetching PYQs", err);
-      } finally {
-        setLoading(false);
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 400,
-          useNativeDriver: true,
-        }).start();
+      if (json.success) {
+        const fullData = json.pyqs || [];
+        const normalized = fullData.map((q: any) => ({
+          id: q.id,
+          question_year: String(q.question_year),
+          pyq_content: q.pyq_content,
+          user_resp: q.user_resp,
+        }));
+
+        // Update cache
+        setPyqCache(prev => ({
+          ...prev,
+          [year]: { lite: normalized, full: fullData }
+        }));
+
+        // Update active context for details screen
+        setPYQList(fullData);
+      } else {
+        // Handle case where year has no data
+        setPyqCache(prev => ({
+          ...prev,
+          [year]: { lite: [], full: [] }
+        }));
+        setPYQList([]);
       }
-    };
-    fetchPYQs();
+    } catch (err) {
+      console.error("Error fetching PYQs", err);
+    } finally {
+      setLoading(false);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
+
+  // Effect for chapter change
+  useEffect(() => {
+    setPyqCache({}); // Clear cache for new chapter
+    setSelectedYear("2025");
+    fetchPYQs("2025");
   }, [id]);
 
-  const listRef = React.useRef<FlatList>(null);
+  // Effect for year change (after initial)
+  useEffect(() => {
+    if (id) {
+      fetchPYQs(selectedYear);
+    }
+  }, [selectedYear]);
+
+  const listRef = React.useRef<ScrollView>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const fadeAnim1 = React.useRef(new Animated.Value(0)).current;
 
@@ -220,305 +252,314 @@ export default function PYQListScreen() {
   };
 
   const scrollToTop = () => {
-    listRef.current?.scrollToOffset({ offset: 0, animated: true });
+    listRef.current?.scrollTo({ y: 0, animated: true });
   };
 
   const filteredPYQs = useMemo(() => {
-    return pyqListLite.filter((q) => q.question_year === selectedYear);
-  }, [selectedYear, pyqListLite]);
+    return pyqCache[selectedYear]?.lite || [];
+  }, [selectedYear, pyqCache]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#f2f2f2" }}>
-      <TopHeader title={title} showBackArrow={true} />
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+      <LinearGradient
+        colors={["#f8fafc", "#e6f1ff", "#e8dcff"]}
+        locations={[0, 0.5, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ flex: 1 }}
+      >
+        <TopHeader title={title} showBackArrow={true} />
 
-      <FlatList
-        ref={listRef}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        data={filteredPYQs}
-        keyExtractor={(item) => item.id.toString()}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.listContent}
-        ListHeaderComponent={
-          <>
+        <ScrollView
+          ref={listRef}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+        >
+          <View style={styles.resultsContainer}>
             <View style={styles.screenHeader}>
               <Text style={styles.title}>{chapter_name}</Text>
               <View>
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>
-                    {pyqList.length > 0 && pyqList.length} Questions
-                  </Text>
-                </View>
+                {
+                  pyqList.length > 0 && (
+                    <View style={styles.badge}>
+                      <Text style={styles.badgeText}>
+                        {pyqList.length} Questions
+                      </Text>
+                    </View>
+                  )
+                }
+
               </View>
             </View>
+          </View>
 
-            {/* 🔽 Year Filter Dropdown */}
-            <View style={{ marginBottom: 16 }}>
-              <Dropdown
-                style={styles.dropdown}
-                labelField="label"
-                valueField="value"
-                placeholder="Select Year"
-                placeholderStyle={styles.dropdownText}
-                selectedTextStyle={styles.dropdownText}
-                itemTextStyle={styles.dropdownText}
-                data={[
-                  { label: "2025", value: "2025" },
-                  { label: "2024", value: "2024" },
-                  { label: "2023", value: "2023" },
-                  { label: "2022", value: "2022" },
-                  { label: "2021", value: "2021" },
-                  { label: "2020", value: "2020" },
-                  { label: "2019", value: "2019" },
-                ]}
-                value={selectedYear}
-                onChange={(item) => setSelectedYear(item.value)}
-              />
+          {/* 🔽 Year Filter Chips */}
+          <View style={styles.resultsContainer}>
+            <View style={styles.filterRow}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.yearChipsContainer}
+              >
+                {["2025", "2024", "2023", "2022", "2021", "2020", "2019"].map((year) => {
+                  const isActive = selectedYear === year;
+                  return (
+                    <TouchableOpacity
+                      key={year}
+                      onPress={() => setSelectedYear(year)}
+                      style={[
+                        styles.yearChip,
+                        isActive ? styles.activeYearChip : styles.inactiveYearChip,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.yearChipText,
+                          isActive ? styles.activeYearChipText : styles.inactiveYearChipText,
+                        ]}
+                      >
+                        {year}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
             </View>
+          </View>
 
-            {getPYQAnalysis(pyqList).answered > 0 && (
-              <View style={styles.analysisTab}>
-                <View style={styles.cutoffWrapper}>
-                  <View
-                    style={[
-                      styles.cutoffBox,
-                      {
-                        backgroundColor: "#e6f5ff",
-                        borderWidth: 1,
-                        borderColor: "#0099ff80",
-                      },
-                    ]}
-                  >
-                    <Text style={[styles.cutoffCategory, { color: "#0099ff" }]}>
-                      Total
-                    </Text>
-                    <Text style={styles.cutoffValue}>
-                      {getPYQAnalysis(pyqList).total}
-                    </Text>
-                  </View>
-                  <View
-                    style={[
-                      styles.cutoffBox,
-                      {
-                        backgroundColor: "#fffae6",
-                        borderWidth: 1,
-                        borderColor: "#e6b80080",
-                      },
-                    ]}
-                  >
-                    <Text style={[styles.cutoffCategory, { color: "#e6b800" }]}>
-                      Answered
-                    </Text>
-                    <Text style={styles.cutoffValue}>
-                      {getPYQAnalysis(pyqList).answered}
-                    </Text>
-                  </View>
-                  <View
-                    style={[
-                      styles.cutoffBox,
-                      {
-                        backgroundColor: "#f0fdf9",
-                        borderWidth: 1,
-                        borderColor: "#10b98180",
-                      },
-                    ]}
-                  >
-                    <Text style={[styles.cutoffCategory, { color: "#10b981" }]}>
-                      Correct
-                    </Text>
-                    <Text style={styles.cutoffValue}>
-                      {getPYQAnalysis(pyqList).correct}
-                    </Text>
-                  </View>
-                  <View
-                    style={[
-                      styles.cutoffBox,
-                      {
-                        backgroundColor: "#fff5e6",
-                        borderWidth: 1,
-                        borderColor: "#ff660080",
-                      },
-                    ]}
-                  >
-                    <Text style={[styles.cutoffCategory, { color: "#ff6600" }]}>
-                      Correct
-                    </Text>
-                    <Text style={styles.cutoffValue}>
-                      {getPYQAnalysis(pyqList).correct} %
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            )}
-          </>
-        }
-        ListEmptyComponent={
-          loading ? (
-            <>
-              <PyqQuestionCardSkeleton />
-              <PyqQuestionCardSkeleton />
-              <PyqQuestionCardSkeleton />
-              <PyqQuestionCardSkeleton />
-            </>
-          ) : (
-            <View style={styles.noResultsContainer}>
-              <Text style={styles.noResultTitle}>No Questions Found</Text>
-              <Text style={styles.noResultSub}>
-                There are no PYQs available for this chapter yet.
+
+          {/* Results Container Wrapper */}
+          <View style={styles.resultsContainer}>
+            {/* 🧮 Result Count */}
+            <View style={styles.resultRow}>
+              <Text style={styles.resultCount}>
+                Total Questions: {filteredPYQs.length}
               </Text>
             </View>
-          )
-        }
-        renderItem={({ item, index }) => (
-          <PYQCard question={item} index={index} id={id} router={router} />
+
+            {loading ? (
+              <View style={{ paddingVertical: 0 }}>
+                <QuestionCardSkeleton />
+                <QuestionCardSkeleton />
+                <QuestionCardSkeleton />
+                <QuestionCardSkeleton />
+              </View>
+            ) : filteredPYQs.length === 0 ? (
+              <View style={styles.noResultsContainer}>
+                <Text style={styles.noResultTitle}>No Questions Found</Text>
+                <Text style={styles.noResultSub}>
+                  There are no PYQs available for this chapter of the year {selectedYear}.
+                </Text>
+              </View>
+            ) : (
+              filteredPYQs.map((item, index) => (
+                <PYQCard
+                  key={item.id}
+                  question={item}
+                  index={index}
+                  id={id}
+                  router={router}
+                  selectedYear={selectedYear}
+                  isSolved={!!userResponses[item.id.toString()] || !!item.user_resp}
+                />
+              ))
+            )}
+          </View>
+        </ScrollView>
+        {showScrollTop && (
+          <Animated.View style={[styles.scrollTopBtn, { opacity: fadeAnim1 }]}>
+            <TouchableOpacity
+              onPress={scrollToTop}
+              style={styles.scrollTopTouchable}
+            >
+              <Ionicons name="chevron-up" size={24} color="#000" />
+            </TouchableOpacity>
+          </Animated.View>
         )}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-      />
-      {showScrollTop && (
-        <Animated.View style={[styles.scrollTopBtn, { opacity: fadeAnim1 }]}>
-          <TouchableOpacity
-            onPress={scrollToTop}
-            style={styles.scrollTopTouchable}
-          >
-            <Ionicons name="chevron-up" size={24} color="#000" />
-          </TouchableOpacity>
-        </Animated.View>
-      )}
-    </SafeAreaView>
+      </LinearGradient>
+    </SafeAreaView >
   );
 }
 
 const styles = StyleSheet.create({
-  headerGradient: {
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-  },
-
-  analysisTab: {
-    marginBottom: 20,
-  },
-  analysisTabTitle: {
-    color: "#004aad",
-    fontSize: 16,
-    fontFamily: "SourceSans3Medium",
-  },
-  analysisTabText: {
-    color: "#ffffff",
-    marginTop: 6,
-    fontSize: 14,
-    fontFamily: "SourceSans3Medium",
-  },
-  progressContainer: {
-    marginBottom: 10,
-  },
-  progressBar: {
-    height: 6,
-    backgroundColor: "#e2e8f0",
-    borderRadius: 3,
-    marginBottom: 8,
-    overflow: "hidden",
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: "#004aad",
-    borderRadius: 3,
-  },
-  progressText: {
-    fontSize: 14,
-    color: "#64748b",
-    fontFamily: "SourceSans3Medium",
-    textAlign: "center",
-  },
-  dropdown: {
-    height: 45,
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    backgroundColor: "#ebf0fa",
-    fontFamily: "SourceSans3Medium",
-  },
-  dropdownText: {
-    fontSize: 16,
-    fontFamily: "SourceSans3Medium",
-    color: "#333",
-  },
   listContent: {
     padding: 16,
     paddingBottom: 32,
-    backgroundColor: "#fff",
   },
   screenHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 18,
+
   },
   title: {
-    fontSize: 16,
-    fontFamily: "SourceSans3Medium",
-    color: "#2d3748",
+    fontSize: 18,
+    fontFamily: "SourceSans3SemiBold",
+    color: "#004aad",
     maxWidth: 200,
   },
   badge: {
-    backgroundColor: "#ebf0fa",
+    borderWidth: 1,
+    borderColor: "#d9d9d9",
+    borderRadius: 99,
     paddingHorizontal: 10,
     paddingVertical: 2,
-    borderRadius: 8,
   },
   badgeText: {
     fontSize: 12,
-    color: "#004aad",
+    color: "#151515",
     fontFamily: "SourceSans3Medium",
   },
-  card: {
-    borderRadius: 20,
-    borderWidth: 1,
+  filterRow: {
+    marginHorizontal: 0, // Negative margin to allow chips to scroll to edges
+  },
+  yearChipsContainer: {
+
+    gap: 10,
+
+  },
+  yearChip: {
+    paddingHorizontal: 20,
+    paddingVertical: 6,
+    borderRadius: 99,
+    borderWidth: 1.5,
+    minWidth: 80,
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  activeYearChip: {
+    backgroundColor: "#ff5e32",
+    borderColor: "#ff5e32",
+  },
+  inactiveYearChip: {
     borderColor: "#d9d9d9",
   },
-  cardGradient: {
-    borderRadius: 20,
-    padding: 14,
+  yearChipText: {
+    fontSize: 15,
+    fontFamily: "SourceSans3SemiBold",
   },
-  cardHeader: {
+  activeYearChipText: {
+    color: "#fff",
+  },
+  inactiveYearChipText: {
+    color: "#404040",
+  },
+  clearFilterBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "flex-end",
+    marginTop: 0,
+    marginBottom: 12,
+  },
+  clearFilterText: {
+    fontSize: 14,
+    fontFamily: "SourceSans3SemiBold",
+    color: "#99b3e6",
+    marginLeft: 2,
+  },
+  resultsContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 12, // Reduced padding to match chapters page feel
+
+    marginBottom: 20,
+  },
+  resultRow: {
+    marginBottom: 16,
+    paddingHorizontal: 4,
+  },
+  resultCount: {
+    fontSize: 16,
+    fontFamily: "SourceSans3SemiBold",
+    color: "#004aad",
+  },
+  chapterTag: {
+    width: "100%",
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    backgroundColor: "#fff",
+    marginBottom: 16,
+  },
+  titleRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 10,
+    alignItems: "center",
+    marginBottom: 16,
   },
-  questionNumber: {
-    backgroundColor: "#ebf0fa",
+  questionTag: {
+    backgroundColor: "#f0f7d4",
+    borderWidth: 1,
+    borderColor: "#b6cf4f",
+    borderRadius: 99,
     paddingHorizontal: 10,
     paddingVertical: 2,
-    borderRadius: 8,
   },
-  questionNumberText: {
+  questionTagText: {
     fontSize: 12,
-    color: "#004aad",
+    color: "#8b9e3dff",
     fontFamily: "SourceSans3Medium",
+  },
+  solveButton: {
+    backgroundColor: "#ff5e32",
+    paddingHorizontal: 18,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  solveButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontFamily: "SourceSans3SemiBold",
   },
   questionContent: {
     marginBottom: 12,
+    marginTop: 8,
   },
-  cardFooter: {
+  questionText: {
+    fontSize: 17,
+    color: "#000",
+    fontFamily: "SourceSans3SemiBold",
+  },
+  bottomSubRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
   },
-  optionsIndicator: {
-    borderWidth: 1,
-    borderColor: "#d9d9d9",
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
+  analysisTab: {
+    marginBottom: 20,
+    marginTop: 10,
   },
-  optionsText: {
-    fontSize: 11,
-    color: "#2d3748",
-    fontFamily: "SourceSans3Regular",
+  cutoffWrapper: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 8,
   },
-  separator: {
-    height: 14,
+  cutoffBox: {
+    borderRadius: 12,
+    paddingVertical: 6,
+    minWidth: 70,
+    flex: 1,
+    alignItems: "center",
+  },
+  cutoffCategory: {
+    fontSize: 10,
+    letterSpacing: 0.4,
+    fontFamily: "SourceSans3Medium",
+  },
+  cutoffValue: {
+    fontSize: 16,
+    color: "#0F172A",
+    fontFamily: "SourceSans3SemiBold",
+    marginTop: -2,
   },
   noResultsContainer: {
     alignItems: "center",
     padding: 40,
-    marginTop: 50,
+    marginTop: 20,
   },
   noResultTitle: {
     fontSize: 20,
@@ -541,9 +582,8 @@ const styles = StyleSheet.create({
     right: 20,
     elevation: 5,
   },
-
   scrollTopTouchable: {
-    backgroundColor: "#e6e6e6", // Same blue shade used in app
+    backgroundColor: "#e6e6e6",
     width: 46,
     height: 46,
     borderRadius: 16,
@@ -552,34 +592,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
-    shadowOpacity: 10,
+    shadowOpacity: 0.1,
     shadowOffset: { width: 4, height: 6 },
     shadowRadius: 3,
-  },
-
-  cutoffWrapper: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  cutoffBox: {
-    backgroundColor: "#e6f1ff",
-    borderRadius: 16,
-    paddingVertical: 4,
-    minWidth: 82,
-    alignItems: "center",
-  },
-  cutoffCategory: {
-    fontSize: 10,
-    color: "#0A5BD3",
-    letterSpacing: 0.4,
-    fontFamily: "SourceSans3Medium",
-  },
-  cutoffValue: {
-    fontSize: 16,
-    color: "#0F172A",
-    fontFamily: "SourceSans3SemiBold",
-    marginTop: -2,
   },
 });

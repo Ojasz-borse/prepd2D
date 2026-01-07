@@ -18,30 +18,56 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
+
 const MemoMathText = React.memo(MathText);
 
+
+
 export default function PYQDetailsPage() {
-  const { currentIndex, chapterId } = useLocalSearchParams<{
+  const { currentIndex, chapterId, selectedYear } = useLocalSearchParams<{
     currentIndex: string;
     chapterId: string;
+    selectedYear: string;
   }>();
 
   const { user, getToken } = useAuth();
-  const { pyqList, setUserResponses } = usePYQContext();
+  const { pyqList, userResponses, setUserResponses } = usePYQContext();
+
+  const filteredList = useMemo(() => {
+    if (!selectedYear) return pyqList;
+    return pyqList.filter(q => String(q.question_year) === selectedYear);
+  }, [pyqList, selectedYear]);
 
   const [index, setIndex] = useState(parseInt(currentIndex || "0", 10));
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
 
+  usePreventScreenCapture();
+
+
+  // Load local cache and prevent screen capture
   useEffect(() => {
-    ScreenCapture.preventScreenCaptureAsync();
 
-    return () => {
-      ScreenCapture.allowScreenCaptureAsync();
+    const loadLocalCache = async () => {
+      try {
+        const cached = await AsyncStorage.getItem(`pyq_responses_${chapterId}`);
+        if (cached) {
+          const cachedMap = JSON.parse(cached);
+          setUserResponses((prev) => ({ ...prev, ...cachedMap }));
+        }
+      } catch (e) {
+        console.error("Failed to load local PYQ cache", e);
+      }
     };
-  }, []);
 
-  const current = pyqList[index];
+    loadLocalCache();
+
+  }, [chapterId]);
+
+
+  const current = filteredList[index];
 
   if (!current) {
     return (
@@ -66,18 +92,21 @@ export default function PYQDetailsPage() {
     [current.correct_option]
   );
 
+  // Sync selectedOption when question changes or userResponses update
   useEffect(() => {
-    if (current.user_resp != null) {
-      const optionIndex = current.user_resp.charCodeAt(0) - 65;
+    const response = userResponses[current.id.toString()];
+    if (response) {
+      const optionIndex = response.charCodeAt(0) - 65;
       setSelectedOption(optionIndex);
+      setShowExplanation(true);
     } else {
       setSelectedOption(null);
       setShowExplanation(false);
     }
-  }, [current]);
+  }, [current, userResponses]);
 
   const handleSelect = useCallback(
-    (i: number) => {
+    async (i: number) => {
       if (selectedOption !== null) return;
       setSelectedOption(i);
       setShowExplanation(true);
@@ -85,47 +114,48 @@ export default function PYQDetailsPage() {
       const qid = current.id.toString();
       const selected = String.fromCharCode(65 + i);
 
+      // Update Context
       setUserResponses((prev: any) => {
         const updated = { ...prev, [qid]: selected };
-        pyqList[index].user_resp = selected;
+        current.user_resp = selected; // Local update for UI
 
-        // Delay API call to not block UI
-        if (typeof requestIdleCallback !== "undefined") {
-          requestIdleCallback(() => sendToServer(updated));
-        } else {
-          setTimeout(() => sendToServer(updated), 150);
-        }
+        // Send to server immediately
+        sendToServer(qid, selected);
+
         return updated;
       });
     },
-    [selectedOption, index, pyqList]
+    [selectedOption, current, chapterId, setUserResponses]
   );
 
-  const sendToServer = async (updatedResponses: Record<string, string>) => {
+  const sendToServer = async (questionId: string, answer: string) => {
     try {
       const token = await getToken();
-      await fetch(UPDATE_USER_RESPONSE, {
+      const response = await fetch(UPDATE_USER_RESPONSE, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: token ? `Bearer ${token}` : "",
         },
         body: JSON.stringify({
-          chapter_id: Number(chapterId),
           user_id: user?.user_id,
-          responses: updatedResponses,
+          pyq_id: Number(questionId),
+          response: { answer, time_taken_sec: 0 },
         }),
       });
-    } catch {
-      // fail silently to prioritize speed
+
+      const data = await response.json();
+      console.log("Backend Response:", data);
+    } catch (err) {
+      console.error("Sync Error:", err);
     }
   };
 
   const handleNext = useCallback(() => {
-    if (index < pyqList.length - 1) {
+    if (index < filteredList.length - 1) {
       setIndex((prev) => prev + 1);
     }
-  }, [index, pyqList.length]);
+  }, [index, filteredList.length]);
 
   const handlePrev = useCallback(() => {
     if (index > 0) {
@@ -136,154 +166,164 @@ export default function PYQDetailsPage() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <TopHeader title="PYQ Section" showBackArrow={true} />
+      <LinearGradient
+        colors={["#f8fafc", "#e6f1ff", "#e8dcff"]}
+        locations={[0, 0.5, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ flex: 1 }}
+      >
 
-      <View style={{ flex: 1 }}>
-        <ScrollView
-          contentContainerStyle={styles.container}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Progress */}
-          <View style={styles.progressContainer}>
-            <View style={styles.progressBar}>
-              <View
-                style={[
-                  styles.progressFill,
-                  { width: `${((index + 1) / pyqList.length) * 100}%` },
-                ]}
-              />
-            </View>
-            <Text style={styles.progressText}>
-              Question {index + 1} of {pyqList.length}
-            </Text>
-          </View>
-
-          {/* Question */}
-          <View style={styles.questionCard}>
-            <View style={styles.questionHeader}>
-              <View style={styles.questionBadge}>
-                <Text style={styles.questionBadgeText}>
-                  Question {index + 1}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.questionContent}>
-              <MemoMathText content={current.pyq_content} />
-              {current.img_url && (
-                <Image
-                  source={{ uri: current.img_url }}
-                  style={{
-                    width: "80%",
-                    height: 200,
-                    margin: "auto",
-                    paddingVertical: 10,
-                  }}
-                  resizeMode="cover"
+        <View style={{ flex: 1 }}>
+          <ScrollView
+            contentContainerStyle={styles.container}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Progress */}
+            <View style={styles.progressContainer}>
+              <View style={styles.progressBar}>
+                <View
+                  style={[
+                    styles.progressFill,
+                    { width: `${((index + 1) / filteredList.length) * 100}%` },
+                  ]}
                 />
-              )}
+              </View>
+              <Text style={styles.progressText}>
+                Question {index + 1} of {filteredList.length}
+              </Text>
             </View>
-          </View>
 
-          {/* Options */}
-          <View style={styles.optionsContainer}>
-            {options.map((opt, i) => (
-              <MemoOptionItem
-                key={i}
-                i={i}
-                opt={opt}
-                selectedOption={selectedOption}
-                correctIndex={correctIndex}
-                onSelect={handleSelect}
+            <View style={styles.progressContainer}>
+              {/* Question */}
+              <View style={styles.questionCard}>
+                <View style={styles.questionHeader}>
+                  <View style={styles.questionBadge}>
+                    <Text style={styles.questionBadgeText}>
+                      Question {index + 1}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.questionContent}>
+                  <MemoMathText content={current.pyq_content} />
+                  {current.img_url && (
+                    <Image
+                      source={{ uri: current.img_url }}
+                      style={{
+                        width: "80%",
+                        height: 200,
+                        margin: "auto",
+                        paddingVertical: 10,
+                      }}
+                      resizeMode="cover"
+                    />
+                  )}
+                </View>
+              </View>
+
+              {/* Options */}
+              <View style={styles.optionsContainer}>
+                {options.map((opt, i) => (
+                  <MemoOptionItem
+                    key={i}
+                    i={i}
+                    opt={opt}
+                    selectedOption={selectedOption}
+                    correctIndex={correctIndex}
+                    onSelect={handleSelect}
+                  />
+                ))}
+              </View>
+
+              {/* Explanation */}
+              {showExplanation && (
+                <View style={styles.explanationBox}>
+                  <View style={styles.explanationHeader}>
+                    <Text style={styles.explanationTitle}>Explanation</Text>
+                  </View>
+
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={true}
+                    contentContainerStyle={{ paddingVertical: 5 }}
+                  >
+                    <View style={{ minWidth: "100%" }}>
+                      {current.explanation_content ? (
+                        <MemoMathText content={current.explanation_content} />
+                      ) : (
+                        <Text
+                          style={{
+                            fontSize: 15,
+                            color: "#222",
+                            fontFamily: "SourceSans3Medium",
+                          }}
+                        >
+                          No Explanation Found
+                        </Text>
+                      )}
+                    </View>
+                  </ScrollView>
+                </View>
+
+              )}
+
+
+            </View>
+            <View style={{ height: 80 }} />
+          </ScrollView>
+
+          {/* Navigation */}
+          <View style={styles.navContainer}>
+            <TouchableOpacity
+              style={[
+                styles.navButton,
+                styles.prevButton,
+                index === 0 && styles.disabledButton,
+              ]}
+              disabled={index === 0}
+              onPress={handlePrev}
+            >
+              <Ionicons
+                name="chevron-back"
+                size={18}
+                color={index === 0 ? "#9ca3af" : "#ffffff"}
               />
-            ))}
+              <Text
+                style={[
+                  styles.navButtonText,
+                  index === 0 && styles.disabledButtonText,
+                ]}
+              >
+                Prev
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.navButton,
+                styles.nextButton,
+                index === filteredList.length - 1 && styles.disabledButton,
+              ]}
+              disabled={index === filteredList.length - 1}
+              onPress={handleNext}
+            >
+              <Text
+                style={[
+                  styles.navButtonText,
+                  index === filteredList.length - 1 && styles.disabledButtonText,
+                ]}
+              >
+                Next
+              </Text>
+              <Ionicons
+                name="chevron-forward"
+                size={18}
+                color={index === filteredList.length - 1 ? "#9ca3af" : "#ffffff"}
+              />
+            </TouchableOpacity>
           </View>
-
-          {/* Explanation */}
-          {showExplanation && (
-            <View style={styles.explanationBox}>
-  <View style={styles.explanationHeader}>
-    <Ionicons name="bulb-outline" size={16} color="#f59e0b" />
-    <Text style={styles.explanationTitle}>Explanation</Text>
-  </View>
-
-  <ScrollView
-    horizontal
-    showsHorizontalScrollIndicator={true}
-    contentContainerStyle={{ paddingVertical: 5 }}
-  >
-    <View style={{ minWidth: "100%" }}>
-      {current.explanation_content ? (
-        <MemoMathText content={current.explanation_content} />
-      ) : (
-        <Text
-          style={{
-            fontSize: 15,
-            color: "#222",
-            fontFamily: "SourceSans3Medium",
-          }}
-        >
-          No Explanation Found
-        </Text>
-      )}
-    </View>
-  </ScrollView>
-</View>
-
-          )}
-
-          <View style={{ height: 80 }} />
-        </ScrollView>
-
-        {/* Navigation */}
-        <View style={styles.navContainer}>
-          <TouchableOpacity
-            style={[
-              styles.navButton,
-              styles.prevButton,
-              index === 0 && styles.disabledButton,
-            ]}
-            disabled={index === 0}
-            onPress={handlePrev}
-          >
-            <Ionicons
-              name="chevron-back"
-              size={18}
-              color={index === 0 ? "#9ca3af" : "#ffffff"}
-            />
-            <Text
-              style={[
-                styles.navButtonText,
-                index === 0 && styles.disabledButtonText,
-              ]}
-            >
-              Prev
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.navButton,
-              styles.nextButton,
-              index === pyqList.length - 1 && styles.disabledButton,
-            ]}
-            disabled={index === pyqList.length - 1}
-            onPress={handleNext}
-          >
-            <Text
-              style={[
-                styles.navButtonText,
-                index === pyqList.length - 1 && styles.disabledButtonText,
-              ]}
-            >
-              Next
-            </Text>
-            <Ionicons
-              name="chevron-forward"
-              size={18}
-              color={index === pyqList.length - 1 ? "#9ca3af" : "#ffffff"}
-            />
-          </TouchableOpacity>
         </View>
-      </View>
+      </LinearGradient>
     </SafeAreaView>
   );
 }
@@ -353,14 +393,19 @@ const OptionItem = ({
 const MemoOptionItem = React.memo(OptionItem);
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, padding: 20, backgroundColor: "#fff" },
-  progressContainer: { marginBottom: 10 },
+  container: { flexGrow: 1, padding: 20, },
+  progressContainer: {
+    marginBottom: 10, backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 12, // Reduced padding to match chapters page feel
+  },
   progressBar: {
-    height: 6,
+    height: 8,
     backgroundColor: "#e2e8f0",
-    borderRadius: 3,
+    borderRadius: 10,
     marginBottom: 8,
     overflow: "hidden",
+    marginTop: 10,
   },
   progressFill: { height: "100%", backgroundColor: "#004aad", borderRadius: 3 },
   progressText: {
@@ -372,15 +417,17 @@ const styles = StyleSheet.create({
   questionCard: { marginBottom: 20 },
   questionHeader: { marginBottom: 12 },
   questionBadge: {
-    backgroundColor: "#ebf0fa",
-    padding: 2,
+    backgroundColor: "#f0f7d4",
+    borderWidth: 1,
+    borderColor: "#b6cf4f",
+    borderRadius: 99,
     paddingHorizontal: 10,
-    borderRadius: 8,
+    paddingVertical: 2,
     alignSelf: "flex-start",
   },
   questionBadgeText: {
     fontSize: 12,
-    color: "#004aad",
+    color: "#8b9e3dff",
     fontFamily: "SourceSans3Medium",
   },
   questionContent: { minHeight: 60 },
@@ -417,7 +464,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#fef3c7",
     overflowX: "auto",
-whiteSpace: "nowrap",
 
 
   },
@@ -428,8 +474,8 @@ whiteSpace: "nowrap",
   },
   explanationTitle: {
     color: "#92400e",
-    fontSize: 16,
-    fontFamily: "SourceSans3Medium",
+    fontSize: 18,
+    fontFamily: "SourceSans3Bold",
     marginLeft: 4,
   },
   explanationContent: { marginTop: 4, width: "100%" },

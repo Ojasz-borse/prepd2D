@@ -1,10 +1,9 @@
 import SearchIcon from "@/assets/icons/SearchIcon";
 
 import NotesCardSkeleton from "@/components/NotesCardSkeleton";
-import { usePYQS } from "@/hooks/usePYQS"; // ⬅️ our new hook
+import { Chapter } from "@/hooks/usePYQS";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import * as ScreenCapture from "expo-screen-capture";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Animated,
@@ -23,6 +22,7 @@ import { Dropdown, MultiSelect } from "react-native-element-dropdown";
 import { LinearGradient } from "expo-linear-gradient";
 import { WebView } from "react-native-webview";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 
 // Types
 interface DropdownItemProps {
@@ -67,9 +67,15 @@ const renderDropdownItem = (
   return <DropdownItem label={item.label} isSelected={isSelected} />;
 };
 
-export default function Notes() {
+interface NotesProps {
+  pyqs: Chapter[];
+  loading: boolean;
+  error: string | null;
+  reload: () => Promise<void>;
+}
+
+export default function Notes({ pyqs, loading, error, reload }: NotesProps) {
   const router = useRouter();
-  const { pyqs: chaptersData, loading, error, reload } = usePYQS(); // ⬅️ from hook
 
   const [searchText, setSearchText] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<string>("");
@@ -77,13 +83,7 @@ export default function Notes() {
   const [selectedPdf, setSelectedPdf] = useState<{ url: string; title: string } | null>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
 
-  useEffect(() => {
-    ScreenCapture.preventScreenCaptureAsync();
-
-    return () => {
-      ScreenCapture.allowScreenCaptureAsync();
-    };
-  }, []);
+  usePreventScreenCapture();
 
   // 🔍 Filtering logic (maps numeric subject/class IDs)
   const filteredData = useMemo(() => {
@@ -100,7 +100,7 @@ export default function Notes() {
       2: "12th",
     };
 
-    return chaptersData.filter((chapter) => {
+    return pyqs.filter((chapter) => {
       const subjectName = subjectMap[chapter.subject];
       const className = classMap[chapter.class];
 
@@ -112,7 +112,7 @@ export default function Notes() {
 
       return matchesSubject && matchesClass && matchesSearch;
     });
-  }, [chaptersData, searchText, selectedSubject, selectedClasses]);
+  }, [pyqs, searchText, selectedSubject, selectedClasses]);
 
   const listRef = React.useRef<ScrollView>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);

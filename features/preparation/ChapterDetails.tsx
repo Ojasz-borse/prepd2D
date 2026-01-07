@@ -1,11 +1,12 @@
 import TopHeader from "@/components/TopHeader";
 import syllabusData from "@/dataConfig/chapters.json";
 import { useLocalSearchParams } from "expo-router";
-import * as ScreenCapture from "expo-screen-capture";
+
 import React, { useEffect, useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
+import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 
 
 export default function ChapterDetails() {
@@ -17,13 +18,7 @@ export default function ChapterDetails() {
     return syllabusData.find((c) => c.id.toString() === id);
   }, [id]);
 
-  useEffect(() => {
-    ScreenCapture.preventScreenCaptureAsync();
-
-    return () => {
-      ScreenCapture.allowScreenCaptureAsync();
-    };
-  }, []);
+  usePreventScreenCapture();
 
   if (!chapter) {
     return (

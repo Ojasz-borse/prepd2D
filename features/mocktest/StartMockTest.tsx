@@ -25,6 +25,7 @@ import {
 } from "react-native";
 import Exam from "./Exam";
 import Guidelines from "./Guidelines";
+import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 
 interface PYQItem {
   id: number;
@@ -58,13 +59,7 @@ const StartMockTest = () => {
     loadQuestions();
   }, [testid]);
 
-  useEffect(() => {
-    ScreenCapture.preventScreenCaptureAsync();
-
-    return () => {
-      ScreenCapture.allowScreenCaptureAsync();
-    };
-  }, []);
+  usePreventScreenCapture();
 
   // useEffect(() => {
   //   const setupFullscreen = async () => {
