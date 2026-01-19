@@ -95,7 +95,7 @@ export default function FindColleges() {
     const isTabLocked = activeTab === "colleges" || activeTab === "branches";
     const isLoading = activeTab === "colleges" ? collegesLoading : branchesLoading;
 
-    if (!isLoading && user && !user.is_subscribed && isTabLocked) {
+    if (!isLoading && user && !user.is_subscribed_before && isTabLocked) {
       const timer = setTimeout(() => {
         setShowLock(true);
       }, 2000);

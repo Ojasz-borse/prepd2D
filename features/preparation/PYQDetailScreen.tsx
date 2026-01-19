@@ -26,14 +26,15 @@ const MemoMathText = React.memo(MathText);
 
 
 export default function PYQDetailsPage() {
-  const { currentIndex, chapterId, selectedYear } = useLocalSearchParams<{
+  const { currentIndex, selectedYear } = useLocalSearchParams<{
     currentIndex: string;
-    chapterId: string;
     selectedYear: string;
   }>();
 
   const { user, getToken } = useAuth();
   const { pyqList, userResponses, setUserResponses } = usePYQContext();
+
+
 
   const filteredList = useMemo(() => {
     if (!selectedYear) return pyqList;
@@ -44,56 +45,21 @@ export default function PYQDetailsPage() {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
 
-  usePreventScreenCapture();
-
-
-  // Load local cache and prevent screen capture
-  useEffect(() => {
-
-    const loadLocalCache = async () => {
-      try {
-        const cached = await AsyncStorage.getItem(`pyq_responses_${chapterId}`);
-        if (cached) {
-          const cachedMap = JSON.parse(cached);
-          setUserResponses((prev) => ({ ...prev, ...cachedMap }));
-        }
-      } catch (e) {
-        console.error("Failed to load local PYQ cache", e);
-      }
-    };
-
-    loadLocalCache();
-
-  }, [chapterId]);
-
-
   const current = filteredList[index];
 
-  if (!current) {
-    return (
-      <View style={styles.center}>
-        <LinearGradient
-          colors={["#667eea", "#764ba2"]}
-          style={styles.errorContainer}
-        >
-          <Ionicons name="document-text-outline" size={48} color="#ffffff" />
-          <Text style={styles.errorText}>No question data found</Text>
-        </LinearGradient>
-      </View>
-    );
-  }
-
   const options = useMemo(
-    () => [current.a, current.b, current.c, current.d],
+    () => (current ? [current.a, current.b, current.c, current.d] : []),
     [current]
   );
+
   const correctIndex = useMemo(
-    () => current.correct_option?.trim().toLowerCase().charCodeAt(0) - 97,
-    [current.correct_option]
+    () => (current?.correct_option ? current.correct_option.trim().toLowerCase().charCodeAt(0) - 97 : 0),
+    [current]
   );
 
   // Sync selectedOption when question changes or userResponses update
   useEffect(() => {
+    if (!current) return;
     const response = userResponses[current.id.toString()];
     if (response) {
       const optionIndex = response.charCodeAt(0) - 65;
@@ -104,29 +70,6 @@ export default function PYQDetailsPage() {
       setShowExplanation(false);
     }
   }, [current, userResponses]);
-
-  const handleSelect = useCallback(
-    async (i: number) => {
-      if (selectedOption !== null) return;
-      setSelectedOption(i);
-      setShowExplanation(true);
-
-      const qid = current.id.toString();
-      const selected = String.fromCharCode(65 + i);
-
-      // Update Context
-      setUserResponses((prev: any) => {
-        const updated = { ...prev, [qid]: selected };
-        current.user_resp = selected; // Local update for UI
-
-        // Send to server immediately
-        sendToServer(qid, selected);
-
-        return updated;
-      });
-    },
-    [selectedOption, current, chapterId, setUserResponses]
-  );
 
   const sendToServer = async (questionId: string, answer: string) => {
     try {
@@ -151,6 +94,29 @@ export default function PYQDetailsPage() {
     }
   };
 
+  const handleSelect = useCallback(
+    async (i: number) => {
+      if (selectedOption !== null || !current) return;
+      setSelectedOption(i);
+      setShowExplanation(true);
+
+      const qid = current.id.toString();
+      const selected = String.fromCharCode(65 + i);
+
+      // Update Context
+      setUserResponses((prev: any) => {
+        const updated = { ...prev, [qid]: selected };
+        current.user_resp = selected; // Local update for UI
+
+        // Send to server immediately
+        sendToServer(qid, selected);
+
+        return updated;
+      });
+    },
+    [selectedOption, current, setUserResponses]
+  );
+
   const handleNext = useCallback(() => {
     if (index < filteredList.length - 1) {
       setIndex((prev) => prev + 1);
@@ -162,6 +128,22 @@ export default function PYQDetailsPage() {
       setIndex((prev) => prev - 1);
     }
   }, [index]);
+
+  usePreventScreenCapture();
+
+  if (!current) {
+    return (
+      <View style={styles.center}>
+        <LinearGradient
+          colors={["#667eea", "#764ba2"]}
+          style={styles.errorContainer}
+        >
+          <Ionicons name="document-text-outline" size={48} color="#ffffff" />
+          <Text style={styles.errorText}>No question data found</Text>
+        </LinearGradient>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -206,18 +188,7 @@ export default function PYQDetailsPage() {
                 </View>
                 <View style={styles.questionContent}>
                   <MemoMathText content={current.pyq_content} />
-                  {current.img_url && (
-                    <Image
-                      source={{ uri: current.img_url }}
-                      style={{
-                        width: "80%",
-                        height: 200,
-                        margin: "auto",
-                        paddingVertical: 10,
-                      }}
-                      resizeMode="cover"
-                    />
-                  )}
+
                 </View>
               </View>
 

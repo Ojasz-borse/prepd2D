@@ -148,7 +148,7 @@ export default function EstimatorScreen() {
   const [showLock, setShowLock] = useState(false);
 
   useEffect(() => {
-    if (!loading && user && !user.is_subscribed) {
+    if (!loading && user && !user.is_subscribed_after) {
       const timer = setTimeout(() => {
         setShowLock(true);
       }, 2000);

@@ -15,10 +15,9 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Linking,
 } from "react-native";
 import { Dropdown, MultiSelect } from "react-native-element-dropdown";
-import { LinearGradient } from "expo-linear-gradient";
-import LockScreen from "@/components/LockScreen";
 import Reanimated, {
   FadeIn,
   FadeOut,
@@ -77,7 +76,7 @@ export default function PYQ({ pyqs, loading, error, reload }: PYQProps) {
   const [showLock, setShowLock] = useState(false);
 
   useEffect(() => {
-    if (!loading && user && !user.is_subscribed) {
+    if (!loading && user && !user.is_subscribed_before) {
       const timer = setTimeout(() => {
         setShowLock(true);
       }, 2000);
@@ -380,16 +379,41 @@ export default function PYQ({ pyqs, loading, error, reload }: PYQProps) {
           >
             <View style={styles.handle} />
 
+            {/* <View style={styles.premiumBadge}>
+              <Text style={styles.premiumBadgeText}>Before MHT-CET Plan</Text>
+            </View> */}
+
             <View style={styles.iconContainer}>
               <View style={styles.lockCircle}>
                 <Ionicons name="lock-closed" size={40} color="#fff" />
               </View>
             </View>
 
-            <Text style={styles.title}>PYQ coming soon</Text>
+
+
+            <Text style={styles.title}>Before MHT-CET Plan</Text>
             <Text style={styles.description}>
-              9,000+ real MHT-CET questions from 2019 to 2025 (Chapter wise) are coming soon for your practice
+              Unlock 9,000+ real MHT-CET questions (2019-2025) and premium features to boost your preparation.
             </Text>
+
+            <Text style={styles.description2}>
+              To unlock PYQ's you have to buy Before MHT-CET Plan
+            </Text>
+
+            <TouchableOpacity
+              style={styles.subscribeButton}
+              onPress={() => {
+                const upiUrl = `upi://pay?pa=9403343871@axl&pn=PrepCET&am=1&cu=INR&tn=prep-payment_id_${user?.user_id}_after_subscription`;
+                Linking.openURL(upiUrl).catch(err => console.error("Couldn't load page", err));
+              }}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.subscribeButtonText}>Unlock Before MHT-CET Plan - ₹199</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.closeButton} onPress={() => setShowLock(false)}>
+              <Text style={styles.closeButtonText}>Maybe Later</Text>
+            </TouchableOpacity>
 
           </Reanimated.View>
         </Reanimated.View>
@@ -453,6 +477,21 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 5,
   },
+  premiumBadge: {
+    backgroundColor: '#fef3c7',
+    paddingHorizontal: 12,
+    paddingVertical: 2,
+    borderRadius: 99,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#f59e0b',
+  },
+  premiumBadgeText: {
+    color: '#d97706',
+    fontSize: 12,
+    fontFamily: 'SourceSans3Medium',
+    letterSpacing: 1,
+  },
   title: {
     fontSize: 24,
     fontFamily: 'SourceSans3Bold',
@@ -464,6 +503,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'SourceSans3Medium',
     color: '#64748b',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 30,
+    paddingHorizontal: 10,
+  },
+  description2: {
+    fontSize: 14,
+    fontFamily: 'SourceSans3Medium',
+    color: '#64748b80',
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 30,

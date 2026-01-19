@@ -38,3 +38,9 @@ export const UPDATE_USER_RESPONSE = `${extra.SERVER_URL}/api/pyqs/chapter/userRe
 export const GET_MOCK_TESTS = `${extra.SERVER_URL}/api/mock-tests`;
 
 export const GET_MOCK_TEST_QUESTIONS = `${extra.SERVER_URL}/api/mock-tests/questions`;
+
+export const GET_REPEATED_PYQS = `${extra.SERVER_URL}/api/pyqs/categories/repeated-pyqs`;
+
+export const GET_DIFFICULTY_PYQS = `${extra.SERVER_URL}/api/pyqs/categories/difficulty`;
+
+

@@ -63,7 +63,7 @@ const MockTestScreen = () => {
   const [showLock, setShowLock] = useState(false);
 
   useEffect(() => {
-    if (!loading && user && !user.is_subscribed && activeTab === "mock") {
+    if (!loading && user && !user.is_subscribed_before && activeTab === "mock") {
       const timer = setTimeout(() => {
         setShowLock(true);
       }, 2000);

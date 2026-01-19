@@ -288,7 +288,6 @@ export default function Notes({ pyqs, loading, error, reload }: NotesProps) {
             filteredData.map((item) => (
               <TouchableOpacity
                 key={item.id}
-
                 activeOpacity={0.7}
               >
                 <View style={styles.chapterTag}>

@@ -36,30 +36,18 @@ export default function PostCardSkeleton() {
 
   return (
     <View style={styles.container}>
-      {/* Row: Profile + Posted by + Time */}
-      <View style={styles.headerRow}>
-        <SkeletonCircle style={{ width: 40, height: 40 }} />
-        <View style={styles.headerTextContainer}>
-          <SkeletonBox style={{ width: 120, height: 14 }} />
-          <SkeletonBox style={{ width: 80, height: 12, marginTop: 5 }} />
-        </View>
-      </View>
-
       {/* Title */}
-      <SkeletonBox style={{ width: "80%", height: 16, marginBottom: 8 }} />
+      <SkeletonBox style={{ width: "70%", height: 18, marginBottom: 12, borderRadius: 6 }} />
 
       {/* Post text (3 lines) */}
-      <SkeletonBox style={{ width: "100%", height: 12, marginBottom: 5 }} />
-      <SkeletonBox style={{ width: "95%", height: 12, marginBottom: 5 }} />
-      <SkeletonBox style={{ width: "70%", height: 12, marginBottom: 8 }} />
+      <SkeletonBox style={{ width: "100%", height: 14, marginBottom: 8, borderRadius: 4 }} />
+      <SkeletonBox style={{ width: "95%", height: 14, marginBottom: 8, borderRadius: 4 }} />
+      <SkeletonBox style={{ width: "60%", height: 14, marginBottom: 4, borderRadius: 4 }} />
 
       {/* Bottom row */}
       <View style={styles.bottomRow}>
-        <View style={styles.linkRow}>
-          <SkeletonBox style={{ width: 60, height: 14 }} />
-          <SkeletonCircle style={{ width: 16, height: 16 }} />
-        </View>
-        <SkeletonCircle style={{ width: 20, height: 20 }} />
+        <SkeletonCircle style={{ width: 18, height: 18, marginRight: 16 }} />
+        <SkeletonCircle style={{ width: 18, height: 18 }} />
       </View>
     </View>
   );
@@ -67,38 +55,24 @@ export default function PostCardSkeleton() {
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 10,
     backgroundColor: "#fff",
-    padding: 20,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#d3d3d3",
-  },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  headerTextContainer: {
-    flexDirection: "column",
-    marginLeft: 10,
+    padding: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
   },
   bottomRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     alignItems: "center",
-    marginTop: 10,
-  },
-  linkRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
+    marginTop: 12,
   },
   skeletonBox: {
-    backgroundColor: "#e0e0e0",
+    backgroundColor: "#f1f5f9",
     borderRadius: 4,
   },
   skeletonCircle: {
-    backgroundColor: "#e0e0e0",
+    backgroundColor: "#f1f5f9",
     borderRadius: 50,
   },
 });

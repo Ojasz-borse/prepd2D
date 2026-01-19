@@ -77,6 +77,55 @@ const PopularSearches = ({ onTabChange }: { onTabChange: (tab: "notes" | "pyq" |
   );
 };
 
+const QuestionBank = () => {
+  const router = useRouter();
+  const items = [
+    {
+      title: "Top 150 most repeating question",
+      icon: "repeat-outline",
+      color: "#FF9800",
+      route: "/repeated-pyqs",
+
+    },
+    { title: "Top 150 Easy Questions", icon: "rocket-outline", color: "#4CAF50", route: "/difficulty-pyqs", params: { difficulty: "Easy" } },
+    { title: "150 Hard Questions", icon: "flame-outline", color: "#F44336", route: "/difficulty-pyqs", params: { difficulty: "Hard" } },
+  ];
+
+  return (
+    <View style={[styles.card, { marginTop: 12 }]}>
+      <Text style={styles.heading}>Question Bank</Text>
+
+      <View style={{ gap: 12 }}>
+        {items.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            activeOpacity={0.7}
+            style={[styles.gridItem, { width: "100%" }]}
+            onPress={() => {
+              if (item.route) {
+                router.push({
+                  pathname: item.route as any,
+                  params: item.params
+                });
+              }
+            }}
+          >
+            <View style={[
+              styles.iconBox,
+              {
+                backgroundColor: item.color + "20",
+              },
+            ]}>
+              <Ionicons name={item.icon as any} size={24} color={item.color} />
+            </View>
+            <Text style={styles.gridTitle}>{item.title}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
+};
+
 export default function Preparation() {
   const [activeTab, setActiveTab] = useState<
     "all" | "notes" | "pyq" | "syllabus"
@@ -241,6 +290,7 @@ export default function Preparation() {
             </LinearGradient>
 
             <PopularSearches onTabChange={handleTabChange} />
+            <QuestionBank />
           </View>
         )}
         {activeTab === "notes" && (
