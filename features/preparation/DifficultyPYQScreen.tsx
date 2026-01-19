@@ -19,6 +19,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import QuestionCardSkeleton from "@/components/QuestionCardSkeleton";
 import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
+import SubscriptionLockSheet from "@/components/ShowLockScreen";
 
 type PYQCardProps = {
     question: any;
@@ -37,6 +39,7 @@ export interface PYQLite {
 
 const PYQCard = React.memo(({ question, index, id, router, isSolved }: PYQCardProps) => {
     const handleSolve = () => {
+        
         router.push({
             pathname: "/pyq-detail",
             params: {
@@ -141,6 +144,11 @@ export default function DifficultyPYQScreen() {
 
     usePreventScreenCapture();
 
+  const {
+  showLock,
+} = useSubscriptionLock({
+  gate: "before",
+});
 
 
     const fetchPYQs = async () => {
@@ -318,6 +326,19 @@ export default function DifficultyPYQScreen() {
                         </TouchableOpacity>
                     </Animated.View>
                 )}
+
+                 {showLock && (
+        <SubscriptionLockSheet
+          visible={showLock}
+          title="Before MHT-CET Plan"
+          description="Unlock 9,000+ real MHT-CET questions (2019–2025)."
+          subDescription="To unlock PYQs you must buy this plan."
+          priceText="Unlock Before MHT-CET Plan - ₹199"
+          upiAmount={199}
+          userId={user?.user_id}
+          paymentTag="before_subscription"
+        />
+      )}
             </LinearGradient>
         </SafeAreaView >
     );

@@ -25,7 +25,8 @@ import Reanimated, {
   SlideOutDown
 } from 'react-native-reanimated';
 
-
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
+import SubscriptionLockSheet from "@/components/ShowLockScreen";
 
 // Types
 interface DropdownItemProps {
@@ -73,16 +74,23 @@ export default function PYQ({ pyqs, loading, error, reload }: PYQProps) {
   const [searchText, setSearchText] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
-  const [showLock, setShowLock] = useState(false);
+  // const [showLock, setShowLock] = useState(false);
 
-  useEffect(() => {
-    if (!loading && user && !user.is_subscribed_before) {
-      const timer = setTimeout(() => {
-        setShowLock(true);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [loading, user]);
+  // useEffect(() => {
+  //   if (!loading && user && !user.is_subscribed_before) {
+  //     const timer = setTimeout(() => {
+  //       setShowLock(true);
+  //     }, 2000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [loading, user]);
+
+  const {
+    showLock,
+    isAllowed
+  } = useSubscriptionLock({
+    gate: "before",
+  });
 
   usePreventScreenCapture();
 
@@ -155,6 +163,9 @@ export default function PYQ({ pyqs, loading, error, reload }: PYQProps) {
     chapter_no: number,
     subject: number
   ) => {
+
+    if(!isAllowed) return;
+
     const title = `${subject === 1 ? "Physics" : subject === 2 ? "Chemistry" : "Mathematics"}`;
     router.push({
       pathname: "/pyq-list",
@@ -368,55 +379,17 @@ export default function PYQ({ pyqs, loading, error, reload }: PYQProps) {
         </Animated.View>
       )}
 
-      {showLock && (
-        <Reanimated.View
-          entering={FadeIn.duration(400)}
-          style={styles.lockScreenContainer}
-        >
-          <Reanimated.View
-            entering={SlideInDown.duration(600)}
-            style={styles.content}
-          >
-            <View style={styles.handle} />
-
-            {/* <View style={styles.premiumBadge}>
-              <Text style={styles.premiumBadgeText}>Before MHT-CET Plan</Text>
-            </View> */}
-
-            <View style={styles.iconContainer}>
-              <View style={styles.lockCircle}>
-                <Ionicons name="lock-closed" size={40} color="#fff" />
-              </View>
-            </View>
-
-
-
-            <Text style={styles.title}>Before MHT-CET Plan</Text>
-            <Text style={styles.description}>
-              Unlock 9,000+ real MHT-CET questions (2019-2025) and premium features to boost your preparation.
-            </Text>
-
-            <Text style={styles.description2}>
-              To unlock PYQ's you have to buy Before MHT-CET Plan
-            </Text>
-
-            <TouchableOpacity
-              style={styles.subscribeButton}
-              onPress={() => {
-                const upiUrl = `upi://pay?pa=9403343871@axl&pn=PrepCET&am=1&cu=INR&tn=prep-payment_id_${user?.user_id}_after_subscription`;
-                Linking.openURL(upiUrl).catch(err => console.error("Couldn't load page", err));
-              }}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.subscribeButtonText}>Unlock Before MHT-CET Plan - ₹199</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.closeButton} onPress={() => setShowLock(false)}>
-              <Text style={styles.closeButtonText}>Maybe Later</Text>
-            </TouchableOpacity>
-
-          </Reanimated.View>
-        </Reanimated.View>
+      {!isAllowed && showLock && (
+        <SubscriptionLockSheet
+          visible={showLock}
+          title="Before MHT-CET Plan"
+          description="Unlock 9,000+ real MHT-CET questions (2019–2025)."
+          subDescription="To unlock PYQs you must buy this plan."
+          priceText="Unlock Before MHT-CET Plan - ₹199"
+          upiAmount={199}
+          userId={user?.user_id}
+          paymentTag="before_subscription"
+        />
       )}
     </>
   );
