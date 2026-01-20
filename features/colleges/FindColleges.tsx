@@ -92,31 +92,31 @@ export default function FindColleges() {
     branchesError,
   } = useAdvancedColleges();
 
-const { isAllowed } = useSubscriptionLock({
-  gate: "after", // 👈 IMPORTANT
-});
+  const { isAllowed } = useSubscriptionLock({
+    gate: "after", // 👈 IMPORTANT
+  });
   const [showLock, setShowLock] = useState(false);
 
- useEffect(() => {
-  const isLockedTab = activeTab === "colleges" || activeTab === "branches";
-  const isLoading =
-    activeTab === "colleges" ? collegesLoading : branchesLoading;
+  useEffect(() => {
+    const isLockedTab = activeTab === "colleges" || activeTab === "branches";
+    const isLoading =
+      activeTab === "colleges" ? collegesLoading : branchesLoading;
 
-  if (!isLoading && !isAllowed && isLockedTab) {
-    const timer = setTimeout(() => {
-      setShowLock(true);
-    }, 2000);
+    if (!isLoading && !isAllowed && isLockedTab) {
+      const timer = setTimeout(() => {
+        setShowLock(true);
+      }, 2000);
 
-    return () => clearTimeout(timer);
-  } else {
-    setShowLock(false);
-  }
-}, [
-  activeTab,
-  collegesLoading,
-  branchesLoading,
-  isAllowed,
-]);
+      return () => clearTimeout(timer);
+    } else {
+      setShowLock(false);
+    }
+  }, [
+    activeTab,
+    collegesLoading,
+    branchesLoading,
+    isAllowed,
+  ]);
 
 
   // Indicator animation
@@ -269,22 +269,22 @@ const { isAllowed } = useSubscriptionLock({
               loading={branchesLoading}
               error={branchesError}
               isActive={true}
-           
+
             />
           </View>
         )}
 
         {showLock && (
           <SubscriptionLockSheet
-  visible={showLock}
-  title="Before MHT-CET Plan"
-  description="Unlock 9,000+ real MHT-CET questions (2019–2025)."
-  subDescription="To unlock PYQs you must buy this plan."
-  priceText="Unlock Before MHT-CET Plan - ₹199"
-  upiAmount={199}
-  userId={user?.user_id}
-  paymentTag="before_subscription"
-/>
+            visible={showLock}
+            title="After MHT-CET Plan"
+            description="Unlock accurate data of all colleges in Maharashtra."
+            subDescription="To unlock Colleges you must buy this plan."
+            priceText="Unlock After MHT-CET Plan - ₹199"
+            upiAmount={199}
+            userId={user?.user_id}
+            paymentTag="after_subscription"
+          />
 
         )}
       </View>
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
   banner: {
     borderRadius: 20,
     padding: 20,
-    marginTop: 18,
+    marginTop: 12,
     marginBottom: 6,
   },
   bannerRow: {

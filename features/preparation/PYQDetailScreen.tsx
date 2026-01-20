@@ -6,10 +6,8 @@ import { usePYQContext } from "@/context/PYQContext";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
-import * as ScreenCapture from "expo-screen-capture";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -17,9 +15,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
+
 
 const MemoMathText = React.memo(MathText);
 
@@ -208,7 +205,14 @@ export default function PYQDetailsPage() {
 
               {/* Explanation */}
               {showExplanation && (
-                <View style={styles.explanationBox}>
+                <LinearGradient
+                  colors={["#f8fafc", "#e6f1ff80", "#e8dcff80"]}
+                  locations={[0, 0.5, 1]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.explanationBox}
+                >
+
                   <View style={styles.explanationHeader}>
                     <Text style={styles.explanationTitle}>Explanation</Text>
                   </View>
@@ -234,8 +238,7 @@ export default function PYQDetailsPage() {
                       )}
                     </View>
                   </ScrollView>
-                </View>
-
+                </LinearGradient>
               )}
 
 
@@ -428,12 +431,11 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   explanationBox: {
-    backgroundColor: "#fffbeb",
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 16,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: "#fef3c7",
+    borderColor: "#004aad30",
     overflowX: "auto",
 
 
@@ -444,7 +446,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   explanationTitle: {
-    color: "#92400e",
+    color: "#004aad",
     fontSize: 18,
     fontFamily: "SourceSans3Bold",
     marginLeft: 4,

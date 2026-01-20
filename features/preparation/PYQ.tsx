@@ -120,7 +120,7 @@ export default function PYQ({ pyqs, loading, error, reload }: PYQProps) {
       const matchesSearch = chapter.chapter_name.toLowerCase().includes(search);
 
       return matchesSubject && matchesClass && matchesSearch;
-    });
+    }).sort((a, b) => b.class - a.class);
   }, [pyqs, searchText, selectedSubject, selectedClasses]);
 
   const listRef = React.useRef<ScrollView>(null);
@@ -164,7 +164,7 @@ export default function PYQ({ pyqs, loading, error, reload }: PYQProps) {
     subject: number
   ) => {
 
-    if(!isAllowed) return;
+    if (!isAllowed) return;
 
     const title = `${subject === 1 ? "Physics" : subject === 2 ? "Chemistry" : "Mathematics"}`;
     router.push({
@@ -367,7 +367,7 @@ export default function PYQ({ pyqs, loading, error, reload }: PYQProps) {
             ))
           )}
         </View>
-      </ScrollView>
+      </ScrollView >
       {showScrollTop && (
         <Animated.View style={[styles.scrollTopBtn, { opacity: fadeAnim }]}>
           <TouchableOpacity
@@ -377,140 +377,22 @@ export default function PYQ({ pyqs, loading, error, reload }: PYQProps) {
             <Ionicons name="chevron-up" size={24} color="#000" />
           </TouchableOpacity>
         </Animated.View>
-      )}
+      )
+      }
 
-      {!isAllowed && showLock && (
-        <SubscriptionLockSheet
-          visible={showLock}
-          title="Before MHT-CET Plan"
-          description="Unlock 9,000+ real MHT-CET questions (2019–2025)."
-          subDescription="To unlock PYQs you must buy this plan."
-          priceText="Unlock Before MHT-CET Plan - ₹199"
-          upiAmount={199}
-          userId={user?.user_id}
-          paymentTag="before_subscription"
-        />
-      )}
+
+
+
     </>
   );
 }
 
 // 🧱 Styles
 const styles = StyleSheet.create({
-  lockScreenContainer: {
+  container: { flex: 1 },
+  contentArea: {
     flex: 1,
-    backgroundColor: "#00000050",
-    width: "110%",
-    height: "100%",
-    position: "absolute",
-    top: 0,
-    left: 0,
-    bottom: 0,
-
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  content: {
-    width: "97%",
-    position: "absolute",
-    left: 0,
-    bottom: 0,
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    padding: 24,
-    paddingBottom: 40,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 20,
-  },
-  handle: {
-    width: 40,
-    height: 4,
-    backgroundColor: '#e2e8f0',
-    borderRadius: 2,
-    marginBottom: 20,
-  },
-  iconContainer: {
-    marginBottom: 20,
-  },
-  lockCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#004aad',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#004aad',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  premiumBadge: {
-    backgroundColor: '#fef3c7',
-    paddingHorizontal: 12,
-    paddingVertical: 2,
-    borderRadius: 99,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: '#f59e0b',
-  },
-  premiumBadgeText: {
-    color: '#d97706',
-    fontSize: 12,
-    fontFamily: 'SourceSans3Medium',
-    letterSpacing: 1,
-  },
-  title: {
-    fontSize: 24,
-    fontFamily: 'SourceSans3Bold',
-    color: '#004aad',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  description: {
-    fontSize: 16,
-    fontFamily: 'SourceSans3Medium',
-    color: '#64748b',
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 30,
-    paddingHorizontal: 10,
-  },
-  description2: {
-    fontSize: 14,
-    fontFamily: 'SourceSans3Medium',
-    color: '#64748b80',
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 30,
-    paddingHorizontal: 10,
-  },
-  subscribeButton: {
-    width: '100%',
-    height: 56,
-    backgroundColor: '#004aad',
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  subscribeButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontFamily: 'SourceSans3SemiBold',
-  },
-  closeButton: {
-    paddingVertical: 12,
-  },
-  closeButtonText: {
-    color: '#94a3b8',
-    fontSize: 16,
-    fontFamily: 'SourceSans3Medium',
+    paddingTop: 8,
   },
 
   centered: {

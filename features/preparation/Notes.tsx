@@ -111,7 +111,7 @@ export default function Notes({ pyqs, loading, error, reload }: NotesProps) {
       const matchesSearch = chapter.chapter_name.toLowerCase().includes(search);
 
       return matchesSubject && matchesClass && matchesSearch;
-    });
+    }).sort((a, b) => b.class - a.class);
   }, [pyqs, searchText, selectedSubject, selectedClasses]);
 
   const listRef = React.useRef<ScrollView>(null);
@@ -317,17 +317,25 @@ export default function Notes({ pyqs, loading, error, reload }: NotesProps) {
                       {item.chapter_no}. {item.chapter_name}
                     </Text>
                     <View>
-                      <TouchableOpacity
-                        style={styles.pdfButton}
-                        onPress={(e) => {
-                          e.stopPropagation();
-                          if (item.notes_url) {
-                            setSelectedPdf({ url: item.notes_url, title: item.chapter_name });
-                          }
-                        }}
-                      >
-                        <Text style={styles.pdfButtonText}>PDF</Text>
-                      </TouchableOpacity>
+                      {
+                        item.notes_url == "" || item.notes_url == null ? <TouchableOpacity
+                          style={styles.pdfButtonDisabled}
+
+                        >
+                          <Text style={styles.pdfButtonText}>PDF</Text>
+                        </TouchableOpacity> : <TouchableOpacity
+                          style={styles.pdfButton}
+                          onPress={(e) => {
+                            e.stopPropagation();
+                            if (item.notes_url) {
+                              setSelectedPdf({ url: item.notes_url, title: item.chapter_name });
+                            }
+                          }}
+                        >
+                          <Text style={styles.pdfButtonText}>PDF</Text>
+                        </TouchableOpacity>
+                      }
+
                     </View>
                   </View>
 
@@ -590,6 +598,12 @@ const styles = StyleSheet.create({
   },
   pdfButton: {
     backgroundColor: "#ff5e32",
+    paddingHorizontal: 18,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  pdfButtonDisabled: {
+    backgroundColor: "#ff5e3250",
     paddingHorizontal: 18,
     paddingVertical: 6,
     borderRadius: 999,

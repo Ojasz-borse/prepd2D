@@ -1,3 +1,4 @@
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 import { router } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -38,6 +39,9 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({
   selectionMode,
   handleSelectCard,
 }) => {
+  const { isAllowed } = useSubscriptionLock({
+    gate: "after", // 👈 IMPORTANT
+  });
   return (
     <TouchableOpacity
       key={item.choice_code}
@@ -93,12 +97,16 @@ const AdvancedFindCollegeCard: React.FC<Props> = ({
         {!selectionMode && (
           <TouchableOpacity
             style={styles.viewButton}
-          // onPress={() =>
-          //   router.push({
-          //     pathname: "../branch-details",
-          //     params: { choice_code: item.choice_code },
-          //   })
-          // }
+            onPress={() => {
+              if (isAllowed) {
+                router.push({
+                  pathname: "../branch-details",
+                  params: { choice_code: item.choice_code },
+                })
+              }
+            }
+
+            }
           >
             <Text style={styles.viewButtonText}>View</Text>
           </TouchableOpacity>

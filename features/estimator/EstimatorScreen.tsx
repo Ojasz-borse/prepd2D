@@ -147,9 +147,9 @@ export default function EstimatorScreen() {
   const [showInfo, setShowInfo] = useState(false);
   const [showResultModal, setShowResultModal] = useState(false);
 
-const { isAllowed } = useSubscriptionLock({
-  gate: "after",
-});
+  const { isAllowed } = useSubscriptionLock({
+    gate: "after",
+  });
 
 
   const [showLock, setShowLock] = useState(false);
@@ -262,14 +262,14 @@ const { isAllowed } = useSubscriptionLock({
 
   const handleCalculatePercentile = async () => {
     if (!isMarksValid) return;
-    if(!isAllowed)return;
+    if (!isAllowed) return;
     await predictPercentile(Number(marks), selectedDifficulty);
     setShowResultModal(true);
   };
 
   const handleCalculateRank = async () => {
     if (!isRankValid) return;
-  if(!isAllowed)return;
+    if (!isAllowed) return;
     // Keep the existing predictRank call (only overall) to avoid breaking the hook.
     // If your hook supports extra fields later, you can extend this call.
     await predictRank(
@@ -474,17 +474,17 @@ const { isAllowed } = useSubscriptionLock({
               </View>
 
               {!isAllowed && showLock && (
- <SubscriptionLockSheet
-  visible={showLock}
-  title="Before MHT-CET Plan"
-  description="Unlock 9,000+ real MHT-CET questions (2019–2025)."
-  subDescription="To unlock PYQs you must buy this plan."
-  priceText="Unlock Before MHT-CET Plan - ₹199"
-  upiAmount={199}
-  userId={user?.user_id}
-  paymentTag="before_subscription"
-  
-/>
+                <SubscriptionLockSheet
+                  visible={showLock}
+                  title="Before MHT-CET Plan"
+                  description="Unlock Estimator to predict your most accurate Percentile from your Marks & Rank from Percentile."
+                  subDescription="To unlock Estimator you must buy this plan."
+                  priceText="Unlock Before MHT-CET Plan - ₹199"
+                  upiAmount={199}
+                  userId={user?.user_id}
+                  paymentTag="before_subscription"
+
+                />
 
               )}
             </>
@@ -592,15 +592,15 @@ const { isAllowed } = useSubscriptionLock({
 
               {showLock && (
                 <SubscriptionLockSheet
-  visible={showLock}
-  title="Before MHT-CET Plan"
-  description="Unlock 9,000+ real MHT-CET questions (2019–2025)."
-  subDescription="To unlock PYQs you must buy this plan."
-  priceText="Unlock Before MHT-CET Plan - ₹199"
-  upiAmount={199}
-  userId={user?.user_id}
-  paymentTag="before_subscription"
-/>
+                  visible={showLock}
+                  title="Before MHT-CET Plan"
+                  description="Unlock 9,000+ real MHT-CET questions (2019–2025)."
+                  subDescription="To unlock PYQs you must buy this plan."
+                  priceText="Unlock Before MHT-CET Plan - ₹199"
+                  upiAmount={199}
+                  userId={user?.user_id}
+                  paymentTag="before_subscription"
+                />
 
               )}
             </>

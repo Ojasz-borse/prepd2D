@@ -21,7 +21,7 @@ interface SubscriptionLockSheetProps {
   upiAmount: number;
   userId?: string;
   paymentTag: string; // before_subscription | after_subscription
-//   onClose: () => void;
+  //   onClose: () => void;
 }
 
 const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
@@ -33,7 +33,7 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
   upiAmount,
   userId,
   paymentTag,
-//   onClose,
+  //   onClose,
 }) => {
   if (!visible) return null;
 
@@ -93,17 +93,19 @@ const styles = StyleSheet.create({
   lockScreenContainer: {
     flex: 1,
     backgroundColor: "#00000050",
-    width: "110%",
+    width: "100%",
     height: "100%",
     position: "absolute",
     top: 0,
     left: 0,
+    right: 0,
     justifyContent: "center",
     alignItems: "center",
     zIndex: 100,
+    margin: "auto"
   },
   content: {
-    width: "97%",
+    width: "100%",
     position: "absolute",
     left: 0,
     bottom: 0,
@@ -118,6 +120,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 20,
+    marginBottom: -10,
   },
   handle: {
     width: 40,

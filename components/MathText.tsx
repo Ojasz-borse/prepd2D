@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   italic: { fontFamily: "SourceSans3Italic" },
   code: { backgroundColor: "#eee", fontFamily: "monospace" },
   inlineMath: { marginHorizontal: 2 },
-  blockMath: { width: "100%", alignItems: "center", marginVertical: 10 },
+  blockMath: { width: "100%", marginVertical: 10 },
   newline: { width: "100%", height: 5 },
   imageContainer: {
     width: "100%",
