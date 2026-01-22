@@ -15,10 +15,9 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Linking,
 } from "react-native";
 import { Dropdown, MultiSelect } from "react-native-element-dropdown";
-import { LinearGradient } from "expo-linear-gradient";
-import LockScreen from "@/components/LockScreen";
 import Reanimated, {
   FadeIn,
   FadeOut,
@@ -26,7 +25,8 @@ import Reanimated, {
   SlideOutDown
 } from 'react-native-reanimated';
 
-
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
+import SubscriptionLockSheet from "@/components/ShowLockScreen";
 
 // Types
 interface DropdownItemProps {
@@ -74,16 +74,23 @@ export default function PYQ({ pyqs, loading, error, reload }: PYQProps) {
   const [searchText, setSearchText] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
-  const [showLock, setShowLock] = useState(false);
+  // const [showLock, setShowLock] = useState(false);
 
-  useEffect(() => {
-    if (!loading && user && !user.is_subscribed) {
-      const timer = setTimeout(() => {
-        setShowLock(true);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [loading, user]);
+  // useEffect(() => {
+  //   if (!loading && user && !user.is_subscribed_before) {
+  //     const timer = setTimeout(() => {
+  //       setShowLock(true);
+  //     }, 2000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [loading, user]);
+
+  const {
+    showLock,
+    isAllowed
+  } = useSubscriptionLock({
+    gate: "before",
+  });
 
   usePreventScreenCapture();
 
@@ -113,7 +120,7 @@ export default function PYQ({ pyqs, loading, error, reload }: PYQProps) {
       const matchesSearch = chapter.chapter_name.toLowerCase().includes(search);
 
       return matchesSubject && matchesClass && matchesSearch;
-    });
+    }).sort((a, b) => b.class - a.class);
   }, [pyqs, searchText, selectedSubject, selectedClasses]);
 
   const listRef = React.useRef<ScrollView>(null);
@@ -156,6 +163,9 @@ export default function PYQ({ pyqs, loading, error, reload }: PYQProps) {
     chapter_no: number,
     subject: number
   ) => {
+
+    if (!isAllowed) return;
+
     const title = `${subject === 1 ? "Physics" : subject === 2 ? "Chemistry" : "Mathematics"}`;
     router.push({
       pathname: "/pyq-list",
@@ -357,7 +367,7 @@ export default function PYQ({ pyqs, loading, error, reload }: PYQProps) {
             ))
           )}
         </View>
-      </ScrollView>
+      </ScrollView >
       {showScrollTop && (
         <Animated.View style={[styles.scrollTopBtn, { opacity: fadeAnim }]}>
           <TouchableOpacity
@@ -367,129 +377,22 @@ export default function PYQ({ pyqs, loading, error, reload }: PYQProps) {
             <Ionicons name="chevron-up" size={24} color="#000" />
           </TouchableOpacity>
         </Animated.View>
-      )}
+      )
+      }
 
-      {showLock && (
-        <Reanimated.View
-          entering={FadeIn.duration(400)}
-          style={styles.lockScreenContainer}
-        >
-          <Reanimated.View
-            entering={SlideInDown.duration(600)}
-            style={styles.content}
-          >
-            <View style={styles.handle} />
 
-            <View style={styles.iconContainer}>
-              <View style={styles.lockCircle}>
-                <Ionicons name="lock-closed" size={40} color="#fff" />
-              </View>
-            </View>
 
-            <Text style={styles.title}>PYQ coming soon</Text>
-            <Text style={styles.description}>
-              9,000+ real MHT-CET questions from 2019 to 2025 (Chapter wise) are coming soon for your practice
-            </Text>
 
-          </Reanimated.View>
-        </Reanimated.View>
-      )}
     </>
   );
 }
 
 // 🧱 Styles
 const styles = StyleSheet.create({
-  lockScreenContainer: {
+  container: { flex: 1 },
+  contentArea: {
     flex: 1,
-    backgroundColor: "#00000050",
-    width: "110%",
-    height: "100%",
-    position: "absolute",
-    top: 0,
-    left: 0,
-    bottom: 0,
-
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  content: {
-    width: "97%",
-    position: "absolute",
-    left: 0,
-    bottom: 0,
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    padding: 24,
-    paddingBottom: 40,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 20,
-  },
-  handle: {
-    width: 40,
-    height: 4,
-    backgroundColor: '#e2e8f0',
-    borderRadius: 2,
-    marginBottom: 20,
-  },
-  iconContainer: {
-    marginBottom: 20,
-  },
-  lockCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#004aad',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#004aad',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  title: {
-    fontSize: 24,
-    fontFamily: 'SourceSans3Bold',
-    color: '#004aad',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  description: {
-    fontSize: 16,
-    fontFamily: 'SourceSans3Medium',
-    color: '#64748b',
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 30,
-    paddingHorizontal: 10,
-  },
-  subscribeButton: {
-    width: '100%',
-    height: 56,
-    backgroundColor: '#004aad',
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  subscribeButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontFamily: 'SourceSans3SemiBold',
-  },
-  closeButton: {
-    paddingVertical: 12,
-  },
-  closeButtonText: {
-    color: '#94a3b8',
-    fontSize: 16,
-    fontFamily: 'SourceSans3Medium',
+    paddingTop: 8,
   },
 
   centered: {

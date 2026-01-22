@@ -67,7 +67,7 @@ export default function Syllabus() {
     setTimeout(() => {
       setChaptersData(syllabusData);
       setLoading(false);
-    }, 1000);
+    }, 100);
   }, []);
   usePreventScreenCapture();
 
@@ -91,7 +91,7 @@ export default function Syllabus() {
       const matchesSearch = chapter.chapter_name.toLowerCase().includes(search);
 
       return matchesSubject && matchesClass && matchesSearch;
-    });
+    }).sort((a, b) => b.class - a.class);
   }, [chaptersData, searchText, selectedSubject, selectedClasses]);
 
   const listRef = React.useRef<ScrollView>(null);

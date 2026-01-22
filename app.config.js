@@ -5,7 +5,7 @@ export default {
     expo: {
         name: "PrepCET",
         slug: "prepcet",
-        version: "1.7.0",
+        version: "1.8.0",
         orientation: "portrait",
         icon: "./assets/images/icon.png",
         scheme: "prepcet",
@@ -58,7 +58,7 @@ export default {
         extra: {
             SERVER_URL: process.env.SERVER_URL,
             eas: {
-                projectId: "d659fd19-f78f-466b-b5e5-d74fc1c2a947"
+                projectId: "4bdd8255-e16b-4789-91b2-24afb5107930"
             }
         },
     },

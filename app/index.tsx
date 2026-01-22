@@ -150,7 +150,7 @@ export default function Index() {
           }
         ]}>
           <Image
-            source={require("../assets/images/icon.png")}
+            source={require("../assets/images/icon-homescreen.png")}
             style={styles.icon}
             resizeMode="contain"
           />
@@ -159,7 +159,7 @@ export default function Index() {
 
       {/* Bottom Half - Blue Gradient */}
       <LinearGradient
-        colors={["#004aad", "#0073e6"]}
+        colors={["#0073e6", "#004aad"]}
         style={styles.bottomHalf}
       >
         {showContent ? (
@@ -170,9 +170,6 @@ export default function Index() {
               transform: [{ translateY: slideUp }]
             }
           ]}>
-            <View style={styles.textContainer}>
-              <Text style={styles.welcomeText}>Welcome to PrepCET</Text>
-            </View>
 
             <View style={styles.buttonWrapper}>
               <TouchableOpacity
@@ -212,24 +209,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   topHalf: {
-    height: SCREEN_HEIGHT * 0.55,
+    height: SCREEN_HEIGHT * 0.65,
     backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
-    borderBottomLeftRadius: 200,
-    borderBottomRightRadius: 200,
+    borderBottomLeftRadius: 400,
+    borderBottomRightRadius: 400,
     zIndex: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 3,
+
   },
   iconContainer: {
-    width: SCREEN_WIDTH * 0.6,
-    height: SCREEN_WIDTH * 0.6,
+    width: SCREEN_WIDTH * 0.35,
+    height: SCREEN_WIDTH * 0.35,
     justifyContent: "center",
-    alignItems: "center",
+    marginTop: 300,
   },
   icon: {
     width: "100%",
@@ -242,7 +235,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingBottom: 40,
+
   },
   content: {
     width: "100%",
@@ -264,19 +257,16 @@ const styles = StyleSheet.create({
   },
   buttonWrapper: {
     width: "100%",
-    gap: 16,
+    gap: 25,
     paddingHorizontal: 10,
+    marginTop: 20,
   },
   loginButton: {
     backgroundColor: "#fff",
     paddingVertical: 12,
     borderRadius: 99,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
+
   },
   loginButtonText: {
     color: "#004aad",
@@ -284,12 +274,11 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3SemiBold",
   },
   registerButton: {
-    backgroundColor: "rgba(255,255,255,0.15)",
     paddingVertical: 12,
     borderRadius: 99,
     alignItems: "center",
-    borderWidth: 1.5,
-    borderColor: "rgba(255,255,255,0.3)",
+    borderWidth: 1,
+    borderColor: "#ffffff",
   },
   registerButtonText: {
     color: "#fff",

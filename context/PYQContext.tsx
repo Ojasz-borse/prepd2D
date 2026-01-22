@@ -20,6 +20,14 @@ export interface PYQItem {
   img_url?: string;
 }
 
+export interface RepeatedPYQList {
+  subject_name: string;
+  chapter_name: string;
+  repeat_count: string;
+  sub_topic: string;
+  questions: PYQItem[];
+}
+
 export interface UserResponseMap {
   [question_id: string]: string; // { "101": "A" }
 }
@@ -27,6 +35,12 @@ export interface UserResponseMap {
 interface PYQContextType {
   pyqList: PYQItem[];
   setPYQList: (list: PYQItem[]) => void;
+  repeatedPYQList: RepeatedPYQList[];
+  setRepeatedPYQList: (list: RepeatedPYQList[]) => void;
+
+  difficultyPYQList: PYQItem[];
+  setDifficultyPYQList: (list: PYQItem[]) => void;
+
   userResponses: UserResponseMap;
   setUserResponses: React.Dispatch<React.SetStateAction<UserResponseMap>>;
 }
@@ -34,6 +48,12 @@ interface PYQContextType {
 const PYQContext = createContext<PYQContextType>({
   pyqList: [],
   setPYQList: () => { },
+  repeatedPYQList: [],
+  setRepeatedPYQList: () => { },
+
+  difficultyPYQList: [],
+  setDifficultyPYQList: () => { },
+
   userResponses: {},
   setUserResponses: () => { },
 });
@@ -42,21 +62,41 @@ export const usePYQContext = () => useContext(PYQContext);
 
 export const PYQProvider = ({ children }: { children: ReactNode }) => {
   const [pyqList, setPYQList] = useState<PYQItem[]>([]);
+  const [repeatedPYQList, setRepeatedPYQList] = useState<RepeatedPYQList[]>([]);
+
+  const [difficultyPYQList, setDifficultyPYQList] = useState<PYQItem[]>([]);
   const [userResponses, setUserResponses] = useState<UserResponseMap>({});
 
   useEffect(() => {
-    // console.log("pyqList", pyqList);
     const mapped: UserResponseMap = {};
+
     pyqList.forEach((q) => {
       if (q.user_resp !== null) mapped[q.id] = q.user_resp;
     });
+
+    repeatedPYQList.forEach((item) => {
+      item.questions.forEach((q) => {
+        if (q.user_resp !== null) mapped[q.id] = q.user_resp;
+      });
+    });
+
     setUserResponses(mapped);
-    console.log("userResponses", userResponses);
-  }, [pyqList]);
+  }, [pyqList, repeatedPYQList]);
 
   return (
     <PYQContext.Provider
-      value={{ pyqList, setPYQList, userResponses, setUserResponses }}
+      value={{
+        pyqList,
+        setPYQList,
+        repeatedPYQList,
+        setRepeatedPYQList,
+
+        difficultyPYQList,
+        setDifficultyPYQList,
+
+        userResponses,
+        setUserResponses,
+      }}
     >
       {children}
     </PYQContext.Provider>

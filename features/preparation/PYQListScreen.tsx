@@ -42,7 +42,6 @@ const PYQCard = React.memo(({ question, index, id, router, selectedYear, isSolve
       pathname: "/pyq-detail",
       params: {
         currentIndex: index.toString(),
-        chapterId: id.toString(),
         selectedYear: selectedYear,
       },
     });

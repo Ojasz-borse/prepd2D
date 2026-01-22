@@ -1,3 +1,4 @@
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 import { router } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -17,6 +18,9 @@ interface NormalFindCollegeCardProps {
 const NormalFindCollegeCard: React.FC<NormalFindCollegeCardProps> = ({
   college,
 }) => {
+  const { isAllowed } = useSubscriptionLock({
+    gate: "after", // 👈 IMPORTANT
+  });
   return (
     <TouchableOpacity
       key={college.college_code}
@@ -50,12 +54,16 @@ const NormalFindCollegeCard: React.FC<NormalFindCollegeCardProps> = ({
         </Text>
         <TouchableOpacity
           style={styles.viewButton}
-        // onPress={() =>
-        //   router.push({
-        //     pathname: "../college-details",
-        //     params: { college_code: college.college_code },
-        //   })
-        // }
+          onPress={() => {
+            if (isAllowed) {
+              router.push({
+                pathname: "../college-details",
+                params: { college_code: college.college_code },
+              })
+            }
+
+          }
+          }
         >
           <Text style={styles.viewButtonText}>View</Text>
         </TouchableOpacity>

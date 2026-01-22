@@ -30,6 +30,8 @@ import Reanimated, {
   SlideOutDown
 } from 'react-native-reanimated';
 import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
+import SubscriptionLockSheet from "@/components/ShowLockScreen";
 
 
 const EstimatorLanding = ({ onTabChange }: { onTabChange: (tab: "marks" | "rank") => void }) => {
@@ -145,10 +147,15 @@ export default function EstimatorScreen() {
   const [showInfo, setShowInfo] = useState(false);
   const [showResultModal, setShowResultModal] = useState(false);
 
+  const { isAllowed } = useSubscriptionLock({
+    gate: "after",
+  });
+
+
   const [showLock, setShowLock] = useState(false);
 
   useEffect(() => {
-    if (!loading && user && !user.is_subscribed) {
+    if (!loading && user && !isAllowed) {
       const timer = setTimeout(() => {
         setShowLock(true);
       }, 2000);
@@ -255,12 +262,14 @@ export default function EstimatorScreen() {
 
   const handleCalculatePercentile = async () => {
     if (!isMarksValid) return;
+    if (!isAllowed) return;
     await predictPercentile(Number(marks), selectedDifficulty);
     setShowResultModal(true);
   };
 
   const handleCalculateRank = async () => {
     if (!isRankValid) return;
+    if (!isAllowed) return;
     // Keep the existing predictRank call (only overall) to avoid breaking the hook.
     // If your hook supports extra fields later, you can extend this call.
     await predictRank(
@@ -464,30 +473,19 @@ export default function EstimatorScreen() {
                 </View>
               </View>
 
-              {showLock && (
-                <Reanimated.View
-                  entering={FadeIn.duration(400)}
-                  style={styles.lockScreenContainer}
-                >
-                  <Reanimated.View
-                    entering={SlideInDown.duration(600)}
-                    style={styles.content}
-                  >
-                    <View style={styles.handle} />
+              {!isAllowed && showLock && (
+                <SubscriptionLockSheet
+                  visible={showLock}
+                  title="Before MHT-CET Plan"
+                  description="Unlock Estimator to predict your most accurate Percentile from your Marks & Rank from Percentile."
+                  subDescription="To unlock Estimator you must buy this plan."
+                  priceText="Unlock Before MHT-CET Plan - ₹199"
+                  upiAmount={199}
+                  userId={user?.user_id}
+                  paymentTag="before_subscription"
 
-                    <View style={styles.iconContainer}>
-                      <View style={styles.lockCircle}>
-                        <Ionicons name="lock-closed" size={40} color="#fff" />
-                      </View>
-                    </View>
+                />
 
-                    <Text style={styles.title}>Percentile from Marks coming soon</Text>
-                    <Text style={styles.description}>
-                      You can now calculate you estimatted percentile from marks, just have to wait for some time
-                    </Text>
-
-                  </Reanimated.View>
-                </Reanimated.View>
               )}
             </>
           )}
@@ -593,29 +591,17 @@ export default function EstimatorScreen() {
 
 
               {showLock && (
-                <Reanimated.View
-                  entering={FadeIn.duration(400)}
-                  style={styles.lockScreenContainer}
-                >
-                  <Reanimated.View
-                    entering={SlideInDown.duration(600)}
-                    style={styles.content}
-                  >
-                    <View style={styles.handle} />
+                <SubscriptionLockSheet
+                  visible={showLock}
+                  title="Before MHT-CET Plan"
+                  description="Unlock 9,000+ real MHT-CET questions (2019–2025)."
+                  subDescription="To unlock PYQs you must buy this plan."
+                  priceText="Unlock Before MHT-CET Plan - ₹199"
+                  upiAmount={199}
+                  userId={user?.user_id}
+                  paymentTag="before_subscription"
+                />
 
-                    <View style={styles.iconContainer}>
-                      <View style={styles.lockCircle}>
-                        <Ionicons name="lock-closed" size={40} color="#fff" />
-                      </View>
-                    </View>
-
-                    <Text style={styles.title}>Rank from Percentile coming soon</Text>
-                    <Text style={styles.description}>
-                      You can now calculate you estimatted rank from percentile, just have to wait forsome time
-                    </Text>
-
-                  </Reanimated.View>
-                </Reanimated.View>
               )}
             </>
           )}

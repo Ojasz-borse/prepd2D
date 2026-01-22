@@ -22,6 +22,7 @@ import Animated, {
   SlideInDown,
 } from "react-native-reanimated";
 import MockTestList from "./MockTestList";
+import SubscriptionLockSheet from "@/components/ShowLockScreen";
 
 const MockTestLanding = ({ onTabChange }: { onTabChange: (tab: "mock") => void }) => {
   const items = [
@@ -63,7 +64,7 @@ const MockTestScreen = () => {
   const [showLock, setShowLock] = useState(false);
 
   useEffect(() => {
-    if (!loading && user && !user.is_subscribed && activeTab === "mock") {
+    if (!loading && user && !user.is_subscribed_before && activeTab === "mock") {
       const timer = setTimeout(() => {
         setShowLock(true);
       }, 2000);
@@ -184,29 +185,17 @@ const MockTestScreen = () => {
         )}
 
         {showLock && (
-          <Animated.View
-            entering={FadeIn.duration(400)}
-            style={styles.lockScreenContainer}
-          >
-            <Animated.View
-              entering={SlideInDown.duration(600)}
-              style={styles.content}
-            >
-              <View style={styles.handle} />
+          <SubscriptionLockSheet
+            visible={showLock}
+            title="Before MHT-CET Plan"
+            description="Unlock 60+ real Mock Test with real MHT_CET exam experience."
+            subDescription="To unlock Mock Test section you must buy this plan."
+            priceText="Unlock Before MHT-CET Plan - ₹199"
+            upiAmount={199}
+            userId={user?.user_id}
+            paymentTag="before_subscription"
+          />
 
-              <View style={styles.iconContainer}>
-                <View style={styles.lockCircle}>
-                  <Ionicons name="lock-closed" size={40} color="#fff" />
-                </View>
-              </View>
-
-              <Text style={styles.title}>Mock Tests are Coming soon</Text>
-              <Text style={styles.description}>
-                You will be getting full length MHT-CET Mock Tests with detailed analysis and performance tracking.
-              </Text>
-
-            </Animated.View>
-          </Animated.View>
         )}
       </View>
     </LinearGradient>

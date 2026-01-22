@@ -29,7 +29,8 @@ type User = {
   first_name: string;
   last_name: string;
   group: string;
-  is_subscribed: boolean;
+  is_subscribed_before: boolean;
+  is_subscribed_after: boolean;
 };
 
 type AuthContextType = {

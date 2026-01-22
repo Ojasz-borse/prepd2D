@@ -31,6 +31,9 @@ import { usePYQS } from "@/hooks/usePYQS";
 
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
+import SubscriptionLockSheet from "@/components/ShowLockScreen";
+import { useAuth } from "@/context/AuthContext";
 
 const PopularSearches = ({ onTabChange }: { onTabChange: (tab: "notes" | "pyq" | "syllabus") => void }) => {
   const router = useRouter();
@@ -77,11 +80,83 @@ const PopularSearches = ({ onTabChange }: { onTabChange: (tab: "notes" | "pyq" |
   );
 };
 
+const QuestionBank = () => {
+  const router = useRouter();
+  const items = [
+    // {
+    //   title: "Top 150 most repeating question",
+    //   icon: "repeat-outline",
+    //   color: "#FF9800",
+    //   route: "/repeated-pyqs",
+
+    // },
+    { title: "Top Easy Questions", subTitle: "150 PYQ's", icon: "rocket-outline", color: "#4CAF50", route: "/difficulty-pyqs", params: { difficulty: "Easy" } },
+    { title: "Top Hard Questions", subTitle: "150 PYQ's", icon: "flame-outline", color: "#F44336", route: "/difficulty-pyqs", params: { difficulty: "Hard" } },
+  ];
+
+  return (
+    <View style={[styles.card, { marginTop: 12 }]}>
+      <Text style={styles.heading}>Question Bank</Text>
+
+      <View style={{ gap: 12 }}>
+        {items.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            activeOpacity={0.7}
+            style={[styles.gridItem, { width: "100%" }]}
+            onPress={() => {
+              if (item.route) {
+                router.push({
+                  pathname: item.route as any,
+                  params: item.params
+                });
+              }
+            }}
+          >
+            <View style={[
+              styles.iconBox,
+              {
+                backgroundColor: item.color + "20",
+              },
+            ]}>
+              <Ionicons name={item.icon as any} size={24} color={item.color} />
+            </View>
+            <Text style={styles.gridTitle}>{item.title}</Text>
+            <Text style={styles.gridSubTitle}>{item.subTitle}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
+};
+
 export default function Preparation() {
   const [activeTab, setActiveTab] = useState<
     "all" | "notes" | "pyq" | "syllabus"
   >("all");
   const { pyqs, loading, error, reload } = usePYQS();
+
+  const { user } = useAuth();
+
+  const { isAllowed } = useSubscriptionLock({
+    gate: "before",
+  });
+  const [showLock, setShowLock] = useState(false);
+
+  useEffect(() => {
+    const isLockedTab = activeTab === "pyq";
+    const isLoading = loading;
+
+    if (!isLoading && !isAllowed && isLockedTab) {
+      const timer = setTimeout(() => {
+        setShowLock(true);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    } else {
+      setShowLock(false);
+    }
+  }, [activeTab, loading, isAllowed]);
 
   // Store layout for each tab { x, width }
   const [tabMeasurements, setTabMeasurements] = useState<{ [key: string]: { x: number; width: number } }>({});
@@ -241,6 +316,7 @@ export default function Preparation() {
             </LinearGradient>
 
             <PopularSearches onTabChange={handleTabChange} />
+            <QuestionBank />
           </View>
         )}
         {activeTab === "notes" && (
@@ -249,7 +325,7 @@ export default function Preparation() {
           </View>
         )}
         {activeTab === "pyq" && (
-          <View style={{ paddingHorizontal: 12 }}>
+          <View style={{ flex: 1, paddingHorizontal: 12 }}>
             <PYQ pyqs={pyqs} loading={loading} error={error} reload={reload} />
           </View>
         )}
@@ -257,6 +333,19 @@ export default function Preparation() {
           <View style={{ paddingHorizontal: 12 }}>
             <Syllabus />
           </View>
+        )}
+
+        {showLock && (
+          <SubscriptionLockSheet
+            visible={showLock}
+            title="Before MHT-CET Plan"
+            description="Unlock 9,000+ real MHT-CET questions (2019–2025)."
+            subDescription="To unlock PYQs you must buy this plan."
+            priceText="Unlock Before MHT-CET Plan - ₹199"
+            upiAmount={199}
+            userId={user?.user_id}
+            paymentTag="before_subscription"
+          />
         )}
       </View>
     </LinearGradient>
@@ -361,6 +450,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "SourceSans3SemiBold",
     color: "#2E2E32",
+  },
+  gridSubTitle: {
+    fontSize: 14,
+    fontFamily: "SourceSans3Medium",
+    color: "#a7a7a7",
+    marginLeft: "auto",
+    paddingRight: 12,
   },
   banner: {
     borderRadius: 20,

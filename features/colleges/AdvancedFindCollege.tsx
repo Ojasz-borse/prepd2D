@@ -95,6 +95,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
   loading,
   error,
   isActive,
+  
 }) => {
   const [searchText, setSearchText] = useState("");
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);

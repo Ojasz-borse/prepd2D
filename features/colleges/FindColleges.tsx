@@ -24,6 +24,9 @@ import Animated, {
 } from "react-native-reanimated";
 import AdvancedFindCollege from "./AdvancedFindCollege";
 import NormalFindCollege from "./NormalFindCollege";
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
+import SubscriptionLockSheet from "@/components/ShowLockScreen";
+
 
 if (Platform.OS === "android") {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -89,21 +92,32 @@ export default function FindColleges() {
     branchesError,
   } = useAdvancedColleges();
 
+  const { isAllowed } = useSubscriptionLock({
+    gate: "after", // 👈 IMPORTANT
+  });
   const [showLock, setShowLock] = useState(false);
 
   useEffect(() => {
-    const isTabLocked = activeTab === "colleges" || activeTab === "branches";
-    const isLoading = activeTab === "colleges" ? collegesLoading : branchesLoading;
+    const isLockedTab = activeTab === "colleges" || activeTab === "branches";
+    const isLoading =
+      activeTab === "colleges" ? collegesLoading : branchesLoading;
 
-    if (!isLoading && user && !user.is_subscribed && isTabLocked) {
+    if (!isLoading && !isAllowed && isLockedTab) {
       const timer = setTimeout(() => {
         setShowLock(true);
       }, 2000);
+
       return () => clearTimeout(timer);
-    } else if (activeTab === "all") {
+    } else {
       setShowLock(false);
     }
-  }, [collegesLoading, branchesLoading, user, activeTab]);
+  }, [
+    activeTab,
+    collegesLoading,
+    branchesLoading,
+    isAllowed,
+  ]);
+
 
   // Indicator animation
   const [tabMeasurements, setTabMeasurements] = useState<{
@@ -255,35 +269,23 @@ export default function FindColleges() {
               loading={branchesLoading}
               error={branchesError}
               isActive={true}
+
             />
           </View>
         )}
 
         {showLock && (
-          <Animated.View
-            entering={FadeIn.duration(400)}
-            style={styles.lockScreenContainer}
-          >
-            <Animated.View
-              entering={SlideInDown.duration(600)}
-              style={styles.content}
-            >
-              <View style={styles.handle} />
+          <SubscriptionLockSheet
+            visible={showLock}
+            title="After MHT-CET Plan"
+            description="Unlock accurate data of all colleges in Maharashtra."
+            subDescription="To unlock Colleges you must buy this plan."
+            priceText="Unlock After MHT-CET Plan - ₹199"
+            upiAmount={199}
+            userId={user?.user_id}
+            paymentTag="after_subscription"
+          />
 
-              <View style={styles.iconContainer}>
-                <View style={styles.lockCircle}>
-                  <Ionicons name="lock-closed" size={40} color="#fff" />
-                </View>
-              </View>
-
-              <Text style={styles.title}>
-                {activeTab === "colleges" ? "College Search" : "Branch Search"} is Coming soon
-              </Text>
-              <Text style={styles.description}>
-                You will be getting accurate details of all colleges & branches that gives admission based on MHT-CET precentile
-              </Text>
-            </Animated.View>
-          </Animated.View>
         )}
       </View>
     </LinearGradient>
@@ -344,7 +346,7 @@ const styles = StyleSheet.create({
   banner: {
     borderRadius: 20,
     padding: 20,
-    marginTop: 18,
+    marginTop: 12,
     marginBottom: 6,
   },
   bannerRow: {
