@@ -67,21 +67,39 @@ export const PYQProvider = ({ children }: { children: ReactNode }) => {
   const [difficultyPYQList, setDifficultyPYQList] = useState<PYQItem[]>([]);
   const [userResponses, setUserResponses] = useState<UserResponseMap>({});
 
+  // Sync responses from pyqList (active practicing list)
   useEffect(() => {
-    const mapped: UserResponseMap = {};
-
-    pyqList.forEach((q) => {
-      if (q.user_resp !== null) mapped[q.id] = q.user_resp;
-    });
-
-    repeatedPYQList.forEach((item) => {
-      item.questions.forEach((q) => {
-        if (q.user_resp !== null) mapped[q.id] = q.user_resp;
+    if (pyqList.length === 0) return;
+    setUserResponses(prev => {
+      const next = { ...prev };
+      let changed = false;
+      pyqList.forEach(q => {
+        if (q.user_resp !== null && next[q.id] !== q.user_resp) {
+          next[q.id] = q.user_resp;
+          changed = true;
+        }
       });
+      return changed ? next : prev;
     });
+  }, [pyqList]);
 
-    setUserResponses(mapped);
-  }, [pyqList, repeatedPYQList]);
+  // Sync responses from repeatedPYQList (clusters)
+  useEffect(() => {
+    if (repeatedPYQList.length === 0) return;
+    setUserResponses(prev => {
+      const next = { ...prev };
+      let changed = false;
+      repeatedPYQList.forEach(group => {
+        group.questions.forEach(q => {
+          if (q.user_resp !== null && next[q.id] !== q.user_resp) {
+            next[q.id] = q.user_resp;
+            changed = true;
+          }
+        });
+      });
+      return changed ? next : prev;
+    });
+  }, [repeatedPYQList]);
 
   return (
     <PYQContext.Provider

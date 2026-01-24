@@ -8,6 +8,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Animated,
+  InteractionManager,
+  LayoutAnimation,
   ScrollView,
   StyleSheet,
   Text,
@@ -28,127 +30,162 @@ type PYQCardProps = {
   isSolved: boolean;
 };
 
-export interface PYQLite {
+export interface RepeatedQuestion {
   question_year: string;
   id: number;
   pyq_content: string;
   user_resp: string | null;
 }
 
-const PYQCard = React.memo(({ question, index, id, router, isSolved }: PYQCardProps) => {
-  const handleSolve = () => {
-    router.push({
-      pathname: "/pyq-detail",
-      params: {
-        currentIndex: index.toString(),
-        chapterId: id.toString(),
-      },
-    });
-  };
+export interface RepeatedPYQGroup {
+  chapter_name: string;
+  subject_name: string;
+  sub_topic: string;
+  repeat_count: string;
+  questions: RepeatedQuestion[];
+}
 
+const IndividualQuestionPreview = React.memo(({
+  q,
+  index,
+  isSolved,
+  onPress
+}: {
+  q: RepeatedQuestion;
+  index: number;
+  isSolved: boolean;
+  onPress: (idx: number) => void;
+}) => {
   return (
     <TouchableOpacity
-      style={styles.chapterTag}
-      onPress={handleSolve}
+      style={styles.questionPreview}
+      onPress={() => onPress(index)}
       activeOpacity={0.7}
     >
-      <View style={styles.titleRow}>
-        <View style={styles.questionTag}>
-          <Text style={styles.questionTagText}>Question {index + 1}</Text>
-        </View>
-
-        <View><Text style={{
-          fontSize: 12,
-          color: "#009933",
-          fontFamily: "SourceSans3SemiBold",
-        }}>{isSolved && "Solved"}</Text></View>
-      </View>
-
-      <View style={styles.questionContent}>
-        <MathText
-          content={question.pyq_content}
-        // baseStyle={styles.questionText}
-        />
-      </View>
-
-      <View style={styles.bottomSubRow}>
-        <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 12 }}>
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>Multiple Choice • 4 Options</Text>
+      <View style={styles.questionPreviewHeader}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <View style={styles.subjectTag}>
+            <Text style={styles.subjectTagText}>Question {index + 1}</Text>
           </View>
-
+          <Text style={styles.separator}>•</Text>
+          <Text style={styles.questionYearText}>{q.question_year}</Text>
         </View>
-        <TouchableOpacity style={styles.solveButton} onPress={handleSolve}>
-          <Text style={styles.solveButtonText}>Solve</Text>
-        </TouchableOpacity>
+        {isSolved && (
+          <Text style={styles.solvedText}>Solved</Text>
+        )}
       </View>
+      <MathText content={q.pyq_content || "No content available"} />
     </TouchableOpacity>
   );
 });
 
-interface AnalysisResult {
-  total: number;
-  answered: number;
-  correct: number;
-  accuracy: number;
-}
+const RepeatedPYQCard = React.memo(({ group, index, router, userResponses }: { group: RepeatedPYQGroup; index: number; router: any; userResponses: any }) => {
+  const { setPYQList } = usePYQContext();
+  const [expanded, setExpanded] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(2);
 
-export interface PYQItem {
-  question_year: string;
-  id: number;
-  pyq_content: string;
-  a: string;
-  b: string;
-  c: string;
-  d: string;
-  correct_option: string;
-  explanation_content: string;
-  user_resp: string | null;
-}
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (expanded && visibleCount < group.questions.length) {
+      timer = setTimeout(() => {
+        setVisibleCount(prev => Math.min(prev + 3, group.questions.length));
+      }, 50); // Fast incremental load
+    }
+    return () => clearTimeout(timer);
+  }, [expanded, visibleCount, group.questions.length]);
 
-export const getPYQAnalysis = (pyqList: PYQItem[]): AnalysisResult => {
-  const total = pyqList.length;
-
-  const answered = pyqList.filter(
-    (q) => q.user_resp !== null && q.user_resp !== ""
-  ).length;
-
-  const correct = pyqList.filter(
-    (q) =>
-      q.user_resp &&
-      q.user_resp.trim().toLowerCase() === q.correct_option.trim().toLowerCase()
-  ).length;
-
-  const accuracy = answered > 0 ? (correct / answered) * 100 : 0;
-
-  return {
-    total,
-    answered,
-    correct,
-    accuracy: Number(accuracy.toFixed(2)),
+  const toggleExpand = () => {
+    if (!expanded) {
+      setVisibleCount(2); // Start with a few
+    }
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setExpanded(!expanded);
   };
-};
+
+  const handleSolve = (questionIndex = 0) => {
+    // Set the global pyqList to questions in this cluster
+    setPYQList(group.questions as any);
+
+    InteractionManager.runAfterInteractions(() => {
+      router.push({
+        pathname: "/pyq-detail",
+        params: {
+          currentIndex: questionIndex.toString(),
+        },
+      });
+    });
+  };
+
+  const displayQuestions = expanded
+    ? group.questions.slice(0, visibleCount)
+    : [group.questions[0]];
+
+  return (
+    <View style={styles.repeatedCard}>
+      <View style={styles.cardHeader}>
+        <View style={styles.subjectRow}>
+          <View style={styles.subjectTag}>
+            <Text style={styles.subjectTagText}>{group.subject_name}</Text>
+          </View>
+          <Text style={styles.separator}>•</Text>
+          <Text style={styles.chapterText}>{group.chapter_name}</Text>
+        </View>
+        <View style={styles.repeatBadge}>
+          <Text style={styles.repeatBadgeText}>Repeated {group.repeat_count} Times</Text>
+        </View>
+      </View>
+
+      <Text style={styles.subTopicTitle}>{group.sub_topic}</Text>
+
+      <View style={styles.questionsContainer}>
+        {displayQuestions.map((q, qIndex) => (
+          <IndividualQuestionPreview
+            key={q.id}
+            q={q}
+            index={qIndex}
+            isSolved={!!userResponses[q.id.toString()] || !!q.user_resp}
+            onPress={handleSolve}
+          />
+        ))}
+        {expanded && visibleCount < group.questions.length && (
+          <QuestionCardSkeleton />
+        )}
+      </View>
+
+      <View style={styles.cardFooter}>
+        <View style={styles.yearList}>
+          {group.questions.length > 1 && (
+            <TouchableOpacity
+              onPress={toggleExpand}
+              style={styles.moreButton}
+            >
+              <Text style={styles.moreYears}>
+                {expanded ? "Show Less" : `+${group.questions.length - 1} more`}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        <TouchableOpacity style={styles.actionButton} onPress={() => handleSolve(0)}>
+          <Text style={styles.actionButtonText}>Solve Now</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+});
 
 export default function RepeatedPYQListScreen() {
   const router = useRouter();
-
   const [loading, setLoading] = useState(true);
   const { user, getToken } = useAuth();
 
-  const { pyqList, setPYQList, userResponses } = usePYQContext();
+  const { repeatedPYQList, setRepeatedPYQList, userResponses } = usePYQContext();
   const fadeAnim = useState(new Animated.Value(0))[0];
 
   usePreventScreenCapture();
 
-
-
   const fetchPYQs = async () => {
-    // If already in cache, just update the context and lite list
-
-
     setLoading(true);
     const token = await getToken();
-
     try {
       const response = await fetch(GET_REPEATED_PYQS, {
         method: "POST",
@@ -162,22 +199,10 @@ export default function RepeatedPYQListScreen() {
       });
 
       const json = await response.json();
-
-      console.log("Repeated PYQs", json);
-
       if (json.success) {
-
-        console.log("Success")
-        const fullData = json.pyqs || [];
-
-
-
-        // Update active context for details screen
-        setPYQList(fullData);
+        setRepeatedPYQList(json.data || []);
       } else {
-        // Handle case where year has no data
-
-        setPYQList([]);
+        setRepeatedPYQList([]);
       }
     } catch (err) {
       console.error("Error fetching PYQs", err);
@@ -191,16 +216,11 @@ export default function RepeatedPYQListScreen() {
     }
   };
 
-
-
-  // Effect for year change (after initial)
   useEffect(() => {
-
     fetchPYQs();
-
   }, []);
 
-  const listRef = React.useRef<ScrollView>(null);
+  const listRef = React.useRef<any>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const fadeAnim1 = React.useRef(new Animated.Value(0)).current;
 
@@ -208,28 +228,42 @@ export default function RepeatedPYQListScreen() {
     const y = e.nativeEvent.contentOffset.y;
     if (y > 250 && !showScrollTop) {
       setShowScrollTop(true);
-      Animated.timing(fadeAnim1, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
+      Animated.timing(fadeAnim1, { toValue: 1, duration: 200, useNativeDriver: true }).start();
     } else if (y <= 250 && showScrollTop) {
       setShowScrollTop(false);
-      Animated.timing(fadeAnim1, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
+      Animated.timing(fadeAnim1, { toValue: 0, duration: 200, useNativeDriver: true }).start();
     }
   };
 
   const scrollToTop = () => {
-    listRef.current?.scrollTo({ y: 0, animated: true });
+    listRef.current?.scrollToOffset({ offset: 0, animated: true });
   };
 
-  const filteredPYQs = useMemo(() => {
-    return pyqList || [];
-  }, [pyqList]);
+  const renderItem = React.useCallback(({ item, index }: { item: any, index: number }) => (
+    <RepeatedPYQCard
+      group={item}
+      index={index}
+      router={router}
+      userResponses={userResponses}
+    />
+  ), [router, userResponses]);
+
+  const headerComponent = useMemo(() => (
+    <View style={styles.resultsContainer}>
+      <View style={styles.screenHeader}>
+        <Text style={styles.title}>{"Repeated PYQs"}</Text>
+        <View>
+          {repeatedPYQList.length > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>
+                {repeatedPYQList.length} Repeated Types
+              </Text>
+            </View>
+          )}
+        </View>
+      </View>
+    </View>
+  ), [repeatedPYQList.length]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -242,83 +276,45 @@ export default function RepeatedPYQListScreen() {
       >
         <TopHeader title="Repeated PYQs" showBackArrow={true} />
 
-        <ScrollView
-          ref={listRef}
-          onScroll={handleScroll}
-          scrollEventThrottle={16}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
-        >
-          <View style={styles.resultsContainer}>
-            <View style={styles.screenHeader}>
-              <Text style={styles.title}>{"Repeated PYQs"}</Text>
-              <View>
-                {
-                  pyqList.length > 0 && (
-                    <View style={styles.badge}>
-                      <Text style={styles.badgeText}>
-                        {pyqList.length} Questions
-                      </Text>
-                    </View>
-                  )
-                }
-
-              </View>
-            </View>
+        {loading ? (
+          <View style={styles.listContent}>
+            <QuestionCardSkeleton />
+            <QuestionCardSkeleton />
+            <QuestionCardSkeleton />
+            <QuestionCardSkeleton />
           </View>
-
-
-
-
-          {/* Results Container Wrapper */}
-          <View style={styles.resultsContainer}>
-            {/* 🧮 Result Count */}
-            <View style={styles.resultRow}>
-              <Text style={styles.resultCount}>
-                Total Questions: {filteredPYQs.length}
-              </Text>
-            </View>
-
-            {loading ? (
-              <View style={{ paddingVertical: 0 }}>
-                <QuestionCardSkeleton />
-                <QuestionCardSkeleton />
-                <QuestionCardSkeleton />
-                <QuestionCardSkeleton />
-              </View>
-            ) : filteredPYQs.length === 0 ? (
-              <View style={styles.noResultsContainer}>
-                <Text style={styles.noResultTitle}>No Questions Found</Text>
-                <Text style={styles.noResultSub}>
-                  There are no repeated PYQs available at the moment.
-                </Text>
-              </View>
-            ) : (
-              filteredPYQs.map((item, index) => (
-                <PYQCard
-                  key={item.id}
-                  question={item}
-                  index={index}
-                  id={item.id.toString()}
-                  router={router}
-                  isSolved={!!userResponses[item.id.toString()] || !!item.user_resp}
-                />
-              ))
-            )}
+        ) : repeatedPYQList.length === 0 ? (
+          <View style={styles.noResultsContainer}>
+            <Text style={styles.noResultTitle}>No Questions Found</Text>
+            <Text style={styles.noResultSub}>
+              There are no repeated PYQs available at the moment.
+            </Text>
           </View>
-        </ScrollView>
+        ) : (
+          <Animated.FlatList
+            ref={listRef}
+            data={repeatedPYQList}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
+            ListHeaderComponent={headerComponent}
+            contentContainerStyle={styles.listContent}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+            showsVerticalScrollIndicator={false}
+            initialNumToRender={5}
+            windowSize={5}
+            removeClippedSubviews={true}
+          />
+        )}
         {showScrollTop && (
           <Animated.View style={[styles.scrollTopBtn, { opacity: fadeAnim1 }]}>
-            <TouchableOpacity
-              onPress={scrollToTop}
-              style={styles.scrollTopTouchable}
-            >
+            <TouchableOpacity onPress={scrollToTop} style={styles.scrollTopTouchable}>
               <Ionicons name="chevron-up" size={24} color="#000" />
             </TouchableOpacity>
           </Animated.View>
         )}
       </LinearGradient>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 }
 
@@ -397,38 +393,40 @@ const styles = StyleSheet.create({
     color: "#99b3e6",
     marginLeft: 2,
   },
-  resultsContainer: {
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    padding: 12, // Reduced padding to match chapters page feel
-
-    marginBottom: 20,
-  },
   resultRow: {
-    marginBottom: 16,
+    marginBottom: 20,
     paddingHorizontal: 4,
   },
   resultCount: {
     fontSize: 16,
     fontFamily: "SourceSans3SemiBold",
     color: "#004aad",
+    opacity: 0.8,
   },
-  chapterTag: {
-    width: "100%",
-    borderRadius: 16,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
+  resultsContainer: {
     backgroundColor: "#fff",
-    marginBottom: 16,
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 20,
   },
-  titleRow: {
+  repeatedCard: {
+    backgroundColor: "#fff",
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 20,
+  },
+  cardHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
+    alignItems: "flex-start",
+    marginBottom: 12,
   },
-  questionTag: {
+  subjectRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  subjectTag: {
     backgroundColor: "#f0f7d4",
     borderWidth: 1,
     borderColor: "#b6cf4f",
@@ -436,64 +434,110 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 2,
   },
-  questionTagText: {
+  subjectTagText: {
     fontSize: 12,
     color: "#8b9e3dff",
     fontFamily: "SourceSans3Medium",
   },
-  solveButton: {
+  separator: {
+    marginHorizontal: 6,
+    color: "#94a3b8",
+    fontSize: 12,
+  },
+  chapterText: {
+    fontSize: 12,
+    fontFamily: "SourceSans3Medium",
+    color: "#64748b",
+  },
+  repeatBadge: {
+    backgroundColor: "#fff2ee",
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    borderRadius: 99,
+    borderWidth: 1,
+    borderColor: "#ffdfd6",
+  },
+  repeatBadgeText: {
+    fontSize: 12,
+    color: "#ff5e32",
+    fontFamily: "SourceSans3Medium",
+  },
+  subTopicTitle: {
+    fontSize: 16,
+    fontFamily: "SourceSans3Medium",
+    color: "#1e293b",
+    marginBottom: 12,
+    lineHeight: 24,
+  },
+  questionPreview: {
+    backgroundColor: "#fff",
+    padding: 8,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    marginBottom: 12,
+  },
+  questionPreviewHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  questionYearText: {
+    fontSize: 12,
+    fontFamily: "SourceSans3Medium",
+    color: "#64748b",
+  },
+  solvedText: {
+    fontSize: 12,
+    color: "#009933",
+    fontFamily: "SourceSans3SemiBold",
+  },
+  questionsContainer: {
+    marginBottom: 12,
+  },
+  cardFooter: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  yearList: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  moreButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  yearTag: {
+    backgroundColor: "#fff",
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    marginRight: 6,
+  },
+  yearTagText: {
+    fontSize: 11,
+    color: "#475569",
+    fontFamily: "SourceSans3SemiBold",
+  },
+  moreYears: {
+    fontSize: 11,
+    color: "#94a3b8",
+    fontFamily: "SourceSans3Medium",
+  },
+  actionButton: {
     backgroundColor: "#ff5e32",
     paddingHorizontal: 18,
     paddingVertical: 6,
     borderRadius: 999,
   },
-  solveButtonText: {
+  actionButtonText: {
     color: "#fff",
     fontSize: 14,
     fontFamily: "SourceSans3SemiBold",
-  },
-  questionContent: {
-    marginBottom: 12,
-    marginTop: 8,
-  },
-  questionText: {
-    fontSize: 17,
-    color: "#000",
-    fontFamily: "SourceSans3SemiBold",
-  },
-  bottomSubRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  analysisTab: {
-    marginBottom: 20,
-    marginTop: 10,
-  },
-  cutoffWrapper: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 8,
-  },
-  cutoffBox: {
-    borderRadius: 12,
-    paddingVertical: 6,
-    minWidth: 70,
-    flex: 1,
-    alignItems: "center",
-  },
-  cutoffCategory: {
-    fontSize: 10,
-    letterSpacing: 0.4,
-    fontFamily: "SourceSans3Medium",
-  },
-  cutoffValue: {
-    fontSize: 16,
-    color: "#0F172A",
-    fontFamily: "SourceSans3SemiBold",
-    marginTop: -2,
   },
   noResultsContainer: {
     alignItems: "center",

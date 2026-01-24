@@ -83,13 +83,14 @@ const PopularSearches = ({ onTabChange }: { onTabChange: (tab: "notes" | "pyq" |
 const QuestionBank = () => {
   const router = useRouter();
   const items = [
-    // {
-    //   title: "Top 150 most repeating question",
-    //   icon: "repeat-outline",
-    //   color: "#FF9800",
-    //   route: "/repeated-pyqs",
+    {
+      title: "Most Repeating Questions",
+      subTitle: "150 PYQ's",
+      icon: "repeat-outline",
+      color: "#FF9800",
+      route: "/repeated-pyqs",
 
-    // },
+    },
     { title: "Top Easy Questions", subTitle: "150 PYQ's", icon: "rocket-outline", color: "#4CAF50", route: "/difficulty-pyqs", params: { difficulty: "Easy" } },
     { title: "Top Hard Questions", subTitle: "150 PYQ's", icon: "flame-outline", color: "#F44336", route: "/difficulty-pyqs", params: { difficulty: "Hard" } },
   ];
