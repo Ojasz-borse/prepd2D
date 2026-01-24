@@ -38,6 +38,7 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
   if (!visible) return null;
 
   const handlePayment = () => {
+    if(paymentTag == 'after_subscription') return;
     const upiUrl = `upi://pay?pa=9403343871@axl&pn=PrepCET&am=${upiAmount}&cu=INR&tn=prep-payment_id_${userId}_${paymentTag}`;
     Linking.openURL(upiUrl).catch((err) =>
       console.error("Couldn't load UPI", err)
