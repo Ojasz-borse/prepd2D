@@ -21,6 +21,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import QuestionCardSkeleton from "@/components/QuestionCardSkeleton";
 import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
+import SubscriptionLockSheet from "@/components/ShowLockScreen";
 
 type PYQCardProps = {
   question: any;
@@ -183,6 +185,8 @@ export default function RepeatedPYQListScreen() {
 
   usePreventScreenCapture();
 
+  const { showLock } = useSubscriptionLock({ gate: "before" });
+  
   const fetchPYQs = async () => {
     setLoading(true);
     const token = await getToken();
@@ -312,6 +316,19 @@ export default function RepeatedPYQListScreen() {
               <Ionicons name="chevron-up" size={24} color="#000" />
             </TouchableOpacity>
           </Animated.View>
+        )}
+
+        {showLock && (
+          <SubscriptionLockSheet
+            visible={showLock}
+            title="Before MHT-CET Plan"
+            description="Unlock most repeated MHT-CET questions (2019–2025)."
+            subDescription="To unlock repeated questions you must buy this plan."
+            priceText="Unlock Before MHT-CET Plan - ₹199"
+            upiAmount={199}
+            userId={user?.user_id}
+            paymentTag="before_subscription"
+          />
         )}
       </LinearGradient>
     </SafeAreaView>
