@@ -11,8 +11,12 @@ import Reanimated, {
   FadeIn,
   SlideInDown,
 } from "react-native-reanimated";
-import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system/legacy';
+import { decode } from "base64-arraybuffer";
 import { Image } from "expo-image";
+import { Alert } from "react-native";
+import * as ImagePicker from 'expo-image-picker';
+import { supabase } from "../hooks/supabase"; // Adjust the path based on your folder structure
 
 interface SubscriptionLockSheetProps {
   visible: boolean;
@@ -68,18 +72,74 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
 
   const handleSubmit = async () => {
     if (!screenshot) {
-      alert("Please upload a screenshot first!");
+      Alert.alert("Error", "Please upload a screenshot first!");
       return;
     }
 
     setIsSubmitting(true);
-    // TODO: Implement actual submission logic (upload to server)
-    setTimeout(() => {
+
+    try {
+      // 1. Get file extension (jpg/png)
+      const fileExt = screenshot.split('.').pop()?.toLowerCase() || 'jpg';
+      
+      // 2. Create a unique filename for the bucket
+      const fileName = `${userId}_${Date.now()}.${fileExt}`;
+
+      // 3. Read the file as Base64 string
+      // We use the string 'base64' directly to avoid TypeScript 'EncodingType' errors
+      const base64 = await FileSystem.readAsStringAsync(screenshot, {
+        encoding: 'base64', 
+      });
+
+      // 4. Convert Base64 to ArrayBuffer (What Supabase needs)
+      const arrayBuffer = decode(base64);
+
+      // 5. Upload directly to the 'payments' bucket
+      const { data, error: uploadError } = await supabase.storage
+        .from('payments')
+        .upload(fileName, arrayBuffer, {
+          contentType: `image/${fileExt}`,
+          upsert: true
+        });
+
+      if (uploadError) throw uploadError;
+
+      // 6. Get the Public URL to send to your backend
+      const { data: urlData } = supabase.storage
+        .from('payments')
+        .getPublicUrl(fileName);
+
+      const publicUrl = urlData.publicUrl;
+      const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
+      console.log("User id: ", userId)
+      console.log("screenshot_url; ", publicUrl)
+      console.log("Payment_tag: ", paymentTag)
+      // 7. Send the URL to your backend
+      const response = await fetch(`${SERVER_URL}/api/verify-payment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userId,          
+          screenshot_url: publicUrl,
+          payment_tag: paymentTag,  
+        }),
+      });
+
+
+      if (response.ok) {
+        Alert.alert("Success!", "Payment proof submitted successfully.");
+        setShowPaymentStep(false);
+        setScreenshot(null);
+      } else {
+        throw new Error("Backend failed to save record.");
+      }
+
+    } catch (error: any) {
+      console.error("Submission Error:", error);
+      Alert.alert("Upload Failed", error.message);
+    } finally {
       setIsSubmitting(false);
-      alert("Payment screenshot submitted! We will verify and activate your subscription soon.");
-      setShowPaymentStep(false);
-      setScreenshot(null);
-    }, 2000);
+    }
   };
 
   return (
@@ -133,7 +193,7 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
 
             <View style={styles.qrContainer}>
               <Image
-                source={require("../assets/images/pay-qr.png")}
+                source={require("../assets/images/pay-qr-2.png")}
                 style={styles.qrImage}
                 contentFit="contain"
               />
