@@ -23,6 +23,7 @@ import Animated, {
 } from "react-native-reanimated";
 import MockTestList from "./MockTestList";
 import SubscriptionLockSheet from "@/components/ShowLockScreen";
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 
 const MockTestLanding = ({ onTabChange }: { onTabChange: (tab: "mock") => void }) => {
   const items = [
@@ -63,8 +64,14 @@ const MockTestScreen = () => {
   const [activeTab, setActiveTab] = useState<"all" | "mock">("all");
   const [showLock, setShowLock] = useState(false);
 
+    const {
+  isAllowed
+} = useSubscriptionLock({
+  gate: "before",
+});
+
   useEffect(() => {
-    if (!loading && user && !user.is_subscribed_before && activeTab === "mock") {
+    if (!loading && !isAllowed && activeTab === "mock") {
       const timer = setTimeout(() => {
         setShowLock(true);
       }, 2000);
@@ -72,6 +79,7 @@ const MockTestScreen = () => {
     } else if (activeTab !== "mock") {
       setShowLock(false);
     }
+
   }, [loading, user, activeTab]);
 
   // Tab Measurement Logic

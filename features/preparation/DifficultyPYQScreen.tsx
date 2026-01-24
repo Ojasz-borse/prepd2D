@@ -1,20 +1,25 @@
 import MathText from "@/components/MathText";
 import TopHeader from "@/components/TopHeader";
-import { GET_DIFFICULTY_PYQS, GET_PYQS, GET_REPEATED_PYQS } from "@/constants/config";
+import { GET_DIFFICULTY_PYQS } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import { usePYQContext } from "@/context/PYQContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
-    Animated,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Animated,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import QuestionCardSkeleton from "@/components/QuestionCardSkeleton";
@@ -22,539 +27,440 @@ import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 import SubscriptionLockSheet from "@/components/ShowLockScreen";
 
-type PYQCardProps = {
-    question: any;
-    index: number;
-    id: string;
-    router: any;
-    isSolved: boolean;
-};
-
-export interface PYQLite {
-    question_year: string;
-    id: number;
-    pyq_content: string;
-    user_resp: string | null;
-}
-
-const PYQCard = React.memo(({ question, index, id, router, isSolved }: PYQCardProps) => {
+/* =========================
+   PYQ CARD (UNCHANGED UI)
+========================= */
+const PYQCard = React.memo(
+  ({ question, index, id, router, isSolved }: any) => {
     const handleSolve = () => {
-        
-        router.push({
-            pathname: "/pyq-detail",
-            params: {
-                currentIndex: index.toString(),
-                chapterId: id.toString(),
-            },
-        });
+      router.push({
+        pathname: "/pyq-detail",
+        params: {
+          currentIndex: index.toString(),
+          chapterId: id.toString(),
+        },
+      });
     };
 
     return (
-        <TouchableOpacity
-            style={styles.chapterTag}
+      <TouchableOpacity
+        style={styles.chapterTag}
+        onPress={handleSolve}
+        activeOpacity={0.7}
+      >
+        <View style={styles.titleRow}>
+          <View style={styles.questionTag}>
+            <Text style={styles.questionTagText}>
+              Question {index + 1}
+            </Text>
+          </View>
+
+          <Text
+            style={{
+              fontSize: 12,
+              color: "#009933",
+              fontFamily: "SourceSans3SemiBold",
+            }}
+          >
+            {isSolved && "Solved"}
+          </Text>
+        </View>
+
+        <View style={styles.questionContent}>
+          <MathText content={question.pyq_content} />
+        </View>
+
+        <View style={styles.bottomSubRow}>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>
+              Multiple Choice • 4 Options
+            </Text>
+          </View>
+
+          <TouchableOpacity
+            style={styles.solveButton}
             onPress={handleSolve}
-            activeOpacity={0.7}
-        >
-            <View style={styles.titleRow}>
-                <View style={styles.questionTag}>
-                    <Text style={styles.questionTagText}>Question {index + 1}</Text>
-                </View>
-
-                <View><Text style={{
-                    fontSize: 12,
-                    color: "#009933",
-                    fontFamily: "SourceSans3SemiBold",
-                }}>{isSolved && "Solved"}</Text></View>
-            </View>
-
-            <View style={styles.questionContent}>
-                <MathText
-                    content={question.pyq_content}
-                // baseStyle={styles.questionText}
-                />
-            </View>
-
-            <View style={styles.bottomSubRow}>
-                <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 12 }}>
-                    <View style={styles.badge}>
-                        <Text style={styles.badgeText}>Multiple Choice • 4 Options</Text>
-                    </View>
-
-                </View>
-                <TouchableOpacity style={styles.solveButton} onPress={handleSolve}>
-                    <Text style={styles.solveButtonText}>Solve</Text>
-                </TouchableOpacity>
-            </View>
-        </TouchableOpacity>
+          >
+            <Text style={styles.solveButtonText}>Solve</Text>
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
     );
-});
+  }
+);
 
-interface AnalysisResult {
-    total: number;
-    answered: number;
-    correct: number;
-    accuracy: number;
-}
-
-export interface PYQItem {
-    question_year: string;
-    id: number;
-    pyq_content: string;
-    a: string;
-    b: string;
-    c: string;
-    d: string;
-    correct_option: string;
-    explanation_content: string;
-    user_resp: string | null;
-}
-
-export const getPYQAnalysis = (pyqList: PYQItem[]): AnalysisResult => {
-    const total = pyqList.length;
-
-    const answered = pyqList.filter(
-        (q) => q.user_resp !== null && q.user_resp !== ""
-    ).length;
-
-    const correct = pyqList.filter(
-        (q) =>
-            q.user_resp &&
-            q.user_resp.trim().toLowerCase() === q.correct_option.trim().toLowerCase()
-    ).length;
-
-    const accuracy = answered > 0 ? (correct / answered) * 100 : 0;
-
-    return {
-        total,
-        answered,
-        correct,
-        accuracy: Number(accuracy.toFixed(2)),
-    };
-};
-
+/* =========================
+   SCREEN
+========================= */
 export default function DifficultyPYQScreen() {
-    const router = useRouter();
-    const { difficulty } = useLocalSearchParams<{ difficulty: string }>();
+  const router = useRouter();
+  const { difficulty } =
+    useLocalSearchParams<{ difficulty: string }>();
 
-    const [loading, setLoading] = useState(true);
-    const { user, getToken } = useAuth();
-
-    const { difficultyPYQList, setDifficultyPYQList, setPYQList, userResponses } = usePYQContext();
-    const fadeAnim = useState(new Animated.Value(0))[0];
-
-    usePreventScreenCapture();
-
+  const { user, getToken } = useAuth();
   const {
-  showLock,
-} = useSubscriptionLock({
-  gate: "before",
-});
+    difficultyPYQList,
+    setDifficultyPYQList,
+    setPYQList,
+    userResponses,
+  } = usePYQContext();
 
+  const [loading, setLoading] = useState(true);
+  const listRef = useRef<FlatList>(null);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const fadeScrollBtn = useRef(new Animated.Value(0)).current;
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
-    const fetchPYQs = async () => {
-        // If already in cache, just update the context and lite list
+  usePreventScreenCapture();
 
+  const { showLock } = useSubscriptionLock({
+    gate: "before",
+  });
 
-        setLoading(true);
-        const token = await getToken();
+  /* =========================
+     FETCH (UNCHANGED LOGIC)
+  ========================= */
+  const fetchPYQs = async () => {
+    setLoading(true);
+    const token = await getToken();
 
-        try {
-            const response = await fetch(GET_DIFFICULTY_PYQS, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: token ? `Bearer ${token}` : "",
-                },
-                body: JSON.stringify({
-                    user_id: user?.user_id,
-                    difficulty: difficulty || "Easy",
-                }),
-            });
+    try {
+      const response = await fetch(GET_DIFFICULTY_PYQS, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({
+          user_id: user?.user_id,
+          difficulty: difficulty || "Easy",
+        }),
+      });
 
-            const json = await response.json();
+      const json = await response.json();
+      const data = json.success ? json.pyqs || [] : [];
 
+      setDifficultyPYQList(data);
+      setPYQList(data);
+    } catch (e) {
+      console.error("Error fetching PYQs", e);
+    } finally {
+      setLoading(false);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
 
+  useEffect(() => {
+    if (difficulty) fetchPYQs();
+  }, [difficulty]);
 
-            if (json.success) {
+  /* =========================
+     MEMOIZED DATA (SAFE)
+  ========================= */
+  const filteredPYQs = useMemo(
+    () => difficultyPYQList || [],
+    [difficultyPYQList]
+  );
 
-                const fullData = json.pyqs || [];
+  const handleScroll = useCallback(
+    (e: any) => {
+      const y = e.nativeEvent.contentOffset.y;
 
-                // Update active context for details screen
-                setDifficultyPYQList(fullData);
-                setPYQList(fullData);
-            } else {
-                // Handle case where year has no data
+      if (y > 250 && !showScrollTop) {
+        setShowScrollTop(true);
+        Animated.timing(fadeScrollBtn, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
+      } else if (y <= 250 && showScrollTop) {
+        setShowScrollTop(false);
+        Animated.timing(fadeScrollBtn, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
+      }
+    },
+    [showScrollTop]
+  );
 
-                setDifficultyPYQList([]);
-                setPYQList([]);
-            }
-        } catch (err) {
-            console.error("Error fetching PYQs", err);
-        } finally {
-            setLoading(false);
-            Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: 400,
-                useNativeDriver: true,
-            }).start();
+  const renderItem = useCallback(
+    ({ item, index }: any) => (
+      <PYQCard
+        question={item}
+        index={index}
+        id={item.id}
+        router={router}
+        isSolved={
+          !!userResponses[item.id.toString()] ||
+          !!item.user_resp
         }
-    };
+      />
+    ),
+    [userResponses]
+  );
 
+  const scrollToTop = useCallback(() => {
+    listRef.current?.scrollToOffset({
+      offset: 0,
+      animated: true,
+    });
+  }, []);
 
+  const ListHeaderComponent = useCallback(() => (
+    <>
+      <View style={styles.resultsContainer}>
+        <View style={styles.screenHeader}>
+          <Text style={styles.title}>{`${difficulty || "Easy"} PYQs`}</Text>
+          <View>
+            {difficultyPYQList.length > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>
+                  {difficultyPYQList.length} Questions
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+      </View>
 
-    // Effect for difficulty change
-    useEffect(() => {
-        if (difficulty) {
-            fetchPYQs();
-        }
-    }, [difficulty]);
+      <View style={styles.resultsContainer}>
+        <View style={styles.resultRow}>
+          <Text style={styles.resultCount}>
+            Total Questions: {filteredPYQs.length}
+          </Text>
+        </View>
+      </View>
+    </>
+  ), [difficulty, difficultyPYQList.length, filteredPYQs.length]);
 
-    const listRef = React.useRef<ScrollView>(null);
-    const [showScrollTop, setShowScrollTop] = useState(false);
-    const fadeAnim1 = React.useRef(new Animated.Value(0)).current;
+  const ListEmptyComponent = useCallback(() => (
+    <View style={styles.noResultsContainer}>
+      <Text style={styles.noResultTitle}>No Questions Found</Text>
+      <Text style={styles.noResultSub}>
+        There are no difficulty PYQs available at the moment.
+      </Text>
+    </View>
+  ), []);
 
-    const handleScroll = (e: any) => {
-        const y = e.nativeEvent.contentOffset.y;
-        if (y > 250 && !showScrollTop) {
-            setShowScrollTop(true);
-            Animated.timing(fadeAnim1, {
-                toValue: 1,
-                duration: 200,
-                useNativeDriver: true,
-            }).start();
-        } else if (y <= 250 && showScrollTop) {
-            setShowScrollTop(false);
-            Animated.timing(fadeAnim1, {
-                toValue: 0,
-                duration: 200,
-                useNativeDriver: true,
-            }).start();
-        }
-    };
-
-    const scrollToTop = () => {
-        listRef.current?.scrollTo({ y: 0, animated: true });
-    };
-
-    const filteredPYQs = useMemo(() => {
-        return difficultyPYQList || [];
-    }, [difficultyPYQList]);
-
-    return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-            <LinearGradient
-                colors={["#f8fafc", "#e6f1ff", "#e8dcff"]}
-                locations={[0, 0.5, 1]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{ flex: 1 }}
-            >
-                <TopHeader title={`${difficulty || "Easy"} PYQs`} showBackArrow={true} />
-
-                <ScrollView
-                    ref={listRef}
-                    onScroll={handleScroll}
-                    scrollEventThrottle={16}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={styles.listContent}
-                >
-                    <View style={styles.resultsContainer}>
-                        <View style={styles.screenHeader}>
-                            <Text style={styles.title}>{`${difficulty || "Easy"} PYQs`}</Text>
-                            <View>
-                                {
-                                    difficultyPYQList.length > 0 && (
-                                        <View style={styles.badge}>
-                                            <Text style={styles.badgeText}>
-                                                {difficultyPYQList.length} Questions
-                                            </Text>
-                                        </View>
-                                    )
-                                }
-
-                            </View>
-                        </View>
-                    </View>
-
-
-
-
-                    {/* Results Container Wrapper */}
-                    <View style={styles.resultsContainer}>
-                        {/* 🧮 Result Count */}
-                        <View style={styles.resultRow}>
-                            <Text style={styles.resultCount}>
-                                Total Questions: {filteredPYQs.length}
-                            </Text>
-                        </View>
-
-                        {loading ? (
-                            <View style={{ paddingVertical: 0 }}>
-                                <QuestionCardSkeleton />
-                                <QuestionCardSkeleton />
-                                <QuestionCardSkeleton />
-                                <QuestionCardSkeleton />
-                            </View>
-                        ) : filteredPYQs.length === 0 ? (
-                            <View style={styles.noResultsContainer}>
-                                <Text style={styles.noResultTitle}>No Questions Found</Text>
-                                <Text style={styles.noResultSub}>
-                                    There are no difficulty PYQs available at the moment.
-                                </Text>
-                            </View>
-                        ) : (
-                            filteredPYQs.map((item, index) => (
-                                <PYQCard
-                                    key={item.id}
-                                    question={item}
-                                    index={index}
-                                    id={item.id.toString()}
-                                    router={router}
-                                    isSolved={!!userResponses[item.id.toString()] || !!item.user_resp}
-                                />
-                            ))
-                        )}
-                    </View>
-                </ScrollView>
-                {showScrollTop && (
-                    <Animated.View style={[styles.scrollTopBtn, { opacity: fadeAnim1 }]}>
-                        <TouchableOpacity
-                            onPress={scrollToTop}
-                            style={styles.scrollTopTouchable}
-                        >
-                            <Ionicons name="chevron-up" size={24} color="#000" />
-                        </TouchableOpacity>
-                    </Animated.View>
-                )}
-
-                 {showLock && (
-        <SubscriptionLockSheet
-          visible={showLock}
-          title="Before MHT-CET Plan"
-          description="Unlock 9,000+ real MHT-CET questions (2019–2025)."
-          subDescription="To unlock PYQs you must buy this plan."
-          priceText="Unlock Before MHT-CET Plan - ₹199"
-          upiAmount={199}
-          userId={user?.user_id}
-          paymentTag="before_subscription"
+  /* =========================
+     UI (COMPLETE FROM OLD CODE)
+  ========================= */
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+      <LinearGradient
+        colors={["#f8fafc", "#e6f1ff", "#e8dcff"]}
+        locations={[0, 0.5, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ flex: 1 }}
+      >
+        <TopHeader
+          title={`${difficulty || "Easy"} PYQs`}
+          showBackArrow={true}
         />
-      )}
-            </LinearGradient>
-        </SafeAreaView >
-    );
+
+        {loading ? (
+          <View style={{ padding: 16 }}>
+            <QuestionCardSkeleton />
+            <QuestionCardSkeleton />
+            <QuestionCardSkeleton />
+          </View>
+        ) : (
+          <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+            <FlatList
+              ref={listRef}
+              data={filteredPYQs}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={renderItem}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+              contentContainerStyle={styles.listContent}
+              showsVerticalScrollIndicator={false}
+              initialNumToRender={6}
+              maxToRenderPerBatch={8}
+              windowSize={10}
+              removeClippedSubviews
+              ListHeaderComponent={ListHeaderComponent}
+              ListEmptyComponent={filteredPYQs.length === 0 ? ListEmptyComponent : null}
+            />
+          </Animated.View>
+        )}
+
+        {showScrollTop && (
+          <Animated.View
+            style={[
+              styles.scrollTopBtn,
+              { opacity: fadeScrollBtn },
+            ]}
+          >
+            <TouchableOpacity
+              onPress={scrollToTop}
+              style={styles.scrollTopTouchable}
+            >
+              <Ionicons
+                name="chevron-up"
+                size={24}
+                color="#000"
+              />
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+
+        {showLock && (
+          <SubscriptionLockSheet
+            visible={showLock}
+            title="Before MHT-CET Plan"
+            description="Unlock 9,000+ real MHT-CET questions (2019–2025)."
+            subDescription="To unlock PYQs you must buy this plan."
+            priceText="Unlock Before MHT-CET Plan - ₹199"
+            upiAmount={199}
+            userId={user?.user_id}
+            paymentTag="before_subscription"
+          />
+        )}
+      </LinearGradient>
+    </SafeAreaView>
+  );
 }
 
+/* =========================
+   STYLES (FROM OLD CODE - COMPLETE)
+========================= */
 const styles = StyleSheet.create({
-    listContent: {
-        padding: 16,
-        paddingBottom: 32,
-    },
-    screenHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-
-    },
-    title: {
-        fontSize: 18,
-        fontFamily: "SourceSans3SemiBold",
-        color: "#004aad",
-        maxWidth: 200,
-    },
-    badge: {
-        borderWidth: 1,
-        borderColor: "#d9d9d9",
-        borderRadius: 99,
-        paddingHorizontal: 10,
-        paddingVertical: 2,
-    },
-    badgeText: {
-        fontSize: 12,
-        color: "#151515",
-        fontFamily: "SourceSans3Medium",
-    },
-    filterRow: {
-        marginHorizontal: 0, // Negative margin to allow chips to scroll to edges
-    },
-    yearChipsContainer: {
-
-        gap: 10,
-
-    },
-    yearChip: {
-        paddingHorizontal: 20,
-        paddingVertical: 6,
-        borderRadius: 99,
-        borderWidth: 1.5,
-        minWidth: 80,
-        alignItems: "center",
-        backgroundColor: "#fff",
-    },
-    activeYearChip: {
-        backgroundColor: "#ff5e32",
-        borderColor: "#ff5e32",
-    },
-    inactiveYearChip: {
-        borderColor: "#d9d9d9",
-    },
-    yearChipText: {
-        fontSize: 15,
-        fontFamily: "SourceSans3SemiBold",
-    },
-    activeYearChipText: {
-        color: "#fff",
-    },
-    inactiveYearChipText: {
-        color: "#404040",
-    },
-    clearFilterBtn: {
-        flexDirection: "row",
-        alignItems: "center",
-        alignSelf: "flex-end",
-        marginTop: 0,
-        marginBottom: 12,
-    },
-    clearFilterText: {
-        fontSize: 14,
-        fontFamily: "SourceSans3SemiBold",
-        color: "#99b3e6",
-        marginLeft: 2,
-    },
-    resultsContainer: {
-        backgroundColor: "#fff",
-        borderRadius: 20,
-        padding: 12, // Reduced padding to match chapters page feel
-
-        marginBottom: 20,
-    },
-    resultRow: {
-        marginBottom: 16,
-        paddingHorizontal: 4,
-    },
-    resultCount: {
-        fontSize: 16,
-        fontFamily: "SourceSans3SemiBold",
-        color: "#004aad",
-    },
-    chapterTag: {
-        width: "100%",
-        borderRadius: 16,
-        padding: 12,
-        borderWidth: 1,
-        borderColor: "#e2e8f0",
-        backgroundColor: "#fff",
-        marginBottom: 16,
-    },
-    titleRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 16,
-    },
-    questionTag: {
-        backgroundColor: "#f0f7d4",
-        borderWidth: 1,
-        borderColor: "#b6cf4f",
-        borderRadius: 99,
-        paddingHorizontal: 10,
-        paddingVertical: 2,
-    },
-    questionTagText: {
-        fontSize: 12,
-        color: "#8b9e3dff",
-        fontFamily: "SourceSans3Medium",
-    },
-    solveButton: {
-        backgroundColor: "#ff5e32",
-        paddingHorizontal: 18,
-        paddingVertical: 6,
-        borderRadius: 999,
-    },
-    solveButtonText: {
-        color: "#fff",
-        fontSize: 14,
-        fontFamily: "SourceSans3SemiBold",
-    },
-    questionContent: {
-        marginBottom: 12,
-        marginTop: 8,
-    },
-    questionText: {
-        fontSize: 17,
-        color: "#000",
-        fontFamily: "SourceSans3SemiBold",
-    },
-    bottomSubRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    analysisTab: {
-        marginBottom: 20,
-        marginTop: 10,
-    },
-    cutoffWrapper: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        justifyContent: "space-between",
-        alignItems: "center",
-        gap: 8,
-    },
-    cutoffBox: {
-        borderRadius: 12,
-        paddingVertical: 6,
-        minWidth: 70,
-        flex: 1,
-        alignItems: "center",
-    },
-    cutoffCategory: {
-        fontSize: 10,
-        letterSpacing: 0.4,
-        fontFamily: "SourceSans3Medium",
-    },
-    cutoffValue: {
-        fontSize: 16,
-        color: "#0F172A",
-        fontFamily: "SourceSans3SemiBold",
-        marginTop: -2,
-    },
-    noResultsContainer: {
-        alignItems: "center",
-        padding: 40,
-        marginTop: 20,
-    },
-    noResultTitle: {
-        fontSize: 20,
-        color: "#444",
-        fontFamily: "SourceSans3Bold",
-        marginTop: 16,
-        textAlign: "center",
-    },
-    noResultSub: {
-        fontSize: 15,
-        color: "#777",
-        fontFamily: "SourceSans3Regular",
-        textAlign: "center",
-        marginTop: 6,
-        lineHeight: 22,
-    },
-    scrollTopBtn: {
-        position: "absolute",
-        bottom: 20,
-        right: 20,
-        elevation: 5,
-    },
-    scrollTopTouchable: {
-        backgroundColor: "#e6e6e6",
-        width: 46,
-        height: 46,
-        borderRadius: 16,
-        borderWidth: 1,
-        borderColor: "#cccccc",
-        justifyContent: "center",
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 4, height: 6 },
-        shadowRadius: 3,
-    },
+  listContent: {
+    padding: 16,
+    paddingBottom: 32,
+  },
+  screenHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 18,
+    fontFamily: "SourceSans3SemiBold",
+    color: "#004aad",
+    maxWidth: 200,
+  },
+  badge: {
+    borderWidth: 1,
+    borderColor: "#d9d9d9",
+    borderRadius: 99,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+  },
+  badgeText: {
+    fontSize: 12,
+    color: "#151515",
+    fontFamily: "SourceSans3Medium",
+  },
+  resultsContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 12,
+    marginBottom: 20,
+  },
+  resultRow: {
+    marginBottom: 16,
+    paddingHorizontal: 4,
+  },
+  resultCount: {
+    fontSize: 16,
+    fontFamily: "SourceSans3SemiBold",
+    color: "#004aad",
+  },
+  chapterTag: {
+    width: "100%",
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    backgroundColor: "#fff",
+    marginBottom: 16,
+  },
+  titleRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  questionTag: {
+    backgroundColor: "#f0f7d4",
+    borderWidth: 1,
+    borderColor: "#b6cf4f",
+    borderRadius: 99,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+  },
+  questionTagText: {
+    fontSize: 12,
+    color: "#8b9e3dff",
+    fontFamily: "SourceSans3Medium",
+  },
+  solveButton: {
+    backgroundColor: "#ff5e32",
+    paddingHorizontal: 18,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  solveButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontFamily: "SourceSans3SemiBold",
+  },
+  questionContent: {
+    marginBottom: 12,
+    marginTop: 8,
+  },
+  bottomSubRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  noResultsContainer: {
+    alignItems: "center",
+    padding: 40,
+    marginTop: 20,
+  },
+  noResultTitle: {
+    fontSize: 20,
+    color: "#444",
+    fontFamily: "SourceSans3Bold",
+    marginTop: 16,
+    textAlign: "center",
+  },
+  noResultSub: {
+    fontSize: 15,
+    color: "#777",
+    fontFamily: "SourceSans3Regular",
+    textAlign: "center",
+    marginTop: 6,
+    lineHeight: 22,
+  },
+  scrollTopBtn: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    elevation: 5,
+  },
+  scrollTopTouchable: {
+    backgroundColor: "#e6e6e6",
+    width: 46,
+    height: 46,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#cccccc",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 4, height: 6 },
+    shadowRadius: 3,
+  },
 });

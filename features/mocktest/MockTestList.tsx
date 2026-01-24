@@ -1,4 +1,5 @@
 import MockTestCardSkeleton from "@/components/MockTestCardSkeleton";
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
@@ -22,6 +23,18 @@ const MockTestList: React.FC<MockTestListProps> = ({
 }) => {
   const router = useRouter();
 
+  const {
+    isAllowed
+  } = useSubscriptionLock({
+    gate: "before",
+  });
+  const handlerRoute = (id: number) => {
+    if (!isAllowed) return;
+    router.push({
+      pathname: "/start-mock-test",
+      params: { testid: id.toString() },
+    })
+  }
   if (error) {
     return (
       <View style={styles.centerContainer}>
@@ -64,12 +77,9 @@ const MockTestList: React.FC<MockTestListProps> = ({
             <View>
               <TouchableOpacity
                 style={styles.solveButton}
-              // onPress={() =>
-              //   router.push({
-              //     pathname: "/start-mock-test",
-              //     params: { testid: item.id.toString() },
-              //   })
-              // }
+                onPress={() =>
+                  handlerRoute(item.id)
+                }
               >
                 <Text style={styles.solveButtonText}>Solve</Text>
               </TouchableOpacity>
