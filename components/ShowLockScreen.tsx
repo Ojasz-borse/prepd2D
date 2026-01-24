@@ -44,14 +44,14 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
   if (!visible) return null;
 
   const handleInitialPay = () => {
-    // if (paymentTag === 'after_subscription') return;
+    if (paymentTag === 'after_subscription') return;
     setShowPaymentStep(true);
 
     // Optional: Also try to open UPI app immediately
-    const upiUrl = `upi://pay?pa=9403343871@axl&pn=PrepCET&am=${upiAmount}&cu=INR&tn=prep-payment_id_${userId}_${paymentTag}`;
-    Linking.openURL(upiUrl).catch((err) =>
-      console.log("UPI app not available or error:", err)
-    );
+    // const upiUrl = `upi://pay?pa=9403343871@axl&pn=PrepCET&am=${upiAmount}&cu=INR&tn=prep-payment_id_${userId}_${paymentTag}`;
+    // Linking.openURL(upiUrl).catch((err) =>
+    //   console.log("UPI app not available or error:", err)
+    // );
   };
 
   const pickImage = async () => {
