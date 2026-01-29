@@ -5,7 +5,7 @@ import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -22,6 +22,7 @@ interface PYQItem {
   c: string;
   d: string;
   correct_option: string;
+  explanation_content: string;
 }
 
 interface UserAnswer {
@@ -31,6 +32,7 @@ interface UserAnswer {
   options: { a: string; b: string; c: string; d: string };
   correct_option: string;
   user_choice: string | null;
+  explanation: string;
 }
 
 interface ExamProps {
@@ -38,11 +40,12 @@ interface ExamProps {
 }
 
 const formatTime = (seconds: number) => {
-  const m = Math.floor(seconds / 60)
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60)
     .toString()
     .padStart(2, "0");
   const s = (seconds % 60).toString().padStart(2, "0");
-  return `${m}:${s}`;
+  return h > 0 ? `${h}:${m}:${s}` : `${m}:${s}`;
 };
 
 const todayDate = () => {
@@ -64,8 +67,12 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
     "physics"
   );
   const [sectionLocked, setSectionLocked] = useState(false);
+  const [mathsUnlocked, setMathsUnlocked] = useState(false);
+  const [showMathConfirm, setShowMathConfirm] = useState(false);
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
 
   const [remainingSeconds, setRemainingSeconds] = useState(180 * 60); // 3 hours in seconds
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
 
@@ -124,6 +131,7 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
         options: { a: currentQ.a, b: currentQ.b, c: currentQ.c, d: currentQ.d },
         correct_option: currentQ.correct_option,
         user_choice: opt,
+        explanation: currentQ.explanation_content,
       };
 
       if (existsIndex !== -1) {
@@ -139,19 +147,20 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
 
 
   const handleSubmit = () => {
+    if (isSubmitting) return;
+
     if (remainingSeconds > 0) {
-      Alert.alert("Submit Test", "Do you really want to submit the test?", [
-        { text: "Cancel", style: "cancel" },
-        { text: "Yes", onPress: submitTest },
-      ]);
+      setShowSubmitConfirm(true);
     } else {
       submitTest();
     }
   };
 
   const submitTest = () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     // console.log("Submitted Answers: ", userAnswers);
-    router.push({
+    router.replace({
       pathname: "/result",
       params: { data: JSON.stringify(userAnswers) },
     });
@@ -159,8 +168,23 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
 
   const goNext = () => {
     if (!visited.includes(currentQ.id)) setVisited([...visited, currentQ.id]);
-    if (currentIndex < filteredQuestions.length - 1)
+
+    if (section === "physics" && currentIndex === 49) {
+      setSection("chemistry");
+      setCurrentIndex(0);
+      return;
+    }
+
+    if (section === "chemistry" && currentIndex === 49) {
+      if (!mathsUnlocked) {
+        setShowMathConfirm(true);
+        return;
+      }
+    }
+
+    if (currentIndex < filteredQuestions.length - 1) {
       setCurrentIndex(currentIndex + 1);
+    }
   };
 
   const goPrev = () => {
@@ -179,6 +203,21 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
     return "notAnswered";
   };
 
+  const handleFinalMathEntry = () => {
+    setMathsUnlocked(true);
+    setSectionLocked(true);
+    setSection("maths");
+    setCurrentIndex(0);
+    setShowMathConfirm(false);
+  };
+
+  const dropdownData: { label: string; value: "physics" | "chemistry" | "maths" }[] = mathsUnlocked
+    ? [{ label: "Mathematics", value: "maths" }]
+    : [
+      { label: "Physics", value: "physics" },
+      { label: "Chemistry", value: "chemistry" },
+    ];
+
   return (
     <View style={styles.section2Container}>
       {/* Header */}
@@ -187,7 +226,7 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
           Name : {user?.first_name} {user?.last_name}
         </Text>
         <Text style={styles.headerTextWhite}>Date : {todayDate()}</Text>
-        <Text style={styles.headerTextWhite}>
+        <Text style={[styles.headerTextWhite, { fontWeight: "bold", fontSize: 13 }]}>
           Remaining Time : {formatTime(remainingSeconds)}
         </Text>
       </View>
@@ -253,40 +292,36 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
                 <Text style={styles.markText}>Mark for Review</Text>
               </TouchableOpacity>
 
-              {/* ✅ dropdown (hide after maths selected) */}
-              {!sectionLocked && (
-                <View
+              {/* ✅ dropdown */}
+              <View
+                style={{
+                  width: 200,
+                  flexDirection: "row",
+                  gap: 8,
+                  alignItems: "center",
+                }}
+              >
+                <Text
                   style={{
-                    width: 200,
-                    flexDirection: "row",
-                    gap: 8,
-                    alignItems: "center",
+                    fontSize: 12,
+                    marginBottom: 2,
+                    color: "#000",
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      marginBottom: 2,
-                      color: "#000",
-                    }}
-                  >
-                    Section
-                  </Text>
-                  <CustomDropdown
-                    data={[
-                      { label: "Physics", value: "physics" },
-                      { label: "Chemistry", value: "chemistry" },
-                      { label: "Mathematics", value: "maths" },
-                    ]}
-                    value={section}
-                    onChange={(item) => {
-                      setSection(item.value);
-                      if (item.value === "maths") setSectionLocked(true);
-                      setCurrentIndex(0);
-                    }}
-                  />
-                </View>
-              )}
+                  Section
+                </Text>
+                <CustomDropdown
+                  data={dropdownData}
+                  value={section}
+                  onChange={(item) => {
+                    if (item.value === "maths" && !mathsUnlocked) {
+                      setShowMathConfirm(true);
+                      return;
+                    }
+                    setSection(item.value);
+                  }}
+                />
+              </View>
             </View>
           </View>
 
@@ -339,10 +374,10 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
         <TouchableOpacity
           style={[
             styles.bottomBtn,
-            currentIndex === filteredQuestions.length - 1 && { opacity: 0.5 },
+            currentIndex === filteredQuestions.length - 1 && section === "maths" && { opacity: 0.5 },
           ]}
           onPress={goNext}
-          disabled={currentIndex === filteredQuestions.length - 1}
+          disabled={currentIndex === filteredQuestions.length - 1 && section === "maths"}
         >
           <Text style={styles.bottomBtnText}>Next</Text>
         </TouchableOpacity>
@@ -361,6 +396,71 @@ const Exam: React.FC<ExamProps> = ({ questions }) => {
           <Text style={styles.bottomBtnText}>Submit Test</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Confirmation Modal for Maths */}
+      <Modal
+        visible={showMathConfirm}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowMathConfirm(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Start Mathematics Section?</Text>
+            <Text style={styles.modalBody}>
+              Once you start the Mathematics section, you will not be able to go back to Physics or Chemistry. Are you sure you want to proceed?
+            </Text>
+            <View style={styles.modalFooter}>
+              <TouchableOpacity
+                style={[styles.modalBtn, styles.modalCancelBtn]}
+                onPress={() => setShowMathConfirm(false)}
+              >
+                <Text style={styles.modalBtnText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalBtn, styles.modalConfirmBtn]}
+                onPress={handleFinalMathEntry}
+              >
+                <Text style={styles.modalBtnText}>Proceed</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Confirmation Modal for Submission */}
+      <Modal
+        visible={showSubmitConfirm}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowSubmitConfirm(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Submit Test?</Text>
+            <Text style={styles.modalBody}>
+              Are you sure you want to submit the test? You will not be able to change your answers once submitted.
+            </Text>
+            <View style={styles.modalFooter}>
+              <TouchableOpacity
+                style={[styles.modalBtn, styles.modalCancelBtn]}
+                onPress={() => setShowSubmitConfirm(false)}
+              >
+                <Text style={styles.modalBtnText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalBtn, { backgroundColor: "green", paddingVertical: 8, paddingHorizontal: 16, borderRadius: 4 }]}
+                onPress={() => {
+                  setShowSubmitConfirm(false);
+                  submitTest();
+                }}
+              >
+                <Text style={styles.modalBtnText}>Submit</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -541,5 +641,57 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 12,
     fontWeight: "bold",
+  },
+
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    width: "50%",
+    padding: 20,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#1a4d80",
+  },
+  modalBody: {
+    fontSize: 14,
+    color: "#333",
+    marginBottom: 20,
+    lineHeight: 20,
+  },
+  modalFooter: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 12,
+  },
+  modalBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+  },
+  modalCancelBtn: {
+    backgroundColor: "#ccc",
+  },
+  modalConfirmBtn: {
+    backgroundColor: "#1a4d80",
+  },
+  modalBtnText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
   },
 });

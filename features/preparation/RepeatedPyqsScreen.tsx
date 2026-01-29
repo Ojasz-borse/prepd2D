@@ -186,7 +186,7 @@ export default function RepeatedPYQListScreen() {
   usePreventScreenCapture();
 
   const { showLock } = useSubscriptionLock({ gate: "before" });
-  
+
   const fetchPYQs = async () => {
     setLoading(true);
     const token = await getToken();
@@ -224,7 +224,7 @@ export default function RepeatedPYQListScreen() {
     fetchPYQs();
   }, []);
 
-  const listRef = React.useRef<any>(null);
+  const listRef = React.useRef<ScrollView>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const fadeAnim1 = React.useRef(new Animated.Value(0)).current;
 
@@ -240,7 +240,7 @@ export default function RepeatedPYQListScreen() {
   };
 
   const scrollToTop = () => {
-    listRef.current?.scrollToOffset({ offset: 0, animated: true });
+    listRef.current?.scrollTo({ y: 0, animated: true });
   };
 
   const renderItem = React.useCallback(({ item, index }: { item: any, index: number }) => (
@@ -280,36 +280,54 @@ export default function RepeatedPYQListScreen() {
       >
         <TopHeader title="Repeated PYQs" showBackArrow={true} />
 
-        {loading ? (
-          <View style={styles.listContent}>
-            <QuestionCardSkeleton />
-            <QuestionCardSkeleton />
-            <QuestionCardSkeleton />
-            <QuestionCardSkeleton />
-          </View>
-        ) : repeatedPYQList.length === 0 ? (
-          <View style={styles.noResultsContainer}>
-            <Text style={styles.noResultTitle}>No Questions Found</Text>
-            <Text style={styles.noResultSub}>
-              There are no repeated PYQs available at the moment.
-            </Text>
-          </View>
-        ) : (
-          <Animated.FlatList
-            ref={listRef}
-            data={repeatedPYQList}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-            ListHeaderComponent={headerComponent}
-            contentContainerStyle={styles.listContent}
-            onScroll={handleScroll}
-            scrollEventThrottle={16}
-            showsVerticalScrollIndicator={false}
-            initialNumToRender={5}
-            windowSize={5}
-            removeClippedSubviews={true}
-          />
-        )}
+        <ScrollView
+          ref={listRef}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+        >
+          {headerComponent}
+
+          {loading ? (
+            <View style={styles.resultsContainer}>
+              <QuestionCardSkeleton />
+              <QuestionCardSkeleton />
+              <QuestionCardSkeleton />
+              <QuestionCardSkeleton />
+            </View>
+          ) : (
+            <Animated.View style={{ opacity: fadeAnim }}>
+              <View style={styles.resultsContainer}>
+                {/* 🧮 Result Count */}
+                <View style={styles.resultRow}>
+                  <Text style={styles.resultCount}>
+                    Total Repeated Types: {repeatedPYQList.length}
+                  </Text>
+                </View>
+
+                {repeatedPYQList.length === 0 ? (
+                  <View style={styles.noResultsContainer}>
+                    <Text style={styles.noResultTitle}>No Questions Found</Text>
+                    <Text style={styles.noResultSub}>
+                      There are no repeated PYQs available at the moment.
+                    </Text>
+                  </View>
+                ) : (
+                  repeatedPYQList.map((item, index) => (
+                    <RepeatedPYQCard
+                      key={index}
+                      group={item}
+                      index={index}
+                      router={router}
+                      userResponses={userResponses}
+                    />
+                  ))
+                )}
+              </View>
+            </Animated.View>
+          )}
+        </ScrollView>
         {showScrollTop && (
           <Animated.View style={[styles.scrollTopBtn, { opacity: fadeAnim1 }]}>
             <TouchableOpacity onPress={scrollToTop} style={styles.scrollTopTouchable}>
@@ -418,15 +436,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "SourceSans3SemiBold",
     color: "#004aad",
-    opacity: 0.8,
   },
   resultsContainer: {
     backgroundColor: "#fff",
-    borderRadius: 18,
-    padding: 16,
+    borderRadius: 20,
+    padding: 12,
     marginBottom: 20,
   },
   repeatedCard: {
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
     backgroundColor: "#fff",
     borderRadius: 18,
     padding: 16,

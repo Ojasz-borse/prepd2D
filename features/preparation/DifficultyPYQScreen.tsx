@@ -15,6 +15,7 @@ import React, {
 import {
   Animated,
   FlatList,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -106,7 +107,7 @@ export default function DifficultyPYQScreen() {
   } = usePYQContext();
 
   const [loading, setLoading] = useState(true);
-  const listRef = useRef<FlatList>(null);
+  const listRef = useRef<ScrollView>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const fadeScrollBtn = useRef(new Animated.Value(0)).current;
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -206,38 +207,28 @@ export default function DifficultyPYQScreen() {
   );
 
   const scrollToTop = useCallback(() => {
-    listRef.current?.scrollToOffset({
-      offset: 0,
+    listRef.current?.scrollTo({
+      y: 0,
       animated: true,
     });
   }, []);
 
   const ListHeaderComponent = useCallback(() => (
-    <>
-      <View style={styles.resultsContainer}>
-        <View style={styles.screenHeader}>
-          <Text style={styles.title}>{`${difficulty || "Easy"} PYQs`}</Text>
-          <View>
-            {difficultyPYQList.length > 0 && (
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>
-                  {difficultyPYQList.length} Questions
-                </Text>
-              </View>
-            )}
-          </View>
+    <View style={styles.resultsContainer}>
+      <View style={styles.screenHeader}>
+        <Text style={styles.title}>{`${difficulty || "Easy"} PYQs`}</Text>
+        <View>
+          {difficultyPYQList.length > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>
+                {difficultyPYQList.length} Questions
+              </Text>
+            </View>
+          )}
         </View>
       </View>
-
-      <View style={styles.resultsContainer}>
-        <View style={styles.resultRow}>
-          <Text style={styles.resultCount}>
-            Total Questions: {filteredPYQs.length}
-          </Text>
-        </View>
-      </View>
-    </>
-  ), [difficulty, difficultyPYQList.length, filteredPYQs.length]);
+    </View>
+  ), [difficulty, difficultyPYQList.length]);
 
   const ListEmptyComponent = useCallback(() => (
     <View style={styles.noResultsContainer}>
@@ -265,32 +256,49 @@ export default function DifficultyPYQScreen() {
           showBackArrow={true}
         />
 
-        {loading ? (
-          <View style={{ padding: 16 }}>
-            <QuestionCardSkeleton />
-            <QuestionCardSkeleton />
-            <QuestionCardSkeleton />
+        <ScrollView
+          ref={listRef}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+        >
+          <ListHeaderComponent />
+
+          {/* Results Container Wrapper */}
+          <View style={styles.resultsContainer}>
+            {/* 🧮 Result Count */}
+            <View style={styles.resultRow}>
+              <Text style={styles.resultCount}>
+                Total Questions: {filteredPYQs.length}
+              </Text>
+            </View>
+
+            {loading ? (
+              <View style={{ paddingVertical: 0 }}>
+                <QuestionCardSkeleton />
+                <QuestionCardSkeleton />
+                <QuestionCardSkeleton />
+              </View>
+            ) : filteredPYQs.length === 0 ? (
+              <ListEmptyComponent />
+            ) : (
+              filteredPYQs.map((item, index) => (
+                <PYQCard
+                  key={item.id}
+                  question={item}
+                  index={index}
+                  id={item.id}
+                  router={router}
+                  isSolved={
+                    !!userResponses[item.id.toString()] ||
+                    !!item.user_resp
+                  }
+                />
+              ))
+            )}
           </View>
-        ) : (
-          <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
-            <FlatList
-              ref={listRef}
-              data={filteredPYQs}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderItem}
-              onScroll={handleScroll}
-              scrollEventThrottle={16}
-              contentContainerStyle={styles.listContent}
-              showsVerticalScrollIndicator={false}
-              initialNumToRender={6}
-              maxToRenderPerBatch={8}
-              windowSize={10}
-              removeClippedSubviews
-              ListHeaderComponent={ListHeaderComponent}
-              ListEmptyComponent={filteredPYQs.length === 0 ? ListEmptyComponent : null}
-            />
-          </Animated.View>
-        )}
+        </ScrollView>
 
         {showScrollTop && (
           <Animated.View

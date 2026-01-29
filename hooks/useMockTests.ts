@@ -122,6 +122,8 @@ export function useMockTests() {
         if (!data.success || !data.questions)
           throw new Error("Failed to fetch test questions");
 
+        
+
         return data.questions; // ✅ return fresh results
       } catch (err) {
         console.error("Error fetching test questions:", err);

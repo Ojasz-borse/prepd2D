@@ -5,6 +5,7 @@ import {
   LayoutChangeEvent,
   PanResponder,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -96,7 +97,7 @@ const QuestionBank = () => {
   ];
 
   return (
-    <View style={[styles.card, { marginTop: 12 }]}>
+    <View style={[styles.card, { marginTop: 16, marginBottom: 16 }]}>
       <Text style={styles.heading}>Question Bank</Text>
 
       <View style={{ gap: 12 }}>
@@ -295,7 +296,11 @@ export default function Preparation() {
       {/* Content */}
       <View style={styles.contentWrapper} {...panResponder.panHandlers}>
         {activeTab === "all" && (
-          <View style={{ paddingHorizontal: 16 }}>
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingHorizontal: 16 }}
+            showsVerticalScrollIndicator={true}
+          >
             {/* Banner */}
             <LinearGradient
               colors={["#004aad", "#0073e6"]}
@@ -318,7 +323,7 @@ export default function Preparation() {
 
             <PopularSearches onTabChange={handleTabChange} />
             <QuestionBank />
-          </View>
+          </ScrollView>
         )}
         {activeTab === "notes" && (
           <View style={{ paddingHorizontal: 12 }}>
@@ -431,6 +436,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 12,
+
   },
   gridItem: {
     width: "48%", // 2 in a row
