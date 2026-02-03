@@ -2,6 +2,7 @@
 import { CACHE_MY_COLLEGES_LIST, CACHE_TTL } from "@/constants/cacheStorageConfig";
 import { MY_LIST_API_URL } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
+import { apiFetch, fetchWithRetry } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useState } from "react";
 
@@ -14,22 +15,6 @@ export function useMyList() {
   const [saving, setSaving] = useState(false);
   const { getToken } = useAuth();
 
-  const fetchWithRetry = useCallback(
-    async (url: string, options: RequestInit, retries = 3, delay = 1000) => {
-      try {
-        const res = await fetch(url, options);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res;
-      } catch (err) {
-        if (retries > 0) {
-          await new Promise((r) => setTimeout(r, delay));
-          return fetchWithRetry(url, options, retries - 1, delay * 2);
-        }
-        throw err;
-      }
-    },
-    []
-  );
 
   const loadList = useCallback(async () => {
     try {
@@ -68,7 +53,7 @@ export function useMyList() {
     } finally {
       setLoading(false);
     }
-  }, [getToken, fetchWithRetry]);
+  }, [getToken]);
 
   const saveList = useCallback(
     async (newCodes: string[]) => {
@@ -83,7 +68,7 @@ export function useMyList() {
         setCodes(newCodes);
 
         if (token) {
-          await fetch(MY_LIST_API_URL, {
+          await apiFetch(MY_LIST_API_URL, {
             method: "POST",
             headers: {
               Authorization: `Bearer ${token}`,

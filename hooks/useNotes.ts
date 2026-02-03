@@ -1,5 +1,6 @@
 import { GET_NOTES_CHAPTERS } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
+import { fetchWithRetry } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useState } from "react";
 
@@ -37,23 +38,6 @@ export function useNotes() {
     const [error, setError] = useState<string | null>(null);
     const { getToken } = useAuth();
 
-    // Retry helper
-    const fetchWithRetry = useCallback(
-        async (url: string, options: RequestInit, retries = 3, delay = 1000) => {
-            try {
-                const res = await fetch(url, options);
-                if (!res.ok) throw new Error(`HTTP error! ${res.status}`);
-                return res;
-            } catch (err) {
-                if (retries > 0) {
-                    await new Promise((r) => setTimeout(r, delay));
-                    return fetchWithRetry(url, options, retries - 1, delay * 2);
-                }
-                throw err;
-            }
-        },
-        []
-    );
 
     const loadNotes = useCallback(async () => {
         // console.log("called loadNotes");
@@ -114,7 +98,7 @@ export function useNotes() {
         } finally {
             setLoading(false);
         }
-    }, [getToken, fetchWithRetry]);
+    }, [getToken]);
 
     // Auto-load on mount
     useEffect(() => {

@@ -344,13 +344,8 @@ export default function Preparation() {
         {showLock && (
           <SubscriptionLockSheet
             visible={showLock}
-            title="Before MHT-CET Plan"
-            description="Unlock 9,000+ real MHT-CET questions (2019–2025)."
-            subDescription="To unlock PYQs you must buy this plan."
-            priceText="Unlock Before MHT-CET Plan - ₹199"
-            upiAmount={199}
-            userId={user?.user_id}
-            paymentTag="before_subscription"
+            planType="before"
+            onClose={() => setShowLock(false)}
           />
         )}
       </View>

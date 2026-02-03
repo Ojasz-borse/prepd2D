@@ -3,6 +3,7 @@ import SyllabusChapterCardSkeleton from "@/components/SyllabusChapterCardSkeleto
 import TopHeader from "@/components/TopHeader";
 import { GET_NOTES } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/services/api";
 import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -77,7 +78,7 @@ export default function NotesListScreen() {
             const token = await getToken();
 
             try {
-                const response = await fetch(GET_NOTES, {
+                const response = await apiFetch(GET_NOTES, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

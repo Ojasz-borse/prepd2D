@@ -9,6 +9,7 @@ import CollegeFeesSkeleton from "@/components/CollegeFeesSkeleton";
 import TopHeader from "@/components/TopHeader";
 import { GET_COLLEGES } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/services/api";
 import CollegeFees from "@/features/colleges/CollegeFees";
 import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -88,7 +89,7 @@ export default function CollegeDetails() {
       try {
         const token = await getToken();
 
-        const res = await fetch(GET_COLLEGE_DETAILS, {
+        const res = await apiFetch(GET_COLLEGE_DETAILS, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -122,7 +123,7 @@ export default function CollegeDetails() {
       try {
         const token = await getToken();
 
-        const res = await fetch(GET_COLLEGE_DETAILS_BRANCHES, {
+        const res = await apiFetch(GET_COLLEGE_DETAILS_BRANCHES, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

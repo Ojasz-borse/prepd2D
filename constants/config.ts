@@ -43,4 +43,8 @@ export const GET_REPEATED_PYQS = `${extra.SERVER_URL}/api/pyqs/categories/repeat
 
 export const GET_DIFFICULTY_PYQS = `${extra.SERVER_URL}/api/pyqs/categories/difficulty`;
 
+export const CREATE_ORDER = `${extra.SERVER_URL}/api/payment/create-order`;
+
+export const VERIFY_ORDER = `${extra.SERVER_URL}/api/payment/verify-order`;
+
 

@@ -2,6 +2,7 @@ import MathText from "@/components/MathText";
 import TopHeader from "@/components/TopHeader";
 import { GET_DIFFICULTY_PYQS } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/services/api";
 import { usePYQContext } from "@/context/PYQContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -114,7 +115,7 @@ export default function DifficultyPYQScreen() {
 
   usePreventScreenCapture();
 
-  const { showLock } = useSubscriptionLock({
+  const { showLock, closeLock } = useSubscriptionLock({
     gate: "before",
   });
 
@@ -126,7 +127,7 @@ export default function DifficultyPYQScreen() {
     const token = await getToken();
 
     try {
-      const response = await fetch(GET_DIFFICULTY_PYQS, {
+      const response = await apiFetch(GET_DIFFICULTY_PYQS, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -199,7 +200,8 @@ export default function DifficultyPYQScreen() {
         router={router}
         isSolved={
           !!userResponses[item.id.toString()] ||
-          !!item.user_resp
+          !!item.user_resp ||
+          !!(item as any).user_response
         }
       />
     ),
@@ -292,7 +294,8 @@ export default function DifficultyPYQScreen() {
                   router={router}
                   isSolved={
                     !!userResponses[item.id.toString()] ||
-                    !!item.user_resp
+                    !!item.user_resp ||
+                    !!(item as any).user_response
                   }
                 />
               ))
@@ -323,13 +326,8 @@ export default function DifficultyPYQScreen() {
         {showLock && (
           <SubscriptionLockSheet
             visible={showLock}
-            title="Before MHT-CET Plan"
-            description="Unlock 9,000+ real MHT-CET questions (2019–2025)."
-            subDescription="To unlock PYQs you must buy this plan."
-            priceText="Unlock Before MHT-CET Plan - ₹199"
-            upiAmount={199}
-            userId={user?.user_id}
-            paymentTag="before_subscription"
+            planType="before"
+            onClose={closeLock}
           />
         )}
       </LinearGradient>

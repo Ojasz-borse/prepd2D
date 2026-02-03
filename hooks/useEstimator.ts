@@ -1,5 +1,6 @@
 import { PREDICT_PERCENTILE, PREDICT_RANK } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/services/api";
 import { useState } from "react";
 
 export function useEstimator() {
@@ -20,7 +21,7 @@ export function useEstimator() {
 
       // console.log("PREDICT_PERCENTILE", PREDICT_PERCENTILE);
 
-      const res = await fetch(PREDICT_PERCENTILE, {
+      const res = await apiFetch(PREDICT_PERCENTILE, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "", },
         body: JSON.stringify({ score, shift }),
@@ -46,7 +47,7 @@ export function useEstimator() {
       setLoading(true);
       setError(null);
 
-      const res = await fetch(PREDICT_RANK, {
+      const res = await apiFetch(PREDICT_RANK, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "", },
         body: JSON.stringify({ overallPercentile, mathPercentile, physicsPercentile, chemPercentile }),

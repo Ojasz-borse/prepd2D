@@ -1,4 +1,5 @@
 import { SAVE_PUSH_TOKEN } from "@/constants/config";
+import { apiFetch } from "@/services/api";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
@@ -55,7 +56,7 @@ export async function registerForPushNotificationsAsync(authToken: string | null
     // console.log("auth token", authToken);
 
     // Send token to backend
-    const response = await fetch(SAVE_PUSH_TOKEN, {
+    const response = await apiFetch(SAVE_PUSH_TOKEN, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

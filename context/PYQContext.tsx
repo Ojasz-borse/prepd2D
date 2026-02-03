@@ -74,8 +74,10 @@ export const PYQProvider = ({ children }: { children: ReactNode }) => {
       const next = { ...prev };
       let changed = false;
       pyqList.forEach(q => {
-        if (q.user_resp !== null && next[q.id] !== q.user_resp) {
-          next[q.id] = q.user_resp;
+        // Handle both user_resp and user_response
+        const resp = q.user_resp || (q as any).user_response;
+        if (resp && next[q.id] !== resp) {
+          next[q.id] = resp;
           changed = true;
         }
       });
@@ -91,8 +93,10 @@ export const PYQProvider = ({ children }: { children: ReactNode }) => {
       let changed = false;
       repeatedPYQList.forEach(group => {
         group.questions.forEach(q => {
-          if (q.user_resp !== null && next[q.id] !== q.user_resp) {
-            next[q.id] = q.user_resp;
+          // Handle both user_resp and user_response
+          const resp = q.user_resp || (q as any).user_response;
+          if (resp && next[q.id] !== resp) {
+            next[q.id] = resp;
             changed = true;
           }
         });

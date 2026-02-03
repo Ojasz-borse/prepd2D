@@ -2,6 +2,7 @@ import MathText from "@/components/MathText";
 import TopHeader from "@/components/TopHeader";
 import { UPDATE_USER_RESPONSE } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/services/api";
 import { usePYQContext } from "@/context/PYQContext";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -71,7 +72,7 @@ export default function PYQDetailsPage() {
   const sendToServer = async (questionId: string, answer: string) => {
     try {
       const token = await getToken();
-      const response = await fetch(UPDATE_USER_RESPONSE, {
+      const response = await apiFetch(UPDATE_USER_RESPONSE, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

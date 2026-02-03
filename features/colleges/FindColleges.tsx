@@ -277,15 +277,9 @@ export default function FindColleges() {
         {showLock && (
           <SubscriptionLockSheet
             visible={showLock}
-            title="After MHT-CET Plan"
-            description="Unlock accurate data of all colleges in Maharashtra."
-            subDescription="To unlock Colleges you must buy this plan."
-            priceText="Unlock After MHT-CET Plan - ₹199"
-            upiAmount={199}
-            userId={user?.user_id}
-            paymentTag="after_subscription"
+            planType="after"
+            onClose={() => setShowLock(false)}
           />
-
         )}
       </View>
     </LinearGradient>

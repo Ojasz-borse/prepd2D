@@ -476,14 +476,8 @@ export default function EstimatorScreen() {
               {!isAllowed && showLock && (
                 <SubscriptionLockSheet
                   visible={showLock}
-                  title="After MHT-CET Plan"
-                  description="Unlock Estimator to predict your most accurate Percentile from your Marks & Rank from Percentile."
-                  subDescription="To unlock Estimator you must buy this plan."
-                  priceText="Unlock After MHT-CET Plan - ₹199"
-                  upiAmount={199}
-                  userId={user?.user_id}
-                  paymentTag="after_subscription"
-
+                  planType="after"
+                  onClose={() => setShowLock(false)}
                 />
 
               )}
@@ -593,13 +587,8 @@ export default function EstimatorScreen() {
               {showLock && (
                 <SubscriptionLockSheet
                   visible={showLock}
-                  title="After MHT-CET Plan"
-                  description="Unlock Estimator to predict your most accurate Percentile from your Marks & Rank from Percentile."
-                  subDescription="To unlock Estimator you must buy this plan."
-                  priceText="Unlock After MHT-CET Plan - ₹199"
-                  upiAmount={199}
-                  userId={user?.user_id}
-                  paymentTag="after_subscription"
+                  planType="after"
+                  onClose={() => setShowLock(false)}
                 />
 
               )}

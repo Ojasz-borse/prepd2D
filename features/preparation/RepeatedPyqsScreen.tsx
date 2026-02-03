@@ -2,6 +2,7 @@ import MathText from "@/components/MathText";
 import TopHeader from "@/components/TopHeader";
 import { GET_PYQS, GET_REPEATED_PYQS } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/services/api";
 import { usePYQContext } from "@/context/PYQContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -145,7 +146,7 @@ const RepeatedPYQCard = React.memo(({ group, index, router, userResponses }: { g
             key={q.id}
             q={q}
             index={qIndex}
-            isSolved={!!userResponses[q.id.toString()] || !!q.user_resp}
+            isSolved={!!userResponses[q.id.toString()] || !!q.user_resp || !!(q as any).user_response}
             onPress={handleSolve}
           />
         ))}
@@ -185,13 +186,14 @@ export default function RepeatedPYQListScreen() {
 
   usePreventScreenCapture();
 
-  const { showLock } = useSubscriptionLock({ gate: "before" });
+  const { showLock, closeLock } = useSubscriptionLock({ gate: "before" });
 
   const fetchPYQs = async () => {
     setLoading(true);
     const token = await getToken();
     try {
-      const response = await fetch(GET_REPEATED_PYQS, {
+      const startTime = performance.now();
+      const response = await apiFetch(GET_REPEATED_PYQS, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -203,11 +205,20 @@ export default function RepeatedPYQListScreen() {
       });
 
       const json = await response.json();
+
+      // ⏱️ end time
+      const endTime = performance.now();
+      console.log(
+        `fetchPYQs API time: ${(endTime - startTime).toFixed(2)} ms`
+      );
       if (json.success) {
         setRepeatedPYQList(json.data || []);
+
       } else {
         setRepeatedPYQList([]);
       }
+
+
     } catch (err) {
       console.error("Error fetching PYQs", err);
     } finally {
@@ -221,6 +232,7 @@ export default function RepeatedPYQListScreen() {
   };
 
   useEffect(() => {
+
     fetchPYQs();
   }, []);
 
@@ -339,13 +351,8 @@ export default function RepeatedPYQListScreen() {
         {showLock && (
           <SubscriptionLockSheet
             visible={showLock}
-            title="Before MHT-CET Plan"
-            description="Unlock most repeated MHT-CET questions (2019–2025)."
-            subDescription="To unlock repeated questions you must buy this plan."
-            priceText="Unlock Before MHT-CET Plan - ₹199"
-            upiAmount={199}
-            userId={user?.user_id}
-            paymentTag="before_subscription"
+            planType="before"
+            onClose={closeLock}
           />
         )}
       </LinearGradient>
