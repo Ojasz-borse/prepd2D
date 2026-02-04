@@ -57,6 +57,7 @@ export default {
         },
         extra: {
             SERVER_URL: process.env.SERVER_URL,
+            RAZORPAY_KEY: process.env.RAZORPAY_KEY,
             eas: {
                 projectId: "4bdd8255-e16b-4789-91b2-24afb5107930"
             }

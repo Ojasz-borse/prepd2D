@@ -12,9 +12,18 @@ import Reanimated, {
 } from "react-native-reanimated";
 import RazorpayCheckout from "react-native-razorpay";
 import { Alert } from "react-native";
-import { CREATE_ORDER, VERIFY_ORDER } from "@/constants/config";
+import { CREATE_ORDER, RAZORPAY_KEY, VERIFY_ORDER } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import { apiFetch } from "@/services/api";
+
+
+type RazorpaySuccess = {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+};
+
+
 
 
 interface SubscriptionLockSheetProps {
@@ -22,6 +31,7 @@ interface SubscriptionLockSheetProps {
   planType: "before" | "after";
   onClose?: () => void;
 }
+
 
 const CONTENT_MAP = {
   before: {
@@ -41,7 +51,7 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
   planType,
   onClose,
 }) => {
-  const { getToken } = useAuth();
+  const { getToken, user } = useAuth();
   if (!visible) return null;
 
   const content = CONTENT_MAP[planType] || CONTENT_MAP.before;
@@ -49,18 +59,30 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
 
 
   const startPayment = async () => {
+
     try {
       const token = await getToken();
-      // 1️⃣ Call backend to create order
+
       const res = await apiFetch(CREATE_ORDER, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: token ? `Bearer ${token}` : "",
         },
+        body: JSON.stringify({ user_id: user?.user_id, payment_tag: planType }),
       });
 
-      console.log("res", res);
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Payment Order Creation Failed:", {
+          status: res.status,
+          statusText: res.statusText,
+          body: errorText,
+          url: CREATE_ORDER
+        });
+        throw new Error(`Server returned ${res.status}: ${errorText.substring(0, 100)}`);
+      }
+
       const order = await res.json();
 
       // 2️⃣ Razorpay options
@@ -68,37 +90,51 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
         description: "PrepCET Subscription",
         // image: "https://yourdomain.com/logo.png",
         currency: "INR",
-        key: "rzp_test_xxxxxxxx", // TEST KEY ONLY
+        key: RAZORPAY_KEY, // TEST KEY ONLY
         amount: order.amount,
         order_id: order.id,
         name: "PrepCET",
         prefill: {
-          email: "student@test.com",
-          contact: "+919999999999",
-          name: "Student Name",
+          email: user?.email,
+          name: user?.first_name + " " + user?.last_name,
         },
         theme: { color: "#004aad" },
       };
 
-      // 3️⃣ Open Checkout
       RazorpayCheckout.open(options)
-        .then(async (data: { razorpay_payment_id: string | undefined }) => {
-          // Payment success
-          Alert.alert("Success", data.razorpay_payment_id);
+        .then(async (data: RazorpaySuccess) => {
 
-          // 4️⃣ Send data to backend for verification
-          await apiFetch(VERIFY_ORDER, {
+          // Call verify API with ALL required fields
+          const verifyRes = await apiFetch(VERIFY_ORDER, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               Authorization: token ? `Bearer ${token}` : "",
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify({
+              user_id: user?.user_id,
+              payment_tag: planType,
+              razorpay_order_id: data.razorpay_order_id,
+              razorpay_payment_id: data.razorpay_payment_id,
+              razorpay_signature: data.razorpay_signature,
+            }),
           });
+
+          if (!verifyRes.ok) {
+            Alert.alert(
+              "Payment Verification Failed",
+              "Payment was done but verification failed. Please contact support."
+            );
+            return;
+          }
+
+          Alert.alert("Payment Successful", "Subscription activated 🎉");
+          onClose?.();
         })
-        .catch((error: { description: string | undefined }) => {
-          Alert.alert("Payment Failed", error.description);
+        .catch((error: { description?: string }) => {
+          Alert.alert("Payment Failed", error.description || "Payment cancelled");
         });
+
     } catch (err) {
       console.error("Payment error:", err);
       Alert.alert("Error", "Something went wrong while initiating payment.");
@@ -158,7 +194,7 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
         <TouchableOpacity
           style={styles.subscribeButton}
           activeOpacity={0.85}
-          onPress={startPayment}
+          onPress={() => startPayment()}
         >
           <Text style={styles.subscribeButtonText}>{content.priceText}</Text>
         </TouchableOpacity>

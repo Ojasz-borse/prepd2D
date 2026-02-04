@@ -47,4 +47,6 @@ export const CREATE_ORDER = `${extra.SERVER_URL}/api/payment/create-order`;
 
 export const VERIFY_ORDER = `${extra.SERVER_URL}/api/payment/verify-order`;
 
+export const RAZORPAY_KEY = `${extra.RAZORPAY_KEY}`;
+
 

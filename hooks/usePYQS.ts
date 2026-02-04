@@ -1,3 +1,4 @@
+import { GET_PYQ_CHAPTERS } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import { fetchWithRetry } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -59,8 +60,7 @@ export function usePYQS() {
       // 2️⃣ Background refresh
       const token = await getToken();
 
-      // console.log("token", token);
-      // console.log("URL", GET_PYQ_CHAPTERS);
+      console.log("URL", GET_PYQ_CHAPTERS);
       const res = await fetchWithRetry(
         GET_PYQ_CHAPTERS,
         {
