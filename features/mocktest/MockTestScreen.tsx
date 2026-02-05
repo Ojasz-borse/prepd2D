@@ -23,6 +23,7 @@ import Animated, {
 } from "react-native-reanimated";
 import MockTestList from "./MockTestList";
 import SubscriptionLockSheet from "@/components/ShowLockScreen";
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 
 const MockTestLanding = ({ onTabChange }: { onTabChange: (tab: "mock") => void }) => {
   const items = [
@@ -63,8 +64,14 @@ const MockTestScreen = () => {
   const [activeTab, setActiveTab] = useState<"all" | "mock">("all");
   const [showLock, setShowLock] = useState(false);
 
+  const {
+    isAllowed
+  } = useSubscriptionLock({
+    gate: "before",
+  });
+
   useEffect(() => {
-    if (!loading && user && !user.is_subscribed_before && activeTab === "mock") {
+    if (!loading && !isAllowed && activeTab === "mock") {
       const timer = setTimeout(() => {
         setShowLock(true);
       }, 2000);
@@ -72,6 +79,7 @@ const MockTestScreen = () => {
     } else if (activeTab !== "mock") {
       setShowLock(false);
     }
+
   }, [loading, user, activeTab]);
 
   // Tab Measurement Logic
@@ -187,13 +195,8 @@ const MockTestScreen = () => {
         {showLock && (
           <SubscriptionLockSheet
             visible={showLock}
-            title="Before MHT-CET Plan"
-            description="Unlock 60+ real Mock Test with real MHT_CET exam experience."
-            subDescription="To unlock Mock Test section you must buy this plan."
-            priceText="Unlock Before MHT-CET Plan - ₹199"
-            upiAmount={199}
-            userId={user?.user_id}
-            paymentTag="before_subscription"
+            planType="before"
+            onClose={() => setShowLock(false)}
           />
 
         )}

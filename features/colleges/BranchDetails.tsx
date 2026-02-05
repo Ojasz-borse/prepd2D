@@ -3,6 +3,7 @@ import PrivateCollegeIcon from "@/assets/icons/PrivateCollegeIcon";
 import TopHeader from "@/components/TopHeader";
 import { GET_COLLEGE_BRANCHES } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/services/api";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -60,7 +61,7 @@ export default function BranchDetails() {
 
       try {
         const token = await getToken();
-        const res = await fetch(GET_BRANCH_DETAILS_URL, {
+        const res = await apiFetch(GET_BRANCH_DETAILS_URL, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

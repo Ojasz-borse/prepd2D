@@ -2,6 +2,7 @@ import MathText from "@/components/MathText";
 import TopHeader from "@/components/TopHeader";
 import { GET_PYQS } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/services/api";
 import { usePYQContext } from "@/context/PYQContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -161,7 +162,7 @@ export default function PYQListScreen() {
     const token = await getToken();
 
     try {
-      const response = await fetch(GET_PYQS, {
+      const response = await apiFetch(GET_PYQS, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -182,7 +183,7 @@ export default function PYQListScreen() {
           id: q.id,
           question_year: String(q.question_year),
           pyq_content: q.pyq_content,
-          user_resp: q.user_resp,
+          user_resp: q.user_resp || q.user_response,
         }));
 
         // Update cache
@@ -361,7 +362,7 @@ export default function PYQListScreen() {
                   id={id}
                   router={router}
                   selectedYear={selectedYear}
-                  isSolved={!!userResponses[item.id.toString()] || !!item.user_resp}
+                  isSolved={!!userResponses[item.id.toString()] || !!item.user_resp || !!(item as any).user_response}
                 />
               ))
             )}

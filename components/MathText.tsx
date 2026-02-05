@@ -16,7 +16,7 @@ interface TextSegment {
   isNewline?: boolean;
 }
 
-const MathRenderer: React.FC<MathRendererProps> = ({ content }) => {
+const MathRenderer: React.FC<MathRendererProps> = React.memo(({ content }) => {
   if (!content) return <View><Text /></View>;
 
   /**
@@ -166,7 +166,7 @@ const MathRenderer: React.FC<MathRendererProps> = ({ content }) => {
       })}
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

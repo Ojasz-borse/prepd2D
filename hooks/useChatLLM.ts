@@ -1,5 +1,6 @@
 import { GET_CHAT_LLM_RESPONSE } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/services/api";
 import { useState } from "react";
 
 export interface Message {
@@ -22,12 +23,12 @@ export function useChatLLM(userContext: { name: string; email: string }) {
     try {
       setLoading(true);
       const token = await getToken();
-      const res = await fetch(GET_CHAT_LLM_RESPONSE, {
+      const res = await apiFetch(GET_CHAT_LLM_RESPONSE, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "",
-          },
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
         body: JSON.stringify({
           userContext,
           userQuery: text,
@@ -44,12 +45,12 @@ export function useChatLLM(userContext: { name: string; email: string }) {
       setMessages((prev) => [...prev, reply]);
     } catch (error) {
       console.error("Error fetching reply:", error);
-       const errorMessage: Message = {
-    role: "assistant",
-    content: "", 
-  };
+      const errorMessage: Message = {
+        role: "assistant",
+        content: "",
+      };
 
-  setMessages((prev) => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setLoading(false);
     }

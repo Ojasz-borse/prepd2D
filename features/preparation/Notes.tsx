@@ -182,7 +182,7 @@ export default function Notes({ pyqs, loading, error, reload }: NotesProps) {
         ref={listRef}
         onScroll={handleScroll}
         scrollEventThrottle={16}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
       >
         {/* 🔍 Search bar */}
         <View style={styles.searchContainer}>

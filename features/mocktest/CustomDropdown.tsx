@@ -32,30 +32,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 
   const selectedItem = data.find((i) => i.value === value);
 
-  // Option order to restrict going back
-  const order = ["physics", "chemistry", "maths"];
-
-  const [highestIndex, setHighestIndex] = useState(order.indexOf(value));
-
   const handleSelect = (item: Option) => {
-    const currentIndex = order.indexOf(value);
-    const newIndex = order.indexOf(item.value);
-
-    // Update the highest reached index
-    if (newIndex > highestIndex) {
-      setHighestIndex(newIndex);
-    }
-
-    // If trying to go back below highest reached index, show alert
-    if (newIndex < highestIndex) {
-      Alert.alert(
-        "Cannot go back",
-        `You cannot go back from ${value} to ${item.value}`
-      );
-      setOpen(false);
-      return;
-    }
-
     onChange(item);
     setOpen(false);
   };

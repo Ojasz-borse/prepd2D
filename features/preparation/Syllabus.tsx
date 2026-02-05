@@ -147,7 +147,7 @@ export default function Syllabus() {
         ref={listRef}
         onScroll={handleScroll}
         scrollEventThrottle={16}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
       >
         {/* 🔍 Search bar */}
         <View style={styles.searchContainer}>

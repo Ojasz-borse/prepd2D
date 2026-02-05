@@ -5,6 +5,7 @@ import {
   LayoutChangeEvent,
   PanResponder,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -83,19 +84,20 @@ const PopularSearches = ({ onTabChange }: { onTabChange: (tab: "notes" | "pyq" |
 const QuestionBank = () => {
   const router = useRouter();
   const items = [
-    // {
-    //   title: "Top 150 most repeating question",
-    //   icon: "repeat-outline",
-    //   color: "#FF9800",
-    //   route: "/repeated-pyqs",
+    {
+      title: "Most Repeating Questions",
+      subTitle: "150 PYQ's",
+      icon: "repeat-outline",
+      color: "#FF9800",
+      route: "/repeated-pyqs",
 
-    // },
+    },
     { title: "Top Easy Questions", subTitle: "150 PYQ's", icon: "rocket-outline", color: "#4CAF50", route: "/difficulty-pyqs", params: { difficulty: "Easy" } },
     { title: "Top Hard Questions", subTitle: "150 PYQ's", icon: "flame-outline", color: "#F44336", route: "/difficulty-pyqs", params: { difficulty: "Hard" } },
   ];
 
   return (
-    <View style={[styles.card, { marginTop: 12 }]}>
+    <View style={[styles.card, { marginTop: 16, marginBottom: 16 }]}>
       <Text style={styles.heading}>Question Bank</Text>
 
       <View style={{ gap: 12 }}>
@@ -294,7 +296,11 @@ export default function Preparation() {
       {/* Content */}
       <View style={styles.contentWrapper} {...panResponder.panHandlers}>
         {activeTab === "all" && (
-          <View style={{ paddingHorizontal: 16 }}>
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingHorizontal: 16 }}
+            showsVerticalScrollIndicator={true}
+          >
             {/* Banner */}
             <LinearGradient
               colors={["#004aad", "#0073e6"]}
@@ -317,7 +323,7 @@ export default function Preparation() {
 
             <PopularSearches onTabChange={handleTabChange} />
             <QuestionBank />
-          </View>
+          </ScrollView>
         )}
         {activeTab === "notes" && (
           <View style={{ paddingHorizontal: 12 }}>
@@ -338,13 +344,8 @@ export default function Preparation() {
         {showLock && (
           <SubscriptionLockSheet
             visible={showLock}
-            title="Before MHT-CET Plan"
-            description="Unlock 9,000+ real MHT-CET questions (2019–2025)."
-            subDescription="To unlock PYQs you must buy this plan."
-            priceText="Unlock Before MHT-CET Plan - ₹199"
-            upiAmount={199}
-            userId={user?.user_id}
-            paymentTag="before_subscription"
+            planType="before"
+            onClose={() => setShowLock(false)}
           />
         )}
       </View>
@@ -430,6 +431,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 12,
+
   },
   gridItem: {
     width: "48%", // 2 in a row

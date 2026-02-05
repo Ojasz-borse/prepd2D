@@ -1,4 +1,5 @@
 import MockTestCardSkeleton from "@/components/MockTestCardSkeleton";
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
@@ -22,6 +23,18 @@ const MockTestList: React.FC<MockTestListProps> = ({
 }) => {
   const router = useRouter();
 
+  const {
+    isAllowed
+  } = useSubscriptionLock({
+    gate: "before",
+  });
+  const handlerRoute = (id: number) => {
+    if (!isAllowed) return;
+    router.push({
+      pathname: "/start-mock-test",
+      params: { testid: id.toString() },
+    })
+  }
   if (error) {
     return (
       <View style={styles.centerContainer}>
@@ -30,65 +43,76 @@ const MockTestList: React.FC<MockTestListProps> = ({
     );
   }
 
+  const renderHeader = () => (
+    <View style={styles.resultCountContainer}>
+      <Text style={styles.resultCount}>
+        Total Tests: {tests.length}
+      </Text>
+    </View>
+  );
+
   return (
     <FlatList
       data={tests}
       keyExtractor={(item) => item.id.toString()}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ padding: 4, paddingTop: 10, paddingBottom: 20 }}
+      contentContainerStyle={styles.listContainer}
+      ListHeaderComponent={renderHeader}
+      ListFooterComponent={<View style={styles.listFooter} />}
       renderItem={({ item }) => (
-        <TouchableOpacity
-          style={styles.card}
-          // onPress={() =>
-          //   router.push({
-          //     pathname: "/start-mock-test",
-          //     params: { testid: item.id.toString() },
-          //   })
-          // }
-          activeOpacity={0.7}
-        >
-          <View style={styles.subRow}>
-            <View style={styles.subjectTag}>
-              <Text style={styles.subText}>{item.shift_time}</Text>
+        <View style={styles.cardWrapper}>
+          <TouchableOpacity
+            style={styles.card}
+            // onPress={() =>
+            //   router.push({
+            //     pathname: "/start-mock-test",
+            //     params: { testid: item.id.toString() },
+            //   })
+            // }
+            activeOpacity={0.7}
+          >
+            <View style={styles.subRow}>
+              <View style={styles.subjectTag}>
+                <Text style={styles.subText}>{item.shift_time}</Text>
+              </View>
+
+              <View style={styles.subjectTag}>
+                <Text style={styles.subText}>
+                  {item.shift_date} {item.shift_year}
+                </Text>
+              </View>
             </View>
 
-            <View style={styles.subjectTag}>
-              <Text style={styles.subText}>
-                {item.shift_date} {item.shift_year}
-              </Text>
+            <View style={styles.titleRow}>
+              <Text style={styles.title}>{item.title}</Text>
+              <View>
+                <TouchableOpacity
+                  style={styles.solveButton}
+                  onPress={() =>
+                    handlerRoute(item.id)
+                  }
+                >
+                  <Text style={styles.solveButtonText}>Solve</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-
-          <View style={styles.titleRow}>
-            <Text style={styles.title}>{item.title}</Text>
-            <View>
-              <TouchableOpacity
-                style={styles.solveButton}
-              // onPress={() =>
-              //   router.push({
-              //     pathname: "/start-mock-test",
-              //     params: { testid: item.id.toString() },
-              //   })
-              // }
-              >
-                <Text style={styles.solveButtonText}>Solve</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
       )}
       ListEmptyComponent={
         loading ? (
-          <>
+          <View style={styles.skeletonContainer}>
             <MockTestCardSkeleton />
             <MockTestCardSkeleton />
             <MockTestCardSkeleton />
             <MockTestCardSkeleton />
             <MockTestCardSkeleton />
             <MockTestCardSkeleton />
-          </>
+          </View>
         ) : (
-          <Text style={styles.noResult}>No tests available</Text>
+          <View style={styles.emptyContainer}>
+            <Text style={styles.noResult}>No tests available</Text>
+          </View>
         )
       }
     />
@@ -105,7 +129,39 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   listContainer: {
-    flex: 1,
+    paddingTop: 10,
+    paddingBottom: 20,
+  },
+  resultCountContainer: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderBottomWidth: 0,
+    borderColor: "#fff",
+  },
+  resultCount: {
+    fontSize: 16,
+    fontFamily: "SourceSans3SemiBold",
+    color: "#004aad",
+  },
+  listFooter: {
+    height: 20,
+    backgroundColor: "#fff",
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderTopWidth: 0,
+    borderColor: "#fff",
+  },
+  cardWrapper: {
+    backgroundColor: "#fff",
+    paddingHorizontal: 12,
+    borderColor: "#fff",
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
   },
   card: {
     width: "100%",
@@ -115,6 +171,17 @@ const styles = StyleSheet.create({
     borderColor: "#e2e8f0",
     backgroundColor: "#fff",
     marginBottom: 16,
+  },
+  skeletonContainer: {
+    backgroundColor: "#fff",
+    padding: 12,
+    borderRadius: 16,
+  },
+  emptyContainer: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 16,
+    alignItems: "center",
   },
   subRow: {
     flexDirection: "row",
@@ -159,8 +226,6 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3SemiBold",
   },
   noResult: {
-    textAlign: "center",
-    marginTop: 40,
     fontSize: 16,
     color: "#777",
     fontFamily: "SourceSans3Medium",

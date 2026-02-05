@@ -18,6 +18,7 @@ import {
   VERIFY_LOGIN,
 } from "@/constants/config";
 import { registerForPushNotificationsAsync } from "@/services/notificationService";
+import { apiFetch, setLogoutHandler } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
@@ -52,6 +53,7 @@ type AuthContextType = {
   forgotResetPassword: (email: string, newPassword: string) => Promise<void>;
   checkAuth: () => Promise<boolean>; // 👈 added
   getToken: () => Promise<string | null>;
+  updateUserSubscription: (type: "before" | "after") => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -79,7 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch(LOGIN, {
+      const response = await apiFetch(LOGIN, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -107,6 +109,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const updateUserSubscription = async (type: "before" | "after") => {
+    if (!user) return;
+
+    const updatedUser: User = {
+      ...user,
+      is_subscribed_before:
+        type === "before" ? true : user.is_subscribed_before,
+      is_subscribed_after:
+        type === "after" ? true : user.is_subscribed_after,
+    };
+
+    setUser(updatedUser);
+
+    await SecureStore.setItemAsync(
+      USER_SESSION,
+      JSON.stringify(updatedUser)
+    );
+  };
+
   const registerRequestOtp = async (
     firstName: string,
     lastName: string,
@@ -114,7 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     group: string,
     password: string
   ) => {
-    const res = await fetch(SIGNUP_REQUEST_OTP, {
+    const res = await apiFetch(SIGNUP_REQUEST_OTP, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -130,7 +151,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const registerVerifyOtp = async (email: string, otp: string) => {
-    const res = await fetch(SIGNUP_VERIFY_OTP, {
+    const res = await apiFetch(SIGNUP_VERIFY_OTP, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, otp }),
@@ -155,7 +176,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const forgotRequestOtp = async (email: string) => {
     try {
-      const res = await fetch(FORGOT_PASSWORD_REQUEST_OTP, {
+      const res = await apiFetch(FORGOT_PASSWORD_REQUEST_OTP, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -179,7 +200,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const forgotVerifyOtp = async (email: string, otp: string) => {
     try {
-      const res = await fetch(FORGOT_PASSWORD_VERIFY_OTP, {
+      const res = await apiFetch(FORGOT_PASSWORD_VERIFY_OTP, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp }),
@@ -201,7 +222,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const forgotResetPassword = async (email: string, newPassword: string) => {
     try {
-      const res = await fetch(FORGOT_PASSWORD_RESET, {
+      const res = await apiFetch(FORGOT_PASSWORD_RESET, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, newPassword }),
@@ -234,6 +255,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     router.replace("/login-user");
   };
 
+  useEffect(() => {
+    setLogoutHandler(logout);
+  }, [logout]);
+
   const checkAuth = async (): Promise<boolean> => {
     try {
       setLoading(true);
@@ -244,7 +269,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       // Hit the API to verify the token
-      const response = await fetch(VERIFY_LOGIN, {
+      const response = await apiFetch(VERIFY_LOGIN, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -300,6 +325,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         forgotResetPassword,
         checkAuth,
         getToken,
+        updateUserSubscription,
       }}
     >
       {children}

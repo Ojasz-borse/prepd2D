@@ -193,7 +193,7 @@ export default function PYQ({ pyqs, loading, error, reload }: PYQProps) {
         ref={listRef}
         onScroll={handleScroll}
         scrollEventThrottle={16}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
 
       >
         {/* 🔍 Search bar */}

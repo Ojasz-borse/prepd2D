@@ -5,6 +5,7 @@ import SmartMatchModal from "@/components/SmartMatchModel";
 import { CACHE_MY_COLLEGES_LIST } from "@/constants/cacheStorageConfig";
 import { useMyList } from "@/hooks/useMyList";
 import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ScreenCapture from "expo-screen-capture";
@@ -95,12 +96,17 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
   loading,
   error,
   isActive,
-  
+
 }) => {
   const [searchText, setSearchText] = useState("");
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
   const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
   const [movedCollegesCount, setMovedCollegesCount] = useState<number>();
+
+
+  const { isAllowed } = useSubscriptionLock({
+    gate: "after", // 👈 IMPORTANT
+  });
 
   // Smart Match
   const [smartMatchEnabled, setSmartMatchEnabled] = useState(false);
@@ -480,7 +486,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
             onValueChange={handleSmartMatchToggle}
             trackColor={{ false: "#ccc", true: "#99b3e6" }}
             thumbColor={smartMatchEnabled ? "#004aad" : "#f4f3f4"}
-            disabled={true}
+            disabled={!isAllowed}
           />
         </View>
 

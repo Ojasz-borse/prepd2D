@@ -1,5 +1,6 @@
 import { GET_PYQ_CHAPTERS } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
+import { fetchWithRetry } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useState } from "react";
 
@@ -36,23 +37,6 @@ export function usePYQS() {
   const [error, setError] = useState<string | null>(null);
   const { getToken } = useAuth();
 
-  // Retry helper
-  const fetchWithRetry = useCallback(
-    async (url: string, options: RequestInit, retries = 3, delay = 1000) => {
-      try {
-        const res = await fetch(url, options);
-        if (!res.ok) throw new Error(`HTTP error! ${res.status}`);
-        return res;
-      } catch (err) {
-        if (retries > 0) {
-          await new Promise((r) => setTimeout(r, delay));
-          return fetchWithRetry(url, options, retries - 1, delay * 2);
-        }
-        throw err;
-      }
-    },
-    []
-  );
 
   const loadPYQS = useCallback(async () => {
     // console.log("called loadPYQs");
@@ -76,8 +60,7 @@ export function usePYQS() {
       // 2️⃣ Background refresh
       const token = await getToken();
 
-      // console.log("token", token);
-      // console.log("URL", GET_PYQ_CHAPTERS);
+      console.log("URL", GET_PYQ_CHAPTERS);
       const res = await fetchWithRetry(
         GET_PYQ_CHAPTERS,
         {
@@ -112,7 +95,7 @@ export function usePYQS() {
     } finally {
       setLoading(false);
     }
-  }, [getToken, fetchWithRetry]);
+  }, [getToken]);
 
   // Auto-load on mount
   useEffect(() => {

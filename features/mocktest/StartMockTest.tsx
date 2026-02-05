@@ -12,9 +12,9 @@ import * as ScreenCapture from "expo-screen-capture";
 import * as ScreenOrientation from "expo-screen-orientation";
 import React, { useEffect, useState } from "react";
 import {
-  Alert,
   BackHandler,
   Image,
+  Modal,
   Platform,
   StatusBar,
   StyleSheet,
@@ -35,6 +35,7 @@ interface PYQItem {
   c: string;
   d: string;
   correct_option: string;
+  explanation_content: string;
 }
 
 const StartMockTest = () => {
@@ -42,10 +43,12 @@ const StartMockTest = () => {
   const [section, setSection] = useState(0);
   const [isAgreed, setIsAgreed] = useState(false);
   const [questions, setQuestions] = useState<PYQItem[]>([]);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   const { testid } = useLocalSearchParams();
 
   const { fetchMockTestQuestions } = useMockTests();
+
 
   const navigation = useNavigation();
   const exitPromptShownRef = React.useRef(false);
@@ -175,15 +178,7 @@ const StartMockTest = () => {
       if (section < 1) return;
 
       const onBackPress = () => {
-        if (exitGuard.current) return true; // already showing alert
-
-        exitGuard.current = true;
-
-        showExitAlert(() => {
-          exitGuard.current = false;
-          router.back();
-        });
-
+        setShowExitConfirm(true);
         return true; // block default
       };
 
@@ -194,33 +189,14 @@ const StartMockTest = () => {
 
       return () => {
         backHandler.remove();
-        exitGuard.current = false;
       };
     }, [section])
   );
 
-  function showExitAlert(onConfirm: () => void) {
-    Alert.alert(
-      "Exit Test?",
-      "Are you sure you want to exit? Your progress will not be saved.",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-          onPress: () => {
-            exitGuard.current = false;
-          },
-        },
-        {
-          text: "Exit",
-          style: "destructive",
-          onPress: () => {
-            onConfirm();
-          },
-        },
-      ]
-    );
-  }
+  const handleConfirmExit = () => {
+    setShowExitConfirm(false);
+    router.back();
+  };
 
   return (
     <View style={styles.container}>
@@ -317,6 +293,37 @@ const StartMockTest = () => {
       )}
 
       {section == 2 && <Exam questions={questions} />}
+
+      {/* Exit Confirmation Modal */}
+      <Modal
+        visible={showExitConfirm}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowExitConfirm(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Exit Test?</Text>
+            <Text style={styles.modalBody}>
+              Are you sure you want to exit? Your progress will not be saved.
+            </Text>
+            <View style={styles.modalFooter}>
+              <TouchableOpacity
+                style={[styles.modalBtn, styles.modalCancelBtn]}
+                onPress={() => setShowExitConfirm(false)}
+              >
+                <Text style={styles.modalBtnText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalBtn, styles.modalConfirmBtn]}
+                onPress={handleConfirmExit}
+              >
+                <Text style={styles.modalBtnText}>Exit</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -638,5 +645,56 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    width: "50%", // Landscape friendly width
+    padding: 20,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#1a4d80",
+  },
+  modalBody: {
+    fontSize: 14,
+    color: "#333",
+    marginBottom: 20,
+    lineHeight: 20,
+  },
+  modalFooter: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 12,
+  },
+  modalBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+  },
+  modalCancelBtn: {
+    backgroundColor: "#ccc",
+  },
+  modalConfirmBtn: {
+    backgroundColor: "#d9534f", // Red for destructive action
+  },
+  modalBtnText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
   },
 });

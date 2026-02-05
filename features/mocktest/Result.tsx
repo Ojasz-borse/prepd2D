@@ -19,17 +19,102 @@ interface UserAnswer {
   options: { a: string; b: string; c: string; d: string };
   correct_option: string;
   user_choice: string | null;
+  explanation: string;
 }
 
 const MemoMathText = React.memo(MathText);
+
+const QuestionItem = ({ ua, index }: { ua: UserAnswer; index: number }) => {
+  const [showWhy, setShowWhy] = React.useState(false);
+  const isCorrect = ua.user_choice === ua.correct_option;
+  const options = [
+    { label: "A", text: ua.options.a },
+    { label: "B", text: ua.options.b },
+    { label: "C", text: ua.options.c },
+    { label: "D", text: ua.options.d },
+  ];
+
+  return (
+    <View
+      style={[
+        styles.questionCard,
+        isCorrect ? styles.correctCard : styles.wrongCard,
+      ]}
+    >
+      <View style={styles.questionHeaderRow}>
+        <Text style={styles.questionNumber}>Q{index + 1}</Text>
+        <View style={styles.statusBadge}>
+          {isCorrect ? (
+            <Text style={[styles.statusText, styles.correctText]}>Correct</Text>
+          ) : ua.user_choice ? (
+            <Text style={[styles.statusText, styles.wrongText]}>Incorrect</Text>
+          ) : (
+            <Text style={[styles.statusText, styles.notAttemptedText]}>
+              Not Attempted
+            </Text>
+          )}
+        </View>
+      </View>
+
+      <Text style={styles.questionText}>
+        <MemoMathText content={ua.question || ""} />
+      </Text>
+
+      <View style={styles.optionsList}>
+        {options.map((opt) => {
+          const isSelected = ua.user_choice === opt.label;
+          const isRight = ua.correct_option === opt.label;
+          return (
+            <View
+              key={opt.label}
+              style={[
+                styles.optionRowDetail,
+                isRight && styles.correctOptionDetail,
+                isSelected && !isRight && styles.wrongOptionDetail,
+              ]}
+            >
+              <Text style={styles.optionLabelDetail}>
+                {opt.label}.
+              </Text>
+              <View style={styles.optionTextDetail}>
+                <MemoMathText content={opt.text || ""} />
+              </View>
+            </View>
+          );
+        })}
+      </View>
+
+      {!isCorrect && (
+        <View style={styles.explanationContainer}>
+          <TouchableOpacity
+            style={styles.whyButton}
+            onPress={() => setShowWhy(!showWhy)}
+          >
+            <Text style={styles.whyButtonText}>
+              {showWhy ? "Hide Explanation" : "Why Wrong?"}
+            </Text>
+          </TouchableOpacity>
+
+          {showWhy && (
+            <View style={styles.explanationContent}>
+              <Text style={styles.explanationLabel}>Explanation:</Text>
+              <MemoMathText content={ua.explanation || "No explanation available."} />
+            </View>
+          )}
+        </View>
+      )}
+    </View>
+  );
+};
 
 const Result = () => {
   const { data } = useLocalSearchParams<{ data: string }>();
   const userAnswers: UserAnswer[] = data
     ? JSON.parse(data).map((ua: UserAnswer) => ({
-        ...ua,
-        user_choice: ua.user_choice ? ua.user_choice.toUpperCase() : null,
-      }))
+      ...ua,
+      user_choice: ua.user_choice ? ua.user_choice.toUpperCase() : null,
+      correct_option: ua.correct_option ? ua.correct_option.toUpperCase() : "",
+    }))
     : [];
 
   // Lock orientation to portrait
@@ -77,7 +162,7 @@ const Result = () => {
           Object.values(stats).reduce((a, s) => a + s.answered, 0),
           1
         )) *
-        100
+      100
     ),
   };
 
@@ -207,11 +292,10 @@ const Result = () => {
               </View>
 
               {/* Questions List */}
-
               <View style={styles.questionsContainer}>
                 <TouchableOpacity onPress={() => toggleSection(section)}>
                   <Text style={styles.showToggle}>
-                    {expanded[section] ? "Show Less" : "Show More"}
+                    {expanded[section] ? "Hide Analysis" : "Analyze Questions"}
                   </Text>
                 </TouchableOpacity>
                 {expanded[section] && (
@@ -219,67 +303,7 @@ const Result = () => {
                     {userAnswers
                       .filter((ua) => ua.section === section)
                       .map((ua, i) => (
-                        <View
-                          key={ua.id}
-                          style={[
-                            styles.questionCard,
-                            ua.user_choice === ua.correct_option
-                              ? styles.correctCard
-                              : styles.wrongCard,
-                          ]}
-                        >
-                          <Text style={styles.questionNumber}>Q{i + 1}</Text>
-                          <Text style={styles.questionText}>
-                            <MemoMathText content={ua.question} />
-                          </Text>
-                          <View style={styles.answerRow}>
-                            <Text style={styles.answerLabel}>Your choice:</Text>
-                            <Text
-                              style={[
-                                styles.answerValue,
-                                ua.user_choice === ua.correct_option
-                                  ? styles.correctText
-                                  : styles.wrongText,
-                              ]}
-                            >
-                              {ua.user_choice || "Not attempted"}
-                            </Text>
-                          </View>
-                          <View style={styles.answerRow}>
-                            <Text style={styles.answerLabel}>
-                              Correct answer:
-                            </Text>
-                            <Text
-                              style={[styles.answerValue, styles.correctText]}
-                            >
-                              {ua.correct_option}
-                            </Text>
-                          </View>
-                          <View style={styles.statusIndicator}>
-                            {ua.user_choice === ua.correct_option ? (
-                              <Text
-                                style={[styles.statusText, styles.correctText]}
-                              >
-                                Correct
-                              </Text>
-                            ) : ua.user_choice ? (
-                              <Text
-                                style={[styles.statusText, styles.wrongText]}
-                              >
-                                Incorrect
-                              </Text>
-                            ) : (
-                              <Text
-                                style={[
-                                  styles.statusText,
-                                  styles.notAttemptedText,
-                                ]}
-                              >
-                                Not Attempted
-                              </Text>
-                            )}
-                          </View>
-                        </View>
+                        <QuestionItem key={ua.id} ua={ua} index={i} />
                       ))}
                   </>
                 )}
@@ -287,6 +311,7 @@ const Result = () => {
             </View>
           );
         })}
+        <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -295,12 +320,11 @@ const Result = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "#f8fafc",
   },
   scrollView: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#fff",
   },
   header: {
     alignItems: "center",
@@ -308,9 +332,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   title: {
-    fontSize: 18,
-    color: "#1e293b",
-    fontFamily: "SourceSans3Medium",
+    fontSize: 22,
+    color: "#0f172a",
+    fontFamily: "SourceSans3Bold",
     marginBottom: 4,
   },
   subtitle: {
@@ -320,52 +344,59 @@ const styles = StyleSheet.create({
   },
   overallCard: {
     backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 12,
-    marginBottom: 16,
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 20,
     borderWidth: 1,
-    borderColor: "#d9d9d9",
+    borderColor: "#e2e8f0",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
   overallTitle: {
     fontSize: 18,
-    fontFamily: "SourceSans3Medium",
+    fontFamily: "SourceSans3SemiBold",
     color: "#1e293b",
     textAlign: "center",
-    marginBottom: 16,
+    marginBottom: 20,
   },
   accuracyContainer: {
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 24,
   },
   accuracyCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 4,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 8,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#fff",
   },
   accuracyText: {
-    fontSize: 24,
-    fontFamily: "SourceSans3Medium",
+    fontSize: 28,
+    fontFamily: "SourceSans3Bold",
   },
   accuracyLabel: {
     fontSize: 12,
-    fontFamily: "SourceSans3Medium",
+    fontFamily: "SourceSans3SemiBold",
     color: "#64748b",
-    marginTop: 4,
+    marginTop: 2,
   },
   statsGrid: {
     flexDirection: "row",
     justifyContent: "space-between",
+    paddingHorizontal: 10,
   },
   statItem: {
     alignItems: "center",
   },
   statNumber: {
     fontSize: 20,
-    fontFamily: "SourceSans3Medium",
-    color: "#1e293b",
+    fontFamily: "SourceSans3Bold",
+    color: "#0f172a",
   },
   statLabel: {
     fontSize: 12,
@@ -375,11 +406,11 @@ const styles = StyleSheet.create({
   },
   sectionCard: {
     backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 12,
-    marginBottom: 16,
+    borderRadius: 20,
+    padding: 16,
+    marginBottom: 20,
     borderWidth: 1,
-    borderColor: "#d9d9d9",
+    borderColor: "#e2e8f0",
   },
   sectionHeader: {
     flexDirection: "row",
@@ -388,13 +419,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontFamily: "SourceSans3Medium",
+    fontSize: 19,
+    fontFamily: "SourceSans3Bold",
     color: "#1e293b",
   },
   sectionAccuracy: {
     fontSize: 16,
-    fontFamily: "SourceSans3Medium",
+    fontFamily: "SourceSans3Bold",
   },
   sectionStats: {
     flexDirection: "row",
@@ -402,94 +433,131 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#e2e8f0",
+    borderBottomColor: "#f1f5f9",
   },
   sectionStat: {
     alignItems: "center",
   },
   sectionStatNumber: {
-    fontSize: 16,
-    fontFamily: "SourceSans3Medium",
+    fontSize: 17,
+    fontFamily: "SourceSans3Bold",
     color: "#1e293b",
   },
   sectionStatLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: "SourceSans3Medium",
     color: "#64748b",
     marginTop: 2,
   },
   questionsContainer: {
-    marginTop: 8,
+    marginTop: 4,
   },
-  questionsTitle: {
-    fontSize: 16,
-    fontFamily: "SourceSans3Medium",
-    color: "#1e293b",
-    marginBottom: 12,
+  showToggle: {
+    fontSize: 15,
+    color: "#004aad",
+    fontFamily: "SourceSans3SemiBold",
+    textAlign: "center",
+    paddingVertical: 8,
   },
   questionCard: {
     padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
+    borderRadius: 16,
+    marginBottom: 16,
+    borderWidth: 1,
   },
   correctCard: {
     backgroundColor: "#f0fdf4",
+    borderColor: "#b9f6ca",
   },
   wrongCard: {
-    backgroundColor: "#fef2f2",
+    backgroundColor: "#fff5f5",
+    borderColor: "#fed7d7",
+  },
+  questionHeaderRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
   },
   questionNumber: {
     fontSize: 14,
-    fontFamily: "SourceSans3Medium",
-    color: "#475569",
-    marginBottom: 4,
-  },
-  questionText: {
-    fontSize: 14,
-    fontFamily: "SourceSans3Medium",
-    color: "#1e293b",
-    marginBottom: 8,
-    lineHeight: 20,
-  },
-  answerRow: {
-    width: 100,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 4,
-  },
-  answerLabel: {
-    fontSize: 12,
-    fontFamily: "SourceSans3Medium",
+    fontFamily: "SourceSans3Bold",
     color: "#64748b",
   },
-  answerValue: {
-    fontSize: 12,
-    fontFamily: "SourceSans3Bold",
-  },
-  statusIndicator: {
-    marginTop: 8,
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
   },
   statusText: {
     fontSize: 12,
+    fontFamily: "SourceSans3Bold",
+  },
+  correctText: { color: "#16a34a" },
+  wrongText: { color: "#dc2626" },
+  notAttemptedText: { color: "#64748b" },
+  questionText: {
+    fontSize: 15,
     fontFamily: "SourceSans3Medium",
+    color: "#1e293b",
+    marginBottom: 20,
+    lineHeight: 22,
   },
-  correctText: {
-    color: "#22c55e",
+  optionsList: {
+    gap: 10,
   },
-  wrongText: {
-    color: "#ef4444",
+  optionRowDetail: {
+    flexDirection: "row",
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    alignItems: "center",
   },
-  notAttemptedText: {
-    color: "#64748b",
+  correctOptionDetail: {
+    borderColor: "#16a34a",
   },
-  showToggle: {
+  wrongOptionDetail: {
+    borderColor: "#dc2626",
+  },
+  optionLabelDetail: {
     fontSize: 14,
-    color: "#0099ff",
-    textDecorationLine: "underline",
+    fontFamily: "SourceSans3Bold",
+    color: "#64748b",
+    width: 24,
+  },
+  optionTextDetail: {
+    flex: 1,
+  },
+  explanationContainer: {
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#fee2e2",
+  },
+  whyButton: {
     alignSelf: "flex-start",
-    fontFamily: "SourceSans3Medium",
-    marginTop: -20,
-    marginBottom: 10,
+
+  },
+  whyButtonText: {
+    fontSize: 13,
+    color: "#3399ff",
+    fontFamily: "SourceSans3SemiBold",
+  },
+  explanationContent: {
+    marginTop: 12,
+    backgroundColor: "#fff",
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+  },
+  explanationLabel: {
+    fontSize: 14,
+    fontFamily: "SourceSans3Bold",
+    color: "#1e293b",
+    marginBottom: 6,
   },
 });
 
