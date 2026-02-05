@@ -51,7 +51,7 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
   planType,
   onClose,
 }) => {
-  const { getToken, user } = useAuth();
+  const { getToken, user, updateUserSubscription } = useAuth();
   if (!visible) return null;
 
   const content = CONTENT_MAP[planType] || CONTENT_MAP.before;
@@ -127,7 +127,8 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
             );
             return;
           }
-
+          
+          await updateUserSubscription(planType);
           Alert.alert("Payment Successful", "Subscription activated 🎉");
           onClose?.();
         })

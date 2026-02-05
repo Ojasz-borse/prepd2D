@@ -53,6 +53,7 @@ type AuthContextType = {
   forgotResetPassword: (email: string, newPassword: string) => Promise<void>;
   checkAuth: () => Promise<boolean>; // 👈 added
   getToken: () => Promise<string | null>;
+  updateUserSubscription: (type: "before" | "after") => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -106,6 +107,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (err: any) {
       throw new Error(err.message || "Login failed");
     }
+  };
+
+  const updateUserSubscription = async (type: "before" | "after") => {
+    if (!user) return;
+
+    const updatedUser: User = {
+      ...user,
+      is_subscribed_before:
+        type === "before" ? true : user.is_subscribed_before,
+      is_subscribed_after:
+        type === "after" ? true : user.is_subscribed_after,
+    };
+
+    setUser(updatedUser);
+
+    await SecureStore.setItemAsync(
+      USER_SESSION,
+      JSON.stringify(updatedUser)
+    );
   };
 
   const registerRequestOtp = async (
@@ -305,6 +325,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         forgotResetPassword,
         checkAuth,
         getToken,
+        updateUserSubscription,
       }}
     >
       {children}
