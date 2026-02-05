@@ -11,10 +11,11 @@ import Reanimated, {
   SlideInDown,
 } from "react-native-reanimated";
 import RazorpayCheckout from "react-native-razorpay";
-import { Alert } from "react-native";
 import { CREATE_ORDER, RAZORPAY_KEY, VERIFY_ORDER } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import { apiFetch } from "@/services/api";
+import CustomAlertModal from "@/components/CustomAlertModal";
+
 
 
 type RazorpaySuccess = {
@@ -52,6 +53,35 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
   onClose,
 }) => {
   const { getToken, user, updateUserSubscription } = useAuth();
+  const [alertConfig, setAlertConfig] = React.useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+    type: "success" | "error" | "info";
+    onClose?: () => void;
+  }>({
+    visible: false,
+    title: "",
+    message: "",
+    type: "info",
+  });
+
+  const showAlert = (title: string, message: string, type: "success" | "error" | "info" = "info", onModalClose?: () => void) => {
+    setAlertConfig({
+      visible: true,
+      title,
+      message,
+      type,
+      onClose: onModalClose,
+    });
+  };
+
+  const hideAlert = () => {
+    const callback = alertConfig.onClose;
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
+    if (callback) callback();
+  };
+
   if (!visible) return null;
 
   const content = CONTENT_MAP[planType] || CONTENT_MAP.before;
@@ -88,7 +118,6 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
       // 2️⃣ Razorpay options
       const options = {
         description: "PrepCET Subscription",
-        // image: "https://yourdomain.com/logo.png",
         currency: "INR",
         key: RAZORPAY_KEY, // TEST KEY ONLY
         amount: order.amount,
@@ -121,26 +150,29 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
           });
 
           if (!verifyRes.ok) {
-            Alert.alert(
+            showAlert(
               "Payment Verification Failed",
-              "Payment was done but verification failed. Please contact support."
+              "Payment was done but verification failed. Please contact support.",
+              "error"
             );
             return;
           }
-          
+
           await updateUserSubscription(planType);
-          Alert.alert("Payment Successful", "Subscription activated 🎉");
-          onClose?.();
+          showAlert("Payment Successful", "Subscription activated 🎉", "success", () => {
+            onClose?.();
+          });
         })
         .catch((error: { description?: string }) => {
-          Alert.alert("Payment Failed", error.description || "Payment cancelled");
+          showAlert("Payment Failed", error.description || "Payment cancelled", "error");
         });
 
     } catch (err) {
       console.error("Payment error:", err);
-      Alert.alert("Error", "Something went wrong while initiating payment.");
+      showAlert("Error", "Something went wrong while initiating payment.", "error");
     }
   };
+
 
 
   return (
@@ -202,7 +234,16 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
 
 
       </Reanimated.View>
+
+      <CustomAlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+        onClose={hideAlert}
+      />
     </Reanimated.View>
+
   );
 };
 
