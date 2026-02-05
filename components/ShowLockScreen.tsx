@@ -164,7 +164,7 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
           });
         })
         .catch((error: { description?: string }) => {
-          showAlert("Payment Failed", error.description || "Payment cancelled", "error");
+          showAlert("Payment Failed", "Payment Failed.", "error");
         });
 
     } catch (err) {
