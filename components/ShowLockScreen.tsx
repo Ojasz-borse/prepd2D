@@ -4,6 +4,7 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  TextInput,
 } from "react-native";
 import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 import Reanimated, {
@@ -14,6 +15,12 @@ import RazorpayCheckout from "react-native-razorpay";
 import { CREATE_ORDER, RAZORPAY_KEY, VERIFY_ORDER } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import { apiFetch } from "@/services/api";
+import {
+  CouponPriceEnumBefore,
+  CouponPriceEnumAfter,
+  DEFAULT_PRICE_BEFORE,
+  DEFAULT_PRICE_AFTER,
+} from "@/constants/couponConfig";
 import CustomAlertModal from "@/components/CustomAlertModal";
 
 
@@ -66,6 +73,46 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
     type: "info",
   });
 
+  const [couponInput, setCouponInput] = React.useState("");
+  const [appliedCoupon, setAppliedCoupon] = React.useState("");
+  const [validationMsg, setValidationMsg] = React.useState<{ text: string; type: "valid" | "invalid" | "none" }>({
+    text: "",
+    type: "none",
+  });
+
+  const defaultPrice = planType === "before" ? DEFAULT_PRICE_BEFORE : DEFAULT_PRICE_AFTER;
+  const [displayedPrice, setDisplayedPrice] = React.useState(defaultPrice);
+
+  const couponEnum = planType === "before" ? CouponPriceEnumBefore : CouponPriceEnumAfter;
+
+  const handleCouponChange = (text: string) => {
+    const code = text.toUpperCase();
+    setCouponInput(code);
+
+    // Reset applied coupon and price if input changes
+    setAppliedCoupon("");
+    setDisplayedPrice(defaultPrice);
+
+    if (code.length === 0) {
+      setValidationMsg({ text: "", type: "none" });
+      return;
+    }
+
+    if (couponEnum[code as keyof typeof couponEnum]) {
+      setValidationMsg({ text: "Coupon is valid", type: "valid" });
+    } else {
+      setValidationMsg({ text: "Coupon is invalid", type: "invalid" });
+    }
+  };
+
+  const applyCoupon = () => {
+    const price = couponEnum[couponInput as keyof typeof couponEnum];
+    if (price) {
+      setAppliedCoupon(couponInput);
+      setDisplayedPrice(price);
+    }
+  };
+
   const showAlert = (title: string, message: string, type: "success" | "error" | "info" = "info", onModalClose?: () => void) => {
     setAlertConfig({
       visible: true,
@@ -99,7 +146,11 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
           "Content-Type": "application/json",
           Authorization: token ? `Bearer ${token}` : "",
         },
-        body: JSON.stringify({ user_id: user?.user_id, payment_tag: planType }),
+        body: JSON.stringify({
+          user_id: user?.user_id,
+          payment_tag: planType,
+          couponCode: appliedCoupon || null
+        }),
       });
 
       if (!res.ok) {
@@ -196,7 +247,40 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
 
         <Text style={styles.description}>{content.description}</Text>
 
-        <Text style={styles.price}>₹199</Text>
+        <Text style={styles.price}>₹{displayedPrice}</Text>
+
+        <View style={styles.couponContainer}>
+
+          {(
+            <Text style={[
+              styles.validationText,
+              validationMsg.type === "valid" ? styles.validText : styles.invalidText
+            ]}>
+              {validationMsg.text}
+            </Text>
+          )}
+
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={styles.couponInput}
+              placeholder="Coupon Code (Optional)"
+              value={couponInput}
+              onChangeText={handleCouponChange}
+              autoCapitalize="characters"
+            />
+            <TouchableOpacity
+              style={[
+                styles.applyButton,
+                validationMsg.type !== "valid" && styles.disabledApplyButton
+              ]}
+              onPress={applyCoupon}
+              disabled={validationMsg.type !== "valid"}
+            >
+              <Text style={styles.applyButtonText}>Apply</Text>
+            </TouchableOpacity>
+          </View>
+
+        </View>
 
         {planType === "before" && (
           <View style={styles.tabIndicatorContainer}>
@@ -225,9 +309,13 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
         )}
 
         <TouchableOpacity
-          style={styles.subscribeButton}
+          style={[
+            styles.subscribeButton,
+            planType === "after" && styles.disabledButton
+          ]}
           activeOpacity={0.85}
           onPress={() => startPayment()}
+          disabled={planType === "after"}
         >
           <Text style={styles.subscribeButtonText}>{content.priceText}</Text>
         </TouchableOpacity>
@@ -274,11 +362,8 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingBottom: 40,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 20,
+    marginBottom: -10
+
   },
   handle: {
     width: 40,
@@ -336,6 +421,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 12,
   },
+  disabledButton: {
+    backgroundColor: "#94a3b8",
+  },
   subscribeButtonText: {
     color: "#fff",
     fontSize: 18,
@@ -370,5 +458,52 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "SourceSans3SemiBold",
     color: "#004aad",
+  },
+  couponContainer: {
+    width: "100%",
+    marginBottom: 24,
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  couponInput: {
+    flex: 1,
+    height: 43,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    fontFamily: "SourceSans3Medium",
+    fontSize: 14,
+    color: "#1e293b",
+  },
+  applyButton: {
+    backgroundColor: "#004aad",
+    paddingHorizontal: 20,
+    height: 40,
+    borderRadius: 12,
+    justifyContent: "center",
+  },
+  disabledApplyButton: {
+    backgroundColor: "#cbd5e1",
+  },
+  applyButtonText: {
+    color: "#fff",
+    fontFamily: "SourceSans3SemiBold",
+    fontSize: 14,
+  },
+  validationText: {
+    fontSize: 12,
+    fontFamily: "SourceSans3Medium",
+    marginLeft: 4,
+    color: "#ffffff",
+  },
+  validText: {
+    color: "#10b981",
+  },
+  invalidText: {
+    color: "#ef4444",
   },
 });
