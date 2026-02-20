@@ -15,6 +15,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "expo-router";
 import Animated, {
   FadeIn,
   SlideInDown,
@@ -37,12 +38,17 @@ if (Platform.OS === "android") {
 const QuickAccess = ({
   onTabChange,
 }: {
- onTabChange: (tab: "colleges" | "branches" | "createList") => void;
+  onTabChange: (tab: "colleges" | "branches") => void;
 }) => {
+  const router = useRouter();
   const items = [
     { title: "Colleges", icon: "school-outline", tab: "colleges" as const },
     { title: "Branches", icon: "filter-outline", tab: "branches" as const },
-    { title: "Create List", icon: "list-outline", tab: "createList" as const },
+    {
+      title: "Generate Option form",
+      icon: "list-outline",
+      tab: "createList" as const,
+    },
   ];
 
   return (
@@ -53,22 +59,41 @@ const QuickAccess = ({
           <TouchableOpacity
             key={i}
             activeOpacity={0.7}
-            style={styles.quickItem}
-            onPress={() => onTabChange(item.tab)}
+            style={[
+              styles.quickItem,
+              item.tab === "createList" && { width: "100%" },
+            ]}
+            onPress={() => {
+              if (item.tab === "createList") {
+                router.push("/create-college-list");
+              } else {
+                onTabChange(item.tab);
+              }
+            }}
           >
             <View
               style={[
                 styles.quickIconBox,
                 {
                   backgroundColor:
-                    item.tab === "colleges" ? "#004aad20" : "#b6cf4f20",
+                    item.tab === "colleges"
+                      ? "#004aad20"
+                      : item.tab === "branches"
+                        ? "#b6cf4f20"
+                        : "#ff7a2220",
                 },
               ]}
             >
               <Ionicons
                 name={item.icon as any}
                 size={24}
-                color={item.tab === "colleges" ? "#004aad" : "#b6cf4f"}
+                color={
+                  item.tab === "colleges"
+                    ? "#004aad"
+                    : item.tab === "branches"
+                      ? "#b6cf4f"
+                      : "#ff7a22"
+                }
               />
             </View>
             <Text style={styles.quickTitle}>{item.title}</Text>
@@ -80,9 +105,9 @@ const QuickAccess = ({
 };
 
 export default function FindColleges() {
-  const [activeTab, setActiveTab] = useState<
-    "all" | "colleges" | "branches" | "createList"
-  >("all");
+  const [activeTab, setActiveTab] = useState<"all" | "colleges" | "branches">(
+    "all"
+  );
 
   const { user } = useAuth();
   const {
@@ -99,10 +124,9 @@ export default function FindColleges() {
   const [showLock, setShowLock] = useState(false);
 
   useEffect(() => {
-   const isLockedTab =
-  activeTab === "colleges" ||
-  activeTab === "branches" ||
-  activeTab === "createList";
+    const isLockedTab =
+      activeTab === "colleges" ||
+      activeTab === "branches";
     const isLoading =
       activeTab === "colleges" ? collegesLoading : branchesLoading;
 
@@ -156,11 +180,9 @@ export default function FindColleges() {
         if (g.dx < -50) {
           if (activeTab === "all") setActiveTab("colleges");
           else if (activeTab === "colleges") setActiveTab("branches");
-          else if (activeTab === "branches") setActiveTab("createList");
         }
         if (g.dx > 50) {
-          if (activeTab === "createList") setActiveTab("branches");
-          else if (activeTab === "branches") setActiveTab("colleges");
+          if (activeTab === "branches") setActiveTab("colleges");
           else if (activeTab === "colleges") setActiveTab("all");
         }
       },
@@ -228,20 +250,7 @@ export default function FindColleges() {
           </Text>
         </TouchableOpacity>
 
-          <TouchableOpacity
-        style={styles.tab}
-        onPress={() => setActiveTab("createList")}
-        onLayout={(e) => onTabLayout("createList", e)}
-      >
-        <Text
-          style={[
-            styles.tabLabel,
-            activeTab === "createList" && styles.tabLabelActive,
-          ]}
-        >
-          Create List
-        </Text>
-      </TouchableOpacity>
+
       </View>
 
       {/* Swipeable content */}
@@ -295,20 +304,7 @@ export default function FindColleges() {
           </View>
         )}
 
-        {activeTab === "createList" && (
-          <View style={{ paddingHorizontal: 16 }}>
-            <Text
-              style={{
-                fontSize: 20,
-                fontFamily: "SourceSans3Bold",
-                color: colors.primary,
-                marginTop: 20,
-              }}
-            >
-              <CreateCollegeList/>
-            </Text>
-          </View>
-        )}
+
 
         {showLock && (
           <SubscriptionLockSheet
