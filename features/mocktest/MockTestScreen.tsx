@@ -64,23 +64,23 @@ const MockTestScreen = () => {
   const [activeTab, setActiveTab] = useState<"all" | "mock">("all");
   const [showLock, setShowLock] = useState(false);
 
-  const {
-    isAllowed
-  } = useSubscriptionLock({
-    gate: "before",
-  });
+  // const {
+  //   isAllowed
+  // } = useSubscriptionLock({
+  //   gate: "before",
+  // });
 
-  useEffect(() => {
-    if (!loading && !isAllowed && activeTab === "mock") {
-      const timer = setTimeout(() => {
-        setShowLock(true);
-      }, 2000);
-      return () => clearTimeout(timer);
-    } else if (activeTab !== "mock") {
-      setShowLock(false);
-    }
+  // useEffect(() => {
+  //   if (!loading && !isAllowed && activeTab === "mock") {
+  //     const timer = setTimeout(() => {
+  //       setShowLock(true);
+  //     }, 2000);
+  //     return () => clearTimeout(timer);
+  //   } else if (activeTab !== "mock") {
+  //     setShowLock(false);
+  //   }
 
-  }, [loading, user, activeTab]);
+  // }, [loading, user, activeTab]);
 
   // Tab Measurement Logic
   const [tabMeasurements, setTabMeasurements] = useState<{ [key: string]: { x: number; width: number } }>({});
@@ -192,14 +192,14 @@ const MockTestScreen = () => {
           </View>
         )}
 
-        {showLock && (
+        {/* {showLock && (
           <SubscriptionLockSheet
             visible={showLock}
             planType="before"
             onClose={() => setShowLock(false)}
           />
 
-        )}
+        )} */}
       </View>
     </LinearGradient>
   );

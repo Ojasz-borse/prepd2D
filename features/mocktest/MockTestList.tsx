@@ -10,6 +10,9 @@ import {
   View,
 } from "react-native";
 
+import SubscriptionLockSheet from "@/components/ShowLockScreen";
+import { useState } from "react";
+
 interface MockTestListProps {
   tests: any[];
   loading: boolean;
@@ -22,19 +25,22 @@ const MockTestList: React.FC<MockTestListProps> = ({
   error,
 }) => {
   const router = useRouter();
+  const [showLock, setShowLock] = useState(false);
 
-  const {
-    isAllowed
-  } = useSubscriptionLock({
+  const { isAllowed } = useSubscriptionLock({
     gate: "before",
   });
-  const handlerRoute = (id: number) => {
-    if (!isAllowed) return;
+
+  const handlerRoute = (id: number, index: number) => {
+    if (index > 0 && !isAllowed) {
+      setShowLock(true);
+      return;
+    }
     router.push({
       pathname: "/start-mock-test",
       params: { testid: id.toString() },
-    })
-  }
+    });
+  };
   if (error) {
     return (
       <View style={styles.centerContainer}>
@@ -52,70 +58,73 @@ const MockTestList: React.FC<MockTestListProps> = ({
   );
 
   return (
-    <FlatList
-      data={tests}
-      keyExtractor={(item) => item.id.toString()}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.listContainer}
-      ListHeaderComponent={renderHeader}
-      ListFooterComponent={<View style={styles.listFooter} />}
-      renderItem={({ item }) => (
-        <View style={styles.cardWrapper}>
-          <TouchableOpacity
-            style={styles.card}
-            // onPress={() =>
-            //   router.push({
-            //     pathname: "/start-mock-test",
-            //     params: { testid: item.id.toString() },
-            //   })
-            // }
-            activeOpacity={0.7}
-          >
-            <View style={styles.subRow}>
-              <View style={styles.subjectTag}>
-                <Text style={styles.subText}>{item.shift_time}</Text>
+    <>
+
+
+      <FlatList
+        data={tests}
+        keyExtractor={(item) => item.id.toString()}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContainer}
+        ListHeaderComponent={renderHeader}
+        renderItem={({ item, index }) => (
+          <View style={styles.cardWrapper}>
+            <TouchableOpacity style={styles.card} activeOpacity={0.7}>
+              <View style={styles.subRow}>
+                <View style={styles.subjectTag}>
+                  <Text style={styles.subText}>{item.shift_time}</Text>
+                </View>
+
+                <View style={styles.subjectTag}>
+                  <Text style={styles.subText}>
+                    {item.shift_date} {item.shift_year}
+                  </Text>
+                </View>
               </View>
 
-              <View style={styles.subjectTag}>
-                <Text style={styles.subText}>
-                  {item.shift_date} {item.shift_year}
-                </Text>
+              <View style={styles.titleRow}>
+                <Text style={styles.title}>{item.title}</Text>
+                <View>
+                  <TouchableOpacity
+                    style={styles.solveButton}
+                    onPress={() => handlerRoute(item.id, index)}
+                  >
+                    <Text style={styles.solveButtonText}>Solve</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
+            </TouchableOpacity>
+          </View>
+        )}
+        ListEmptyComponent={
+          loading ? (
+            <View style={styles.skeletonContainer}>
+              <MockTestCardSkeleton />
+              <MockTestCardSkeleton />
+              <MockTestCardSkeleton />
+              <MockTestCardSkeleton />
+              <MockTestCardSkeleton />
+              <MockTestCardSkeleton />
             </View>
+          ) : (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.noResult}>No tests available</Text>
+            </View>
+          )
+        }
+        ListFooterComponent={<View style={styles.listFooter} />}
+      />
 
-            <View style={styles.titleRow}>
-              <Text style={styles.title}>{item.title}</Text>
-              <View>
-                <TouchableOpacity
-                  style={styles.solveButton}
-                  onPress={() =>
-                    handlerRoute(item.id)
-                  }
-                >
-                  <Text style={styles.solveButtonText}>Solve</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </TouchableOpacity>
+      {showLock && (
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000 }}>
+          <SubscriptionLockSheet
+            visible={showLock}
+            planType="before"
+            onClose={() => setShowLock(false)}
+          />
         </View>
       )}
-      ListEmptyComponent={
-        loading ? (
-          <View style={styles.skeletonContainer}>
-            <MockTestCardSkeleton />
-            <MockTestCardSkeleton />
-            <MockTestCardSkeleton />
-            <MockTestCardSkeleton />
-            <MockTestCardSkeleton />
-            <MockTestCardSkeleton />
-          </View>
-        ) : (
-          <View style={styles.emptyContainer}>
-            <Text style={styles.noResult}>No tests available</Text>
-          </View>
-        )
-      }
-    />
+    </>
   );
 };
 

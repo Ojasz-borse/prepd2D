@@ -49,7 +49,7 @@ const CONTENT_MAP = {
   },
   after: {
     title: "After MHT-CET Plan",
-    description: "Unlock accurate data of all 600+ colleges in Maharashtra, college predictor, and advanced filters.",
+    description: "Unlock accurate data of all colleges in Maharashtra, and advanced filters.",
     priceText: "Unlock After MHT-CET Plan",
   },
 };
@@ -320,6 +320,13 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
           <Text style={styles.subscribeButtonText}>{content.priceText}</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={onClose}
+        >
+          <Text style={styles.closeButtonText}>Not Now</Text>
+        </TouchableOpacity>
+
 
       </Reanimated.View>
 
@@ -360,7 +367,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 24,
-    paddingBottom: 40,
+    paddingBottom: 20,
     alignItems: "center",
     marginBottom: -10
 

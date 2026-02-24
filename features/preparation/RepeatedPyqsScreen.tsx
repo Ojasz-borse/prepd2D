@@ -186,7 +186,7 @@ export default function RepeatedPYQListScreen() {
 
   usePreventScreenCapture();
 
-  const { showLock, closeLock } = useSubscriptionLock({ gate: "before" });
+  // const { showLock, closeLock } = useSubscriptionLock({ gate: "before" });
 
   const fetchPYQs = async () => {
     setLoading(true);
@@ -348,13 +348,13 @@ export default function RepeatedPYQListScreen() {
           </Animated.View>
         )}
 
-        {showLock && (
+        {/* {showLock && (
           <SubscriptionLockSheet
             visible={showLock}
             planType="before"
             onClose={closeLock}
           />
-        )}
+        )} */}
       </LinearGradient>
     </SafeAreaView>
   );

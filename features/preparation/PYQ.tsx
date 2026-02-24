@@ -164,7 +164,7 @@ export default function PYQ({ pyqs, loading, error, reload }: PYQProps) {
     subject: number
   ) => {
 
-    if (!isAllowed) return;
+    // if (!isAllowed) return;
 
     const title = `${subject === 1 ? "Physics" : subject === 2 ? "Chemistry" : "Mathematics"}`;
     router.push({

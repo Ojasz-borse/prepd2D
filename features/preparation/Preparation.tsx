@@ -140,25 +140,25 @@ export default function Preparation() {
 
   const { user } = useAuth();
 
-  const { isAllowed } = useSubscriptionLock({
-    gate: "before",
-  });
-  const [showLock, setShowLock] = useState(false);
+  // const { isAllowed } = useSubscriptionLock({
+  //   gate: "before",
+  // });
+  // const [showLock, setShowLock] = useState(false);
 
-  useEffect(() => {
-    const isLockedTab = activeTab === "pyq";
-    const isLoading = loading;
+  // useEffect(() => {
+  //   const isLockedTab = activeTab === "pyq";
+  //   const isLoading = loading;
 
-    if (!isLoading && !isAllowed && isLockedTab) {
-      const timer = setTimeout(() => {
-        setShowLock(true);
-      }, 2000);
+  //   if (!isLoading && !isAllowed && isLockedTab) {
+  //     const timer = setTimeout(() => {
+  //       setShowLock(true);
+  //     }, 2000);
 
-      return () => clearTimeout(timer);
-    } else {
-      setShowLock(false);
-    }
-  }, [activeTab, loading, isAllowed]);
+  //     return () => clearTimeout(timer);
+  //   } else {
+  //     setShowLock(false);
+  //   }
+  // }, [activeTab, loading, isAllowed]);
 
   // Store layout for each tab { x, width }
   const [tabMeasurements, setTabMeasurements] = useState<{ [key: string]: { x: number; width: number } }>({});
@@ -341,13 +341,13 @@ export default function Preparation() {
           </View>
         )}
 
-        {showLock && (
+        {/* {showLock && (
           <SubscriptionLockSheet
             visible={showLock}
             planType="before"
             onClose={() => setShowLock(false)}
           />
-        )}
+        )} */}
       </View>
     </LinearGradient>
   );

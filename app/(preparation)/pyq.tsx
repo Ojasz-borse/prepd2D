@@ -13,22 +13,22 @@ export default function PyqScreen() {
     const { pyqs, loading, error, reload } = usePYQS();
     const { user } = useAuth();
 
-    const { isAllowed } = useSubscriptionLock({
-        gate: "before",
-    });
-    const [showLock, setShowLock] = useState(false);
+    // const { isAllowed } = useSubscriptionLock({
+    //     gate: "before",
+    // });
+    // const [showLock, setShowLock] = useState(false);
 
-    useEffect(() => {
-        if (!loading && !isAllowed) {
-            const timer = setTimeout(() => {
-                setShowLock(true);
-            }, 2000);
+    // useEffect(() => {
+    //     if (!loading && !isAllowed) {
+    //         const timer = setTimeout(() => {
+    //             setShowLock(true);
+    //         }, 2000);
 
-            return () => clearTimeout(timer);
-        } else {
-            setShowLock(false);
-        }
-    }, [loading, isAllowed]);
+    //         return () => clearTimeout(timer);
+    //     } else {
+    //         setShowLock(false);
+    //     }
+    // }, [loading, isAllowed]);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -37,13 +37,13 @@ export default function PyqScreen() {
                 <PYQ pyqs={pyqs} loading={loading} error={error} reload={reload} />
             </View>
 
-            {showLock && (
+            {/* {showLock && (
                 <SubscriptionLockSheet
                     visible={showLock}
                     planType="before"
                     onClose={() => setShowLock(false)}
                 />
-            )}
+            )} */}
         </SafeAreaView>
     );
 }

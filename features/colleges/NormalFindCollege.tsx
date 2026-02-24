@@ -238,9 +238,9 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
         scrollEventThrottle={16}
         data={filteredData}
         keyExtractor={(item) => item.college_code}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <View style={styles.itemWrapper}>
-            <NormalFindCollegeCard college={item} />
+            <NormalFindCollegeCard college={item} index={index} />
           </View>
         )}
         ListHeaderComponent={renderHeader}

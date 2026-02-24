@@ -124,27 +124,19 @@ export default function FindColleges() {
   const [showLock, setShowLock] = useState(false);
 
   useEffect(() => {
-    const isLockedTab =
-      activeTab === "colleges" ||
-      activeTab === "branches";
-    const isLoading =
-      activeTab === "colleges" ? collegesLoading : branchesLoading;
+    const isLockedTab = activeTab === "branches";
+    const isLoading = branchesLoading;
 
     if (!isLoading && !isAllowed && isLockedTab) {
       const timer = setTimeout(() => {
         setShowLock(true);
-      }, 2000);
+      }, 3000);
 
       return () => clearTimeout(timer);
     } else {
       setShowLock(false);
     }
-  }, [
-    activeTab,
-    collegesLoading,
-    branchesLoading,
-    isAllowed,
-  ]);
+  }, [activeTab, branchesLoading, isAllowed]);
 
 
   // Indicator animation

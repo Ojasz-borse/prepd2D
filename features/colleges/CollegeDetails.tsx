@@ -14,6 +14,7 @@ import CollegeFees from "@/features/colleges/CollegeFees";
 import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import * as ScreenCapture from "expo-screen-capture";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import {
   Linking,
@@ -23,11 +24,17 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
+import SubscriptionLockSheet from "@/components/ShowLockScreen";
+import { useLocalSearchParams, useRouter } from "expo-router";
 
 type RootStackParamList = {
   CollegeDetails: {
     college_code: string;
+    collegeIndex?: string;
   };
 };
 type DetailsRouteProp = RouteProp<RootStackParamList, "CollegeDetails">;
@@ -73,14 +80,32 @@ interface Branch {
 }
 
 export default function CollegeDetails() {
-  const { params } = useRoute<DetailsRouteProp>();
-  const { college_code } = params;
+  const router = useRouter();
+  const { college_code, collegeIndex } = useLocalSearchParams<{
+    college_code: string;
+    collegeIndex?: string;
+  }>();
 
   const [collegeDetails, setCollegeDetails] = useState<CollegeDetails | null>();
   const [collegeBranches, setCollegeBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
 
   const { getToken } = useAuth();
+
+  const { isAllowed } = useSubscriptionLock({
+    gate: "after",
+  });
+  const [showLock, setShowLock] = useState(false);
+
+  const index = collegeIndex ? parseInt(collegeIndex) : 0;
+
+  useEffect(() => {
+    if (!isAllowed && index > 0) {
+      setShowLock(true);
+    } else {
+      setShowLock(false);
+    }
+  }, [isAllowed, index]);
 
   useEffect(() => {
     const fetchCollegeDetails = async () => {
@@ -159,152 +184,175 @@ export default function CollegeDetails() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <TopHeader title="View College" showBackArrow={true} />
+    <LinearGradient
+      colors={["#f8fafc", "#e6f1ff", "#e8dcff"]}
+      locations={[0, 0.5, 1]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView style={{ flex: 1 }}>
+        <TopHeader title="View College" showBackArrow={true} />
 
-      <ScrollView
-        contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}
-      >
-        {loading ? (
-          <CollegeContentSkeleton />
-        ) : (
-          <>
-            <View style={styles.subRow}>
-              <Text style={styles.subText}>{collegeDetails?.college_code}</Text>
+        <ScrollView
+          contentContainerStyle={styles.container}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.whiteBox}>
+            {loading ? (
+              <CollegeContentSkeleton />
+            ) : (
+              <>
+                <View style={styles.metaRow}>
+                  <View style={styles.greenTag}>
+                    <Text style={styles.greenTagText}>{collegeDetails?.college_code}</Text>
+                  </View>
 
-              <View style={styles.typeRow}>
-                {collegeDetails?.is_autonomous ? (
-                  <GovernmentCollegeIcon size={16} />
-                ) : (
-                  <PrivateCollegeIcon size={16} />
-                )}
-                <Text style={styles.subText}>
-                  {collegeDetails?.is_autonomous
-                    ? "Autonomous"
-                    : "Non-Autonomous"}
-                </Text>
-              </View>
-            </View>
-
-            {/* College Name + Link */}
-            <TouchableOpacity
-              onPress={() =>
-                handleOpenLink(collegeDetails?.official_website_url || "")
-              }
-            >
-              <Text style={styles.title}>
-                <Text>{collegeDetails?.name + " "}</Text>
-                <Text>
-                  <ExternalLinkIcon size={14} />
-                </Text>
-              </Text>
-            </TouchableOpacity>
-
-            {/* Address */}
-            {collegeDetails?.address && (
-              <View style={styles.address}>
-                <LocationPinIcon size={18} />
-                <Text style={styles.addressText}>
-                  {" "}
-                  {collegeDetails?.address}
-                </Text>
-              </View>
-            )}
-
-            {collegeDetails?.status && (
-              <View>
-                <Text style={styles.addressText}>
-                  Status:
-                  {collegeDetails?.status}
-                </Text>
-              </View>
-            )}
-
-            {/* NAAC + Placement */}
-            <View style={styles.subRow}>
-              {collegeDetails?.naac_grade && collegeDetails?.naac_score ? (
-                <View style={styles.naacGrade}>
-                  <Text style={styles.naacGradeText}>
-                    NAAC: {collegeDetails?.naac_grade}
-                  </Text>
-                  <Text style={styles.naacGradeText}>🔹</Text>
-                  <Text style={styles.naacGradeText}>
-                    {collegeDetails?.naac_score}/4
-                  </Text>
+                  {collegeDetails?.status && (
+                    <View style={[styles.greenTag, styles.statusAbsolute]}>
+                      <Text style={styles.greenTagText}>{collegeDetails?.status}</Text>
+                    </View>
+                  )}
                 </View>
-              ) : (
-                <View></View>
-              )}
 
-              {collegeDetails?.placement_url && (
+                {/* College Name + Icon Section */}
                 <TouchableOpacity
                   onPress={() =>
-                    handleOpenLink(collegeDetails?.placement_url || "")
+                    handleOpenLink(collegeDetails?.official_website_url || "")
                   }
-                  style={styles.placementUrl}
+                  style={styles.nameSection}
                 >
-                  <View style={styles.rowWithIcon}>
-                    <Text style={styles.placementUrlText}>View placements</Text>
-                    <View style={{ marginLeft: 4 }}>
-                      <ExternalLinkIcon size={12} />
-                    </View>
+                  <View style={styles.iconCircle}>
+                    <Ionicons name="school" size={24} color="#fff" />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.title}>
+                      {collegeDetails?.name}
+                      {"  "}
+                      <ExternalLinkIcon size={14} color="#004aad" />
+                    </Text>
                   </View>
                 </TouchableOpacity>
-              )}
-            </View>
-          </>
-        )}
 
-        <View style={styles.separator} />
+                {/* Address */}
+                {collegeDetails?.address && (
+                  <View style={styles.address}>
+                    <LocationPinIcon size={18} />
+                    <Text style={styles.addressText}>
+                      {" "}
+                      {collegeDetails?.address}
+                    </Text>
+                  </View>
+                )}
 
-        {/* Fees Section */}
-        <TouchableOpacity
-          onPress={() =>
-            handleOpenLink(collegeDetails?.tuition_fees_url_exact || "")
-          }
-        >
-          <View style={styles.rowWithIcon}>
-            <Text style={styles.sectionTitle}>Fees Structure</Text>
-            <View style={{ marginLeft: 4 }}>
-              <ExternalLinkIcon size={12} />
-            </View>
+                {/* NAAC Row */}
+                <View style={styles.subRow}>
+                  {collegeDetails?.naac_grade && collegeDetails?.naac_score ? (
+                    <View style={styles.naacGrade}>
+                      <Text style={styles.naacGradeText}>
+                        NAAC: {collegeDetails?.naac_grade}
+                      </Text>
+                      <Text style={styles.naacGradeText}>🔹</Text>
+                      <Text style={styles.naacGradeText}>
+                        {collegeDetails?.naac_score}/4
+                      </Text>
+                    </View>
+                  ) : (
+                    <View></View>
+                  )}
+                </View>
+
+                {/* Placement Button */}
+                {collegeDetails?.placement_url && (
+                  <TouchableOpacity
+                    onPress={() =>
+                      handleOpenLink(collegeDetails?.placement_url || "")
+                    }
+                    style={styles.placementButton}
+                    activeOpacity={0.8}
+                  >
+                    <View style={styles.placementButtonContent}>
+                      <Text style={styles.placementButtonText}>View placements</Text>
+                      <Ionicons name="arrow-forward" size={18} color="#fff" />
+                    </View>
+                  </TouchableOpacity>
+                )}
+              </>
+            )}
+
+            <View style={styles.separator} />
+
+            {/* Fees Section */}
+            <TouchableOpacity
+              onPress={() =>
+                handleOpenLink(collegeDetails?.tuition_fees_url_exact || "")
+              }
+            >
+              <View style={styles.rowWithIcon}>
+                <Text style={styles.sectionTitle}>Fees Structure</Text>
+                <View style={{ marginLeft: 4 }}>
+                  <ExternalLinkIcon size={12} />
+                </View>
+              </View>
+            </TouchableOpacity>
+
+            {loading ? (
+              <CollegeFeesSkeleton />
+            ) : (
+              <CollegeFees fees={collegeDetails?.fees_structure as FeesStructure} />
+            )}
+
+            <View style={styles.separator} />
+
+            {/* Branches Section */}
+            <Text style={styles.sectionTitle}>Branches & Intake</Text>
+
+            {collegeBranches.length == 0 && (
+              <>
+                <CollegeDetailsBranchSkeleton />
+                <CollegeDetailsBranchSkeleton />
+                <CollegeDetailsBranchSkeleton />
+              </>
+            )}
+            {collegeBranches.map((e) => {
+              return <CollegeDetailsBranch item={e} />;
+            })}
+
+            <View style={styles.separator} />
           </View>
-        </TouchableOpacity>
+        </ScrollView>
 
-        {loading ? (
-          <CollegeFeesSkeleton />
-        ) : (
-          <CollegeFees fees={collegeDetails?.fees_structure as FeesStructure} />
+        {showLock && (
+          <SubscriptionLockSheet
+            visible={showLock}
+            planType="after"
+            onClose={() => {
+              setShowLock(false);
+              if (index > 0) {
+                router.back();
+              }
+            }}
+          />
         )}
-
-        <View style={styles.separator} />
-
-        {/* Branches Section */}
-        <Text style={styles.sectionTitle}>Branches & Intake</Text>
-
-        {collegeBranches.length == 0 && (
-          <>
-            <CollegeDetailsBranchSkeleton />
-            <CollegeDetailsBranchSkeleton />
-            <CollegeDetailsBranchSkeleton />
-          </>
-        )}
-        {collegeBranches.map((e) => {
-          return <CollegeDetailsBranch item={e} />;
-        })}
-
-        <View style={styles.separator} />
-      </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
     gap: 12,
+  },
+  whiteBox: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 16,
+    gap: 12,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    position: "relative",
   },
 
   subRow: {
@@ -312,11 +360,48 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+    gap: 8,
+    flexWrap: "wrap",
+  },
+  greenTag: {
+    backgroundColor: "#f0f7d4",
+    borderWidth: 1,
+    borderColor: "#b6cf4f",
+    borderRadius: 99,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+  },
+  greenTagText: {
+    fontSize: 12,
+    color: "#8b9e3dff",
+    fontFamily: "SourceSans3Medium",
+  },
+  statusAbsolute: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+  },
+  statusPill: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#004aad",
+    paddingVertical: 2,
+    paddingHorizontal: 10,
+    borderRadius: 99,
+  },
+  statusPillText: {
+    fontSize: 12,
+    color: "#004aad",
+    fontFamily: "SourceSans3Medium",
+  },
   typeRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
-    width: 140,
     gap: 4,
   },
   subText: {
@@ -328,17 +413,38 @@ const styles = StyleSheet.create({
 
   // Typography
   title: {
-    fontFamily: "SourceSans3Medium",
-    fontSize: 18,
-    color: "#000",
+    fontFamily: "SourceSans3SemiBold",
+    fontSize: 20,
+    color: "#004aad",
     flexWrap: "wrap",
-    marginBottom: -8,
+    lineHeight: 26,
+  },
+
+  nameSection: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+    marginVertical: 4,
+  },
+  iconCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#ff7a22",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#ff7a22",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+    marginTop: 2,
   },
 
   sectionTitle: {
-    fontFamily: "SourceSans3Medium",
+    fontFamily: "SourceSans3SemiBold",
     fontSize: 16,
-    color: "#000",
+    color: "#004aad",
   },
 
   address: {
@@ -369,17 +475,29 @@ const styles = StyleSheet.create({
     color: "#004aad",
   },
 
-  placementUrl: {
-    paddingHorizontal: 12,
-    backgroundColor: "#f2f2f2",
-    maxWidth: 300,
-    padding: 4,
-    borderRadius: 10,
-  },
   placementUrlText: {
     fontFamily: "SourceSans3Medium",
     fontSize: 14,
     color: "#004aad",
+  },
+
+  placementButton: {
+    backgroundColor: "#B6CF4F",
+    borderRadius: 12,
+    marginTop: 8,
+    overflow: "hidden",
+  },
+  placementButtonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    gap: 8,
+  },
+  placementButtonText: {
+    fontFamily: "SourceSans3SemiBold",
+    fontSize: 16,
+    color: "#fff",
   },
 
   addressText: {

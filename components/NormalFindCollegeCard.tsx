@@ -13,10 +13,12 @@ export interface College {
 
 interface NormalFindCollegeCardProps {
   college: College;
+  index: number;
 }
 
 const NormalFindCollegeCard: React.FC<NormalFindCollegeCardProps> = ({
   college,
+  index,
 }) => {
   const { isAllowed } = useSubscriptionLock({
     gate: "after", // 👈 IMPORTANT
@@ -25,14 +27,6 @@ const NormalFindCollegeCard: React.FC<NormalFindCollegeCardProps> = ({
     <TouchableOpacity
       key={college.college_code}
       style={styles.cardContainer}
-      // onPress={() =>
-      //   router.push({
-      //     pathname: "../college-details",
-      //     params: {
-      //       college_code: college.college_code,
-      //     },
-      //   })
-      // }
       activeOpacity={0.7}
     >
       {/* Top Metadata Row (Greenish Pills) */}
@@ -55,13 +49,13 @@ const NormalFindCollegeCard: React.FC<NormalFindCollegeCardProps> = ({
         <TouchableOpacity
           style={styles.viewButton}
           onPress={() => {
-            if (isAllowed) {
-              router.push({
-                pathname: "../college-details",
-                params: { college_code: college.college_code },
-              })
-            }
-
+            router.push({
+              pathname: "../college-details",
+              params: {
+                college_code: college.college_code,
+                collegeIndex: index.toString()
+              },
+            })
           }
           }
         >

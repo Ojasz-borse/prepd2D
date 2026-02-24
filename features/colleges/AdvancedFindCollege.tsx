@@ -129,7 +129,6 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
     ...new Set(branches.map((d) => d.branch_name.toLowerCase())),
   ].sort((a, b) => a.localeCompare(b));
 
-   console.log(collegeBranches)
   const districts = [
     ...new Set(branches.map((d) => d.district.toLowerCase())),
   ].sort((a, b) => a.localeCompare(b));

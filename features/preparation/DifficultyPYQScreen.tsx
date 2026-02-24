@@ -115,9 +115,9 @@ export default function DifficultyPYQScreen() {
 
   usePreventScreenCapture();
 
-  const { showLock, closeLock } = useSubscriptionLock({
-    gate: "before",
-  });
+  // const { showLock, closeLock } = useSubscriptionLock({
+  //   gate: "before",
+  // });
 
   /* =========================
      FETCH (UNCHANGED LOGIC)
@@ -323,13 +323,13 @@ export default function DifficultyPYQScreen() {
           </Animated.View>
         )}
 
-        {showLock && (
+        {/* {showLock && (
           <SubscriptionLockSheet
             visible={showLock}
             planType="before"
             onClose={closeLock}
           />
-        )}
+        )} */}
       </LinearGradient>
     </SafeAreaView>
   );
