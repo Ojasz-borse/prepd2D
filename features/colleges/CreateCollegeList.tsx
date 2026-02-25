@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   View,
   Text,
@@ -18,10 +18,13 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LOCATIONS, BRANCHES, CATEGORIES } from "@/constants/collegeFilters";
 import { useCreateCollegeList } from "@/hooks/useCreateCollegeList";
 import { formatLocationName, formatBranchName } from "@/utils/formatHelpers";
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
+import SubscriptionLockSheet from "@/components/ShowLockScreen";
 import TopHeader from "@/components/TopHeader";
 import { useRouter } from "expo-router";
 import FloatingLabelInput from "@/components/FloatingLabelInput";
 import { Dropdown, MultiSelect } from "react-native-element-dropdown";
+import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 
 interface DropdownItemProps {
   label: string;
@@ -55,6 +58,24 @@ export default function CreateCollegeList() {
   const [branches, setBranches] = useState<string[]>([]);
   const [results, setResults] = useState<any[]>([]);
   const [showResults, setShowResults] = useState(false);
+
+  const { showLock, closeLock, isAllowed } = useSubscriptionLock({
+    gate: "after",
+    delay: 0, 
+  });
+
+  const [localShowLock, setLocalShowLock] = useState(false);
+
+  usePreventScreenCapture();
+  
+  // Subscription Lock Effect
+  useEffect(() => {
+    if (!isAllowed) {
+      setLocalShowLock(true); 
+    } else {
+      setLocalShowLock(false);
+    }
+  }, [isAllowed]);
 
   const moveBranch = (index: number, direction: "up" | "down") => {
     const updated = [...branches];
@@ -175,6 +196,18 @@ export default function CreateCollegeList() {
               </View>
             )}
           </ScrollView>
+          {localShowLock && (
+          <SubscriptionLockSheet
+            visible={localShowLock}
+            planType="before"
+            // onClose={() => {
+            //   setLocalShowLock(false)
+            //   if (index >= 3) {
+            //     setIndex(2) // Jump back to safe question if they close and are still on blocked index
+            //   }
+            // }}
+          />
+        )}
         </View>
       </SafeAreaView>
     </LinearGradient>

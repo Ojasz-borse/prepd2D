@@ -124,7 +124,7 @@ export default function FindColleges() {
   const [showLock, setShowLock] = useState(false);
 
   useEffect(() => {
-    const isLockedTab = activeTab === "branches";
+    const isLockedTab = activeTab !== "all";
     const isLoading = branchesLoading;
 
     if (!isLoading && !isAllowed && isLockedTab) {

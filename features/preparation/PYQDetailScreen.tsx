@@ -141,8 +141,9 @@ export default function PYQDetailsPage() {
 
   // Subscription Lock Effect
   useEffect(() => {
-    if (!isAllowed && index >= 3) {
-      setLocalShowLock(true);
+    const isFreeContent = selectedYear === "2025" && index < 3;
+    if (!isAllowed && !isFreeContent) {
+      setLocalShowLock(true); 
     } else {
       setLocalShowLock(false);
     }

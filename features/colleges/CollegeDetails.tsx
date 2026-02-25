@@ -100,7 +100,7 @@ export default function CollegeDetails() {
   const index = collegeIndex ? parseInt(collegeIndex) : 0;
 
   useEffect(() => {
-    if (!isAllowed && index > 0) {
+    if (!isAllowed && college_code!=="03012") {
       setShowLock(true);
     } else {
       setShowLock(false);
