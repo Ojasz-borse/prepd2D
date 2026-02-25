@@ -9,4 +9,4 @@ export const CouponPriceEnumAfter = {
 };
 
 export const DEFAULT_PRICE_BEFORE = 499;
-export const DEFAULT_PRICE_AFTER = 799;
+export const DEFAULT_PRICE_AFTER = 499;

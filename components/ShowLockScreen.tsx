@@ -16,13 +16,12 @@ import { CREATE_ORDER, RAZORPAY_KEY, VERIFY_ORDER } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import { apiFetch } from "@/services/api";
 import {
-  CouponPriceEnumBefore,
-  CouponPriceEnumAfter,
   DEFAULT_PRICE_BEFORE,
   DEFAULT_PRICE_AFTER,
 } from "@/constants/couponConfig";
 import CustomAlertModal from "@/components/CustomAlertModal";
-
+import { VERIFY_COUPON } from "@/constants/config"; // Ensure this is exported in your config
+import { fetchWithRetry } from "@/services/api";
 
 
 type RazorpaySuccess = {
@@ -79,11 +78,10 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
     text: "",
     type: "none",
   });
+  const [isValidating, setIsValidating] = React.useState(false);
 
   const defaultPrice = planType === "before" ? DEFAULT_PRICE_BEFORE : DEFAULT_PRICE_AFTER;
   const [displayedPrice, setDisplayedPrice] = React.useState(defaultPrice);
-
-  const couponEnum = planType === "before" ? CouponPriceEnumBefore : CouponPriceEnumAfter;
 
   const handleCouponChange = (text: string) => {
     const code = text.toUpperCase();
@@ -98,18 +96,50 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
       return;
     }
 
-    if (couponEnum[code as keyof typeof couponEnum]) {
-      setValidationMsg({ text: "Coupon is valid", type: "valid" });
-    } else {
-      setValidationMsg({ text: "Coupon is invalid", type: "invalid" });
-    }
+    setValidationMsg({ text: "", type: "none" });
   };
 
-  const applyCoupon = () => {
-    const price = couponEnum[couponInput as keyof typeof couponEnum];
-    if (price) {
-      setAppliedCoupon(couponInput);
-      setDisplayedPrice(price);
+  const validateCouponOnBackend = async () => {
+    if (!couponInput) return;
+
+    setIsValidating(true);
+    try {
+      const token = await getToken();
+      const res = await fetchWithRetry(
+        VERIFY_COUPON,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+          body: JSON.stringify({
+            payment_tag: planType,
+            couponCode: couponInput,
+          }),
+        },
+        2, 
+        1000 
+      );
+
+      if (!res.ok) {
+          throw new Error("Validation failed");
+      }
+
+      const data = await res.json();
+
+      if (data.success) {
+        setAppliedCoupon(couponInput);
+        setDisplayedPrice(data.finalPrice);
+        setValidationMsg({ text: "Coupon applied successfully!", type: "valid" });
+      } else {
+        setDisplayedPrice(data.finalPrice || defaultPrice);
+        setValidationMsg({ text: data.message || "Invalid coupon", type: "invalid" });
+      }
+    } catch (err) {
+      setValidationMsg({ text: "Error validating coupon", type: "invalid" });
+    } finally {
+      setIsValidating(false);
     }
   };
 
@@ -136,7 +166,6 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
 
 
   const startPayment = async () => {
-
     try {
       const token = await getToken();
 
@@ -267,16 +296,17 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
               value={couponInput}
               onChangeText={handleCouponChange}
               autoCapitalize="characters"
+              editable={!isValidating}
             />
             <TouchableOpacity
               style={[
                 styles.applyButton,
-                validationMsg.type !== "valid" && styles.disabledApplyButton
+                (!couponInput || isValidating) && styles.disabledApplyButton
               ]}
-              onPress={applyCoupon}
-              disabled={validationMsg.type !== "valid"}
+              onPress={validateCouponOnBackend}
+              disabled={!couponInput || isValidating}
             >
-              <Text style={styles.applyButtonText}>Apply</Text>
+              <Text style={styles.applyButtonText}>{isValidating ? "Applying.." : "Apply"}</Text>
             </TouchableOpacity>
           </View>
 
