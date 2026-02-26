@@ -5,7 +5,7 @@ export default {
     expo: {
         name: "PrepCET",
         slug: "prepcet",
-        version: "2.0.2",
+        version: "2.0.3",
         orientation: "portrait",
         icon: "./assets/images/icon.png",
         scheme: "prepcet",
@@ -19,7 +19,7 @@ export default {
             supportsTablet: true
         },
         android: {
-            versionCode: 12,
+            versionCode: 13,
             adaptiveIcon: {
                 foregroundImage: "./assets/images/icon.png",
                 backgroundColor: "#ffffff"
@@ -59,7 +59,8 @@ export default {
             SERVER_URL: process.env.SERVER_URL,
             RAZORPAY_KEY: process.env.RAZORPAY_KEY,
             eas: {
-                projectId: "4bdd8255-e16b-4789-91b2-24afb5107930"
+                // projectId: "4bdd8255-e16b-4789-91b2-24afb5107930"
+                projectId: "d659fd19-f78f-466b-b5e5-d74fc1c2a947"
             }
         },
     },
