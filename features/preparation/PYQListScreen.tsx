@@ -482,6 +482,7 @@ const styles = StyleSheet.create({
     borderColor: "#e2e8f0",
     backgroundColor: "#fff",
     marginBottom: 16,
+
   },
   titleRow: {
     flexDirection: "row",
@@ -496,6 +497,7 @@ const styles = StyleSheet.create({
     borderRadius: 99,
     paddingHorizontal: 10,
     paddingVertical: 2,
+
   },
   questionTagText: {
     fontSize: 12,
@@ -516,6 +518,8 @@ const styles = StyleSheet.create({
   questionContent: {
     marginBottom: 12,
     marginTop: 8,
+    height: 75,        // 👈 fixed height
+    overflow: "hidden",
   },
   questionText: {
     fontSize: 17,
