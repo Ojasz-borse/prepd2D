@@ -326,12 +326,12 @@ export default function CollegeDetails() {
           <SubscriptionLockSheet
             visible={showLock}
             planType="after"
-            onClose={() => {
-              setShowLock(false);
-              if (index > 0) {
-                router.back();
-              }
-            }}
+            // onClose={() => {
+            //   setShowLock(false);
+            //   if (index > 0) {
+            //     router.back();
+            //   }
+            // }}
           />
         )}
       </SafeAreaView>

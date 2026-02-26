@@ -302,7 +302,7 @@ export default function FindColleges() {
           <SubscriptionLockSheet
             visible={showLock}
             planType="after"
-            onClose={() => setShowLock(false)}
+            // onClose={() => setShowLock(false)}
           />
         )}
       </View>
