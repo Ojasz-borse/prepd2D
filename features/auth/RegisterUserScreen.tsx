@@ -27,7 +27,7 @@ const RegisterUserScreen: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
-  const [group, setGroup] = useState<"PCB" | "PCM" | "">("");
+  const [group, setGroup] = useState<"PCM">("PCM");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [otp, setOtp] = useState<string[]>(["", "", "", ""]);
@@ -273,14 +273,14 @@ const RegisterUserScreen: React.FC = () => {
                         PCM
                       </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                       style={[
                         styles.groupOption,
                         group === "PCB" && styles.groupOptionSelected,
                       ]}
                       onPress={() => setGroup("PCB")}
-                    >
-                      <Text
+                    > */}
+                      {/* <Text
                         style={[
                           styles.groupOptionText,
                           group === "PCB" && styles.groupOptionTextSelected,
@@ -288,7 +288,7 @@ const RegisterUserScreen: React.FC = () => {
                       >
                         PCB
                       </Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                   </View>
                   <View style={styles.buttonWrapper}>
                     <TouchableOpacity
