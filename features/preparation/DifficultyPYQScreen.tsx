@@ -336,6 +336,7 @@ export default function DifficultyPYQScreen() {
           <SubscriptionLockSheet
             visible={showLock}
             planType="before"
+            cssType="type2"
             // onClose={closeLock}
           />
         )}

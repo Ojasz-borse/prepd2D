@@ -200,6 +200,7 @@ export default function CreateCollegeList() {
           <SubscriptionLockSheet
             visible={localShowLock}
             planType="after"
+            cssType="type2"
             // onClose={() => {
             //   setLocalShowLock(false)
             //   if (index >= 3) {

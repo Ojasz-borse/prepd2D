@@ -323,6 +323,7 @@ export default function PYQDetailsPage() {
           <SubscriptionLockSheet
             visible={localShowLock}
             planType="before"
+            cssType="type2"
             onClose={() => {
               setLocalShowLock(false)
               if (index >= 3) {

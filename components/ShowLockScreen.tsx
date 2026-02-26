@@ -36,6 +36,7 @@ type RazorpaySuccess = {
 interface SubscriptionLockSheetProps {
   visible: boolean;
   planType: "before" | "after";
+  cssType?: "type1" | "type2";
   onClose?: () => void;
 }
 
@@ -56,6 +57,7 @@ const CONTENT_MAP = {
 const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
   visible,
   planType,
+  cssType,
   onClose,
 }) => {
   const { getToken, user, updateUserSubscription } = useAuth();
@@ -82,6 +84,8 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
 
   const defaultPrice = planType === "before" ? DEFAULT_PRICE_BEFORE : DEFAULT_PRICE_AFTER;
   const [displayedPrice, setDisplayedPrice] = React.useState(defaultPrice);
+
+  const overallCss = (cssType === "type2") ? styles.content_type2 : styles.content_type1;
 
   const handleCouponChange = (text: string) => {
     const code = text.toUpperCase();
@@ -226,6 +230,7 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
               razorpay_order_id: data.razorpay_order_id,
               razorpay_payment_id: data.razorpay_payment_id,
               razorpay_signature: data.razorpay_signature,
+              coupon_code: appliedCoupon,
             }),
           });
 
@@ -262,7 +267,7 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
     >
       <Reanimated.View
         entering={SlideInDown.duration(600)}
-        style={styles.content}
+        style={overallCss}
       >
         <View style={styles.handle} />
 
@@ -388,7 +393,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     zIndex: 1000,
   },
-  content: {
+  content_type1: {
     width: "100%",
     position: "absolute",
     left: 0,
@@ -400,6 +405,20 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     alignItems: "center",
     marginBottom: -10
+
+  },
+  content_type2: {
+    width: "100%",
+    position: "absolute",
+    left: 0,
+    bottom: 0,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    padding: 24,
+    paddingBottom: 20,
+    alignItems: "center",
+    marginBottom: 150
 
   },
   handle: {

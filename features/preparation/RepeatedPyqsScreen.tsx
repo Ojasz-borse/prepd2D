@@ -364,6 +364,7 @@ export default function RepeatedPYQListScreen() {
           <SubscriptionLockSheet
             visible={showLock}
             planType="before"
+            cssType="type2"
             // onClose={closeLock}
           />
         )}

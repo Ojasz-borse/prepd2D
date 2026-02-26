@@ -412,6 +412,7 @@ export default function PYQListScreen() {
           <SubscriptionLockSheet
             visible={showLock}
             planType="before"
+            cssType="type2"
             // onClose={closeLock}
           />
         )}
