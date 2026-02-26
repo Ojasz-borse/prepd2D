@@ -49,4 +49,4 @@ export const VERIFY_ORDER = `${extra.SERVER_URL}/api/payment/verify-order`;
 
 export const RAZORPAY_KEY = `${extra.RAZORPAY_KEY}`;
 
-
+export const VERIFY_COUPON = `${extra.SERVER_URL}/api/payment/validate-coupon`;

@@ -32,13 +32,16 @@ const LoginUserScreen: React.FC = () => {
       return Alert.alert("Error", "Please enter email and password");
     }
 
+
     setModalVisible(true);
     setLoading(true);
     setError(false);
     setModalMessage("Authenticating...");
 
     try {
+     
       await login(email, password);
+      
       setLoading(false);
       setModalMessage("Login Successful!");
       setTimeout(() => {

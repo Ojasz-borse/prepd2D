@@ -22,7 +22,7 @@ const CollegeDetailsBranch: React.FC<Props> = ({ item }) => {
   return (
     <TouchableOpacity
       key={item.choice_code}
-      style={styles.card3D}
+      style={styles.cardContainer}
       onPress={() =>
         router.push({
           pathname: "../branch-details",
@@ -31,16 +31,31 @@ const CollegeDetailsBranch: React.FC<Props> = ({ item }) => {
       }
       activeOpacity={0.7}
     >
-      {/* Top Row */}
-      <View style={styles.subRow}>
-        <Text style={styles.subText}>{item.choice_code}</Text>
-        <View style={styles.typeRow}>
-          <Text style={styles.subText}>Intake: 120</Text>
+      {/* Top Metadata Row (Greenish Pills) */}
+      <View style={styles.topRow}>
+        <View style={styles.greenTag}>
+          <Text style={styles.greenTagText}>{item.choice_code}</Text>
+        </View>
+        <View style={styles.greenTag}>
+          <Text style={styles.greenTagText}>Intake: 120</Text>
         </View>
       </View>
 
-      {/* Branch */}
-      <Text style={styles.collegeName}>{item.branch_name}</Text>
+      {/* Branch & View Button Row */}
+      <View style={styles.titleRow}>
+        <Text style={styles.branchName}>{item.branch_name}</Text>
+        <TouchableOpacity
+          style={styles.viewButton}
+          onPress={() =>
+            router.push({
+              pathname: "../branch-details",
+              params: { choice_code: item.choice_code },
+            })
+          }
+        >
+          <Text style={styles.viewButtonText}>View</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Cutoff Grid */}
       <View style={styles.cutoffWrapper}>
@@ -60,50 +75,69 @@ const CollegeDetailsBranch: React.FC<Props> = ({ item }) => {
 export default React.memo(CollegeDetailsBranch);
 
 const styles = StyleSheet.create({
-  card3D: {
+  cardContainer: {
     width: "100%",
+    backgroundColor: "#fff",
     borderRadius: 16,
-    padding: 12,
-    marginBottom: 2,
+    padding: 14,
+    marginBottom: 20,
     borderWidth: 1,
-    borderColor: "#d9d9d9",
+    borderColor: "#e2e8f0",
   },
-  subRow: {
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 14,
+    gap: 8,
+  },
+  greenTag: {
+    backgroundColor: "#f0f7d4",
+    borderWidth: 1,
+    borderColor: "#b6cf4f",
+    borderRadius: 99,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+  },
+  greenTagText: {
+    fontSize: 12,
+    color: "#8b9e3dff",
+    fontFamily: "SourceSans3Medium",
+  },
+  titleRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 8,
+    gap: 12,
   },
-  typeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  subText: {
-    fontSize: 14,
-    color: "#004aad",
-    fontFamily: "SourceSans3Medium",
-  },
-  collegeName: {
-    fontSize: 16,
+  branchName: {
+    flex: 1,
+    fontSize: 17,
     color: "#000",
-    marginTop: 2,
-    fontWeight: "600",
-    fontFamily: "SourceSans3Medium",
+    fontFamily: "SourceSans3SemiBold",
   },
-  districtText: {
-    fontSize: 14,
-    color: "#666",
-    marginTop: 2,
-    fontFamily: "SourceSans3Medium",
+  viewButton: {
+    backgroundColor: "#ff5e32",
+    paddingHorizontal: 16,
+    paddingVertical: 5,
+    borderRadius: 99,
+  },
+  viewButtonText: {
+    color: "#fff",
+    fontSize: 13,
+    fontFamily: "SourceSans3SemiBold",
   },
   cutoffWrapper: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 10,
-    marginTop: 12,
+    gap: 8,
+    alignItems: "center",
+    marginTop: 4,
   },
   cutoffBox: {
-    backgroundColor: "#e6f1ff",
+    backgroundColor: "#f8fafc",
+    borderColor: "#e2e8f0",
+    borderWidth: 1,
     borderRadius: 8,
     paddingVertical: 4,
     minWidth: 50,
@@ -119,12 +153,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#0F172A",
     fontFamily: "SourceSans3Bold",
-    marginTop: -2,
-  },
-  rankValue: {
-    fontSize: 10,
-    fontFamily: "SourceSans3SemiBold",
-    color: "#666",
     marginTop: -2,
   },
 });

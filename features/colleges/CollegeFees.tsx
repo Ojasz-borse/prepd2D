@@ -170,10 +170,10 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3Medium", // ✅ applied
   },
   fees_total: {
-    fontSize: 16,
+    fontSize: 20,
     color: "#004aad",
-    fontFamily: "SourceSans3Medium", // ✅ applied
-    marginTop: 10,
+    fontFamily: "SourceSans3SemiBold", // ✅ applied
+    marginTop: 12,
   },
   notAVailable: {
     fontSize: 14,

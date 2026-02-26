@@ -133,6 +133,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
     ...new Set(branches.map((d) => d.district.toLowerCase())),
   ].sort((a, b) => a.localeCompare(b));
 
+  console.log(districts)
   // Filtering
   const filteredData = useMemo(() => {
     const search = searchText.toLowerCase();

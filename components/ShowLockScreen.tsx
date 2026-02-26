@@ -16,13 +16,12 @@ import { CREATE_ORDER, RAZORPAY_KEY, VERIFY_ORDER } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
 import { apiFetch } from "@/services/api";
 import {
-  CouponPriceEnumBefore,
-  CouponPriceEnumAfter,
   DEFAULT_PRICE_BEFORE,
   DEFAULT_PRICE_AFTER,
 } from "@/constants/couponConfig";
 import CustomAlertModal from "@/components/CustomAlertModal";
-
+import { VERIFY_COUPON } from "@/constants/config"; // Ensure this is exported in your config
+import { fetchWithRetry } from "@/services/api";
 
 
 type RazorpaySuccess = {
@@ -37,6 +36,7 @@ type RazorpaySuccess = {
 interface SubscriptionLockSheetProps {
   visible: boolean;
   planType: "before" | "after";
+  cssType?: "type1" | "type2";
   onClose?: () => void;
 }
 
@@ -49,7 +49,7 @@ const CONTENT_MAP = {
   },
   after: {
     title: "After MHT-CET Plan",
-    description: "Unlock accurate data of all 600+ colleges in Maharashtra, college predictor, and advanced filters.",
+    description: "Unlock accurate data of all colleges in Maharashtra, and advanced filters.",
     priceText: "Unlock After MHT-CET Plan",
   },
 };
@@ -57,6 +57,7 @@ const CONTENT_MAP = {
 const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
   visible,
   planType,
+  cssType,
   onClose,
 }) => {
   const { getToken, user, updateUserSubscription } = useAuth();
@@ -79,11 +80,12 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
     text: "",
     type: "none",
   });
+  const [isValidating, setIsValidating] = React.useState(false);
 
   const defaultPrice = planType === "before" ? DEFAULT_PRICE_BEFORE : DEFAULT_PRICE_AFTER;
   const [displayedPrice, setDisplayedPrice] = React.useState(defaultPrice);
 
-  const couponEnum = planType === "before" ? CouponPriceEnumBefore : CouponPriceEnumAfter;
+  const overallCss = (cssType === "type2") ? styles.content_type2 : styles.content_type1;
 
   const handleCouponChange = (text: string) => {
     const code = text.toUpperCase();
@@ -98,18 +100,50 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
       return;
     }
 
-    if (couponEnum[code as keyof typeof couponEnum]) {
-      setValidationMsg({ text: "Coupon is valid", type: "valid" });
-    } else {
-      setValidationMsg({ text: "Coupon is invalid", type: "invalid" });
-    }
+    setValidationMsg({ text: "", type: "none" });
   };
 
-  const applyCoupon = () => {
-    const price = couponEnum[couponInput as keyof typeof couponEnum];
-    if (price) {
-      setAppliedCoupon(couponInput);
-      setDisplayedPrice(price);
+  const validateCouponOnBackend = async () => {
+    if (!couponInput) return;
+
+    setIsValidating(true);
+    try {
+      const token = await getToken();
+      const res = await fetchWithRetry(
+        VERIFY_COUPON,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+          body: JSON.stringify({
+            payment_tag: planType,
+            couponCode: couponInput,
+          }),
+        },
+        2, 
+        1000 
+      );
+
+      if (!res.ok) {
+          throw new Error("Validation failed");
+      }
+
+      const data = await res.json();
+
+      if (data.success) {
+        setAppliedCoupon(couponInput);
+        setDisplayedPrice(data.finalPrice);
+        setValidationMsg({ text: "Coupon applied successfully!", type: "valid" });
+      } else {
+        setDisplayedPrice(data.finalPrice || defaultPrice);
+        setValidationMsg({ text: data.message || "Invalid coupon", type: "invalid" });
+      }
+    } catch (err) {
+      setValidationMsg({ text: "Error validating coupon", type: "invalid" });
+    } finally {
+      setIsValidating(false);
     }
   };
 
@@ -136,7 +170,6 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
 
 
   const startPayment = async () => {
-
     try {
       const token = await getToken();
 
@@ -197,6 +230,7 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
               razorpay_order_id: data.razorpay_order_id,
               razorpay_payment_id: data.razorpay_payment_id,
               razorpay_signature: data.razorpay_signature,
+              coupon_code: appliedCoupon,
             }),
           });
 
@@ -233,7 +267,7 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
     >
       <Reanimated.View
         entering={SlideInDown.duration(600)}
-        style={styles.content}
+        style={overallCss}
       >
         <View style={styles.handle} />
 
@@ -267,16 +301,17 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
               value={couponInput}
               onChangeText={handleCouponChange}
               autoCapitalize="characters"
+              editable={!isValidating}
             />
             <TouchableOpacity
               style={[
                 styles.applyButton,
-                validationMsg.type !== "valid" && styles.disabledApplyButton
+                (!couponInput || isValidating) && styles.disabledApplyButton
               ]}
-              onPress={applyCoupon}
-              disabled={validationMsg.type !== "valid"}
+              onPress={validateCouponOnBackend}
+              disabled={!couponInput || isValidating}
             >
-              <Text style={styles.applyButtonText}>Apply</Text>
+              <Text style={styles.applyButtonText}>{isValidating ? "Applying.." : "Apply"}</Text>
             </TouchableOpacity>
           </View>
 
@@ -320,6 +355,13 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
           <Text style={styles.subscribeButtonText}>{content.priceText}</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={onClose}
+        >
+          <Text style={styles.closeButtonText}>Not Now</Text>
+        </TouchableOpacity>
+
 
       </Reanimated.View>
 
@@ -351,7 +393,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     zIndex: 1000,
   },
-  content: {
+  content_type1: {
     width: "100%",
     position: "absolute",
     left: 0,
@@ -360,9 +402,23 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 24,
-    paddingBottom: 40,
+    paddingBottom: 20,
     alignItems: "center",
     marginBottom: -10
+
+  },
+  content_type2: {
+    width: "100%",
+    position: "absolute",
+    left: 0,
+    bottom: 0,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    padding: 24,
+    paddingBottom: 20,
+    alignItems: "center",
+    marginBottom: 150
 
   },
   handle: {

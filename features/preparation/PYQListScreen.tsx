@@ -20,6 +20,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import QuestionCardSkeleton from "@/components/QuestionCardSkeleton";
 import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
+import SubscriptionLockSheet from "@/components/ShowLockScreen";
 
 type PYQCardProps = {
   question: any;
@@ -147,6 +149,11 @@ export default function PYQListScreen() {
   const { pyqList, setPYQList, userResponses } = usePYQContext();
   const fadeAnim = useState(new Animated.Value(0))[0];
 
+  const { isAllowed } = useSubscriptionLock({
+      gate: "before",
+    });
+    const [showLock, setShowLock] = useState(false);
+
   usePreventScreenCapture();
 
 
@@ -228,6 +235,14 @@ export default function PYQListScreen() {
     }
   }, [selectedYear]);
 
+  useEffect(() => {
+      if (!isAllowed && selectedYear!="2025") {
+        setShowLock(true);
+      } else {
+        setShowLock(false);
+      }
+    }, [isAllowed]);
+
   const listRef = React.useRef<ScrollView>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const fadeAnim1 = React.useRef(new Animated.Value(0)).current;
@@ -258,6 +273,19 @@ export default function PYQListScreen() {
   const filteredPYQs = useMemo(() => {
     return pyqCache[selectedYear]?.lite || [];
   }, [selectedYear, pyqCache]);
+
+  const handleYearSelection = (year: string) => {
+    if (year === "2025") {
+      setSelectedYear(year);
+      return;
+    }
+
+    if (!isAllowed) {
+      setShowLock(true); 
+    } else {
+      setSelectedYear(year); 
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -308,7 +336,8 @@ export default function PYQListScreen() {
                   return (
                     <TouchableOpacity
                       key={year}
-                      onPress={() => setSelectedYear(year)}
+                      // onPress={() => setSelectedYear(year)}
+                      onPress={() => handleYearSelection(year)}
                       style={[
                         styles.yearChip,
                         isActive ? styles.activeYearChip : styles.inactiveYearChip,
@@ -378,6 +407,16 @@ export default function PYQListScreen() {
             </TouchableOpacity>
           </Animated.View>
         )}
+
+        {showLock && (
+          <SubscriptionLockSheet
+            visible={showLock}
+            planType="before"
+            cssType="type2"
+            // onClose={closeLock}
+          />
+        )}
+
       </LinearGradient>
     </SafeAreaView >
   );
@@ -482,6 +521,7 @@ const styles = StyleSheet.create({
     borderColor: "#e2e8f0",
     backgroundColor: "#fff",
     marginBottom: 16,
+
   },
   titleRow: {
     flexDirection: "row",
@@ -496,6 +536,7 @@ const styles = StyleSheet.create({
     borderRadius: 99,
     paddingHorizontal: 10,
     paddingVertical: 2,
+
   },
   questionTagText: {
     fontSize: 12,
@@ -516,6 +557,8 @@ const styles = StyleSheet.create({
   questionContent: {
     marginBottom: 12,
     marginTop: 8,
+    height: 75,        // 👈 fixed height
+    overflow: "hidden",
   },
   questionText: {
     fontSize: 17,

@@ -23,6 +23,9 @@ const MemoMathText = React.memo(MathText);
 
 
 
+import { useSubscriptionLock } from "@/hooks/useSubcribtion";
+import SubscriptionLockSheet from "@/components/ShowLockScreen";
+
 export default function PYQDetailsPage() {
   const { currentIndex, selectedYear } = useLocalSearchParams<{
     currentIndex: string;
@@ -31,6 +34,13 @@ export default function PYQDetailsPage() {
 
   const { user, getToken } = useAuth();
   const { pyqList, userResponses, setUserResponses } = usePYQContext();
+
+  const { showLock, closeLock, isAllowed } = useSubscriptionLock({
+    gate: "before",
+    delay: 0, // Show immediately when condition met
+  });
+
+  const [localShowLock, setLocalShowLock] = useState(false);
 
 
 
@@ -128,6 +138,16 @@ export default function PYQDetailsPage() {
   }, [index]);
 
   usePreventScreenCapture();
+
+  // Subscription Lock Effect
+  useEffect(() => {
+    const isFreeContent = selectedYear === "2025" && index < 3;
+    if (!isAllowed && !isFreeContent) {
+      setLocalShowLock(true); 
+    } else {
+      setLocalShowLock(false);
+    }
+  }, [index, isAllowed]);
 
   if (!current) {
     return (
@@ -298,6 +318,20 @@ export default function PYQDetailsPage() {
             </TouchableOpacity>
           </View>
         </View>
+
+        {localShowLock && (
+          <SubscriptionLockSheet
+            visible={localShowLock}
+            planType="before"
+            cssType="type2"
+            onClose={() => {
+              setLocalShowLock(false)
+              if (index >= 3) {
+                setIndex(2) // Jump back to safe question if they close and are still on blocked index
+              }
+            }}
+          />
+        )}
       </LinearGradient>
     </SafeAreaView>
   );

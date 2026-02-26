@@ -15,6 +15,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "expo-router";
 import Animated, {
   FadeIn,
   SlideInDown,
@@ -26,7 +27,7 @@ import AdvancedFindCollege from "./AdvancedFindCollege";
 import NormalFindCollege from "./NormalFindCollege";
 import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 import SubscriptionLockSheet from "@/components/ShowLockScreen";
-
+import CreateCollegeList from "./CreateCollegeList";
 
 if (Platform.OS === "android") {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -39,9 +40,15 @@ const QuickAccess = ({
 }: {
   onTabChange: (tab: "colleges" | "branches") => void;
 }) => {
+  const router = useRouter();
   const items = [
     { title: "Colleges", icon: "school-outline", tab: "colleges" as const },
     { title: "Branches", icon: "filter-outline", tab: "branches" as const },
+    {
+      title: "Generate Option form",
+      icon: "list-outline",
+      tab: "createList" as const,
+    },
   ];
 
   return (
@@ -52,22 +59,41 @@ const QuickAccess = ({
           <TouchableOpacity
             key={i}
             activeOpacity={0.7}
-            style={styles.quickItem}
-            onPress={() => onTabChange(item.tab)}
+            style={[
+              styles.quickItem,
+              item.tab === "createList" && { width: "100%" },
+            ]}
+            onPress={() => {
+              if (item.tab === "createList") {
+                router.push("/create-college-list");
+              } else {
+                onTabChange(item.tab);
+              }
+            }}
           >
             <View
               style={[
                 styles.quickIconBox,
                 {
                   backgroundColor:
-                    item.tab === "colleges" ? "#004aad20" : "#b6cf4f20",
+                    item.tab === "colleges"
+                      ? "#004aad20"
+                      : item.tab === "branches"
+                        ? "#b6cf4f20"
+                        : "#ff7a2220",
                 },
               ]}
             >
               <Ionicons
                 name={item.icon as any}
                 size={24}
-                color={item.tab === "colleges" ? "#004aad" : "#b6cf4f"}
+                color={
+                  item.tab === "colleges"
+                    ? "#004aad"
+                    : item.tab === "branches"
+                      ? "#b6cf4f"
+                      : "#ff7a22"
+                }
               />
             </View>
             <Text style={styles.quickTitle}>{item.title}</Text>
@@ -98,25 +124,19 @@ export default function FindColleges() {
   const [showLock, setShowLock] = useState(false);
 
   useEffect(() => {
-    const isLockedTab = activeTab === "colleges" || activeTab === "branches";
-    const isLoading =
-      activeTab === "colleges" ? collegesLoading : branchesLoading;
+    const isLockedTab = activeTab !== "all";
+    const isLoading = branchesLoading;
 
     if (!isLoading && !isAllowed && isLockedTab) {
       const timer = setTimeout(() => {
         setShowLock(true);
-      }, 2000);
+      }, 3000);
 
       return () => clearTimeout(timer);
     } else {
       setShowLock(false);
     }
-  }, [
-    activeTab,
-    collegesLoading,
-    branchesLoading,
-    isAllowed,
-  ]);
+  }, [activeTab, branchesLoading, isAllowed]);
 
 
   // Indicator animation
@@ -221,6 +241,8 @@ export default function FindColleges() {
             Branches
           </Text>
         </TouchableOpacity>
+
+
       </View>
 
       {/* Swipeable content */}
@@ -274,11 +296,13 @@ export default function FindColleges() {
           </View>
         )}
 
+
+
         {showLock && (
           <SubscriptionLockSheet
             visible={showLock}
             planType="after"
-            onClose={() => setShowLock(false)}
+            // onClose={() => setShowLock(false)}
           />
         )}
       </View>
