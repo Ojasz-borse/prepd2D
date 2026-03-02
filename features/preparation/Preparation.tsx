@@ -36,12 +36,12 @@ import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 import SubscriptionLockSheet from "@/components/ShowLockScreen";
 import { useAuth } from "@/context/AuthContext";
 
-const PopularSearches = ({ onTabChange }: { onTabChange: (tab: "notes" | "pyq" | "syllabus") => void }) => {
+const PopularSearches = ({ onTabChange }: { onTabChange: (tab: "notes" | "syllabus") => void }) => {
   const router = useRouter();
 
   const items = [
     { title: "Notes", icon: "document-text-outline", tab: "notes" as const },
-    { title: "PYQ", icon: "book-outline", tab: "pyq" as const },
+    // { title: "PYQ", icon: "book-outline", tab: "pyq" as const },
     { title: "Syllabus", icon: "clipboard-outline", tab: "syllabus" as const },
   ];
 
@@ -81,56 +81,56 @@ const PopularSearches = ({ onTabChange }: { onTabChange: (tab: "notes" | "pyq" |
   );
 };
 
-const QuestionBank = () => {
-  const router = useRouter();
-  const items = [
-    {
-      title: "Most Repeating Questions",
-      subTitle: "150 PYQ's",
-      icon: "repeat-outline",
-      color: "#FF9800",
-      route: "/repeated-pyqs",
+// const QuestionBank = () => {
+//   const router = useRouter();
+//   const items = [
+//     {
+//       title: "Most Repeating Questions",
+//       subTitle: "150 PYQ's",
+//       icon: "repeat-outline",
+//       color: "#FF9800",
+//       route: "/repeated-pyqs",
 
-    },
-    { title: "Top Easy Questions", subTitle: "150 PYQ's", icon: "rocket-outline", color: "#4CAF50", route: "/difficulty-pyqs", params: { difficulty: "Easy" } },
-    { title: "Top Hard Questions", subTitle: "150 PYQ's", icon: "flame-outline", color: "#F44336", route: "/difficulty-pyqs", params: { difficulty: "Hard" } },
-  ];
+//     },
+//     { title: "Top Easy Questions", subTitle: "150 PYQ's", icon: "rocket-outline", color: "#4CAF50", route: "/difficulty-pyqs", params: { difficulty: "Easy" } },
+//     { title: "Top Hard Questions", subTitle: "150 PYQ's", icon: "flame-outline", color: "#F44336", route: "/difficulty-pyqs", params: { difficulty: "Hard" } },
+//   ];
 
-  return (
-    <View style={[styles.card, { marginTop: 16, marginBottom: 16 }]}>
-      <Text style={styles.heading}>Question Bank</Text>
+//   return (
+//     <View style={[styles.card, { marginTop: 16, marginBottom: 16 }]}>
+//       <Text style={styles.heading}>Question Bank</Text>
 
-      <View style={{ gap: 12 }}>
-        {items.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            activeOpacity={0.7}
-            style={[styles.gridItem, { width: "100%" }]}
-            onPress={() => {
-              if (item.route) {
-                router.push({
-                  pathname: item.route as any,
-                  params: item.params
-                });
-              }
-            }}
-          >
-            <View style={[
-              styles.iconBox,
-              {
-                backgroundColor: item.color + "20",
-              },
-            ]}>
-              <Ionicons name={item.icon as any} size={24} color={item.color} />
-            </View>
-            <Text style={styles.gridTitle}>{item.title}</Text>
-            <Text style={styles.gridSubTitle}>{item.subTitle}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </View>
-  );
-};
+//       <View style={{ gap: 12 }}>
+//         {items.map((item, index) => (
+//           <TouchableOpacity
+//             key={index}
+//             activeOpacity={0.7}
+//             style={[styles.gridItem, { width: "100%" }]}
+//             onPress={() => {
+//               if (item.route) {
+//                 router.push({
+//                   pathname: item.route as any,
+//                   params: item.params
+//                 });
+//               }
+//             }}
+//           >
+//             <View style={[
+//               styles.iconBox,
+//               {
+//                 backgroundColor: item.color + "20",
+//               },
+//             ]}>
+//               <Ionicons name={item.icon as any} size={24} color={item.color} />
+//             </View>
+//             <Text style={styles.gridTitle}>{item.title}</Text>
+//             <Text style={styles.gridSubTitle}>{item.subTitle}</Text>
+//           </TouchableOpacity>
+//         ))}
+//       </View>
+//     </View>
+//   );
+// };
 
 export default function Preparation() {
   const [activeTab, setActiveTab] = useState<
@@ -192,19 +192,19 @@ export default function Preparation() {
         Math.abs(gestureState.dx) > 20,
       onPanResponderRelease: (_, gestureState) => {
         if (gestureState.dx > 50) {
-          if (activeTab === "syllabus") setActiveTab("pyq");
-          else if (activeTab === "pyq") setActiveTab("notes");
+          if (activeTab === "syllabus") setActiveTab("notes");
+          // else if (activeTab === "pyq") setActiveTab("notes");
           else if (activeTab === "notes") setActiveTab("all");
         } else if (gestureState.dx < -50) {
           if (activeTab === "all") setActiveTab("notes");
-          else if (activeTab === "notes") setActiveTab("pyq");
-          else if (activeTab === "pyq") setActiveTab("syllabus");
+          // else if (activeTab === "notes") setActiveTab("pyq");
+          else if (activeTab === "notes") setActiveTab("syllabus");
         }
       },
     })
   ).current;
 
-  const handleTabChange = (tab: "all" | "notes" | "pyq" | "syllabus") => {
+  const handleTabChange = (tab: "all" | "notes" | "syllabus") => {
     setActiveTab(tab);
   };
 
@@ -279,7 +279,7 @@ export default function Preparation() {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.tab}
           onPress={() => handleTabChange("pyq")}
           onLayout={(e) => onTabLayout("pyq", e)}
@@ -289,7 +289,7 @@ export default function Preparation() {
           >
             PYQ
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
       </View>
 
@@ -312,7 +312,7 @@ export default function Preparation() {
                 <View style={{ flex: 1 }}>
                   <Text style={styles.bannerTitle}>Start Your Prep!</Text>
                   <Text style={styles.bannerSubtitle}>
-                    Access Notes, PYQs, and Syllabus all in one place.
+                    Access Notes, and Syllabus all in one place.
                   </Text>
                 </View>
                 <View style={styles.bannerIcon}>
@@ -322,7 +322,7 @@ export default function Preparation() {
             </LinearGradient>
 
             <PopularSearches onTabChange={handleTabChange} />
-            <QuestionBank />
+            {/* <QuestionBank /> */}
           </ScrollView>
         )}
         {activeTab === "notes" && (
@@ -330,11 +330,11 @@ export default function Preparation() {
             <Notes pyqs={pyqs} loading={loading} error={error} reload={reload} />
           </View>
         )}
-        {activeTab === "pyq" && (
+        {/* {activeTab === "pyq" && (
           <View style={{ flex: 1, paddingHorizontal: 12 }}>
             <PYQ pyqs={pyqs} loading={loading} error={error} reload={reload} />
           </View>
-        )}
+        )} */}
         {activeTab === "syllabus" && (
           <View style={{ paddingHorizontal: 12 }}>
             <Syllabus />
