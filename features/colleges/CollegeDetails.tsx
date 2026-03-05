@@ -1,4 +1,4 @@
-import ExternalLinkIcon from "@/assets/icons/ExternalLinkIcon";
+
 import GovernmentCollegeIcon from "@/assets/icons/GovernmentCollegeIcon";
 import LocationPinIcon from "@/assets/icons/LocationPinIcon";
 import PrivateCollegeIcon from "@/assets/icons/PrivateCollegeIcon";
@@ -100,7 +100,7 @@ export default function CollegeDetails() {
   const index = collegeIndex ? parseInt(collegeIndex) : 0;
 
   useEffect(() => {
-    if (!isAllowed && college_code!=="03012") {
+    if (!isAllowed && college_code !== "03012") {
       setShowLock(true);
     } else {
       setShowLock(false);
@@ -158,7 +158,7 @@ export default function CollegeDetails() {
 
         const data = await res.json();
         if (data.success) {
-          // console.log("branches", data.college.branches);
+          console.log("branches", data.college.branches);
           setCollegeBranches(data.college.branches || []);
         } else {
           setCollegeBranches([]);
@@ -216,23 +216,16 @@ export default function CollegeDetails() {
                 </View>
 
                 {/* College Name + Icon Section */}
-                <TouchableOpacity
-                  onPress={() =>
-                    handleOpenLink(collegeDetails?.official_website_url || "")
-                  }
-                  style={styles.nameSection}
-                >
+                <View style={styles.nameSection}>
                   <View style={styles.iconCircle}>
-                    <Ionicons name="school" size={24} color="#fff" />
+                    <Ionicons name="school" size={20} color="#fff" />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.title}>
                       {collegeDetails?.name}
-                      {"  "}
-                      <ExternalLinkIcon size={14} color="#004aad" />
                     </Text>
                   </View>
-                </TouchableOpacity>
+                </View>
 
                 {/* Address */}
                 {collegeDetails?.address && (
@@ -262,39 +255,62 @@ export default function CollegeDetails() {
                   )}
                 </View>
 
-                {/* Placement Button */}
-                {collegeDetails?.placement_url && (
-                  <TouchableOpacity
-                    onPress={() =>
-                      handleOpenLink(collegeDetails?.placement_url || "")
-                    }
-                    style={styles.placementButton}
-                    activeOpacity={0.8}
-                  >
-                    <View style={styles.placementButtonContent}>
-                      <Text style={styles.placementButtonText}>View placements</Text>
-                      <Ionicons name="arrow-forward" size={18} color="#fff" />
-                    </View>
-                  </TouchableOpacity>
-                )}
+                {/* Action Buttons */}
+                <View style={{ gap: 8, marginTop: 0 }}>
+                  {collegeDetails?.official_website_url && (
+                    <TouchableOpacity
+                      onPress={() =>
+                        handleOpenLink(collegeDetails?.official_website_url || "")
+                      }
+                      style={[styles.placementButton, { marginTop: 0 }]}
+                      activeOpacity={0.8}
+                    >
+                      <View style={styles.placementButtonContent}>
+                        <Text style={styles.placementButtonText}>Visit College Website</Text>
+                        <Ionicons name="arrow-forward" size={18} color="#fff" />
+                      </View>
+                    </TouchableOpacity>
+                  )}
+
+                  <View style={[styles.actionButtonsRow, { marginTop: 0 }]}>
+                    {collegeDetails?.placement_url && (
+                      <TouchableOpacity
+                        onPress={() =>
+                          handleOpenLink(collegeDetails?.placement_url || "")
+                        }
+                        style={[styles.placementButtonOutline, { flex: 1, marginTop: 0 }]}
+                        activeOpacity={0.8}
+                      >
+                        <View style={styles.placementButtonContent}>
+                          <Text style={[styles.placementButtonTextOutline, { fontSize: 14 }]}>Placements</Text>
+                          <Ionicons name="arrow-forward" size={18} color="#B6CF4F" />
+                        </View>
+                      </TouchableOpacity>
+                    )}
+
+                    {collegeDetails?.tuition_fees_url_exact && (
+                      <TouchableOpacity
+                        onPress={() =>
+                          handleOpenLink(collegeDetails?.tuition_fees_url_exact || "")
+                        }
+                        style={[styles.placementButtonOutline, { flex: 1, marginTop: 0 }]}
+                        activeOpacity={0.8}
+                      >
+                        <View style={styles.placementButtonContent}>
+                          <Text style={[styles.placementButtonTextOutline, { fontSize: 14 }]}>Fees</Text>
+                          <Ionicons name="arrow-forward" size={18} color="#B6CF4F" />
+                        </View>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </View>
               </>
             )}
 
             <View style={styles.separator} />
 
             {/* Fees Section */}
-            <TouchableOpacity
-              onPress={() =>
-                handleOpenLink(collegeDetails?.tuition_fees_url_exact || "")
-              }
-            >
-              <View style={styles.rowWithIcon}>
-                <Text style={styles.sectionTitle}>Fees Structure</Text>
-                <View style={{ marginLeft: 4 }}>
-                  <ExternalLinkIcon size={12} />
-                </View>
-              </View>
-            </TouchableOpacity>
+            <Text style={styles.sectionTitle}>Fees Structure</Text>
 
             {loading ? (
               <CollegeFeesSkeleton />
@@ -326,12 +342,12 @@ export default function CollegeDetails() {
           <SubscriptionLockSheet
             visible={showLock}
             planType="after"
-            // onClose={() => {
-            //   setShowLock(false);
-            //   if (index > 0) {
-            //     router.back();
-            //   }
-            // }}
+          // onClose={() => {
+          //   setShowLock(false);
+          //   if (index > 0) {
+          //     router.back();
+          //   }
+          // }}
           />
         )}
       </SafeAreaView>
@@ -414,10 +430,10 @@ const styles = StyleSheet.create({
   // Typography
   title: {
     fontFamily: "SourceSans3SemiBold",
-    fontSize: 20,
     color: "#004aad",
     flexWrap: "wrap",
     lineHeight: 26,
+    fontSize: 18,
   },
 
   nameSection: {
@@ -427,8 +443,8 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   iconCircle: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     borderRadius: 25,
     backgroundColor: "#ff7a22",
     justifyContent: "center",
@@ -442,8 +458,8 @@ const styles = StyleSheet.create({
   },
 
   sectionTitle: {
-    fontFamily: "SourceSans3SemiBold",
     fontSize: 16,
+    fontFamily: "SourceSans3SemiBold",
     color: "#004aad",
   },
 
@@ -481,10 +497,22 @@ const styles = StyleSheet.create({
     color: "#004aad",
   },
 
+  actionButtonsRow: {
+    flexDirection: "row",
+    gap: 12,
+  },
   placementButton: {
     backgroundColor: "#B6CF4F",
     borderRadius: 12,
     marginTop: 8,
+    overflow: "hidden",
+  },
+  placementButtonOutline: {
+    backgroundColor: "transparent",
+    borderRadius: 12,
+    marginTop: 8,
+    borderWidth: 1.5,
+    borderColor: "#B6CF4F",
     overflow: "hidden",
   },
   placementButtonContent: {
@@ -496,8 +524,13 @@ const styles = StyleSheet.create({
   },
   placementButtonText: {
     fontFamily: "SourceSans3SemiBold",
-    fontSize: 16,
+    fontSize: 14,
     color: "#fff",
+  },
+  placementButtonTextOutline: {
+    fontFamily: "SourceSans3SemiBold",
+    fontSize: 14,
+    color: "#B6CF4F",
   },
 
   addressText: {
@@ -511,7 +544,8 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#004aad",
     opacity: 0.15,
-    marginVertical: 4,
+    marginVertical: 10,
+    marginBottom: 20,
   },
 
   // Row with Text + Icon

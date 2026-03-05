@@ -36,9 +36,9 @@ const CollegeDetailsBranch: React.FC<Props> = ({ item }) => {
         <View style={styles.greenTag}>
           <Text style={styles.greenTagText}>{item.choice_code}</Text>
         </View>
-        <View style={styles.greenTag}>
+        {/* <View style={styles.greenTag}>
           <Text style={styles.greenTagText}>Intake: 120</Text>
-        </View>
+        </View> */}
       </View>
 
       {/* Branch & View Button Row */}
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 16,
     padding: 14,
-    marginBottom: 20,
+    marginBottom: 6,
     borderWidth: 1,
     borderColor: "#e2e8f0",
   },

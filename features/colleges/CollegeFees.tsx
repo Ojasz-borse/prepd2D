@@ -58,7 +58,7 @@ export default function CollegeFees({ fees }: Props) {
       {categories.length > 0 && (
         <View style={styles.dropdownWrapper}>
           <View style={styles.rightGroup}>
-            <Text style={styles.icon}>👇</Text>
+
             <Dropdown
               style={styles.dropdown}
               data={categories}
@@ -71,6 +71,7 @@ export default function CollegeFees({ fees }: Props) {
               selectedTextStyle={styles.dropdownText}
               itemTextStyle={styles.dropdownText}
             />
+
           </View>
         </View>
       )}
@@ -78,34 +79,31 @@ export default function CollegeFees({ fees }: Props) {
       {/* Fees Card */}
       {activeFees ? (
         <View style={styles.card}>
-          <View style={styles.fees_row}>
-            <View>
-              <Text style={styles.fees_label}>Tuition fees</Text>
-              <Text style={styles.fees_value}>
+          <View style={styles.feesWrapper}>
+            <View style={styles.feeBox}>
+              <Text style={styles.feeCategory}>Tution</Text>
+              <Text style={styles.feeValue}>
                 ₹{formatINR(activeFees.tuition_fees)}
               </Text>
             </View>
-
-            <Text style={styles.fees_plus}>+</Text>
-
-            <View>
-              <Text style={styles.fees_label}>Development fees</Text>
-              <Text style={styles.fees_value}>
+            <View style={styles.feeBox}>
+              <Text style={styles.feeCategory}>Development</Text>
+              <Text style={styles.feeValue}>
                 ₹{formatINR(activeFees.development_fees)}
               </Text>
             </View>
-
-            <Text style={styles.fees_plus}>+</Text>
-
-            <View>
-              <Text style={styles.fees_label}>Other fees</Text>
-              <Text style={styles.fees_value}>
+            <View style={styles.feeBox}>
+              <Text style={styles.feeCategory}>Other</Text>
+              <Text style={styles.feeValue}>
                 ₹{formatINR(activeFees.other_fees)}
               </Text>
             </View>
           </View>
 
-          <Text style={styles.fees_total}>₹{formatINR(activeFees.total)}</Text>
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Total Fees</Text>
+            <Text style={styles.fees_total}>₹{formatINR(activeFees.total)}</Text>
+          </View>
         </View>
       ) : (
         <Text style={styles.notAVailable}>No Fees Data available</Text>
@@ -117,20 +115,18 @@ export default function CollegeFees({ fees }: Props) {
 const styles = StyleSheet.create({
   dropdownWrapper: {
     flexDirection: "row",
-    marginBottom: 4,
+    marginBottom: 10,
     marginTop: -45,
   },
   rightGroup: {
     flexDirection: "row",
     alignItems: "center",
     marginLeft: "auto",
+
   },
-  icon: {
-    marginRight: 6,
-    fontSize: 18,
-  },
+
   dropdown: {
-    width: 120,
+    width: 100,
     height: 40,
     borderRadius: 20,
   },
@@ -141,39 +137,64 @@ const styles = StyleSheet.create({
     textTransform: "capitalize",
   },
   card: {
-    paddingVertical: 8,
+    width: "100%",
+    backgroundColor: "#fff",
     borderRadius: 16,
-    padding: 12,
+    padding: 14,
     marginBottom: 6,
     borderWidth: 1,
-    borderColor: "#d9d9d9",
+    borderColor: "#e2e8f0",
   },
-  fees_row: {
+  feesWrapper: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    alignItems: "center",
+  },
+  feeBox: {
+    backgroundColor: "#f8fafc",
+    borderColor: "#e2e8f0",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 2,
+    alignItems: "center",
+    flex: 1,
+
+  },
+  feeCategory: {
+    fontSize: 12,
+    color: "#0A5BD3",
+    fontFamily: "SourceSans3SemiBold",
+  },
+  feeValue: {
+    fontSize: 14,
+    color: "#141a2aff",
+    fontFamily: "SourceSans3SemiBold",
+    marginTop: 2,
+  },
+  totalRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: "#e2e8f0",
   },
-  fees_label: {
+  totalLabel: {
     fontSize: 14,
-    color: "#787878ff",
-    fontFamily: "SourceSans3Medium", // ✅ applied
-  },
-
-  fees_plus: {
-    fontSize: 14,
-    color: "#787878ff",
-    fontFamily: "SourceSans3Medium", // ✅ applied
-  },
-  fees_value: {
-    fontSize: 16,
-    color: "#000",
-    fontFamily: "SourceSans3Medium", // ✅ applied
+    color: "#141a2aff",
+    fontFamily: "SourceSans3SemiBold",
   },
   fees_total: {
-    fontSize: 20,
+    fontSize: 16,
     color: "#004aad",
-    fontFamily: "SourceSans3SemiBold", // ✅ applied
-    marginTop: 12,
+    fontFamily: "SourceSans3SemiBold",
+    backgroundColor: "rgba(0, 74, 173, 0.1)",
+    paddingVertical: 6,
+    paddingHorizontal: 20,
+    borderRadius: 20,
   },
   notAVailable: {
     fontSize: 14,

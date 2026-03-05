@@ -28,6 +28,7 @@ if (Platform.OS === 'android') {
 import PYQ from "./PYQ";
 import Syllabus from "./Syllabus";
 import Notes from "./Notes";
+import Updates from "./Updates";
 import { usePYQS } from "@/hooks/usePYQS";
 
 import { Ionicons, Feather } from "@expo/vector-icons";
@@ -36,13 +37,14 @@ import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 import SubscriptionLockSheet from "@/components/ShowLockScreen";
 import { useAuth } from "@/context/AuthContext";
 
-const PopularSearches = ({ onTabChange }: { onTabChange: (tab: "notes" | "syllabus") => void }) => {
+const PopularSearches = ({ onTabChange }: { onTabChange: (tab: "notes" | "syllabus" | "updates") => void }) => {
   const router = useRouter();
 
   const items = [
     { title: "Notes", icon: "document-text-outline", tab: "notes" as const },
     // { title: "PYQ", icon: "book-outline", tab: "pyq" as const },
     { title: "Syllabus", icon: "clipboard-outline", tab: "syllabus" as const },
+    { title: "Resources", icon: "notifications-outline", tab: "updates" as const },
   ];
 
   return (
@@ -64,13 +66,15 @@ const PopularSearches = ({ onTabChange }: { onTabChange: (tab: "notes" | "syllab
                   item.title === "Notes" ? "#ff5e3220" :
                     item.title === "PYQ" ? "#004aad20" :
                       item.title === "Syllabus" ? "#b6cf4f20" :
-                        "#fff",
+                        item.title === "Resources" ? "#004aad15" :
+                          "#fff",
               },
             ]}>
               <Ionicons name={item.icon as any} size={24} color={
                 item.title === "Notes" ? "#ff5e32" :
                   item.title === "PYQ" ? "#004aad" :
-                    "#b6cf4f"
+                    item.title === "Syllabus" ? "#b6cf4f" :
+                      "#004aad"
               } />
             </View>
             <Text style={styles.gridTitle}>{item.title}</Text>
@@ -134,7 +138,7 @@ const PopularSearches = ({ onTabChange }: { onTabChange: (tab: "notes" | "syllab
 
 export default function Preparation() {
   const [activeTab, setActiveTab] = useState<
-    "all" | "notes" | "pyq" | "syllabus"
+    "all" | "notes" | "pyq" | "syllabus" | "updates"
   >("all");
   const { pyqs, loading, error, reload } = usePYQS();
 
@@ -166,8 +170,8 @@ export default function Preparation() {
   const indicatorX = useSharedValue(0);
   const indicatorWidth = useSharedValue(0);
 
-  // Map tabs to keys
-  const tabs: ("all" | "notes" | "pyq" | "syllabus")[] = ["all", "notes", "pyq", "syllabus"];
+  // Map tabs to keys (Visual Order)
+  const tabs: ("all" | "syllabus" | "notes" | "updates")[] = ["all", "syllabus", "notes", "updates"];
 
   useEffect(() => {
     const measurement = tabMeasurements[activeTab];
@@ -192,19 +196,21 @@ export default function Preparation() {
         Math.abs(gestureState.dx) > 20,
       onPanResponderRelease: (_, gestureState) => {
         if (gestureState.dx > 50) {
-          if (activeTab === "syllabus") setActiveTab("notes");
-          // else if (activeTab === "pyq") setActiveTab("notes");
-          else if (activeTab === "notes") setActiveTab("all");
-        } else if (gestureState.dx < -50) {
-          if (activeTab === "all") setActiveTab("notes");
-          // else if (activeTab === "notes") setActiveTab("pyq");
+          // Swipe Right (Go Previous)
+          if (activeTab === "updates") setActiveTab("notes");
           else if (activeTab === "notes") setActiveTab("syllabus");
+          else if (activeTab === "syllabus") setActiveTab("all");
+        } else if (gestureState.dx < -50) {
+          // Swipe Left (Go Next)
+          if (activeTab === "all") setActiveTab("syllabus");
+          else if (activeTab === "syllabus") setActiveTab("notes");
+          else if (activeTab === "notes") setActiveTab("updates");
         }
       },
     })
   ).current;
 
-  const handleTabChange = (tab: "all" | "notes" | "syllabus") => {
+  const handleTabChange = (tab: "all" | "notes" | "syllabus" | "updates") => {
     setActiveTab(tab);
   };
 
@@ -279,6 +285,21 @@ export default function Preparation() {
           </Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          style={styles.tab}
+          onPress={() => handleTabChange("updates")}
+          onLayout={(e) => onTabLayout("updates", e)}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === "updates" && styles.activeTabText,
+            ]}
+          >
+            Resources
+          </Text>
+        </TouchableOpacity>
+
         {/* <TouchableOpacity
           style={styles.tab}
           onPress={() => handleTabChange("pyq")}
@@ -326,7 +347,7 @@ export default function Preparation() {
           </ScrollView>
         )}
         {activeTab === "notes" && (
-          <View style={{ paddingHorizontal: 12 }}>
+          <View style={{ flex: 1, paddingHorizontal: 12 }}>
             <Notes pyqs={pyqs} loading={loading} error={error} reload={reload} />
           </View>
         )}
@@ -336,8 +357,13 @@ export default function Preparation() {
           </View>
         )} */}
         {activeTab === "syllabus" && (
-          <View style={{ paddingHorizontal: 12 }}>
+          <View style={{ flex: 1, paddingHorizontal: 12 }}>
             <Syllabus />
+          </View>
+        )}
+        {activeTab === "updates" && (
+          <View style={{ flex: 1, paddingHorizontal: 12 }}>
+            <Updates />
           </View>
         )}
 

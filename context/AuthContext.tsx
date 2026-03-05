@@ -6,6 +6,7 @@ import {
   CACHE_COLLEGES,
   CACHE_MY_COLLEGES_LIST,
   CACHE_NEWS,
+  CACHE_RESOURCES,
   USER_SESSION,
 } from "@/constants/cacheStorageConfig";
 import {
@@ -250,6 +251,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     await AsyncStorage.removeItem(CACHE_COLLEGE_BRANCHES);
     await AsyncStorage.removeItem(CACHE_MY_COLLEGES_LIST);
     await AsyncStorage.removeItem(CACHE_NEWS);
+    await AsyncStorage.removeItem(CACHE_RESOURCES);
 
     setUserToken(null);
     router.replace("/login-user");
