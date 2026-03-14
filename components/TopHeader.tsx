@@ -145,6 +145,17 @@ const TopHeader: React.FC<TopHeaderProps> = ({ title, showBackArrow }) => {
 
           {/* Drawer Content */}
           <View style={styles.drawerContent}>
+            <TouchableOpacity
+              style={styles.drawerItem}
+              onPress={() => {
+                closeDrawer();
+                router.push("/preparation");
+              }}
+            >
+              <Ionicons name="book-outline" size={22} color={colors.textDark} />
+              <Text style={styles.drawerItemText}>Preparation</Text>
+            </TouchableOpacity>
+
             {/* <TouchableOpacity
               style={styles.drawerItem}
               onPress={() => {

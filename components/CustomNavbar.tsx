@@ -19,7 +19,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-type TabName = "Home" | "Preparation" | "Colleges";
+type TabName = "Home" | "Admission process" | "SMart option form" | "Colleges" | "Mock Tests" | "Preparation";
 
 interface CustomNavbarProps {
     activeTab: TabName;
@@ -28,8 +28,8 @@ interface CustomNavbarProps {
 
 const tabs: { name: TabName; icon: keyof typeof Feather.glyphMap }[] = [
     { name: "Home", icon: "home" },
-    { name: "Preparation", icon: "book-open" },
-    // { name: "Mock Tests", icon: "file-text" },
+    { name: "Admission process", icon: "file-minus" },
+    { name: "SMart option form", icon: "clipboard" },
     { name: "Colleges", icon: "search" },
 ];
 

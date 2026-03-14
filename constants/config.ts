@@ -15,6 +15,7 @@ export const SAVE_PUSH_TOKEN = `${extra.SERVER_URL}/api/notifications/save-push-
 
 export const GET_COLLEGES = `${extra.SERVER_URL}/api/colleges/normal`;
 export const GET_COLLEGE_BRANCHES = `${extra.SERVER_URL}/api/colleges/advanced`;
+export const COMPARE_COLLEGES = `${extra.SERVER_URL}/api/colleges/compare-colleges`;
 
 export const PREDICT_PERCENTILE = `${extra.SERVER_URL}/api/estimator/predictPercentile`;
 export const PREDICT_RANK = `${extra.SERVER_URL}/api/estimator/predictRank`;

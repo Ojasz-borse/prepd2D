@@ -1,16 +1,17 @@
 import CustomNavbar from "@/components/CustomNavbar";
 import { useAuth } from "@/context/AuthContext";
 import FindColleges from "@/features/colleges/FindColleges";
+import CreateCollegeList from "@/features/colleges/CreateCollegeList";
 import HomeScreen from "@/features/home/HomeScreen";
 import MockTestScreen from "@/features/mocktest/MockTestScreen";
 import Preparation from "@/features/preparation/Preparation";
 import { useRouter, useFocusEffect } from "expo-router";
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { ActivityIndicator, BackHandler, Platform, StyleSheet, View } from "react-native";
+import { ActivityIndicator, BackHandler, Platform, StyleSheet, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../constants/theme";
 
-type TabName = "Home" | "Preparation" | "Mock Tests" | "Colleges";
+type TabName = "Home" | "Mock Tests" | "Colleges" | "Admission process" | "SMart option form" | "Preparation";
 
 export default function Home() {
   const router = useRouter();
@@ -75,6 +76,16 @@ export default function Home() {
         return <MockTestScreen />;
       case "Colleges":
         return <FindColleges />;
+      case "Admission process":
+        return (
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <Text style={{ fontFamily: "SourceSans3Medium", fontSize: 18, color: colors.textDark }}>
+              Coming Soon
+            </Text>
+          </View>
+        );
+      case "SMart option form":
+        return <CreateCollegeList />;
       default:
         return <HomeScreen />;
     }

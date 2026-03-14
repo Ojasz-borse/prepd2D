@@ -28,6 +28,7 @@ import NormalFindCollege from "./NormalFindCollege";
 import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 import SubscriptionLockSheet from "@/components/ShowLockScreen";
 import CreateCollegeList from "./CreateCollegeList";
+import CompareColleges from "./CompareColleges";
 
 if (Platform.OS === "android") {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -105,7 +106,7 @@ const QuickAccess = ({
 };
 
 export default function FindColleges() {
-  const [activeTab, setActiveTab] = useState<"all" | "colleges" | "branches">(
+  const [activeTab, setActiveTab] = useState<"all" | "colleges" | "branches" | "compare">(
     "all"
   );
 
@@ -172,9 +173,11 @@ export default function FindColleges() {
         if (g.dx < -50) {
           if (activeTab === "all") setActiveTab("colleges");
           else if (activeTab === "colleges") setActiveTab("branches");
+          else if (activeTab === "branches") setActiveTab("compare");
         }
         if (g.dx > 50) {
-          if (activeTab === "branches") setActiveTab("colleges");
+          if (activeTab === "compare") setActiveTab("branches");
+          else if (activeTab === "branches") setActiveTab("colleges");
           else if (activeTab === "colleges") setActiveTab("all");
         }
       },
@@ -242,6 +245,20 @@ export default function FindColleges() {
           </Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          style={styles.tab}
+          onPress={() => setActiveTab("compare")}
+          onLayout={(e) => onTabLayout("compare", e)}
+        >
+          <Text
+            style={[
+              styles.tabLabel,
+              activeTab === "compare" && styles.tabLabelActive,
+            ]}
+          >
+            Compare
+          </Text>
+        </TouchableOpacity>
 
       </View>
 
@@ -296,6 +313,11 @@ export default function FindColleges() {
           </View>
         )}
 
+        {activeTab === "compare" && (
+          <View style={{ paddingHorizontal: 12, flex: 1 }}>
+            <CompareColleges colleges={colleges} />
+          </View>
+        )}
 
 
         {showLock && (

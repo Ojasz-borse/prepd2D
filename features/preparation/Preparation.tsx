@@ -230,7 +230,7 @@ export default function Preparation() {
       style={styles.container}
     >
       {/* Keep Top Header */}
-      <TopHeader title="Preparation" />
+      <TopHeader title="Preparation" showBackArrow={true} />
 
       <View style={styles.tabContainer}>
         {/* Animated Indicator */}

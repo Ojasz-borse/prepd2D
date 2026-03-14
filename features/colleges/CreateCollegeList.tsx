@@ -14,7 +14,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "@/constants/theme";
 import { useAuth } from "@/context/AuthContext";
 import { Picker } from "@react-native-picker/picker";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 import { LOCATIONS, BRANCHES, CATEGORIES } from "@/constants/collegeFilters";
 import { useCreateCollegeList } from "@/hooks/useCreateCollegeList";
 import { formatLocationName, formatBranchName } from "@/utils/formatHelpers";
@@ -157,13 +157,33 @@ export default function CreateCollegeList() {
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea}>
-        <TopHeader title="Generate Option form" showBackArrow={true} />
+        <TopHeader title="Generate Option form" showBackArrow={false} />
         <View style={styles.container}>
           <ScrollView
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
             bounces={false}
           >
+            {/* Banner */}
+            <LinearGradient
+              colors={["#004aad", "#0073e6"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.banner}
+            >
+              <View style={styles.bannerRow}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.bannerHead}>Generate Option Form!</Text>
+                  <Text style={styles.bannerSub}>
+                    Create your perfect college preference list easily.
+                  </Text>
+                </View>
+                <View style={styles.bannerIconWrap}>
+                  <Feather name="list" size={34} color="#fff" />
+                </View>
+              </View>
+            </LinearGradient>
+
             {!showResults ? (
               <CreateCollegeForm
                 rank={rank}
@@ -522,6 +542,37 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingBottom: 32,
     alignItems: 'center',
+  },
+  banner: {
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 20,
+    width: '100%',
+    maxWidth: 500,
+    alignSelf: 'center',
+  },
+  bannerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  bannerHead: {
+    fontSize: 20,
+    fontFamily: "SourceSans3Bold",
+    color: "#fff",
+    marginBottom: 4,
+  },
+  bannerSub: {
+    fontSize: 14,
+    fontFamily: "SourceSans3Medium",
+    color: "#e6f1ff",
+    lineHeight: 20,
+    paddingRight: 10,
+  },
+  bannerIconWrap: {
+    backgroundColor: "rgba(255,255,255,0.2)",
+    padding: 10,
+    borderRadius: 15,
   },
   card: {
     borderRadius: 16,
