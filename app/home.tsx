@@ -11,7 +11,7 @@ import { ActivityIndicator, BackHandler, Platform, StyleSheet, View, Text } from
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../constants/theme";
 
-type TabName = "Home" | "Mock Tests" | "Colleges" | "Admission process" | "SMart option form" | "Preparation";
+type TabName = "Home" | "Mock Tests" | "Colleges" | "Admission process" | "Option Form" | "Preparation";
 
 export default function Home() {
   const router = useRouter();
@@ -84,7 +84,7 @@ export default function Home() {
             </Text>
           </View>
         );
-      case "SMart option form":
+      case "Option Form":
         return <CreateCollegeList />;
       default:
         return <HomeScreen />;

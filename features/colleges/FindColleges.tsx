@@ -39,16 +39,16 @@ if (Platform.OS === "android") {
 const QuickAccess = ({
   onTabChange,
 }: {
-  onTabChange: (tab: "colleges" | "branches") => void;
+  onTabChange: (tab: "colleges" | "branches" | "compare") => void;
 }) => {
   const router = useRouter();
   const items = [
     { title: "Colleges", icon: "school-outline", tab: "colleges" as const },
     { title: "Branches", icon: "filter-outline", tab: "branches" as const },
     {
-      title: "Generate Option form",
-      icon: "list-outline",
-      tab: "createList" as const,
+      title: "Compare",
+      icon: "git-compare-outline",
+      tab: "compare" as const,
     },
   ];
 
@@ -62,15 +62,9 @@ const QuickAccess = ({
             activeOpacity={0.7}
             style={[
               styles.quickItem,
-              item.tab === "createList" && { width: "100%" },
+              item.tab === "compare" && { width: "100%" },
             ]}
-            onPress={() => {
-              if (item.tab === "createList") {
-                router.push("/create-college-list");
-              } else {
-                onTabChange(item.tab);
-              }
-            }}
+            onPress={() => onTabChange(item.tab)}
           >
             <View
               style={[
