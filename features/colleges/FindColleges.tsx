@@ -27,7 +27,6 @@ import AdvancedFindCollege from "./AdvancedFindCollege";
 import NormalFindCollege from "./NormalFindCollege";
 import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 import SubscriptionLockSheet from "@/components/ShowLockScreen";
-import CreateCollegeList from "./CreateCollegeList";
 import CompareColleges from "./CompareColleges";
 
 if (Platform.OS === "android") {

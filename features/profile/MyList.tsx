@@ -41,7 +41,7 @@ interface StandardCutoffData {
 
 const MemoizedCard = React.memo(AdvancedFindCollegeCard);
 
-export default function MyList() {
+export default function MyList({ hideHeader = false }: { hideHeader?: boolean }) {
   const { branches, branchesLoading } = useAdvancedColleges();
   const { codes, loading, saving, saveList, clearList } = useMyList();
 
@@ -156,127 +156,133 @@ export default function MyList() {
     );
   };
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <GestureHandlerRootView>
-        <TopHeader title="My List" showBackArrow={true} />
-        <View style={styles.container}>
-          <View style={styles.contentWrapper}>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                paddingHorizontal: 10,
-                paddingVertical: 5,
-              }}
-            >
-              <Dropdown
-                style={styles.dropdown}
-                data={[
-                  { label: "Quick view", value: "quick" },
-                  { label: "Info view", value: "info" },
-                ]}
-                labelField="label"
-                valueField="value"
-                value={view}
-                onChange={(item) => setView(item.value)}
-                placeholder="Select view"
-                placeholderStyle={styles.dropdownText}
-                selectedTextStyle={styles.dropdownText}
-                itemTextStyle={styles.dropdownText}
-              />
-
-              <TouchableOpacity onPress={() => setVisibleModal(true)}>
-                <Text style={styles.clearButton}>Clear All</Text>
-              </TouchableOpacity>
-            </View>
-
-            <DraggableFlatList
-              data={filteredData}
-              keyExtractor={(item) => item.choice_code}
-              renderItem={renderItem}
-              onDragEnd={handleDragEnd}
-              activationDistance={10}
-              autoscrollSpeed={200}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{
-                padding: 4,
-                paddingTop: 16,
-                paddingBottom: 100,
-              }}
-              ListEmptyComponent={
-                loading || branchesLoading ? (
-                  <>
-                    <AdvancedFindCollegeCardSkeleton />
-                    <AdvancedFindCollegeCardSkeleton />
-                  </>
-                ) : (
-                  <Text style={styles.noResult}>No colleges found</Text>
-                )
-              }
+  const renderContent = () => (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      {!hideHeader && <TopHeader title="My List" showBackArrow={true} />}
+      <View style={styles.container}>
+        <View style={styles.contentWrapper}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingHorizontal: 10,
+              paddingVertical: 5,
+            }}
+          >
+            <Dropdown
+              style={styles.dropdown}
+              data={[
+                { label: "Quick view", value: "quick" },
+                { label: "Info view", value: "info" },
+              ]}
+              labelField="label"
+              valueField="value"
+              value={view}
+              onChange={(item) => setView(item.value)}
+              placeholder="Select view"
+              placeholderStyle={styles.dropdownText}
+              selectedTextStyle={styles.dropdownText}
+              itemTextStyle={styles.dropdownText}
             />
 
-            {hasChanges && filteredData.length > 0 && (
-              <View style={styles.bottomDeleteWrapper}>
-                <TouchableOpacity
-                  style={styles.bottomSaveBtn}
-                  onPress={handleSave}
-                  disabled={saving}
-                >
-                  <Ionicons name="checkmark" size={20} color="#fff" />
-                  <Text style={styles.bottomDeleteText}>
-                    {saving ? "Saving..." : "Save Changes"}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )}
-
-            {selectionMode && selectedCards.length > 0 && (
-              <View style={styles.bottomDeleteWrapper}>
-                <TouchableOpacity
-                  style={styles.bottomDeleteBtn}
-                  onPress={handleDeleteSelected}
-                >
-                  <Ionicons name="trash-outline" size={20} color="#fff" />
-                  <Text style={styles.bottomDeleteText}>
-                    Delete Selected ({selectedCards.length})
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )}
+            <TouchableOpacity onPress={() => setVisibleModal(true)}>
+              <Text style={styles.clearButton}>Clear All</Text>
+            </TouchableOpacity>
           </View>
 
-          <Modal
-            visible={visibleModal}
-            transparent
-            animationType="fade"
-            onRequestClose={() => setVisibleModal(false)}
-          >
-            <View style={styles.modalOverlay}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>
-                  Do you really want to clear all your saved list?
+          <DraggableFlatList
+            data={filteredData}
+            keyExtractor={(item) => item.choice_code}
+            renderItem={renderItem}
+            onDragEnd={handleDragEnd}
+            activationDistance={10}
+            autoscrollSpeed={200}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              padding: 4,
+              paddingTop: 16,
+              paddingBottom: 100,
+            }}
+            ListEmptyComponent={
+              loading || branchesLoading ? (
+                <>
+                  <AdvancedFindCollegeCardSkeleton />
+                  <AdvancedFindCollegeCardSkeleton />
+                </>
+              ) : (
+                <Text style={styles.noResult}>No colleges found</Text>
+              )
+            }
+          />
+
+          {hasChanges && filteredData.length > 0 && (
+            <View style={styles.bottomDeleteWrapper}>
+              <TouchableOpacity
+                style={styles.bottomSaveBtn}
+                onPress={handleSave}
+                disabled={saving}
+              >
+                <Ionicons name="checkmark" size={20} color="#fff" />
+                <Text style={styles.bottomDeleteText}>
+                  {saving ? "Saving..." : "Save Changes"}
                 </Text>
-                <View style={styles.modalActions}>
-                  <TouchableOpacity
-                    style={styles.modalButtonCancel}
-                    onPress={() => setVisibleModal(false)}
-                  >
-                    <Text style={styles.modalButtonTextCancel}>Cancel</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.modalButtonSubmit}
-                    onPress={handleClearAll}
-                  >
-                    <Text style={styles.modalButtonTextSubmit}>Clear All</Text>
-                  </TouchableOpacity>
-                </View>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {selectionMode && selectedCards.length > 0 && (
+            <View style={styles.bottomDeleteWrapper}>
+              <TouchableOpacity
+                style={styles.bottomDeleteBtn}
+                onPress={handleDeleteSelected}
+              >
+                <Ionicons name="trash-outline" size={20} color="#fff" />
+                <Text style={styles.bottomDeleteText}>
+                  Delete Selected ({selectedCards.length})
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+
+        <Modal
+          visible={visibleModal}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setVisibleModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>
+                Do you really want to clear all your saved list?
+              </Text>
+              <View style={styles.modalActions}>
+                <TouchableOpacity
+                  style={styles.modalButtonCancel}
+                  onPress={() => setVisibleModal(false)}
+                >
+                  <Text style={styles.modalButtonTextCancel}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalButtonSubmit}
+                  onPress={handleClearAll}
+                >
+                  <Text style={styles.modalButtonTextSubmit}>Clear All</Text>
+                </TouchableOpacity>
               </View>
             </View>
-          </Modal>
-        </View>
-      </GestureHandlerRootView>
+          </View>
+        </Modal>
+      </View>
+    </GestureHandlerRootView>
+  );
+
+  if (hideHeader) return renderContent();
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      {renderContent()}
     </SafeAreaView>
   );
 }

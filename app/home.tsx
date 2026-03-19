@@ -1,7 +1,8 @@
 import CustomNavbar from "@/components/CustomNavbar";
+import AdmissionProcess from "@/features/admissionProcess/AdmissionProcess";
 import { useAuth } from "@/context/AuthContext";
 import FindColleges from "@/features/colleges/FindColleges";
-import CreateCollegeList from "@/features/colleges/CreateCollegeList";
+import OptionForm from "@/features/OptionForm/OptionForm";
 import HomeScreen from "@/features/home/HomeScreen";
 import MockTestScreen from "@/features/mocktest/MockTestScreen";
 import Preparation from "@/features/preparation/Preparation";
@@ -77,15 +78,9 @@ export default function Home() {
       case "Colleges":
         return <FindColleges />;
       case "Admission process":
-        return (
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <Text style={{ fontFamily: "SourceSans3Medium", fontSize: 18, color: colors.textDark }}>
-              Coming Soon
-            </Text>
-          </View>
-        );
+        return <AdmissionProcess />;
       case "Option Form":
-        return <CreateCollegeList />;
+        return <OptionForm />;
       default:
         return <HomeScreen />;
     }
