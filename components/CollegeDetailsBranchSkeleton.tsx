@@ -30,41 +30,22 @@ export default function CollegeDetailsBranchSkeleton() {
   );
 
   return (
-    <View style={styles.card3D}>
-      {/* Top Row: choice code + type */}
-      <View style={styles.subRow}>
-        <SkeletonBox style={{ width: 80, height: 14, borderRadius: 4 }} />
-
-        <View style={styles.typeRow}>
-          <SkeletonBox style={{ width: 30, height: 14, borderRadius: 4 }} />
-        </View>
+    <View style={styles.cardContainer}>
+      {/* Top Metadata Row: Choice Code */}
+      <View style={styles.topRow}>
+        <SkeletonBox style={{ width: 70, height: 20, borderRadius: 99 }} />
       </View>
 
-      {/* Branch Name */}
-      <SkeletonBox
-        style={{ width: "70%", height: 16, marginTop: 8, borderRadius: 4 }}
-      />
+      {/* Branch & View Button Row */}
+      <View style={styles.titleRow}>
+        <SkeletonBox style={{ flex: 1, height: 20, borderRadius: 4 }} />
+        <SkeletonBox style={styles.viewButtonSkeleton} />
+      </View>
 
       {/* Cutoff Grid */}
       <View style={styles.cutoffWrapper}>
         {Array.from({ length: 4 }).map((_, idx) => (
-          <View key={idx} style={styles.cutoffBox}>
-            <SkeletonBox
-              style={{
-                width: 40,
-                height: 10,
-                borderRadius: 4,
-                marginBottom: 4,
-              }}
-            />
-            <SkeletonBox
-              style={{
-                width: 40,
-                height: 14,
-                borderRadius: 4,
-              }}
-            />
-          </View>
+          <SkeletonBox key={idx} style={styles.cutoffBox} />
         ))}
       </View>
     </View>
@@ -72,37 +53,47 @@ export default function CollegeDetailsBranchSkeleton() {
 }
 
 const styles = StyleSheet.create({
-  card3D: {
+  cardContainer: {
     width: "100%",
-    borderRadius: 16,
-    padding: 12,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "#d9d9d9",
     backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 6,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
   },
-  subRow: {
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 14,
+    gap: 8,
+    height: 20,
+  },
+  titleRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 8,
+    gap: 12,
+    height: 32,
   },
-  typeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
+  viewButtonSkeleton: {
+    width: 60,
+    height: 32,
+    borderRadius: 999,
   },
   cutoffWrapper: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 10,
-    marginTop: 12,
+    gap: 8,
+    alignItems: "center",
+    marginTop: 4,
   },
   cutoffBox: {
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#e0e0e0",
     borderRadius: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    alignItems: "center",
+    height: 35,
+    width: 60,
   },
   skeletonBox: {
     backgroundColor: "#e0e0e0",

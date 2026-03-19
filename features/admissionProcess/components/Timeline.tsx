@@ -50,72 +50,6 @@ const EVENTS = [
   },
 ];
 
-// ─── Config per status ───────────────────────────────────────────────────────
-
-const STATUS_CONFIG: any = {
-  done: {
-    dotColor: '#9CA3AF',
-    cardBg: '#F9FAFB',
-    cardBorder: '#E5E7EB',
-    badgeBg: '#F3F4F6',
-    badgeText: '#6B7280',
-    badgeLabel: 'Done',
-    titleColor: '#9CA3AF',
-    descColor: '#9CA3AF',
-    dateColor: '#9CA3AF',
-    dimmed: true,
-  },
-  active: {
-    dotColor: colors.primary,
-    dotRing: '#CECBF6',
-    cardBg: '#EEEDFE',
-    cardBorder: '#AFA9EC',
-    badgeBg: colors.primary,
-    badgeText: '#FFFFFF',
-    badgeLabel: 'Active Now',
-    titleColor: '#26215C',
-    descColor: '#3C3489',
-    dateColor: colors.primary,
-    dimmed: false,
-  },
-  deadline: {
-    dotColor: '#BA7517',
-    cardBg: '#FAEEDA',
-    cardBorder: '#FAC775',
-    badgeBg: '#BA7517',
-    badgeText: '#FFFFFF',
-    badgeLabel: 'Deadline',
-    titleColor: '#412402',
-    descColor: '#633806',
-    dateColor: '#854F0B',
-    dimmed: false,
-  },
-  result: {
-    dotColor: '#0F6E56',
-    cardBg: '#E1F5EE',
-    cardBorder: '#5DCAA5',
-    badgeBg: '#0F6E56',
-    badgeText: '#FFFFFF',
-    badgeLabel: 'Result',
-    titleColor: '#04342C',
-    descColor: '#085041',
-    dateColor: '#0F6E56',
-    dimmed: false,
-  },
-  upcoming: {
-    dotColor: '#7F77DD',
-    cardBg: '#FFFFFF',
-    cardBorder: '#E5E7EB',
-    badgeBg: '#EEEDFE',
-    badgeText: '#3C3489',
-    badgeLabel: 'Upcoming',
-    titleColor: '#1F2937',
-    descColor: '#6B7280',
-    dateColor: '#374151',
-    dimmed: false,
-  },
-};
-
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function formatDate(dateStr: string) {
@@ -123,6 +57,16 @@ function formatDate(dateStr: string) {
   const day = d.getDate();
   const month = d.toLocaleString('default', { month: 'short' }).toUpperCase();
   return { day, month };
+}
+
+function getBadgeLabel(status: string) {
+  switch (status) {
+    case 'done': return 'Done';
+    case 'active': return 'Active Now';
+    case 'deadline': return 'Deadline';
+    case 'result': return 'Result';
+    default: return 'Upcoming';
+  }
 }
 
 function isTodayBoundary(events: any[], index: number) {
@@ -148,59 +92,34 @@ const TodayDivider = () => (
 );
 
 const TimelineItem = ({ item, isLast }: { item: any, isLast: boolean }) => {
-  const cfg = STATUS_CONFIG[item.status] || STATUS_CONFIG.upcoming;
   const { day, month } = formatDate(item.event_date);
+  const badgeLabel = getBadgeLabel(item.status);
+  const isDone = item.status === 'done';
 
   return (
-    <View style={[styles.itemRow, cfg.dimmed && styles.dimmed]}>
+    <View style={[styles.itemRow, isDone && styles.dimmed]}>
       {/* Left: date box + spine */}
       <View style={styles.leftCol}>
-        <View style={[styles.dateBox, { borderColor: cfg.cardBorder }]}>
-          <Text style={[styles.dateMonth, { color: cfg.dateColor }]}>{month}</Text>
-          <Text style={[styles.dateDay, { color: cfg.dateColor }]}>{day}</Text>
+        <View style={styles.dateBox}>
+          <Text style={styles.dateMonth}>{month}</Text>
+          <Text style={styles.dateDay}>{day}</Text>
         </View>
         {!isLast && <View style={styles.spine} />}
       </View>
 
       {/* Center: dot + line */}
       <View style={styles.dotCol}>
-        <View
-          style={[
-            styles.dot,
-            { backgroundColor: cfg.dotColor },
-            cfg.dotRing && {
-              shadowColor: cfg.dotRing,
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 1,
-              shadowRadius: 4,
-              elevation: 0,
-            },
-          ]}
-        />
+        <View style={styles.dot} />
         {!isLast && <View style={styles.dotLine} />}
       </View>
 
       {/* Right: card */}
-      <View
-        style={[
-          styles.card,
-          {
-            backgroundColor: cfg.cardBg,
-            borderColor: cfg.cardBorder,
-          },
-        ]}
-      >
-        <View style={[styles.badge, { backgroundColor: cfg.badgeBg }]}>
-          <Text style={[styles.badgeText, { color: cfg.badgeText }]}>
-            {cfg.badgeLabel}
-          </Text>
+      <View style={styles.card}>
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{badgeLabel}</Text>
         </View>
-        <Text style={[styles.cardTitle, { color: cfg.titleColor }]}>
-          {item.title}
-        </Text>
-        <Text style={[styles.cardDesc, { color: cfg.descColor }]}>
-          {item.description}
-        </Text>
+        <Text style={styles.cardTitle}>{item.title}</Text>
+        <Text style={styles.cardDesc}>{item.description}</Text>
       </View>
     </View>
   );
@@ -212,11 +131,6 @@ const Timeline = () => {
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
     >
-      <View style={styles.timelineHeader}>
-        <Text style={styles.headerTitle}>Admission Timeline</Text>
-        <Text style={styles.headerSub}>CAP 2026 · Engineering</Text>
-      </View>
-
       {EVENTS.map((item, index) => (
         <React.Fragment key={item.id}>
           {isTodayBoundary(EVENTS, index) && <TodayDivider />}

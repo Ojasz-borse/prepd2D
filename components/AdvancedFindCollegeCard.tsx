@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3SemiBold",
   },
   viewButton: {
-    backgroundColor: "#ff5e32",
+    backgroundColor: "#ff7a22",
     paddingHorizontal: 16,
     paddingVertical: 5,
     borderRadius: 99,

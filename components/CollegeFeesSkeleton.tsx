@@ -31,59 +31,26 @@ export default function CollegeFeesSkeleton() {
 
   return (
     <View style={styles.container}>
+      {/* Dropdown Skeleton */}
+      <View style={styles.dropdownWrapper}>
+        <View style={styles.rightGroup}>
+          <SkeletonBox style={styles.dropdownSkeleton} />
+        </View>
+      </View>
+
       {/* Fees Card Skeleton */}
       <View style={styles.card}>
-        <View style={styles.fees_row}>
-          {/* Tuition Fees */}
-          <View>
-            <SkeletonBox
-              style={{
-                width: 80,
-                height: 10,
-                borderRadius: 4,
-                marginBottom: 4,
-              }}
-            />
-            <SkeletonBox style={{ width: 60, height: 16, borderRadius: 4 }} />
-          </View>
-
-          {/* Plus sign */}
-          <SkeletonBox style={{ width: 12, height: 12, borderRadius: 7 }} />
-
-          {/* Development Fees */}
-          <View>
-            <SkeletonBox
-              style={{
-                width: 80,
-                height: 10,
-                borderRadius: 4,
-                marginBottom: 4,
-              }}
-            />
-            <SkeletonBox style={{ width: 60, height: 16, borderRadius: 4 }} />
-          </View>
-
-          {/* Plus sign */}
-          <SkeletonBox style={{ width: 12, height: 12, borderRadius: 7 }} />
-
-          {/* Other Fees */}
-          <View>
-            <SkeletonBox
-              style={{
-                width: 80,
-                height: 10,
-                borderRadius: 4,
-                marginBottom: 4,
-              }}
-            />
-            <SkeletonBox style={{ width: 60, height: 16, borderRadius: 4 }} />
-          </View>
+        <View style={styles.feesWrapper}>
+          <SkeletonBox style={styles.feeBox} />
+          <SkeletonBox style={styles.feeBox} />
+          <SkeletonBox style={styles.feeBox} />
         </View>
 
         {/* Total Fees */}
-        <SkeletonBox
-          style={{ width: 100, height: 16, borderRadius: 4, marginTop: 18 }}
-        />
+        <View style={styles.totalRow}>
+          <SkeletonBox style={{ width: 80, height: 16, borderRadius: 4 }} />
+          <SkeletonBox style={styles.totalPill} />
+        </View>
       </View>
     </View>
   );
@@ -95,20 +62,56 @@ const styles = StyleSheet.create({
   },
   dropdownWrapper: {
     flexDirection: "row",
-    justifyContent: "flex-end",
-    marginBottom: 12,
+    marginBottom: 10,
+    marginTop: -45,
+  },
+  rightGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: "auto",
+  },
+  dropdownSkeleton: {
+    width: 100,
+    height: 30,
+    borderRadius: 20,
   },
   card: {
-    paddingVertical: 12,
+    width: "100%",
+    backgroundColor: "#fff",
     borderRadius: 16,
-    padding: 12,
+    padding: 14,
+    marginBottom: 6,
     borderWidth: 1,
-    borderColor: "#d9d9d9",
+    borderColor: "#e2e8f0",
   },
-  fees_row: {
+  feesWrapper: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    alignItems: "center",
+  },
+  feeBox: {
+    backgroundColor: "#e0e0e0",
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 2,
+    alignItems: "center",
+    flex: 1,
+    height: 48,
+  },
+  totalRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: "#e2e8f0",
+  },
+  totalPill: {
+    width: 100,
+    height: 32,
+    borderRadius: 20,
   },
   skeletonBox: {
     backgroundColor: "#e0e0e0",

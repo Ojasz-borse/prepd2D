@@ -31,34 +31,37 @@ export default function CollegeContentSkeleton() {
 
   return (
     <View style={styles.cardContainer}>
-      {/* Top Row: Choice Code + Type */}
-      <View style={styles.topRow}>
-        <SkeletonBox style={{ width: 60, height: 14, borderRadius: 4 }} />
-        <View style={styles.typeRow}>
-          <SkeletonBox style={{ width: 16, height: 16, borderRadius: 8 }} />
-          <SkeletonBox style={{ width: 80, height: 14, borderRadius: 4 }} />
+      {/* Meta Row: Code + Status */}
+      <View style={styles.metaRow}>
+        <SkeletonBox style={{ width: 70, height: 22, borderRadius: 99 }} />
+        <SkeletonBox style={{ width: 80, height: 22, borderRadius: 99, position: 'absolute', right: 0 }} />
+      </View>
+
+      {/* College Name + Icon Section */}
+      <View style={styles.nameSection}>
+        <SkeletonBox style={styles.iconCircle} />
+        <View style={{ flex: 1, gap: 6 }}>
+          <SkeletonBox style={{ width: "90%", height: 20, borderRadius: 4 }} />
+          <SkeletonBox style={{ width: "70%", height: 20, borderRadius: 4 }} />
         </View>
       </View>
 
-      {/* Branch Name */}
-      <SkeletonBox
-        style={{ width: "60%", height: 16, marginTop: 8, borderRadius: 4 }}
-      />
+      {/* Address */}
+      <View style={styles.address}>
+        <SkeletonBox style={{ width: 18, height: 18, borderRadius: 4 }} />
+        <SkeletonBox style={{ width: "80%", height: 16, borderRadius: 4 }} />
+      </View>
 
-      {/* College Name */}
-      <SkeletonBox
-        style={{ width: "80%", height: 14, marginTop: 6, borderRadius: 4 }}
-      />
+      {/* NAAC Row */}
+      <View style={styles.subRow}>
+        <SkeletonBox style={{ width: 120, height: 28, borderRadius: 99 }} />
+      </View>
 
-      {/* Location / District */}
-      <SkeletonBox
-        style={{ width: "40%", height: 12, marginTop: 6, borderRadius: 4 }}
-      />
-
-      {/* Other small info rows */}
-      <View style={styles.topRow}>
-        <SkeletonBox style={{ width: 100, height: 24, borderRadius: 16, marginTop: 10, }} />
-        <SkeletonBox style={{ width: 100, height: 24, borderRadius: 8, marginTop: 10, }} />
+      {/* Action Buttons Row */}
+      <View style={styles.actionButtonsRow}>
+        <SkeletonBox style={styles.viewButtonLike} />
+        <SkeletonBox style={styles.viewButtonLike} />
+        <SkeletonBox style={styles.viewButtonLike} />
       </View>
     </View>
   );
@@ -66,22 +69,54 @@ export default function CollegeContentSkeleton() {
 
 const styles = StyleSheet.create({
   cardContainer: {
-
+    gap: 12,
   },
-  topRow: {
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+    gap: 8,
+    flexWrap: "wrap",
+    position: 'relative',
+    height: 22,
+  },
+  nameSection: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+    marginVertical: 4,
+  },
+  iconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 25,
+    backgroundColor: "#e0e0e0",
+    marginTop: 2,
+  },
+  address: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 2,
+    marginBottom: -8,
+    paddingVertical: 8,
+  },
+  subRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    height: 30,
+    marginTop: 4,
   },
-  typeRow: {
+  actionButtonsRow: {
     flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  infoRow: {
-    flexDirection: "row",
-    gap: 10,
+    gap: 12,
     marginTop: 8,
+  },
+  viewButtonLike: {
+    backgroundColor: "#e0e0e0",
+    height: 32,
+    borderRadius: 999,
+    flex: 1,
   },
   skeletonBox: {
     backgroundColor: "#e0e0e0",

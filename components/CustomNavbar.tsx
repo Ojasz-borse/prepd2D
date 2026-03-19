@@ -28,8 +28,8 @@ interface CustomNavbarProps {
 
 const tabs: { name: TabName; icon: keyof typeof Feather.glyphMap }[] = [
     { name: "Home", icon: "home" },
-    { name: "Admission process", icon: "file-minus" },
-    { name: "Option Form", icon: "clipboard" },
+    { name: "Admission process", icon: "layers" },
+    { name: "Option Form", icon: "align-justify" },
     { name: "Colleges", icon: "search" },
 ];
 

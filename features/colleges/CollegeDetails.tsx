@@ -185,7 +185,7 @@ export default function CollegeDetails() {
 
   return (
     <LinearGradient
-      colors={["#f8fafc", "#e6f1ff", "#e8dcff"]}
+      colors={["#f8fafc", "#e6f1ff", "#ffffff"]}
       locations={[0, 0.5, 1]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
@@ -257,34 +257,31 @@ export default function CollegeDetails() {
 
                 {/* Action Buttons */}
                 <View style={{ gap: 8, marginTop: 0 }}>
-                  {collegeDetails?.official_website_url && (
-                    <TouchableOpacity
-                      onPress={() =>
-                        handleOpenLink(collegeDetails?.official_website_url || "")
-                      }
-                      style={[styles.placementButton, { marginTop: 0 }]}
-                      activeOpacity={0.8}
-                    >
-                      <View style={styles.placementButtonContent}>
-                        <Text style={styles.placementButtonText}>Visit College Website</Text>
-                        <Ionicons name="arrow-forward" size={18} color="#fff" />
-                      </View>
-                    </TouchableOpacity>
-                  )}
 
-                  <View style={[styles.actionButtonsRow, { marginTop: 0 }]}>
+
+                  <View style={[styles.actionButtonsRow, { marginTop: 8 }]}>
+                    {collegeDetails?.official_website_url && (
+                      <TouchableOpacity
+                        onPress={() =>
+                          handleOpenLink(collegeDetails?.official_website_url || "")
+                        }
+                        style={styles.viewButtonLike}
+                        activeOpacity={0.8}
+                      >
+                        <Text style={styles.viewButtonTextLike}>Website</Text>
+
+                      </TouchableOpacity>
+                    )}
                     {collegeDetails?.placement_url && (
                       <TouchableOpacity
                         onPress={() =>
                           handleOpenLink(collegeDetails?.placement_url || "")
                         }
-                        style={[styles.placementButtonOutline, { flex: 1, marginTop: 0 }]}
+                        style={styles.viewButtonLike}
                         activeOpacity={0.8}
                       >
-                        <View style={styles.placementButtonContent}>
-                          <Text style={[styles.placementButtonTextOutline, { fontSize: 14 }]}>Placements</Text>
-                          <Ionicons name="arrow-forward" size={18} color="#B6CF4F" />
-                        </View>
+                        <Text style={styles.viewButtonTextLike}>Placements</Text>
+
                       </TouchableOpacity>
                     )}
 
@@ -293,13 +290,11 @@ export default function CollegeDetails() {
                         onPress={() =>
                           handleOpenLink(collegeDetails?.tuition_fees_url_exact || "")
                         }
-                        style={[styles.placementButtonOutline, { flex: 1, marginTop: 0 }]}
+                        style={styles.viewButtonLike}
                         activeOpacity={0.8}
                       >
-                        <View style={styles.placementButtonContent}>
-                          <Text style={[styles.placementButtonTextOutline, { fontSize: 14 }]}>Fees</Text>
-                          <Ionicons name="arrow-forward" size={18} color="#B6CF4F" />
-                        </View>
+                        <Text style={styles.viewButtonTextLike}>Fees</Text>
+
                       </TouchableOpacity>
                     )}
                   </View>
@@ -502,17 +497,9 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   placementButton: {
-    backgroundColor: "#B6CF4F",
+    backgroundColor: "#ff7a22",
     borderRadius: 12,
     marginTop: 8,
-    overflow: "hidden",
-  },
-  placementButtonOutline: {
-    backgroundColor: "transparent",
-    borderRadius: 12,
-    marginTop: 8,
-    borderWidth: 1.5,
-    borderColor: "#B6CF4F",
     overflow: "hidden",
   },
   placementButtonContent: {
@@ -527,10 +514,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#fff",
   },
-  placementButtonTextOutline: {
-    fontFamily: "SourceSans3SemiBold",
+  viewButtonLike: {
+    backgroundColor: "#ff7a22",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 4,
+  },
+  viewButtonTextLike: {
+    color: "#fff",
     fontSize: 14,
-    color: "#B6CF4F",
+    fontFamily: "SourceSans3SemiBold",
   },
 
   addressText: {

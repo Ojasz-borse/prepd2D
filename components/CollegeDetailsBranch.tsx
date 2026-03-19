@@ -117,14 +117,14 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3SemiBold",
   },
   viewButton: {
-    backgroundColor: "#ff5e32",
+    backgroundColor: "#ff7a22",
     paddingHorizontal: 16,
-    paddingVertical: 5,
-    borderRadius: 99,
+    paddingVertical: 6,
+    borderRadius: 999,
   },
   viewButtonText: {
     color: "#fff",
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "SourceSans3SemiBold",
   },
   cutoffWrapper: {

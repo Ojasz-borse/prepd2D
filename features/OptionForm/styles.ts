@@ -103,10 +103,9 @@ export const styles = StyleSheet.create({
   banner: {
     borderRadius: 20,
     padding: 20,
-    marginBottom: 20,
+    marginTop: 12,
+    marginBottom: 6,
     width: '100%',
-    maxWidth: 500,
-    alignSelf: 'center',
   },
   bannerRow: {
     flexDirection: "row",
