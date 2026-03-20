@@ -18,11 +18,12 @@ import Animated, {
 
 import QuickAccess from "./components/QuickAccess";
 import Timeline from "./components/Timeline";
+import LearnAdmission from "./components/LearnAdmission";
 import { styles } from "./styles";
 import { colors } from "@/constants/theme";
 
 export default function AdmissionProcess() {
-  const [activeTab, setActiveTab ] = useState<"all" | "timeline">("all");
+  const [activeTab, setActiveTab ] = useState<"all" | "timeline" | "learn">("all");
 
   // Indicator animation
   const [tabMeasurements, setTabMeasurements] = useState<{
@@ -56,9 +57,11 @@ export default function AdmissionProcess() {
       onPanResponderRelease: (_, g) => {
         if (g.dx < -50) {
           if (activeTab === "all") setActiveTab("timeline");
+          else if (activeTab === "timeline") setActiveTab("learn");
         }
         if (g.dx > 50) {
-          if (activeTab === "timeline") setActiveTab("all");
+          if (activeTab === "learn") setActiveTab("timeline");
+          else if (activeTab === "timeline") setActiveTab("all");
         }
       },
     })
@@ -110,6 +113,21 @@ export default function AdmissionProcess() {
               Timeline
             </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.tab}
+            onPress={() => setActiveTab("learn")}
+            onLayout={(e) => onTabLayout("learn", e)}
+          >
+            <Text
+              style={[
+                styles.tabLabel,
+                activeTab === "learn" && styles.tabLabelActive,
+              ]}
+            >
+              Learn
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Content Area */}
@@ -142,6 +160,10 @@ export default function AdmissionProcess() {
 
           {activeTab === "timeline" && (
             <Timeline />
+          )}
+
+          {activeTab === "learn" && (
+            <LearnAdmission />
           )}
 
         </View>

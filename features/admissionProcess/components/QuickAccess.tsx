@@ -4,12 +4,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { styles } from "../styles";
 
 interface QuickAccessProps {
-  onTabChange: (tab: "timeline") => void;
+  onTabChange: (tab: "timeline" | "learn") => void;
 }
 
 const QuickAccess = ({ onTabChange }: QuickAccessProps) => {
   const items = [
     { title: "Admission Timeline", icon: "time-outline", tab: "timeline" as const },
+    { title: "Learn Admission", icon: "book-outline", tab: "learn" as const },
   ];
 
   return (

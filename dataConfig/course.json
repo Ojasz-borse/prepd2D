@@ -1,0 +1,740 @@
+[
+  {
+    "id": 1,
+    "question": "What is MHT-CET?",
+    "answers": {
+      "en": "MHT-CET is the Maharashtra Common Entrance Test. It is a state-level exam \nconducted by the State CET Cell for admission into Engineering (B.E./B.Tech) and Pharmacy \n(B.Pharm) courses in Maharashtra.",
+      "mr": "MHT-CET म्हणजे Maharashtra Common Entrance Test. हे State CET Cell द्वारे घेतले \nजाणारे state-level exam आहे, जे Engineering आ\u0000ण Pharmacy courses मध्ये admission साठी असते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 2,
+    "question": "What is a percentile score?",
+    "answers": {
+      "en": "Percentile tells you what percentage of students scored below you. Example: If \nyour percentile is 90, it means 90% of all students who appeared scored less than you. It is \nNOT the same as the marks you got.",
+      "mr": "Percentile म्हणजे तुमच्यापेक्षा \u0000कती टक्के  students कमी marks \u0000मळवले ते दाखवते. उदाहरण: \nजर तुमचा percentile 90 असेल, तर 90% students तुमच्यापेक्षा कमी marks \u0000मळवले. हे तुम्हाला \n\u0000मळालेल्या marks च्या percentage शी same नाही.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 3,
+    "question": "What is the difference between percentile and percentage?",
+    "answers": {
+      "en": "Percentage = (marks you scored ÷ total marks) × 100. Percentile = how many \nstudents scored below you. You can score 70% marks but have a 95 percentile if most students \nscored even lower.",
+      "mr": "Percentage = तुम्ही \u0000मळवलेले marks ÷ total marks × 100. Percentile = तुमच्यापेक्षा कमी \nscore करणाऱ्यांची संख्या. तुम्ही 70% marks \u0000मळवले तरी 95 percentile असू शकते, जर बाकी students \nअजून कमी score करतील.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 5,
+    "question": "What is the State Merit List (SML)?",
+    "answers": {
+      "en": "The SML is a ranked list of all students who appeared for MHT-CET, arranged \nfrom highest to lowest percentile. Your SML rank decides your priority during seat allotment in \nCAP rounds.",
+      "mr": "SML म्हणजे सगळ्या MHT-CET students ची highest ते lowest percentile नुसार के लेली \nranked list. तुमची SML rank CAP rounds मध्ये seat allotment साठी तुमची priority ठरवते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 6,
+    "question": "How do I check my MHT-CET result?",
+    "answers": {
+      "en": "Go to the official website: cetcell.mahacet.org. Log in with your application number \nand date of birth. Download and save your scorecard immediately.",
+      "mr": "Official website वर जा: cetcell.mahacet.org. तुमच्या application number आ\u0000ण date of \nbirth ने login करा. तुमचा scorecard लगेच download करून save करा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 7,
+    "question": "What details are on the MHT-CET scorecard?",
+    "answers": {
+      "en": "The scorecard shows: your name, application number, PCM or PCB percentile, \nraw score, scaled score, and your State Merit List (SML) rank. Check all details carefully for any \nerrors.",
+      "mr": "Scorecard वर असते: तुमचे नाव, application number, PCM \u0000कं वा PCB percentile, raw \nscore, scaled score, आ\u0000ण State Merit List (SML) rank. सगळ्या details नीट तपासा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 8,
+    "question": "What is a raw score vs. a scaled score?",
+    "answers": {
+      "en": "Raw score = the actual marks you scored in the exam. Scaled score = the \nadjusted score after normalization across all shifts. Your final percentile is calculated using the \nscaled score, not the raw score.",
+      "mr": "Raw score = exam मध्ये तुम्हाला \u0000मळालेले actual marks. Scaled score = normalization \nनंतर adjust के लेला score. तुमचा final percentile raw score नाही, scaled score वरून काढला जातो.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 10,
+    "question": "Can I use my JEE Main score for admission in Maharashtra instead of MHT-CET?",
+    "answers": {
+      "en": "Yes. Maharashtra accepts JEE Main scores for Engineering admissions. JEE Main \nstudents are also included in the merit list and can participate in CAP rounds. You do not need \nto give MHT-CET separately if you have a JEE Main score.",
+      "mr": "हो. Maharashtra Engineering admissions साठी JEE Main scores स्वीकारते. JEE Main \nstudents ला merit list मध्ये include के ले जाते आ\u0000ण ते CAP rounds मध्ये participate करू शकतात.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 11,
+    "question": "What is a good percentile for Engineering admission in Maharashtra?",
+    "answers": {
+      "en": "It depends on the college and branch you want. Generally: Above 95 percentile = \nTop government colleges. 80–95 percentile = Good private colleges. 60–80 percentile = \nAverage private colleges. Below 60 = Limited options, but seats are available.",
+      "mr": "हे तुम्हाला हवे असलेल्या college आ\u0000ण branch वर अवलंबून आहे. सामान्यपणे: 95 percentile \nवर = Top government colleges. 80–95 = चांगल्या private colleges. 60–80 = Average private \ncolleges. 60 पेक्षा कमी = मया\u0000\u0000दत options.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 12,
+    "question": "What should I do immediately after checking my result?",
+    "answers": {
+      "en": "1. Download and save the scorecard as a PDF. 2. Take 2–3 printouts and keep \nthem safe. 3. Start researching colleges based on your percentile. 4. Prepare your documents \nfor CAP registration which will open soon.",
+      "mr": "1. Scorecard PDF म्हणून download करा. 2. 2–3 printouts काढा. 3. तुमच्या percentile \nनुसार colleges शोधायला सुरुवात करा. 4. CAP registration साठी documents तयार करा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 13,
+    "question": "What if I am not satisfied with my MHT-CET score?",
+    "answers": {
+      "en": "You have a few options: 1. Appear for MHT-CET next year. 2. Consider Diploma in \nEngineering (Polytechnic) and use Lateral Entry for direct 2nd year admission later. 3. Look at \nprivate colleges with direct admissions (Institute Level). Your score does not define your entire \nfuture.",
+      "mr": "तुमच्याकडे काही options आहेत: 1. पुढील वष\u0000 MHT-CET द्या. 2. Diploma (Polytechnic) \nकरा आ\u0000ण नंतर Lateral Entry ने direct 2nd year ला प्रवेश घ्या. 3. Direct admissions असलेल्या private \ncolleges बघा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 14,
+    "question": "Is there a separate merit list for PCM and PCB students?",
+    "answers": {
+      "en": "Yes. PCM students (Physics, Chemistry, Mathematics) are in the Engineering merit \nlist. PCB students (Physics, Chemistry, Biology) are in the Pharmacy/Agriculture merit list. If you \nappeared in both, you will have two separate percentiles.",
+      "mr": "हो. PCM students (Physics, Chemistry, Mathematics) Engineering merit list मध्ये \nअसतात. PCB students (Physics, Chemistry, Biology) Pharmacy/Agriculture merit list मध्ये \nअसतात. दोन्ही \u0000दले असतील तर दोन वेगळ्या percentiles असतील.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 15,
+    "question": "What is the Home University quota vs. Other University quota?",
+    "answers": {
+      "en": "Maharashtra divides college seats into two groups. Home University seats (about \n70%) are reserved for students from the same university area (district). Other University seats \n(about 30%) are open to students from anywhere in Maharashtra. This affects which colleges \nyou can apply to based on where you studied.",
+      "mr": "Maharashtra college seats दोन गटांत \u0000वभागते. Home University seats (सुमारे 70%) \nत्याच university क्षेत्रातील students साठी राखीव असतात. Other University seats (सुमारे 30%) \nMaharashtra मधील कोणत्याही \u0000ठकाणच्या students साठी खुल्या असतात.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 16,
+    "question": "What is the CAP process in brief?",
+    "answers": {
+      "en": "CAP (Centralised Admission Process) is the government-managed system for \nadmitting students into Engineering and Pharmacy colleges in Maharashtra. It is a fair, \nmerit-based, online system where you fill a ranked list of colleges and the government allots \nseats based on your merit and category.",
+      "mr": "CAP (Centralised Admission Process) म्हणजे Maharashtra मधील Engineering आ\u0000ण \nPharmacy colleges मध्ये admission साठी सरकार-चालवलेली प्रणाली. तुम्ही colleges ची ranked list \nभरता आ\u0000ण सरकार तुमच्या merit आ\u0000ण category नुसार seat allot करते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 17,
+    "question": "What is CAP registration?",
+    "answers": {
+      "en": "CAP registration is the process of creating your official profile on the government's \nadmission portal (cetcell.mahacet.org). Without completing this registration, you cannot \nparticipate in any CAP round or get a seat allotted.",
+      "mr": "CAP registration म्हणजे सरकारच्या admission portal (cetcell.mahacet.org) वर तुमचे \nofficial profile तयार करणे. हे पूण\u0000 के ल्या\u0000शवाय तुम्ही कोणत्याही CAP round मध्ये participate करू शकत \nनाही.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 18,
+    "question": "What documents are required for CAP registration?",
+    "answers": {
+      "en": "You will need: MHT-CET scorecard, HSC (12th) marksheet, SSC (10th) \nmarksheet, School Leaving Certificate (SLC), Domicile Certificate, Caste Certificate (if \napplicable), Income Certificate (for TFWS/EWS), Aadhaar Card, recent passport-size \nphotograph, and signature image.",
+      "mr": "तुम्हाला लागेल: MHT-CET scorecard, HSC (12वी) marksheet, SSC (10वी) marksheet, \nSchool Leaving Certificate (SLC), Domicile Certificate, Caste Certificate (लागू असल्यास), Income \nCertificate (TFWS/EWS साठी), Aadhaar Card, photo आ\u0000ण signature.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 19,
+    "question": "What is a Domicile Certificate and why is it needed?",
+    "answers": {
+      "en": "A Domicile Certificate is an official document that proves you are a resident of \nMaharashtra. Without a valid domicile certificate, you are treated as an outside-state student \nand can only apply for very limited seats (about 15%). It is one of the most important \ndocuments.",
+      "mr": "Domicile Certificate म्हणजे तुम्ही Maharashtra चे र\u0000हवासी आहात हे \u0000सद्ध करणारा official \ndocument. Valid domicile certificate नसेल तर तुम्हाला outside-state student मानले जाते आ\u0000ण फक्त \nमया\u0000\u0000दत seats (सुमारे 15%) साठी apply करता येते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 20,
+    "question": "What is document scrutiny (verification)?",
+    "answers": {
+      "en": "Document scrutiny is a process where a government official physically checks and \nverifies all your original documents. It confirms that the information you filled in during \nregistration is accurate. Without successful scrutiny, your CAP registration is incomplete.",
+      "mr": "Document scrutiny म्हणजे एक सरकारी अ\u0000धकारी तुमच्या सगळ्या original documents ची \nप्रत्यक्ष तपासणी करतो. तुम्ही registration मध्ये भरलेली मा\u0000हती बरोबर आहे हे confirm होते. Scrutiny पूण\u0000 न \nझाल्यास तुमची CAP registration incomplete राहते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 21,
+    "question": "Where do I go for document scrutiny?",
+    "answers": {
+      "en": "You go to an ARC (Admission Reporting Centre). These are \ngovernment-designated centres set up across Maharashtra at specific colleges and institutes. \nThe list of ARC centres is published on the official CET website.",
+      "mr": "तुम्ही ARC (Admission Reporting Centre) ला जाता. हे Maharashtra मध्ये specific \ncolleges आ\u0000ण institutes येथे सरकारने ठरवलेले centres आहेत. ARC centres ची list official CET \nwebsite वर प्रका\u0000शत के ली जाते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 22,
+    "question": "What happens if I miss the document scrutiny deadline?",
+    "answers": {
+      "en": "If you miss the scrutiny deadline, you will not be able to participate in CAP rounds \neven if you completed the online registration. Your registration will be treated as incomplete. \nAlways complete scrutiny on time.",
+      "mr": "Scrutiny deadline चुकवली तर online registration पूण\u0000 असली तरी तुम्ही CAP rounds मध्ये \nparticipate करू शकणार नाही. तुमची registration incomplete मानली जाईल.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 23,
+    "question": "What is a Caste Certificate and who needs it?",
+    "answers": {
+      "en": "A Caste Certificate is an official document issued by the government proving your \nreserved category (SC, ST, OBC, SEBC, VJ, NT, SBC, etc.). If you belong to any reserved \ncategory, you must submit this certificate to claim your category benefits during admission.",
+      "mr": "Caste Certificate म्हणजे सरकारने \u0000दलेला official document जो तुमची reserved category \n(SC, ST, OBC, SEBC, VJ, NT, SBC इ.) \u0000सद्ध करतो. Reserved category असल्यास admission मध्ये \ncategory benefits \u0000मळवण्यासाठी हे certificate जमा करावे लागते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 24,
+    "question": "What is a non-creamy layer certificate and who needs it?",
+    "answers": {
+      "en": "Non-creamy layer certificate is required for OBC/SEBC students. It proves that \nyour family's annual income is below a certain limit (currently ₹8 lakh per year). Without this, \nOBC/SEBC students are treated as Open Category students and lose their reservation benefits.",
+      "mr": "Non-creamy layer certificate OBC/SEBC students साठी लागते. हे \u0000सद्ध करते की तुमच्या \nंबाचे वा\u0000ष\u0000क उत्पन्न एका ठरा\u0000वक मया\u0000देपेक्षा (सध्या ₹8 लाख प्र\u0000त वष\u0000) कमी आहे. हे नसेल तर OBC/SEBC \nकु टु\nstudents ला Open Category मध्ये गृहीत धरले जाते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 25,
+    "question": "What is an Income Certificate and when is it needed?",
+    "answers": {
+      "en": "An Income Certificate is an official document stating your family's annual income, \nissued by the Tahsildar or an authorised government officer. It is required for TFWS (Tuition Fee \nWaiver Scheme), EWS category benefits, and some scholarship applications.",
+      "mr": "Income Certificate म्हणजे Tahsildar \u0000कं वा अ\u0000धकृ त सरकारी अ\u0000धकाऱ्याने \u0000दलेला कु टु\nवा\u0000ष\u0000क उत्पन्न सांगणारा official document. TFWS, EWS category benefits आ\u0000ण काही scholarships \nसाठी हे लागते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 26,
+    "question": "What is a School Leaving Certificate (SLC) and why is it important?",
+    "answers": {
+      "en": "The SLC (also called Transfer Certificate or TC) is issued by your school. It \ncontains your name, date of birth, caste, nationality, and date of leaving school. It is a \nmandatory document for CAP registration. Check it carefully for any spelling errors in your name \nor wrong date of birth.",
+      "mr": "SLC (Transfer Certificate \u0000कं वा TC म्हणूनही ओळखले जाते) तुमच्या शाळेने \u0000दलेले असते. \nत्यात तुमचे नाव, जन्मतारीख, जात, राष्ट्रीयत्व असते. CAP registration साठी हे mandatory document \nआहे. नावातील spelling आ\u0000ण जन्मतारीख नीट तपासा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 27,
+    "question": "Do I need to carry original documents or photocopies for scrutiny?",
+    "answers": {
+      "en": "You must carry BOTH originals and photocopies. The officer will check the \noriginals to verify they are genuine and stamp the photocopies. Bring at least 2 sets of \nself-attested photocopies of every document.",
+      "mr": "तुम्हाला originals आ\u0000ण photocopies दोन्ही न्यायला लागतात. अ\u0000धकारी originals तपासेल \nआ\u0000ण photocopies वर \u0000शक्का मारेल. प्रत्येक document च्या \u0000कमान 2 sets self-attested photocopies \nघेऊन या.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 28,
+    "question": "What is a Gap Certificate and who needs it?",
+    "answers": {
+      "en": "If there is a gap between your 12th result and your current CAP registration (e.g., \nyou passed 12th in 2024 and are applying in 2026), you need a Gap Certificate. It is a \nself-declaration affidavit stating what you were doing during that period. It must be made on a \nstamp paper.",
+      "mr": "जर तुमच्या 12वी result आ\u0000ण CAP registration मध्ये gap असेल (उदा: तुम्ही 2024 मध्ये \n12वी pass झालात आ\u0000ण 2026 मध्ये apply करत आहात), तर Gap Certificate लागते. हे एक \nself-declaration affidavit असते जे stamp paper वर करायचे असते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 29,
+    "question": "What is the correct photo and signature format for CAP registration?",
+    "answers": {
+      "en": "Photo: Recent passport-size, white background, clear face, JPG format, size \nbetween 20KB–100KB. Signature: On white paper with black ink, JPG format, size between \n10KB–50KB. Wrong format is one of the most common reasons for registration rejection.",
+      "mr": "Photo: नुकताच काढलेला passport-size, पांढरी background, स्पष्ट चेहरा, JPG format, size \n20KB–100KB. Signature: पांढऱ्या कागदावर काळ्या शाईने, JPG format, size 10KB–50KB. चुकीचा \nformat हे registration rejection चे सवा\u0000त सामान्य कारण आहे.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 30,
+    "question": "Can I make changes to my CAP registration after submission?",
+    "answers": {
+      "en": "Some limited corrections are allowed during a specific correction window \nannounced by the CET Cell. After that window closes, changes are not possible. This is why \nyou must verify every detail carefully before final submission.",
+      "mr": "CET Cell द्वारे जाहीर के लेल्या specific correction window मध्ये काही मया\u0000\u0000दत corrections \nकरता येतात. ती window बंद झाल्यावर changes शक्य नाहीत. म्हणून final submission आधी सगळ्या \ndetails नीट तपासा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 31,
+    "question": "What is the difference between CAP registration and document scrutiny?",
+    "answers": {
+      "en": "CAP registration is done online — you fill your details and upload documents on \nthe portal. Document scrutiny is done offline — you physically visit an ARC centre with your \noriginals. Both steps are separate and both are mandatory.",
+      "mr": "CAP registration online होते — तुम्ही portal वर details भरता आ\u0000ण documents upload \nकरता. Document scrutiny offline होते — तुम्ही originals घेऊन ARC centre ला प्रत्यक्ष भेट देता. दोन्ही \nsteps वेगळे आहेत आ\u0000ण दोन्ही mandatory आहेत.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 32,
+    "question": "What categories are considered during admission?",
+    "answers": {
+      "en": "Maharashtra admission categories include: Open (General), SC, ST, VJ/DT, NT-B, \nNT-C, NT-D, OBC/SEBC, EWS, TFWS, Minority (Linguistic and Religious), PwD (Persons with \n\n \n \n \n \n\fDisability), and Defense/Ex-Servicemen. Each category has a specific percentage of seats \nreserved.",
+      "mr": "Maharashtra admission categories मध्ये समा\u0000वष्ट आहेत: Open (General), SC, ST, \nVJ/DT, NT-B, NT-C, NT-D, OBC/SEBC, EWS, TFWS, Minority, PwD, आ\u0000ण \nDefense/Ex-Servicemen. प्रत्येक category साठी ठरा\u0000वक टक्के  seats राखीव असतात.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 33,
+    "question": "What is the TFWS scheme?",
+    "answers": {
+      "en": "TFWS stands for Tuition Fee Waiver Scheme. Under this scheme, selected \nstudents pay zero tuition fees for their entire 4-year Engineering course. It is available for \nfamilies with an annual income below ₹8 lakh. Only the tuition fee is waived; development fees \nand hostel fees still apply.",
+      "mr": "TFWS म्हणजे Tuition Fee Waiver Scheme. या scheme अंतग\u0000त \u0000नवडलेल्या students ना \nसंपूण\u0000 4 वषा\u0000च्या Engineering course साठी tuition fees भरावी लागत नाही. ₹8 लाखांपेक्षा कमी वा\u0000ष\u0000क \nउत्पन्न असलेल्या कु टु\nfees लागतात.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 34,
+    "question": "What is EWS category?",
+    "answers": {
+      "en": "EWS stands for Economically Weaker Section. It is a 10% reservation for students \nfrom the General (Open) category whose family income is below ₹8 lakh per year. EWS is \nseparate from OBC. You need an EWS certificate issued by the Tahsildar.",
+      "mr": "EWS म्हणजे Economically Weaker Section. हे General (Open) category मधील ज्या \nstudents च्या कु टु\nOBC पेक्षा वेगळे आहे. Tahsildar कडू न EWS certificate लागते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 35,
+    "question": "What is the Minority quota in Maharashtra admissions?",
+    "answers": {
+      "en": "Minority quota seats are reserved for students from recognized linguistic minorities \n(Urdu, Telugu, Kannada, etc.) and religious minorities (Muslim, Christian, Buddhist, Sikh, etc.). \nThese seats are available only in minority-designated institutions. Specific documents like a \nMinority Certificate are required.",
+      "mr": "Minority quota seats मान्यताप्राप्त linguistic minorities (Urdu, Telugu, Kannada इ.) \nआ\u0000ण religious minorities (Muslim, Christian, Buddhist, Sikh इ.) साठी राखीव आहेत. या seats फक्त \nminority-designated institutions मध्ये उपलब्ध असतात. Minority Certificate सारखे specific \ndocuments लागतात.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 36,
+    "question": "What if my caste certificate is outdated?",
+    "answers": {
+      "en": "The caste certificate must be valid and issued within a specific time period as \nmentioned in the official CAP guidelines. An outdated or expired certificate will be rejected \nduring scrutiny. Contact your local tehsil office or municipality to get a fresh certificate before \nregistration opens.",
+      "mr": "Caste certificate valid असणे आ\u0000ण official CAP guidelines मध्ये नमूद के लेल्या specific \nकालावधीत issued असणे आवश्यक आहे. Outdated \u0000कं वा expired certificate scrutiny मध्ये reject के ले \nजाईल. Registration सुरू होण्यापूव\u0000 नवीन certificate \u0000मळवण्यासाठी स्था\u0000नक tehsil office \u0000कं वा \nmunicipality शी संपक\u0000  करा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 37,
+    "question": "What is the Option Form in CAP?",
+    "answers": {
+      "en": "The Option Form is your ranked wishlist of colleges and branches. You tell the \nsystem: 'This is my 1st choice, this is my 2nd choice, this is my 3rd choice...' and so on. The \ngovernment's algorithm then uses your merit rank and this list to allot you the best possible seat.",
+      "mr": "Option Form म्हणजे colleges आ\u0000ण branches ची तुमची ranked wishlist. तुम्ही system ला \nसांगता: 'हे माझे 1st choice, हे 2nd choice, हे 3rd choice...' असे. सरकारचा algorithm नंतर तुमची merit \nrank आ\u0000ण ही list वापरून सव\u0000त्तम seat allot करतो.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 38,
+    "question": "How many options should I fill in the Option Form?",
+    "answers": {
+      "en": "Fill as many options as possible — ideally 100 or more. More options = better \nchances of getting a good seat. Students who fill only 5–10 options often miss out on good \ncolleges. There is no penalty for filling more options.",
+      "mr": "शक्य \u0000ततके  options भरा — आदश\u0000तः 100 \u0000कं वा त्यापेक्षा जास्त. जास्त options = चांगली seat \n\u0000मळण्याची जास्त शक्यता. फक्त 5–10 options भरणारे students अनेकदा चांगल्या colleges पासून वं\u0000चत \nराहतात. जास्त options भरल्याने कोणतीही \u0000शक्षा नाही.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 40,
+    "question": "What does 'Freeze' mean in CAP rounds?",
+    "answers": {
+      "en": "Freeze means you are satisfied with the seat you received and want to lock it \npermanently. Once you freeze, you will not participate in further rounds. Your seat is confirmed. \nChoose Freeze when you are happy with your allotted college and branch.",
+      "mr": "Freeze म्हणजे तुम्हाला \u0000मळालेली seat तुम्हाला मान्य आहे आ\u0000ण ती permanently lock \nकरायची आहे. Freeze के ल्यावर तुम्ही पुढील rounds मध्ये भाग घेणार नाही. तुमची seat confirm होते. जेव्हा \nतुम्हाला \u0000मळालेले college आ\u0000ण branch आवडले, तेव्हा Freeze \u0000नवडा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 41,
+    "question": "What does 'Float' mean in CAP rounds?",
+    "answers": {
+      "en": "Float means: 'I will keep this seat, but if a seat from a higher-ranked option in my \nform becomes available, please upgrade me automatically.' Float is safe — you cannot lose \nyour current seat. If no better seat is available, you stay in your current seat.",
+      "mr": "Float म्हणजे: 'मी ही seat ठे वतो, पण माझ्या form मधील higher-ranked option ची seat \nउपलब्ध झाली तर मला automatically upgrade करा.' Float safe आहे — तुम्ही तुमची current seat \nगमावणार नाही. जर चांगली seat उपलब्ध नसेल, तर तुम्ही current seat मध्ये राहता.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 42,
+    "question": "What does 'Betterment' mean in CAP rounds?",
+    "answers": {
+      "en": "Betterment means: 'I am giving up my current seat and participating in the next \nround hoping to get something better.' This is risky. If you choose Betterment and do not get a \nbetter seat in the next round, you may end up with a worse seat or no seat at all.",
+      "mr": "Betterment म्हणजे: 'मी माझी current seat सोडतो आ\u0000ण चांगली seat \u0000मळेल या आशेने पुढील \nround मध्ये participate करतो.' हे risky आहे. Betterment \u0000नवडल्यावर पुढील round मध्ये चांगली seat न \n\u0000मळाल्यास, तुम्हाला कमी दजा\u0000ची seat \u0000कं वा कोणतीही seat \u0000मळणार नाही.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 44,
+    "question": "Can I edit my Option Form after submitting it?",
+    "answers": {
+      "en": "Yes, but only within the edit window. The CET Cell provides a short window \n(usually 1–2 days) after the form submission deadline during which you can make changes. \nAfter this window closes, no changes are allowed. Verify everything carefully before final \nlocking.",
+      "mr": "हो, पण फक्त edit window मध्ये. CET Cell form submission deadline नंतर एक short \nwindow (सहसा 1–2 \u0000दवस) देते ज्यात तुम्ही changes करू शकता. ही window बंद झाल्यावर कोणतेही \nchanges करता येत नाहीत.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 45,
+    "question": "Should I include colleges outside my district in the option form?",
+    "answers": {
+      "en": "Yes. You should include colleges from all across Maharashtra that you are willing \nto attend. Limiting yourself only to your city or district significantly reduces your chances of \ngetting a good seat.",
+      "mr": "हो. तुम्ही attend करण्यास तयार असलेल्या Maharashtra मधील सगळ्या colleges समा\u0000वष्ट \nकरा. फक्त तुमच्या शहर \u0000कं वा िजल्ह्यापुरते मया\u0000\u0000दत रा\u0000हल्यास चांगली seat \u0000मळण्याची शक्यता खूप कमी \nहोते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 46,
+    "question": "How do I check last year's cutoff data to fill the option form wisely?",
+    "answers": {
+      "en": "The official CAP cutoff data of previous years is available on the CET Cell website. \nYou can also find it on various educational portals. Look at the closing percentile for your \ncategory in the previous year for each college and branch. Use this data to place your choices \nrealistically.",
+      "mr": "मागील वषा\u0000चा official CAP cutoff data CET Cell website वर उपलब्ध आहे. \u0000व\u0000वध \neducational portals वर पण \u0000मळतो. प्रत्येक college आ\u0000ण branch साठी मागील वष\u0000 तुमच्या category \nसाठी closing percentile बघा. हा data वापरून तुमच्या choices realistically ठरवा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 47,
+    "question": "What is a 'Mock Round' in CAP and is it real?",
+    "answers": {
+      "en": "A Mock Round is a practice round conducted by the CET Cell before the actual \nCAP rounds. It simulates the allotment process so you can see which college/branch you might \nget based on your option form. Seats allotted in Mock Round are NOT real and do NOT \nguarantee you that seat in the actual rounds. Use it to refine your option form.",
+      "mr": "Mock Round म्हणजे CET Cell द्वारे actual CAP rounds पूव\u0000 घेतला जाणारा practice \nround. हे allotment process चे simulation आहे जेणेकरून तुम्ही तुमच्या option form नुसार कोणते \ncollege/branch \u0000मळू शकते ते पाहू शकता. Mock Round मध्ये allotted seats real नाहीत आ\u0000ण actual \nrounds मध्ये त्या seats ची guarantee नाही.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 48,
+    "question": "Is it okay to put a college with a higher cutoff than my percentile at the top?",
+    "answers": {
+      "en": "Yes, absolutely. You should always put your dream college at the top, even if its \ncutoff is slightly higher than your percentile. Cutoffs change every year. If even one student \nabove you does not choose that college, your rank moves up. There is no harm in hoping for a \nbetter seat.",
+      "mr": "हो, नक्कीच. तुमचा dream college नेहमी top ला ठे वा, जरी त्याचा cutoff तुमच्या percentile \nपेक्षा थोडा जास्त असला तरी. Cutoffs दर वष\u0000 बदलतात. तुमच्यावरचा एकही student तो college न \n\u0000नवडल्यास तुमची rank वर जाते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 49,
+    "question": "What happens if I get a seat I do not want?",
+    "answers": {
+      "en": "If you get a seat you do not want, you can choose Betterment (risky) to participate \nin the next round and hope for a better one. Alternatively, you can choose Float, which keeps \nyour current seat but automatically upgrades you if a better seat opens. You can also wait for \nlater rounds.",
+      "mr": "नको असलेली seat \u0000मळाल्यास Betterment (risky) \u0000नवडू न पुढील round मध्ये participate \nकरता येते. \u0000कं वा Float \u0000नवडल्यास current seat राहते पण चांगली seat उपलब्ध झाल्यास automatic \nupgrade होतो. नंतरच्या rounds साठी थांबता येते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 50,
+    "question": "Can two students get the same seat?",
+    "answers": {
+      "en": "No. The CAP algorithm ensures each seat is allotted to only one student. The \nprocess is fully automated and merit-based. The student with a higher merit rank and a \nmatching option form preference gets the seat.",
+      "mr": "नाही. CAP algorithm प्रत्येक seat फक्त एकाच student ला allot करते याची खात्री करतो. ही \nप्र\u0000क्रया पूण\u0000पणे automated आ\u0000ण merit-based आहे. जास्त merit rank आ\u0000ण matching option form \npreference असलेल्या student ला seat \u0000मळते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 51,
+    "question": "What is the difference between Government, Aided and Unaided (Private) colleges?",
+    "answers": {
+      "en": "Government colleges: Fully funded by the government. Very low fees \n(₹10,000–40,000 per year). Admission only through CAP. Aided colleges: Partially funded by \ngovernment. Low-to-medium fees. Unaided (Private) colleges: Privately owned. Higher fees \n(₹80,000–2,50,000 per year). Both CAP seats and Management quota seats exist.",
+      "mr": "Government colleges: पूण\u0000पणे सरकारी. खूप कमी fees (₹10,000–40,000 प्र\u0000त वष\u0000). फक्त \nCAP द्वारे admission. Aided colleges: अंशतः सरकारी अनुदान. कमी ते मध्यम fees. Unaided (Private) \ncolleges: खाजगी. जास्त fees (₹80,000–2,50,000 प्र\u0000त वष\u0000). CAP seats आ\u0000ण Management quota \nseats दोन्ही असतात.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 52,
+    "question": "What is the Slide option in CAP?",
+    "answers": {
+      "en": "Some CAP systems include a 'Slide' option alongside Float. Slide means: upgrade \nme to a better branch in the same college if available. Float means: upgrade me to a better \ncollege and/or branch anywhere in my list. Check the official CAP instructions in the year you \nare applying for the exact definition.",
+      "mr": "काही CAP systems मध्ये Float सोबत 'Slide' option असतो. Slide म्हणजे: त्याच college \nमध्ये चांगली branch उपलब्ध असल्यास upgrade करा. Float म्हणजे: माझ्या list मधील कोणत्याही \u0000ठकाणी \nचांगले college आ\u0000ण/\u0000कं वा branch साठी upgrade करा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 53,
+    "question": "Should I fill options for multiple branches in the same college?",
+    "answers": {
+      "en": "Yes. If you like a particular college, fill multiple branches of that college as \nseparate options. Example: COEP Computer Engineering at rank 5, COEP IT at rank 6, COEP \nElectronics at rank 7. This improves your chances of getting into your preferred college.",
+      "mr": "हो. एखादे college आवडत असल्यास त्या college च्या multiple branches वेगळ्या options \nम्हणून भरा. उदाहरण: COEP Computer Engineering rank 5 वर, COEP IT rank 6 वर, COEP \nElectronics rank 7 वर. यामुळे तुमच्या preferred college मध्ये जाण्याची शक्यता वाढते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 54,
+    "question": "What is the difference between CS, IT, AIML and CSE-DS branches?",
+    "answers": {
+      "en": "Computer Science (CS/CSE): Core programming, algorithms, OS, databases. \nVery broad scope. IT (Information Technology): Similar to CS but more application-focused. \nAIML: Artificial Intelligence and Machine Learning. Focused curriculum. CSE-DS: Computer \nScience with Data Science specialisation. All have good placement prospects but CS/CSE \nremains the most in-demand.",
+      "mr": "Computer Science (CS/CSE): Core programming, algorithms, OS, databases. खूप \nbroad scope. IT: CS सारखेच पण application-focused. AIML: Artificial Intelligence आ\u0000ण Machine \nLearning. Focused curriculum. CSE-DS: Data Science specialisation. सगळ्यांना चांगले \nplacements \u0000मळतात पण CS/CSE सवा\u0000त जास्त demand मध्ये आहे.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 55,
+    "question": "What should I do if the Option Form portal crashes or I face a technical error?",
+    "answers": {
+      "en": "First, take a screenshot of the error. Try again after a few minutes. Clear browser \ncache or try a different browser. If the problem persists, contact the CET helpline immediately. \nAlso check if there is an extension of the deadline announced on the official website.",
+      "mr": "आधी error चा screenshot घ्या. काही \u0000म\u0000नटांनी पुन्हा प्रयत्न करा. Browser cache clear करा \n\u0000कं वा वेगळा browser वापरा. Problem कायम रा\u0000हल्यास लगेच CET helpline शी संपक\u0000  करा. Official \nwebsite वर deadline extension जाहीर झाली आहे का ते पण तपासा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 56,
+    "question": "How many CAP rounds are there?",
+    "answers": {
+      "en": "There are typically 3 main CAP rounds. After these 3 rounds, if seats are still \nvacant, institutes may conduct Spot Rounds or Institute Level Admissions (ILA). The number \ncan vary slightly year to year based on CET Cell announcements.",
+      "mr": "सहसा 3 मुख्य CAP rounds असतात. या 3 rounds नंतर जर seats \u0000रकाम्या असतील तर \ninstitutes Spot Rounds \u0000कं वा Institute Level Admissions (ILA) घेतात. CET Cell च्या \nannouncements नुसार संख्या थोडी बदलू शकते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 58,
+    "question": "What is an allotment letter?",
+    "answers": {
+      "en": "An allotment letter is the official document you download from the CAP portal after \neach round. It states which college and branch has been allotted to you, along with your fee \npayment deadline and ARC reporting date. Print it and keep it safe — you will need it at the \nARC.",
+      "mr": "Allotment letter म्हणजे प्रत्येक round नंतर CAP portal वरून download के लेला official \ndocument. त्यात कोणते college आ\u0000ण branch allot झाले आहे, fees भरण्याची deadline आ\u0000ण ARC \nreporting date असते. Print करा आ\u0000ण सुर\u0000क्षत ठे वा — ARC ला लागेल.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 59,
+    "question": "What do I do within 24 hours of getting my allotment?",
+    "answers": {
+      "en": "1. Log in to the CAP portal and view your allotment. 2. Download and print the \nallotment letter. 3. Pay the seat acceptance fee online. 4. Choose Freeze or Float based on your \ndecision. 5. Book your ARC appointment if required. Missing any of these steps within the \ndeadline can cancel your seat.",
+      "mr": "1. CAP portal ला login करा आ\u0000ण allotment पाहा. 2. Allotment letter download आ\u0000ण \nprint करा. 3. Online seat acceptance fee भरा. 4. \u0000नण\u0000यानुसार Freeze \u0000कं वा Float \u0000नवडा. 5. आवश्यक \nअसल्यास ARC appointment book करा. Deadline मध्ये कोणताही step चुकवल्यास seat cancel होऊ \nशकते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 60,
+    "question": "What is ARC (Admission Reporting Centre)?",
+    "answers": {
+      "en": "ARC is a government-designated centre where you physically go to get your \ndocuments verified and your admission confirmed. It is different from your college. After getting \na seat allotted, you must report to an ARC to make your admission official. Missing ARC \nreporting = seat cancelled.",
+      "mr": "ARC म्हणजे सरकारने नेमलेले centre िजथे तुम्ही प्रत्यक्ष जाऊन documents verify करता \nआ\u0000ण admission confirm करता. हे तुमचे college नाही. Seat allot झाल्यावर admission official \nकरण्यासाठी ARC ला report करणे आवश्यक आहे. ARC reporting चुकवल्यास seat cancel होते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 61,
+    "question": "What documents must I carry to the ARC?",
+    "answers": {
+      "en": "Carry: Allotment letter (printed), MHT-CET scorecard, HSC marksheet (original + 2 \nphotocopies), SSC marksheet (original + 2 photocopies), SLC (original + 2 photocopies), \nDomicile Certificate, Caste/Income Certificate (if applicable), Aadhaar Card, 6 passport-size \nphotos, and the fee payment receipt.",
+      "mr": "न्यायचे: Allotment letter (printed), MHT-CET scorecard, HSC marksheet (original + 2 \nphotocopies), SSC marksheet (original + 2 photocopies), SLC (original + 2 photocopies), \nDomicile Certificate, Caste/Income Certificate (लागू असल्यास), Aadhaar Card, 6 passport-size \nphotos, आ\u0000ण fee payment receipt.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 62,
+    "question": "What is 'provisional admission' and is it final?",
+    "answers": {
+      "en": "Provisional admission means your seat has been temporarily confirmed pending \nfinal verification. It is NOT final admission. Your admission becomes final only after the college \nverifies all your original documents on the first day of college. If any document is found invalid, \nyour provisional admission can be cancelled.",
+      "mr": "Provisional admission म्हणजे final verification pending असताना तुमची seat तात्पुरती \nconfirm झाली आहे. हे final admission नाही. College च्या प\u0000हल्या \u0000दवशी college ने सव\u0000 original \ndocuments verify के ल्यावरच admission final होते. कोणताही document invalid आढळल्यास provisional \nadmission cancel होऊ शकते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 63,
+    "question": "Can I cancel my seat after it is allotted?",
+    "answers": {
+      "en": "Yes, but the refund policy matters. If you cancel within a specific timeframe, you \nmay get a partial refund of fees. If you cancel very late, you may forfeit the fees entirely. \nCancellation rules are published in the official CAP schedule. Read them carefully before \ndeciding.",
+      "mr": "हो, पण refund policy महत्त्वाची आहे. ठरा\u0000वक कालावधीत cancel के ल्यास fees चा partial \nrefund \u0000मळू शकतो. खूप उ\u0000शरा cancel के ल्यास fees पूण\u0000तः जाऊ शकते. Cancellation rules official CAP \nschedule मध्ये प्रका\u0000शत के ले जातात. \u0000नण\u0000य घेण्यापूव\u0000 नीट वाचा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 64,
+    "question": "What is the Spot Round in CAP?",
+    "answers": {
+      "en": "After all 3 main CAP rounds, if some seats remain vacant, the CET Cell may \nconduct a Spot Round. In a Spot Round, available seats are displayed on the portal and \nstudents can apply for them on a first-come-first-served or merit basis. This is a last opportunity \nto grab an unfilled seat.",
+      "mr": "3 मुख्य CAP rounds नंतर काही seats \u0000रकाम्या रा\u0000हल्यास CET Cell Spot Round घेऊ शकते. \nSpot Round मध्ये available seats portal वर दाखवल्या जातात आ\u0000ण students first-come-first-served \n\u0000कं वा merit basis वर apply करू शकतात.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 65,
+    "question": "What is Institute Level Admission (ILA)?",
+    "answers": {
+      "en": "After all CAP processes are complete, colleges still have some unfilled seats. \nThese seats are filled directly by the institute through their own admission process, not through \nCAP. This is called Institute Level Admission or Direct Admission. Students can contact colleges \ndirectly for ILA seats.",
+      "mr": "सव\u0000 CAP processes पूण\u0000 झाल्यावर colleges कडे काही unfilled seats असतात. या seats \ncollege स्वतः CAP द्वारे नव्हे तर त्यांच्या स्वतःच्या admission process द्वारे भरतात. याला Institute \nLevel Admission \u0000कं वा Direct Admission म्हणतात.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 66,
+    "question": "What is the Management Quota and how does it work?",
+    "answers": {
+      "en": "Management Quota is a certain percentage of seats (usually 15–20%) in private \ncolleges that the college management fills on their own, outside the CAP process. Fees for \nManagement Quota are usually higher. Admissions can be done directly by contacting the \ncollege. Be cautious of agents claiming to arrange management quota seats for a commission.",
+      "mr": "Management Quota म्हणजे खाजगी colleges मधील ठरा\u0000वक टक्के  seats (सहसा 15–20%) \nजे college management CAP process बाहेर स्वतः भरतात. Management Quota ची fees सहसा जास्त \nअसते. College ला थेट संपक\u0000  करून admission होऊ शकते. Management quota seats \u0000मळवून देण्याचा \nदावा करणाऱ्या agents पासून सावध राहा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 67,
+    "question": "What if I do not get any seat in all CAP rounds?",
+    "answers": {
+      "en": "If you do not get any seat in all CAP rounds: 1. Apply for Spot Round. 2. Check \nILA (direct admission) at private colleges. 3. Consider Diploma Engineering for a fresh attempt \nnext year. 4. Look at other state universities that accept MHT-CET scores. Your education \noptions do not end here.",
+      "mr": "सव\u0000 CAP rounds मध्ये seat न \u0000मळाल्यास: 1. Spot Round साठी apply करा. 2. Private \ncolleges मध्ये ILA (direct admission) तपासा. 3. Diploma Engineering चा \u0000वचार करा आ\u0000ण पुढील वष\u0000 \nपुन्हा प्रयत्न करा. 4. MHT-CET scores स्वीकारणाऱ्या इतर state universities बघा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 68,
+    "question": "What is a Waiting List in CAP?",
+    "answers": {
+      "en": "There is no traditional waiting list in CAP. Instead, the Float option acts as an \nautomatic upgrade mechanism. If you choose Float and a higher-preference seat opens up in \nthe next round due to another student cancelling or upgrading, you automatically get that better \nseat.",
+      "mr": "CAP मध्ये traditional waiting list नाही. त्याऐवजी Float option हे automatic upgrade \nmechanism म्हणून काम करते. Float \u0000नवडल्यास आ\u0000ण पुढील round मध्ये दुसऱ्या student ने cancel \n\u0000कल्यामुळे \u0000कं वा upgrade झाल्यामुळे higher-preference seat उपलब्ध झाल्यास तुम्हाला automatically \nती seat \u0000मळते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 69,
+    "question": "Can I change my branch or college after CAP admission is over?",
+    "answers": {
+      "en": "After all CAP rounds are complete and you have confirmed your seat, changing \nyour college or branch is not possible through the CAP process. However, you can apply for \ncollege migration or transfer in your second year under certain conditions, subject to the \nuniversity rules.",
+      "mr": "सव\u0000 CAP rounds पूण\u0000 झाल्यावर आ\u0000ण seat confirm के ल्यावर CAP process द्वारे college \n\u0000कं वा branch बदलणे शक्य नाही. मात्र, \u0000व\u0000शष्ट अटींनुसार आ\u0000ण university \u0000नयमांनुसार दुसऱ्या वष\u0000 college \nmigration \u0000कं वा transfer साठी apply करता येते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 70,
+    "question": "What is the NRI quota?",
+    "answers": {
+      "en": "NRI quota is a small percentage of seats in private colleges (usually 5%) reserved \nfor Non-Resident Indians (NRIs) and their relatives. These seats are filled by the college directly \nat a higher tuition fee. They are not part of the CAP process.",
+      "mr": "NRI quota म्हणजे खाजगी colleges मधील थोड्या seats (सहसा 5%) Non-Resident Indians \n(NRIs) आ\u0000ण त्यांच्या नातेवाईकांसाठी राखीव असतात. या seats college जास्त tuition fee वर थेट भरते. या \nCAP process चा भाग नाहीत.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 71,
+    "question": "How do I raise a grievance if there is a problem with my allotment?",
+    "answers": {
+      "en": "Log in to the CAP portal and go to the Grievance section. Submit your complaint \nwith all relevant details and supporting documents. The CET Cell has a dedicated grievance \nredressal team. You can also contact them by phone or email. Always keep a record of your \ngrievance submission.",
+      "mr": "CAP portal ला login करा आ\u0000ण Grievance section ला जा. सव\u0000 relevant details आ\u0000ण \nsupporting documents सह तक्रार submit करा. CET Cell कडे dedicated grievance redressal team \nआहे. फोन \u0000कं वा email द्वारे पण संपक\u0000  करता येतो. तुमच्या grievance submission चा record नेहमी ठे वा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 72,
+    "question": "What is the last date to participate in CAP — can I join midway?",
+    "answers": {
+      "en": "No. You must complete CAP registration and document scrutiny before the official \ndeadline. You cannot join CAP midway through the rounds. If you miss the registration deadline, \nyou will have to wait for Spot Rounds or try Institute Level Admissions directly.",
+      "mr": "नाही. CAP registration आ\u0000ण document scrutiny official deadline आधी पूण\u0000 करणे \nआवश्यक आहे. Rounds मध्ये मध्येच CAP मध्ये सामील होता येत नाही. Registration deadline चुकवल्यास \nSpot Rounds साठी थांबावे लागेल \u0000कं वा Institute Level Admissions साठी थेट प्रयत्न करावा लागेल.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 73,
+    "question": "What is the difference between ARC reporting and college reporting?",
+    "answers": {
+      "en": "ARC reporting = Going to the government ARC centre with your documents to \nofficially confirm your CAP seat. It is done before you go to college. College reporting = Going to \nyour allotted college on the day they ask you to, to complete enrollment, pay remaining fees, \nand get your student ID. Both are separate events.",
+      "mr": "ARC reporting = CAP seat officially confirm करण्यासाठी documents घेऊन सरकारी ARC \ncentre ला जाणे. हे college ला जाण्यापूव\u0000 के ले जाते. College reporting = enrollment पूण\u0000 करण्यासाठी, \nउव\u0000\u0000रत fees भरण्यासाठी आ\u0000ण student ID घेण्यासाठी allotted college ला जाणे. दोन्ही वेगळ्या घटना \nआहेत.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 74,
+    "question": "What documents do I need to carry on the first day of college?",
+    "answers": {
+      "en": "Carry: Allotment letter, ARC reporting receipt, original HSC and SSC marksheets, \nSLC, Domicile Certificate, Caste/Income Certificate (if applicable), Aadhaar Card, 6–8 passport \nphotos, and the fee receipts. The college will collect originals of some documents for their \nrecords.",
+      "mr": "न्यायचे: Allotment letter, ARC reporting receipt, original HSC आ\u0000ण SSC marksheets, \nSLC, Domicile Certificate, Caste/Income Certificate (लागू असल्यास), Aadhaar Card, 6–8 passport \nphotos, आ\u0000ण fee receipts. College काही documents चे originals त्यांच्या records साठी घेईल.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 75,
+    "question": "What is the difference between tuition fees, development fees, and other charges?",
+    "answers": {
+      "en": "Tuition fees = Fee for teaching and education (this is what TFWS waives). \nDevelopment fees = Fee for infrastructure like labs, buildings, computers. Other charges may \ninclude exam fees, library fees, etc. The total annual cost to a student is the sum of all these \ncomponents, not just tuition fees.",
+      "mr": "Tuition fees = \u0000शक्षण आ\u0000ण अध्यापनाची fee (TFWS हीच माफ करते). Development fees = \nLabs, buildings, computers सारख्या infrastructure साठीची fee. इतर charges मध्ये exam fees, \nlibrary fees इ. असू शकतात. Student साठी एकू ण वा\u0000ष\u0000क खच\u0000 फक्त tuition fees नव्हे, तर या सव\u0000 घटकांची \nबेरीज आहे.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 76,
+    "question": "What scholarships are available for Engineering students in Maharashtra?",
+    "answers": {
+      "en": "Key scholarships: 1. Government Post-Matric Scholarship (for SC/ST/VJ/NT/OBC \nstudents). 2. EBC Scholarship (for open category, low income). 3. TFWS (Tuition Fee Waiver). \n4. AICTE Pragati Scholarship (for girl students). 5. AICTE Saksham Scholarship (for PwD \nstudents). 6. Central Sector Scholarship. Apply within 30 days of admission.",
+      "mr": "मुख्य scholarships: 1. Government Post-Matric Scholarship (SC/ST/VJ/NT/OBC \nstudents साठी). 2. EBC Scholarship (open category, low income साठी). 3. TFWS (Tuition Fee \nWaiver). 4. AICTE Pragati Scholarship (मुलींसाठी). 5. AICTE Saksham Scholarship (PwD \nstudents साठी). 6. Central Sector Scholarship. Admission च्या 30 \u0000दवसांत apply करा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 77,
+    "question": "What is the Post-Matric Scholarship and who can apply?",
+    "answers": {
+      "en": "The Post-Matric Scholarship is a government scholarship for students from SC, \nST, VJ/DT, NT, and OBC categories. It covers tuition fees and provides a monthly stipend. Apply \non the Maharashtra Scholarship Portal (mahaeschol.maharashtra.gov.in) within the deadline \nafter admission.",
+      "mr": "Post-Matric Scholarship म्हणजे SC, ST, VJ/DT, NT, आ\u0000ण OBC category च्या students \nसाठी सरकारी scholarship. यात tuition fees समा\u0000वष्ट होतात आ\u0000ण monthly stipend \u0000मळतो. Admission \nनंतर deadline मध्ये Maharashtra Scholarship Portal वर apply करा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 78,
+    "question": "What is an Education Loan and how do I apply?",
+    "answers": {
+      "en": "An Education Loan is a bank loan to fund your college education. It can cover \ntuition fees, hostel fees, books, laptop, and living expenses. Government banks like SBI, Bank \nof Baroda, and Canara Bank offer education loans at lower interest rates. Apply at your nearest \nbank branch with your admission letter and college fee receipt.",
+      "mr": "Education Loan म्हणजे तुमच्या college education साठी बँके कडू न घेतलेले कज\u0000. यात tuition \nfees, hostel fees, books, laptop, आ\u0000ण राहण्याचा खच\u0000 समा\u0000वष्ट होऊ शकतो. SBI, Bank of Baroda, \nCanara Bank सारख्या सरकारी बँका कमी interest rate वर education loans देतात.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 79,
+    "question": "What is CGPA and why does it matter from Day 1?",
+    "answers": {
+      "en": "CGPA (Cumulative Grade Point Average) is your overall academic score on a \nscale of 10. Companies during campus placements often have a minimum CGPA requirement \n(typically 6.0–7.5 out of 10). Starting strong from Semester 1 builds a solid CGPA that opens \nmore placement opportunities.",
+      "mr": "CGPA (Cumulative Grade Point Average) म्हणजे 10 च्या scale वर तुमचा एकू ण \nacademic score. Campus placements मध्ये companies सहसा minimum CGPA (साधारणपणे \n6.0–7.5 out of 10) मागतात. Semester 1 पासूनच चांगली सुरुवात के ल्यास solid CGPA तयार होतो.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 80,
+    "question": "What is a backlog and how does it affect my future?",
+    "answers": {
+      "en": "A backlog means you failed a subject in a semester and need to re-appear for that \nexam. Having backlogs can disqualify you from certain campus placements, government jobs, \nand scholarships. Some companies have a 'no active backlog' policy. Clear all backlogs as soon \nas possible.",
+      "mr": "Backlog म्हणजे तुम्ही एखाद्या semester मध्ये एखाद्या subject मध्ये fail झालात आ\u0000ण त्या \nexam साठी पुन्हा बसावे लागते. Backlogs असल्यास काही campus placements, government jobs, आ\u0000ण \nscholarships साठी disqualify व्हाल. काही companies ना 'no active backlog' policy असते. Backlogs \nलवकरात लवकर clear करा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 82,
+    "question": "Can I transfer to a different college after taking admission?",
+    "answers": {
+      "en": "Yes, college transfer/migration is possible in Maharashtra. It is typically allowed \nafter the first year under specific conditions: you must have cleared all subjects, the new college \nmust have a vacancy, and you must have university approval. The transfer rules vary by \nuniversity. Check your university website for the exact procedure.",
+      "mr": "हो, Maharashtra मध्ये college transfer/migration शक्य आहे. सामान्यतः \u0000व\u0000शष्ट अटींनुसार \nप\u0000हल्या वषा\u0000नंतर परवानगी \u0000दली जाते: सव\u0000 subjects clear असणे आवश्यक, नवीन college मध्ये vacancy \nअसणे, आ\u0000ण university ची मंजुरी लागते. Transfer rules university नुसार वेगळे असतात.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 83,
+    "question": "What is Lateral Entry admission and who can apply?",
+    "answers": {
+      "en": "Lateral Entry allows Diploma Engineering holders to directly join the 2nd year (3rd \nsemester) of B.E./B.Tech without giving MHT-CET. It is a great option for students who did a \n3-year Diploma after 10th. A separate entrance exam (MHT-CET for Diploma students) is \nconducted for this.",
+      "mr": "Lateral Entry मुळे Diploma Engineering धारकांना MHT-CET न देता B.E./B.Tech च्या 2nd \nyear (3rd semester) ला थेट प्रवेश \u0000मळतो. 10वी नंतर 3 वषा\u0000चा Diploma के लेल्या students साठी हा एक \nउत्तम पया\u0000य आहे. यासाठी वेगळी entrance exam (Diploma students साठी MHT-CET) घेतली जाते.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 84,
+    "question": "What is the AICTE Pragati Scholarship?",
+    "answers": {
+      "en": "The AICTE Pragati Scholarship is for girl students studying in AICTE-approved \ntechnical institutions. It provides financial support of ₹50,000 per year. Only 2 girls per family are \neligible. Apply through the AICTE National Scholarship Portal after admission.",
+      "mr": "AICTE Pragati Scholarship AICTE-approved technical institutions मध्ये \u0000शकणाऱ्या \nमुलींसाठी आहे. यात प्र\u0000तवष\u0000 ₹50,000 आ\u0000थ\u0000क सहाय्य \u0000मळते. एका कु टु\nAdmission नंतर AICTE National Scholarship Portal द्वारे apply करा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 85,
+    "question": "What are the biggest mistakes final-year students wish they had avoided?",
+    "answers": {
+      "en": "1. Ignoring CGPA in first year. 2. Not learning to code early (for CS/IT students). 3. \nMissing scholarship deadlines. 4. Not joining any club or participating in hackathons. 5. Not \nbuilding a LinkedIn profile early. 6. Not doing any internship before final year. Start early on all of \nthese.",
+      "mr": "1. प\u0000हल्या वष\u0000 CGPA कडे दुल\u0000क्ष करणे. 2. लवकर coding न \u0000शकणे (CS/IT students साठी). \n3. Scholarship deadlines चुकवणे. 4. कोणत्याही club मध्ये न जाणे \u0000कं वा hackathons मध्ये भाग न घेणे. \n5. LinkedIn profile लवकर न तयार करणे. 6. Final year आधी कोणताही internship न करणे.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 86,
+    "question": "What is a LinkedIn profile and do engineering students need one?",
+    "answers": {
+      "en": "LinkedIn is a professional networking platform where companies post jobs and \ninternships, and recruiters find candidates. Engineering students should create a LinkedIn \nprofile from Semester 1. Add your skills, projects, certificates, and internship experiences. Many \ncampus placements and off-campus opportunities come through LinkedIn.",
+      "mr": "LinkedIn एक professional networking platform आहे िजथे companies jobs आ\u0000ण \ninternships post करतात आ\u0000ण recruiters candidates शोधतात. Engineering students नी Semester 1 \nपासूनच LinkedIn profile तयार करावा. Skills, projects, certificates, आ\u0000ण internship experiences \nजोडा. अनेक campus आ\u0000ण off-campus opportunities LinkedIn द्वारे \u0000मळतात.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 87,
+    "question": "What should I focus on in the first semester of engineering?",
+    "answers": {
+      "en": "1. Attend all lectures and understand fundamentals. 2. Do not let assignments pile \nup. 3. Fill scholarship forms within 30 days. 4. Join at least one technical club. 5. Start learning \none programming language (Python is recommended for beginners). 6. Build the habit of \nstudying consistently, not just before exams.",
+      "mr": "1. सव\u0000 lectures ला उपिस्थत राहा आ\u0000ण fundamentals समजून घ्या. 2. Assignments जमा \nहोऊ देऊ नका. 3. 30 \u0000दवसांत scholarship forms भरा. 4. \u0000कमान एका technical club मध्ये सामील व्हा. 5. \nएक programming language \u0000शका (beginners साठी Python recommended आहे). 6. फक्त exams \nआधी नव्हे, consistently अभ्यास करण्याची सवय लावा.",
+      "hi": ""
+    }
+  },
+  {
+    "id": 88,
+    "question": "Is college attendance mandatory in Engineering?",
+    "answers": {
+      "en": "Yes. Maharashtra universities require a minimum of 75% attendance in lectures \nand practicals to be eligible for appearing in semester examinations. If your attendance falls \nbelow 75%, you may be detained and cannot appear for that semester's exam. Track your \nattendance from Day 1.",
+      "mr": "हो. Maharashtra universities ला semester examinations साठी eligible होण्यासाठी \nlectures आ\u0000ण practicals मध्ये \u0000कमान 75% attendance आवश्यक आहे. Attendance 75% पेक्षा कमी \nझाल्यास detained व्हाल आ\u0000ण त्या semester च्या exam साठी appear करू शकणार नाही. प\u0000हल्या \n\u0000दवसापासून attendance track करा.",
+      "hi": ""
+    }
+  }
+]
