@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -14,11 +14,15 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import SearchIcon from "@/assets/icons/SearchIcon";
 import { Dropdown } from "react-native-element-dropdown";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import courseData from "../../../dataConfig/course.json";
+import { GET_COURSE_CONTENT } from "@/constants/config";
+import { CACHE_COURSE_CONTENT, CACHE_TTL } from "@/constants/cacheStorageConfig";
+import { useAuth } from "@/context/AuthContext";
+import { fetchWithRetry } from "@/services/api";
+import { Animated, Easing } from "react-native";
 
 const { width } = Dimensions.get("window");
 
-interface Question {
+export interface Question {
   id: number;
   question: string;
   answers: {
@@ -36,19 +40,72 @@ const LANGUAGES = [
 
 const ASYNC_STORAGE_KEY = "LEARN_ADMISSION_PROGRESS";
 
-export default function LearnAdmission() {
+function LearnAdmissionSkeleton() {
+  const opacity = useRef(new Animated.Value(0.6)).current;
+
+  useEffect(() => {
+    const loopAnimation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 800,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 0.6,
+          duration: 800,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    loopAnimation.start();
+    return () => loopAnimation.stop();
+  }, [opacity]);
+
+  const SkeletonBox = (props: any) => (
+    <Animated.View style={[styles.skeletonBox, { opacity }, props.style]} />
+  );
+
+  return (
+    <View style={styles.card}>
+      <SkeletonBox style={styles.badgeSkeleton} />
+      <SkeletonBox style={styles.questionSkeleton} />
+      <View style={styles.footerSkeleton}>
+        <SkeletonBox style={styles.linkSkeleton} />
+      </View>
+    </View>
+  );
+}
+
+interface LearnAdmissionProps {
+  data: Question[];
+  isLoading: boolean;
+  error: string | null;
+}
+
+export default function LearnAdmission({ data, isLoading, error }: LearnAdmissionProps) {
+  const [courseData, setCourseData] = useState<Question[]>(data || []);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
   const [language, setLanguage] = useState<"en" | "mr" | "hi">("en");
   const [doneQuestions, setDoneQuestions] = useState<Set<number>>(new Set());
 
-  // Load progress from AsyncStorage
+  // Set course data from props
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setCourseData(data);
+    }
+  }, [data]);
+
+  // Load progress
   useEffect(() => {
     const loadProgress = async () => {
       try {
-        const saved = await AsyncStorage.getItem(ASYNC_STORAGE_KEY);
-        if (saved) {
-          setDoneQuestions(new Set(JSON.parse(saved)));
+        const savedProgress = await AsyncStorage.getItem(ASYNC_STORAGE_KEY);
+        if (savedProgress) {
+          setDoneQuestions(new Set(JSON.parse(savedProgress)));
         }
       } catch (e) {
         console.error("Failed to load progress", e);
@@ -74,13 +131,13 @@ export default function LearnAdmission() {
   };
 
   const filteredQuestions = useMemo(() => {
-    return (courseData as Question[]).filter((q) =>
+    return courseData.filter((q) =>
       q.question.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [searchQuery]);
+  }, [searchQuery, courseData]);
 
-  const totalQuestions = (courseData as Question[]).length;
-  const progressPercent = (doneQuestions.size / totalQuestions) * 100;
+  const totalQuestions = courseData.length;
+  const progressPercent = totalQuestions > 0 ? (doneQuestions.size / totalQuestions) * 100 : 0;
 
   const renderCard = ({ item, index }: { item: Question, index: number }) => {
     const isDone = doneQuestions.has(item.id);
@@ -94,7 +151,7 @@ export default function LearnAdmission() {
           <Text style={styles.badgeText}>{index + 1}</Text>
         </View>
 
-        <Text style={styles.cardQuestion} numberOfLines={2}>
+        <Text style={styles.cardQuestion} numberOfLines={1}>
           {item.question}
         </Text>
 
@@ -150,29 +207,36 @@ export default function LearnAdmission() {
   return (
     <View style={styles.mainWrapper}>
       <FlatList
-        data={filteredQuestions}
-        renderItem={({ item, index }) => (
-          <View style={styles.columnWrapper}>
-            <View style={styles.itemContainer}>
-              {renderCard({ item, index })}
+        data={(isLoading && filteredQuestions.length === 0) ? ([1, 2, 3, 4] as any) : filteredQuestions}
+        renderItem={({ item, index }) => {
+          if (isLoading && filteredQuestions.length === 0) {
+            return (
+              <View style={styles.rowWrapper}>
+                <LearnAdmissionSkeleton />
+              </View>
+            );
+          }
+          return (
+            <View style={styles.rowWrapper}>
+              {renderCard({ item: item as Question, index })}
             </View>
-            {/* Logic for 2 columns handle if odd results */}
-          </View>
-        )}
-        keyExtractor={(item) => item.id.toString()}
-        numColumns={2}
+          );
+        }}
+        keyExtractor={(item, index) => (isLoading && filteredQuestions.length === 0 ? `skeleton-${index}` : (item as Question).id?.toString())}
+        numColumns={1}
         ListHeaderComponent={renderHeader}
         ListFooterComponent={<View style={styles.listFooter} />}
         contentContainerStyle={styles.listContent}
-        columnWrapperStyle={styles.flatListColumnWrapper}
         showsVerticalScrollIndicator={true}
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <View style={styles.emptyState}>
-              <Feather name="search" size={48} color="#cbd5e1" />
-              <Text style={styles.emptyText}>No questions found matching your search.</Text>
+          !isLoading ? (
+            <View style={styles.emptyContainer}>
+              <View style={styles.emptyState}>
+                <Feather name="search" size={48} color="#cbd5e1" />
+                <Text style={styles.emptyText}>No questions found matching your search.</Text>
+              </View>
             </View>
-          </View>
+          ) : null
         }
       />
 
@@ -319,16 +383,13 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: 24,
   },
-  flatListColumnWrapper: {
+  rowWrapper: {
     backgroundColor: "#fff",
     borderLeftWidth: 1,
     borderRightWidth: 1,
     borderColor: "#e2e8f0",
     paddingHorizontal: 16,
-  },
-  columnWrapper: {
-    flex: 1,
-    marginBottom: 16,
+    paddingBottom: 16,
   },
   itemContainer: {
     flex: 1,
@@ -345,12 +406,12 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#fff",
-    width: "95%",
+    width: "100%",
     borderRadius: 16,
     padding: 14,
     borderWidth: 1,
     borderColor: "#e2e8f0",
-    height: 145,
+    height: 110,
     justifyContent: "space-between",
   },
   cardDone: {
@@ -501,5 +562,29 @@ const styles = StyleSheet.create({
     marginTop: 12,
     textAlign: "center",
     paddingHorizontal: 40,
+  },
+  skeletonBox: {
+    backgroundColor: "#e0e0e0",
+    borderRadius: 8,
+  },
+  badgeSkeleton: {
+    width: 30,
+    height: 18,
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  questionSkeleton: {
+    width: "80%",
+    height: 18,
+    marginBottom: 12,
+  },
+  footerSkeleton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+  linkSkeleton: {
+    width: 100,
+    height: 14,
   },
 });

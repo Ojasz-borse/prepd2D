@@ -46,12 +46,7 @@ const CreateCollegeForm = ({
   handleSubmit,
   loading,
 }: CreateCollegeFormProps) => (
-  <LinearGradient
-    colors={["#ffffff", "#f8faff"]}
-    style={styles.card}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 0, y: 1 }}
-  >
+  <View style={styles.card}>
     <Text style={styles.formTitle}>Enter Details</Text>
 
     <View style={{ flexDirection: "row", gap: 12, marginBottom: -14 }}>
@@ -166,22 +161,14 @@ const CreateCollegeForm = ({
     )}
 
     <TouchableOpacity
-      style={styles.submitButton}
+      style={[styles.submitButton, loading && { opacity: 0.7 }]}
       onPress={handleSubmit}
       activeOpacity={0.8}
       disabled={loading}
     >
-      <LinearGradient
-        colors={["#ff7a22", "#e66a1f"]}
-        style={styles.submitButtonGradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-      >
-        <Text style={styles.submitButtonText}>Generate List</Text>
-        <Ionicons name="arrow-forward" size={20} color="#fff" />
-      </LinearGradient>
+      <Text style={styles.submitButtonText}>Generate List</Text>
     </TouchableOpacity>
-  </LinearGradient>
+  </View>
 );
 
 export default CreateCollegeForm;

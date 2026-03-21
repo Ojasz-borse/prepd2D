@@ -53,3 +53,7 @@ export const RAZORPAY_KEY = `${extra.RAZORPAY_KEY}`;
 export const VERIFY_COUPON = `${extra.SERVER_URL}/api/payment/validate-coupon`;
 
 export const GET_RESOURCES = `${extra.SERVER_URL}/api/resources`;
+
+export const GET_COURSE_CONTENT = `${extra.SERVER_URL}/api/admissions/faqs`;
+
+export const GET_ADMISSION_TIMELINE = `${extra.SERVER_URL}/api/admissions/timeline`;

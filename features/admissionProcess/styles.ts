@@ -75,7 +75,7 @@ export const styles = StyleSheet.create({
     gap: 12,
   },
   quickItem: {
-    width: "100%",
+    width: "48%",
     backgroundColor: "#fff",
     borderRadius: 12,
     padding: 6,

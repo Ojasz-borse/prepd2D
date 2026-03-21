@@ -9,8 +9,18 @@ interface QuickAccessProps {
 
 const QuickAccess = ({ onTabChange }: QuickAccessProps) => {
   const items = [
-    { title: "Admission Timeline", icon: "time-outline", tab: "timeline" as const },
-    { title: "Learn Admission", icon: "book-outline", tab: "learn" as const },
+    { 
+      title: "Timeline", 
+      icon: "time-outline", 
+      tab: "timeline" as const,
+      color: "#004aad"
+    },
+    { 
+      title: "Learn", 
+      icon: "book-outline", 
+      tab: "learn" as const,
+      color: "#b6cf4f"
+    },
   ];
 
   return (
@@ -28,15 +38,14 @@ const QuickAccess = ({ onTabChange }: QuickAccessProps) => {
               style={[
                 styles.quickIconBox,
                 {
-                  backgroundColor:
-                     "#004aad20",
+                  backgroundColor: `${item.color}20`,
                 },
               ]}
             >
               <Ionicons
                 name={item.icon as any}
                 size={24}
-                color={"#004aad"}
+                color={item.color}
               />
             </View>
             <Text style={styles.quickTitle}>{item.title}</Text>

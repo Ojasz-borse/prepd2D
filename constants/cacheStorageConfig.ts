@@ -6,5 +6,7 @@ export const CACHE_MY_COLLEGES_LIST = "my_colleges_list";
 export const CACHE_NEWS = "news";
 export const CACHE_MOCK_TESTS = "mock_tests";
 export const CACHE_RESOURCES = "resources";
+export const CACHE_COURSE_CONTENT = "course_content";
+export const CACHE_ADMISSION_TIMELINE = "admission_timeline";
 
 export const CACHE_TTL = 1000 * 60 * 60 * 24; // 24h

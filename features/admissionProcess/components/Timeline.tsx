@@ -2,53 +2,75 @@ import React from "react";
 import { View, Text, ScrollView } from "react-native";
 import { styles } from "../styles";
 import { colors } from "@/constants/theme";
+import { Animated, Easing } from "react-native";
+
+interface TimelineEvent {
+  id: string | number;
+  start_date: string;
+  title: string;
+  popup_description: string;
+  status?: string;
+}
+
+interface TimelineProps {
+  data: TimelineEvent[];
+  isLoading: boolean;
+}
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
-const EVENTS = [
-  {
-    id: '1',
-    event_date: '2026-03-10',
-    status: 'done',
-    title: 'Registration Opens',
-    description: 'Student login portal activated. Create your account and verify your documents.',
-  },
-  {
-    id: '2',
-    event_date: '2026-03-18',
-    status: 'active',
-    title: 'CAP Round 1 — Option Form',
-    description: 'Fill and submit your college preference list. You can edit until the deadline.',
-  },
-  {
-    id: '3',
-    event_date: '2026-03-22',
-    status: 'deadline',
-    title: 'Option Form Closes',
-    description: 'Last date to edit or re-submit your preference list. No changes after this.',
-  },
-  {
-    id: '4',
-    event_date: '2026-03-28',
-    status: 'result',
-    title: 'CAP Round 1 — Result',
-    description: 'Seat allotment published on the official portal. Check your allotment letter.',
-  },
-  {
-    id: '5',
-    event_date: '2026-04-03',
-    status: 'upcoming',
-    title: 'CAP Round 2 — Option Form',
-    description: 'Second round preferences open for eligible and non-reporting students.',
-  },
-  {
-    id: '6',
-    event_date: '2026-04-10',
-    status: 'upcoming',
-    title: 'CAP Round 2 — Result',
-    description: 'Round 2 seat allotment declared. Candidates must report to allotted institute.',
-  },
-];
+function getStatusFromDate(dateStr: string, apiStatus?: string) {
+  try {
+    const itemDate = new Date(dateStr);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkDate = new Date(itemDate);
+    checkDate.setHours(0, 0, 0, 0);
+
+    if (checkDate < today) return "done";
+    if (checkDate.getTime() === today.getTime()) return apiStatus || "active";
+    return apiStatus || "upcoming";
+  } catch (e) {
+    return apiStatus || "upcoming";
+  }
+}
+
+function TimelineSkeleton() {
+  const opacity = React.useRef(new Animated.Value(0.6)).current;
+  React.useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity, { toValue: 1, duration: 800, useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 0.6, duration: 800, useNativeDriver: true }),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, []);
+
+  const SkeletonBox = (props: any) => (
+    <Animated.View style={[{ backgroundColor: "#e2e8f0", borderRadius: 4, opacity }, props.style]} />
+  );
+
+  return (
+    <View style={styles.itemRow}>
+      <View style={styles.leftCol}>
+        <SkeletonBox style={{ width: 45, height: 50, borderRadius: 8 }} />
+        <View style={styles.spine} />
+      </View>
+      <View style={styles.dotCol}>
+        <View style={styles.dot} />
+        <View style={styles.dotLine} />
+      </View>
+      <View style={styles.card}>
+        <SkeletonBox style={{ width: 80, height: 20, marginBottom: 12, borderRadius: 12 }} />
+        <SkeletonBox style={{ width: "70%", height: 18, marginBottom: 10 }} />
+        <SkeletonBox style={{ width: "90%", height: 14, marginBottom: 6 }} />
+        <SkeletonBox style={{ width: "60%", height: 14 }} />
+      </View>
+    </View>
+  );
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -60,23 +82,23 @@ function formatDate(dateStr: string) {
 }
 
 function getBadgeLabel(status: string) {
-  switch (status) {
-    case 'done': return 'Done';
-    case 'active': return 'Active Now';
-    case 'deadline': return 'Deadline';
-    case 'result': return 'Result';
-    default: return 'Upcoming';
-  }
+  const mapping: { [key: string]: string } = {
+    done: 'Done',
+    active: 'Active Now',
+    deadline: 'Deadline',
+    result: 'Result',
+    upcoming: 'Upcoming'
+  };
+  return mapping[status.toLowerCase()] || (status.charAt(0).toUpperCase() + status.slice(1));
 }
 
 function isTodayBoundary(events: any[], index: number) {
-  // Insert "Today" marker between done/past and active/future items
+  // Insert "Today" marker between past (done) and future (active/upcoming) items
   if (index === 0) return false;
-  const prev = events[index - 1];
-  const curr = events[index];
-  const prevIsPast = prev.status === 'done';
-  const currIsPresent = curr.status === 'active' || curr.status === 'deadline';
-  return prevIsPast && currIsPresent;
+  const prevStatus = getStatusFromDate(events[index - 1].start_date, events[index - 1].status);
+  const currStatus = getStatusFromDate(events[index].start_date, events[index].status);
+
+  return prevStatus === 'done' && currStatus !== 'done';
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -91,10 +113,11 @@ const TodayDivider = () => (
   </View>
 );
 
-const TimelineItem = ({ item, isLast }: { item: any, isLast: boolean }) => {
-  const { day, month } = formatDate(item.event_date);
-  const badgeLabel = getBadgeLabel(item.status);
-  const isDone = item.status === 'done';
+const TimelineItem = ({ item, isLast }: { item: TimelineEvent, isLast: boolean }) => {
+  const status = getStatusFromDate(item.start_date, item.status);
+  const { day, month } = formatDate(item.start_date);
+  const badgeLabel = getBadgeLabel(status);
+  const isDone = status === 'done';
 
   return (
     <View style={[styles.itemRow, isDone && styles.dimmed]}>
@@ -119,24 +142,37 @@ const TimelineItem = ({ item, isLast }: { item: any, isLast: boolean }) => {
           <Text style={styles.badgeText}>{badgeLabel}</Text>
         </View>
         <Text style={styles.cardTitle}>{item.title}</Text>
-        <Text style={styles.cardDesc}>{item.description}</Text>
+        <Text style={styles.cardDesc} numberOfLines={2}>{item.popup_description}</Text>
       </View>
     </View>
   );
 };
 
-const Timeline = () => {
+const Timeline = ({ data, isLoading }: TimelineProps) => {
+  if (isLoading && (!data || data.length === 0)) {
+    return (
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {[1, 2, 3, 4].map((i) => <TimelineSkeleton key={i} />)}
+      </ScrollView>
+    );
+  }
+
+  const events = React.useMemo(() => {
+    if (!data) return [];
+    return [...data].sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
+  }, [data]);
+
   return (
     <ScrollView
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
     >
-      {EVENTS.map((item, index) => (
+      {events.map((item, index) => (
         <React.Fragment key={item.id}>
-          {isTodayBoundary(EVENTS, index) && <TodayDivider />}
+          {isTodayBoundary(events, index) && <TodayDivider />}
           <TimelineItem
             item={item}
-            isLast={index === EVENTS.length - 1}
+            isLast={index === events.length - 1}
           />
         </React.Fragment>
       ))}

@@ -98,14 +98,9 @@ export default function CompareColleges({ colleges }: CompareCollegesProps) {
 
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-            <LinearGradient
-                colors={["#ffffff", "#f8faff"]}
-                style={styles.card}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 1 }}
-            >
+            <View style={styles.card}>
                 <View style={styles.inputWrapper}>
-                    <Text style={styles.label}>Select First College</Text>
+                    <Text style={styles.formTitle}>Select colleges</Text>
                     <Dropdown
                         style={styles.dropdown}
                         data={data}
@@ -129,7 +124,7 @@ export default function CompareColleges({ colleges }: CompareCollegesProps) {
                 </View>
 
                 <View style={styles.inputWrapper}>
-                    <Text style={styles.label}>Select Second College</Text>
+
                     <Dropdown
                         style={styles.dropdown}
                         data={data}
@@ -154,17 +149,9 @@ export default function CompareColleges({ colleges }: CompareCollegesProps) {
                     activeOpacity={0.8}
                     disabled={loading}
                 >
-                    <LinearGradient
-                        colors={['#ff7a22', '#e66a1f']}
-                        style={styles.submitButtonGradient}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                    >
-                        <Text style={styles.submitButtonText}>Compare</Text>
-                        <Ionicons name="git-compare-outline" size={20} color="#fff" />
-                    </LinearGradient>
+                    <Text style={styles.submitButtonText}>Compare</Text>
                 </TouchableOpacity>
-            </LinearGradient>
+            </View>
 
             {compareResult && compareResult.length === 2 && (
                 <View style={styles.resultContainer}>
@@ -256,11 +243,15 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     card: {
+        backgroundColor: "#fff",
         borderRadius: 16,
-        padding: 24,
+        padding: 14,
         width: '100%',
         maxWidth: 500,
         alignSelf: 'center',
+        borderWidth: 1,
+        borderColor: "#e2e8f0",
+        marginBottom: 20,
     },
     title: {
         fontSize: 18,
@@ -272,6 +263,12 @@ const styles = StyleSheet.create({
     inputWrapper: {
         marginBottom: 8,
         width: '100%',
+    },
+    formTitle: {
+        fontSize: 18,
+        fontFamily: "SourceSans3SemiBold",
+        color: colors.primary,
+        marginBottom: 20,
     },
     label: {
         marginBottom: 8,
@@ -311,24 +308,17 @@ const styles = StyleSheet.create({
         color: colors.primary,
     },
     submitButton: {
+        backgroundColor: "#ff7a22",
+        paddingHorizontal: 18,
+        paddingVertical: 6,
+        borderRadius: 999,
         marginTop: 20,
-        borderRadius: 30,
-        overflow: 'hidden',
-        width: '100%',
-    },
-    submitButtonGradient: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 16,
-        paddingHorizontal: 24,
-        gap: 8,
-        width: '100%',
+        alignSelf: 'flex-end',
     },
     submitButtonText: {
         color: "#fff",
+        fontSize: 14,
         fontFamily: "SourceSans3SemiBold",
-        fontSize: 16,
     },
     resultContainer: {
         marginTop: 16,

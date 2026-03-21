@@ -125,12 +125,12 @@ export default function HomeScreen() {
 
             <View style={styles.bannerTop}>
               <View style={styles.bannerInfo}>
-                <Text style={styles.bannerLabel}>Master Your Future with</Text>
+                <Text style={styles.bannerLabel}>Your Admission Journey</Text>
                 <Text style={styles.bannerTitle}>
                   PrepCET
                 </Text>
                 <Text style={styles.bannerSubtitle}>
-                  Your journey to MHT-CET excellence continues with curated resources and practice.
+                  Search, Compare & Get Into the Right College After MHT CET
                 </Text>
               </View>
               <View style={styles.bannerIconBox}>

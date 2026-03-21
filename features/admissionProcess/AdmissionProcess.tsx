@@ -18,12 +18,23 @@ import Animated, {
 
 import QuickAccess from "./components/QuickAccess";
 import Timeline from "./components/Timeline";
-import LearnAdmission from "./components/LearnAdmission";
+import LearnAdmission, { Question } from "./components/LearnAdmission";
 import { styles } from "./styles";
 import { colors } from "@/constants/theme";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { GET_COURSE_CONTENT, GET_ADMISSION_TIMELINE } from "@/constants/config";
+import { CACHE_COURSE_CONTENT, CACHE_ADMISSION_TIMELINE, CACHE_TTL } from "@/constants/cacheStorageConfig";
+import { useAuth } from "@/context/AuthContext";
+import { fetchWithRetry } from "@/services/api";
 
 export default function AdmissionProcess() {
-  const [activeTab, setActiveTab ] = useState<"all" | "timeline" | "learn">("all");
+  const [activeTab, setActiveTab] = useState<"all" | "timeline" | "learn">("all");
+  const [courseData, setCourseData] = useState<Question[]>([]);
+  const [timelineData, setTimelineData] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isTimelineLoading, setIsTimelineLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { getToken } = useAuth();
 
   // Indicator animation
   const [tabMeasurements, setTabMeasurements] = useState<{
@@ -39,6 +50,73 @@ export default function AdmissionProcess() {
       indicatorWidth.value = withTiming(m.width, { duration: 180 });
     }
   }, [activeTab, tabMeasurements]);
+
+  // Pre-fetch both course content and timeline when on 'all' tab
+  useEffect(() => {
+    if (activeTab === "all" || courseData.length === 0 || timelineData.length === 0) {
+      const initAll = async () => {
+        const token = await getToken();
+
+        // --- Fetch Course Questions ---
+        const fetchQuestions = async () => {
+          try {
+            const cached = await AsyncStorage.getItem(CACHE_COURSE_CONTENT);
+            let hasCache = false;
+            if (cached) {
+              const parsed = JSON.parse(cached);
+              setCourseData(parsed.data);
+              hasCache = true;
+              if (Date.now() - parsed.lastFetched < CACHE_TTL && activeTab !== 'all') return;
+            }
+            if (!hasCache) setIsLoading(true);
+            const res = await fetchWithRetry(GET_COURSE_CONTENT, {
+              headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
+            });
+            const data = await res.json();
+            if (data.success && data.faqs) {
+              setCourseData(data.faqs);
+              await AsyncStorage.setItem(CACHE_COURSE_CONTENT, JSON.stringify({ data: data.faqs, lastFetched: Date.now() }));
+            }
+          } catch (e) {
+            console.error(e);
+          } finally {
+            setIsLoading(false);
+          }
+        };
+
+        // --- Fetch Timeline ---
+        const fetchTimeline = async () => {
+          try {
+            const cached = await AsyncStorage.getItem(CACHE_ADMISSION_TIMELINE);
+            let hasCache = false;
+            if (cached) {
+              const parsed = JSON.parse(cached);
+              setTimelineData(parsed.data);
+              hasCache = true;
+              if (Date.now() - parsed.lastFetched < CACHE_TTL && activeTab !== 'all') return;
+            }
+            if (!hasCache) setIsTimelineLoading(true);
+            const res = await fetchWithRetry(GET_ADMISSION_TIMELINE, {
+              headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
+            });
+
+            const data = await res.json();
+            if (data.success && data.timeline) {
+              setTimelineData(data.timeline);
+              await AsyncStorage.setItem(CACHE_ADMISSION_TIMELINE, JSON.stringify({ data: data.timeline, lastFetched: Date.now() }));
+            }
+          } catch (e) {
+            console.error(e);
+          } finally {
+            setIsTimelineLoading(false);
+          }
+        };
+
+        await Promise.all([fetchQuestions(), fetchTimeline()]);
+      };
+      initAll();
+    }
+  }, [activeTab, getToken]);
 
   const onTabLayout = (tab: string, e: LayoutChangeEvent) => {
     const { x, width } = e.nativeEvent.layout;
@@ -159,11 +237,18 @@ export default function AdmissionProcess() {
           )}
 
           {activeTab === "timeline" && (
-            <Timeline />
+            <Timeline
+              data={timelineData}
+              isLoading={isTimelineLoading}
+            />
           )}
 
           {activeTab === "learn" && (
-            <LearnAdmission />
+            <LearnAdmission
+              data={courseData}
+              isLoading={isLoading}
+              error={error}
+            />
           )}
 
         </View>
