@@ -400,75 +400,65 @@ export default function EstimatorScreen() {
               <View style={styles.centerContainer}>
                 <View style={styles.cardContainer}>
                   <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: 16,
-                    }}
+
+                    style={styles.cardHeader}
                   >
-                    <Text style={styles.headingText}>Enter your Marks</Text>
-                    <TouchableOpacity
-                      onPress={() => setShowInfo(true)}
-                    >
+                    <Text style={styles.cardTitle}>Enter your Marks</Text>
+                    <TouchableOpacity onPress={() => setShowInfo(true)}>
                       <Ionicons
                         name="information-circle-outline"
-                        size={24}
-                        color={colors.primary}
+                        size={22}
+                        color="#004aad"
                       />
                     </TouchableOpacity>
                   </View>
 
-                  {!!error && <Text style={styles.errorText}>{error}</Text>}
-                  {!!errMsgMarks && (
-                    <Text style={styles.errorText}>{errMsgMarks}</Text>
-                  )}
+                  <View style={styles.cardBody}>
+                    {!!error && <Text style={styles.errorText}>{error}</Text>}
+                    {!!errMsgMarks && (
+                      <Text style={styles.errorText}>{errMsgMarks}</Text>
+                    )}
 
-                  <FloatingLabelInput
-                    label="Enter Marks"
-                    value={marks}
-                    onChangeText={(text) => {
-                      const sanitized = text.replace(/\./g, "");
-                      setMarks(sanitized);
-                    }}
-                    keyboardType="number-pad"
-                  />
+                    <FloatingLabelInput
+                      label="Enter Marks"
+                      value={marks}
+                      onChangeText={(text) => {
+                        const sanitized = text.replace(/\./g, "");
+                        setMarks(sanitized);
+                      }}
+                      keyboardType="number-pad"
+                    />
 
-                  <Text style={[styles.headingText, { marginTop: 12 }]}>
-                    Select Shift Difficulty
-                  </Text>
+                    <Dropdown
+                      style={styles.dropdown}
+                      data={difficultyOptions}
+                      labelField="label"
+                      valueField="value"
+                      value={selectedDifficulty}
+                      onChange={(item) => setSelectedDifficulty(item.value)}
+                      placeholder="Select Difficulty"
+                      placeholderStyle={styles.dropdownText}
+                      selectedTextStyle={styles.dropdownText}
+                      itemTextStyle={styles.dropdownText}
+                    />
 
-                  <Dropdown
-                    style={styles.dropdown}
-                    data={difficultyOptions}
-                    labelField="label"
-                    valueField="value"
-                    value={selectedDifficulty}
-                    onChange={(item) => setSelectedDifficulty(item.value)}
-                    placeholder="Select Difficulty"
-                    placeholderStyle={styles.dropdownText}
-                    selectedTextStyle={styles.dropdownText}
-                    itemTextStyle={styles.dropdownText}
-                  />
-
-                  <View style={styles.buttonWrapper}>
-                    <TouchableOpacity
-                      style={[
-                        styles.confirmButton,
-                        isMarksValid && styles.confirmButtonActive,
-                      ]}
-                      onPress={handleCalculatePercentile}
-                      disabled={!isMarksValid || loading}
-                    >
-                      <Text
+                    <View style={styles.buttonWrapper}>
+                      <TouchableOpacity
                         style={[
+                          styles.confirmButton,
+                          isMarksValid && styles.confirmButtonActive,
+                        ]}
+                        onPress={handleCalculatePercentile}
+                        disabled={!isMarksValid || loading}
+                      >
+                        <Text style={[
                           styles.confirmButtonText,
                           isMarksValid && styles.confirmButtonTextActive,
-                        ]}
-                      >
-                        {loading ? "Calculating..." : "Calculate"}
-                      </Text>
-                    </TouchableOpacity>
+                        ]}>
+                          {loading ? "Calculating..." : "Calculate"}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
               </View>
@@ -489,67 +479,58 @@ export default function EstimatorScreen() {
               <View style={styles.centerContainer}>
                 <View style={styles.cardContainer}>
                   <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: 16,
-                    }}
+
+                    style={styles.cardHeader}
                   >
-                    <Text style={styles.headingText}>
-                      Enter Overall Percentile
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => setShowInfo(true)}
-                    >
+                    <Text style={styles.cardTitle}>Enter Overall Percentile</Text>
+                    <TouchableOpacity onPress={() => setShowInfo(true)}>
                       <Ionicons
                         name="information-circle-outline"
-                        size={24}
-                        color={colors.primary}
+                        size={22}
+                        color="#004aad"
                       />
                     </TouchableOpacity>
                   </View>
 
-                  {!!error && <Text style={styles.errorText}>{error}</Text>}
-                  {!!errMsgRank && (
-                    <Text style={styles.errorText}>{errMsgRank}</Text>
-                  )}
+                  <View style={styles.cardBody}>
+                    {!!error && <Text style={styles.errorText}>{error}</Text>}
+                    {!!errMsgRank && (
+                      <Text style={styles.errorText}>{errMsgRank}</Text>
+                    )}
 
-                  <FloatingLabelInput
-                    label="Overall Percentile"
-                    value={overallPercentile}
-                    onChangeText={(text) =>
-                      handlePercentileInput(text, setOverallPercentile)
-                    }
-                    keyboardType="number-pad"
-                  />
+                    <FloatingLabelInput
+                      label="Overall Percentile"
+                      value={overallPercentile}
+                      onChangeText={(text) =>
+                        handlePercentileInput(text, setOverallPercentile)
+                      }
+                      keyboardType="number-pad"
+                    />
 
-                  <Text style={[styles.headingText, { marginTop: 16 }]}>
-                    Subject Percentiles (Optional)
-                  </Text>
+                    <View style={{ flexDirection: "row", gap: 10, marginTop: 8 }}>
+                      <View style={{ flex: 1 }}>
+                        <FloatingLabelInput
+                          label="Physics"
+                          value={physicsPercentile}
+                          onChangeText={(text) =>
+                            handlePercentileInput(text, setPhysicsPercentile)
+                          }
+                          keyboardType="number-pad"
+                        />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <FloatingLabelInput
+                          label="Chemistry"
+                          value={chemistryPercentile}
+                          onChangeText={(text) =>
+                            handlePercentileInput(text, setChemistryPercentile)
+                          }
+                          keyboardType="number-pad"
+                        />
+                      </View>
 
-                  <View style={{ flexDirection: "row", gap: 10 }}>
-                    <View style={{ flex: 1 }}>
-                      <FloatingLabelInput
-                        label="Physics"
-                        value={physicsPercentile}
-                        onChangeText={(text) =>
-                          handlePercentileInput(text, setPhysicsPercentile)
-                        }
-                        keyboardType="number-pad"
-                      />
                     </View>
-                    <View style={{ flex: 1 }}>
-                      <FloatingLabelInput
-                        label="Chemistry"
-                        value={chemistryPercentile}
-                        onChangeText={(text) =>
-                          handlePercentileInput(text, setChemistryPercentile)
-                        }
-                        keyboardType="number-pad"
-                      />
-                    </View>
-                    <View style={{ flex: 1.1 }}>
+                    <View>
                       <FloatingLabelInput
                         label="Mathematics"
                         value={mathsPercentile}
@@ -559,26 +540,24 @@ export default function EstimatorScreen() {
                         keyboardType="number-pad"
                       />
                     </View>
-                  </View>
 
-                  <View style={styles.buttonWrapper}>
-                    <TouchableOpacity
-                      style={[
-                        styles.confirmButton,
-                        isRankValid && styles.confirmButtonActive,
-                      ]}
-                      onPress={handleCalculateRank}
-                      disabled={!isRankValid || loading}
-                    >
-                      <Text
+                    <View style={styles.buttonWrapper}>
+                      <TouchableOpacity
                         style={[
+                          styles.confirmButton,
+                          isRankValid && styles.confirmButtonActive,
+                        ]}
+                        onPress={handleCalculateRank}
+                        disabled={!isRankValid || loading}
+                      >
+                        <Text style={[
                           styles.confirmButtonText,
                           isRankValid && styles.confirmButtonTextActive,
-                        ]}
-                      >
-                        {loading ? "Calculating..." : "Calculate"}
-                      </Text>
-                    </TouchableOpacity>
+                        ]}>
+                          {loading ? "Calculating..." : "Calculate"}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
               </View>
@@ -701,9 +680,25 @@ const styles = StyleSheet.create({
   cardContainer: {
     backgroundColor: "#fff",
     borderRadius: 20,
-    padding: 20,
     width: "100%",
-
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+  },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  cardTitle: {
+    fontSize: 18,
+    color: "#004aad",
+    fontFamily: "SourceSans3Medium",
+  },
+  cardBody: {
+    padding: 20,
   },
 
   /* center content vertically */
@@ -722,38 +717,40 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   headingText: {
-    fontSize: 18,
+    fontSize: 16,
     color: "#1e293b",
     fontFamily: "SourceSans3SemiBold",
   },
 
   dropdown: {
     width: "100%",
-    height: 60,
+    height: 55,
     backgroundColor: "#fff",
-    borderColor: "#ccc",
+    borderColor: "#d6e0f5",
     borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 10,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    marginTop: 10,
   },
   dropdownText: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: "SourceSans3Medium",
     color: "#333",
   },
 
-  buttonWrapper: { width: "100%", alignItems: "flex-end" },
+  buttonWrapper: { width: "100%" },
   confirmButton: {
     backgroundColor: "#e2e8f0",
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 14,
-    marginTop: 32,
+    paddingHorizontal: 18,
+    paddingVertical: 6,
+    borderRadius: 999,
+    marginTop: 20,
+    alignSelf: "flex-end",
   },
-  confirmButtonActive: { backgroundColor: colors.primary },
+  confirmButtonActive: { backgroundColor: "#ff7a22" },
   confirmButtonText: {
     color: "#94a3b8",
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: "SourceSans3SemiBold",
   },
   confirmButtonTextActive: { color: "#fff" },

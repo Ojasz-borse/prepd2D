@@ -243,7 +243,7 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
             <NormalFindCollegeCard college={item} index={index} />
           </View>
         )}
-        ListHeaderComponent={renderHeader}
+        ListHeaderComponent={renderHeader()}
         ListFooterComponent={<View style={styles.listFooter} />}
         ListEmptyComponent={
           loading ? (
@@ -355,6 +355,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 16,
     padding: 12,
+    marginTop: -10,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
   },
   resultCountContainer: {
     backgroundColor: "#fff",

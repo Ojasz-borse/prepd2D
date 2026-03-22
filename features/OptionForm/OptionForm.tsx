@@ -27,7 +27,6 @@ import Animated, {
 import QuickAccess from "./components/QuickAccess";
 import CreateCollegeForm from "./components/CreateCollegeForm";
 import ResultsList from "./components/ResultsList";
-import EditButton from "./components/EditButton";
 import { styles } from "./styles";
 import { colors } from "@/constants/theme";
 
@@ -45,23 +44,13 @@ export default function OptionForm() {
   const [results, setResults] = useState<any[]>([]);
   const [showResults, setShowResults] = useState(false);
 
-  const { isAllowed } = useSubscriptionLock({
+  const { isAllowed, showLock, closeLock } = useSubscriptionLock({
     gate: "after",
-    delay: 0,
+    delay: 3000,
+    condition: activeTab === "generate",
   });
 
-  const [localShowLock, setLocalShowLock] = useState(false);
-
   usePreventScreenCapture();
-
-  // Subscription Lock Effect
-  useEffect(() => {
-    if (!isAllowed) {
-      setLocalShowLock(true);
-    } else {
-      setLocalShowLock(false);
-    }
-  }, [isAllowed]);
 
   // Indicator animation
   const [tabMeasurements, setTabMeasurements] = useState<{
@@ -108,10 +97,7 @@ export default function OptionForm() {
     const swapIndex = direction === "up" ? index - 1 : index + 1;
     if (swapIndex < 0 || swapIndex >= updated.length) return;
 
-    [updated[index], updated[swapIndex]] = [
-      updated[swapIndex],
-      updated[index],
-    ];
+    [updated[index], updated[swapIndex]] = [updated[swapIndex], updated[index]];
 
     setBranches(updated);
   };
@@ -154,7 +140,10 @@ export default function OptionForm() {
 
     const percentileNum = parseFloat(percentile);
     if (isNaN(percentileNum) || percentileNum < 0 || percentileNum > 100) {
-      Alert.alert("Invalid Input", "Please enter a valid percentile between 0 and 100");
+      Alert.alert(
+        "Invalid Input",
+        "Please enter a valid percentile between 0 and 100"
+      );
       return;
     }
 
@@ -273,31 +262,31 @@ export default function OptionForm() {
                   moveBranch={moveBranch}
                   handleSubmit={handleSubmit}
                   loading={loading}
+                  isAllowed={isAllowed}
                 />
               ) : (
                 <>
-                  <EditButton onPress={() => setShowResults(false)} />
-                  <ResultsList results={results} />
+                  <ResultsList
+                    results={results}
+                    onEdit={() => setShowResults(false)}
+                  />
                 </>
               )}
 
               {loading && !showResults && (
                 <View style={styles.loadingContainer}>
                   <ActivityIndicator size="large" color={colors.primary} />
-                  <Text style={styles.loadingText}>Generating your options...</Text>
+                  <Text style={styles.loadingText}>
+                    Generating your options...
+                  </Text>
                 </View>
               )}
             </ScrollView>
           )}
 
-          {localShowLock && (
-            <SubscriptionLockSheet
-              visible={localShowLock}
-              planType="after"
-              cssType="type2"
-            />
+          {showLock && (
+            <SubscriptionLockSheet visible={showLock} planType="after" />
           )}
-
         </View>
       </SafeAreaView>
     </LinearGradient>

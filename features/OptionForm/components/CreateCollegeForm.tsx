@@ -27,6 +27,7 @@ interface CreateCollegeFormProps {
   moveBranch: (index: number, direction: "up" | "down") => void;
   handleSubmit: () => void;
   loading: boolean;
+  isAllowed: boolean;
 }
 
 const CreateCollegeForm = ({
@@ -45,6 +46,7 @@ const CreateCollegeForm = ({
   moveBranch,
   handleSubmit,
   loading,
+  isAllowed,
 }: CreateCollegeFormProps) => (
   <View style={styles.card}>
     <Text style={styles.formTitle}>Enter Details</Text>
@@ -161,10 +163,10 @@ const CreateCollegeForm = ({
     )}
 
     <TouchableOpacity
-      style={[styles.submitButton, loading && { opacity: 0.7 }]}
+      style={[styles.submitButton, (loading || !isAllowed) && { opacity: 0.7 }]}
       onPress={handleSubmit}
       activeOpacity={0.8}
-      disabled={loading}
+      disabled={loading || !isAllowed}
     >
       <Text style={styles.submitButtonText}>Generate List</Text>
     </TouchableOpacity>

@@ -286,4 +286,109 @@ export const styles = StyleSheet.create({
     fontFamily: "SourceSans3Medium",
     color: "#737373",
   },
+
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    width: "100%",
+    borderRadius: 24,
+    maxHeight: "80%",
+    overflow: "hidden",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  modalBody: {
+    padding: 24,
+  },
+  modalBadgeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontFamily: "SourceSans3Bold",
+    color: "#0f172a",
+    marginBottom: 12,
+    lineHeight: 28,
+  },
+  modalDatesContainer: {
+    marginBottom: 20,
+    backgroundColor: "#f8fafc",
+    padding: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+  },
+  modalDateRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  modalDateText: {
+    fontSize: 14,
+    fontFamily: "SourceSans3SemiBold",
+    color: "#004aad",
+  },
+  descriptionContainer: {
+    marginBottom: 20,
+  },
+  descriptionHeader: {
+    fontSize: 16,
+    fontFamily: "SourceSans3Bold",
+    color: "#475569",
+    marginBottom: 8,
+  },
+  descriptionText: {
+    fontSize: 15,
+    lineHeight: 24,
+    fontFamily: "SourceSans3Regular",
+    color: "#334155",
+  },
+  modalFooter: {
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#f1f5f9",
+    alignItems: "flex-end",
+  },
+  closeModalButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+  },
+  closeModalButtonText: {
+    color: "#64748b",
+    fontSize: 15,
+    fontFamily: "SourceSans3Medium",
+  },
+
+  // Empty State Styles
+  emptyCard: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    marginTop: 20,
+
+  },
+  emptyText: {
+    fontSize: 16,
+    fontFamily: "SourceSans3Medium",
+    color: "#64748b",
+    textAlign: "center",
+    lineHeight: 24,
+  },
 });

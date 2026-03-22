@@ -1,12 +1,14 @@
 import React from "react";
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Modal } from "react-native";
 import { styles } from "../styles";
 import { colors } from "@/constants/theme";
 import { Animated, Easing } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 interface TimelineEvent {
   id: string | number;
   start_date: string;
+  end_date?: string;
   title: string;
   popup_description: string;
   status?: string;
@@ -113,14 +115,26 @@ const TodayDivider = () => (
   </View>
 );
 
-const TimelineItem = ({ item, isLast }: { item: TimelineEvent, isLast: boolean }) => {
+const TimelineItem = ({
+  item,
+  isLast,
+  onPress
+}: {
+  item: TimelineEvent,
+  isLast: boolean,
+  onPress: (item: TimelineEvent) => void
+}) => {
   const status = getStatusFromDate(item.start_date, item.status);
   const { day, month } = formatDate(item.start_date);
   const badgeLabel = getBadgeLabel(status);
   const isDone = status === 'done';
 
   return (
-    <View style={[styles.itemRow, isDone && styles.dimmed]}>
+    <TouchableOpacity
+      style={[styles.itemRow, isDone && styles.dimmed]}
+      activeOpacity={0.7}
+      onPress={() => onPress(item)}
+    >
       {/* Left: date box + spine */}
       <View style={styles.leftCol}>
         <View style={styles.dateBox}>
@@ -142,13 +156,17 @@ const TimelineItem = ({ item, isLast }: { item: TimelineEvent, isLast: boolean }
           <Text style={styles.badgeText}>{badgeLabel}</Text>
         </View>
         <Text style={styles.cardTitle}>{item.title}</Text>
-        <Text style={styles.cardDesc} numberOfLines={2}>{item.popup_description}</Text>
+        <Text style={styles.cardDesc} numberOfLines={2}>
+          {item.popup_description?.replace(/\\n/g, '\n')}
+        </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
 const Timeline = ({ data, isLoading }: TimelineProps) => {
+  const [selectedEvent, setSelectedEvent] = React.useState<TimelineEvent | null>(null);
+
   if (isLoading && (!data || data.length === 0)) {
     return (
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -162,21 +180,99 @@ const Timeline = ({ data, isLoading }: TimelineProps) => {
     return [...data].sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
   }, [data]);
 
+  const handleCloseModal = () => setSelectedEvent(null);
+
+  if (!isLoading && events.length === 0) {
+    return (
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.emptyCard}>
+          <Ionicons name="time-outline" size={48} color="#cbd5e1" style={{ marginBottom: 16 }} />
+          <Text style={styles.emptyText}>No time line added yet, please try later</Text>
+        </View>
+      </ScrollView>
+    );
+  }
+
   return (
-    <ScrollView
-      contentContainerStyle={styles.scrollContent}
-      showsVerticalScrollIndicator={false}
-    >
-      {events.map((item, index) => (
-        <React.Fragment key={item.id}>
-          {isTodayBoundary(events, index) && <TodayDivider />}
-          <TimelineItem
-            item={item}
-            isLast={index === events.length - 1}
-          />
-        </React.Fragment>
-      ))}
-    </ScrollView>
+    <View style={{ flex: 1 }}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {events.map((item, index) => (
+          <React.Fragment key={item.id}>
+            {isTodayBoundary(events, index) && <TodayDivider />}
+            <TimelineItem
+              item={item}
+              isLast={index === events.length - 1}
+              onPress={(event) => setSelectedEvent(event)}
+            />
+          </React.Fragment>
+        ))}
+      </ScrollView>
+
+      {/* Event Details Modal */}
+      <Modal
+        visible={!!selectedEvent}
+        transparent
+        animationType="fade"
+        onRequestClose={handleCloseModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
+              {selectedEvent && (
+                <>
+                  <View style={styles.modalBadgeRow}>
+                    <View style={[styles.badge, { marginBottom: 0 }]}>
+                      <Text style={styles.badgeText}>
+                        {getBadgeLabel(getStatusFromDate(selectedEvent.start_date, selectedEvent.status))}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <Text style={styles.modalTitle}>{selectedEvent.title}</Text>
+
+                  <View style={styles.modalDatesContainer}>
+                    <View style={styles.modalDateRow}>
+                      <Ionicons name="calendar-outline" size={16} color="#004aad" style={{ marginRight: 8 }} />
+                      <Text style={styles.modalDateText}>
+                        Starts: {new Date(selectedEvent.start_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      </Text>
+                    </View>
+
+                    {selectedEvent.end_date && (
+                      <View style={[styles.modalDateRow, { marginTop: 8 }]}>
+                        <Ionicons name="alert-circle-outline" size={16} color="#ff5e32" style={{ marginRight: 8 }} />
+                        <Text style={[styles.modalDateText, { color: '#ff5e32' }]}>
+                          Deadline: {new Date(selectedEvent.end_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+
+                  <View style={styles.descriptionContainer}>
+                    <Text style={styles.descriptionHeader}>Description:</Text>
+                    <Text style={styles.descriptionText}>
+                      {selectedEvent.popup_description?.replace(/\\n/g, '\n')}
+                    </Text>
+                  </View>
+                </>
+              )}
+            </ScrollView>
+
+            <View style={styles.modalFooter}>
+              <TouchableOpacity
+                style={styles.closeModalButton}
+                onPress={handleCloseModal}
+              >
+                <Text style={styles.closeModalButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </View>
   );
 };
 

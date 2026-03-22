@@ -70,7 +70,7 @@ function LearnAdmissionSkeleton() {
 
   return (
     <View style={styles.card}>
-      <SkeletonBox style={styles.badgeSkeleton} />
+      {/* <SkeletonBox style={styles.badgeSkeleton} /> */}
       <SkeletonBox style={styles.questionSkeleton} />
       <View style={styles.footerSkeleton}>
         <SkeletonBox style={styles.linkSkeleton} />
@@ -147,12 +147,12 @@ export default function LearnAdmission({ data, isLoading, error }: LearnAdmissio
         activeOpacity={0.7}
         onPress={() => setSelectedQuestion(item)}
       >
-        <View style={styles.badge}>
+        {/* <View style={styles.badge}>
           <Text style={styles.badgeText}>{index + 1}</Text>
-        </View>
+        </View> */}
 
         <Text style={styles.cardQuestion} numberOfLines={1}>
-          {item.question}
+          {index + 1}. {item.question}
         </Text>
 
         <View style={styles.cardFooter}>
@@ -224,7 +224,7 @@ export default function LearnAdmission({ data, isLoading, error }: LearnAdmissio
         }}
         keyExtractor={(item, index) => (isLoading && filteredQuestions.length === 0 ? `skeleton-${index}` : (item as Question).id?.toString())}
         numColumns={1}
-        ListHeaderComponent={renderHeader}
+        ListHeaderComponent={renderHeader()}
         ListFooterComponent={<View style={styles.listFooter} />}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={true}
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
     padding: 14,
     borderWidth: 1,
     borderColor: "#e2e8f0",
-    height: 110,
+    height: 85,
     justifyContent: "space-between",
   },
   cardDone: {

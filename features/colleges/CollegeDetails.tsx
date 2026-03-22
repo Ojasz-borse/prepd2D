@@ -209,7 +209,7 @@ export default function CollegeDetails() {
                   </View>
 
                   {collegeDetails?.status && (
-                    <View style={[styles.greenTag, styles.statusAbsolute]}>
+                    <View style={[styles.greenTag, styles.statusBadge]}>
                       <Text style={styles.greenTagText}>{collegeDetails?.status}</Text>
                     </View>
                   )}
@@ -391,10 +391,8 @@ const styles = StyleSheet.create({
     color: "#8b9e3dff",
     fontFamily: "SourceSans3Medium",
   },
-  statusAbsolute: {
-    position: "absolute",
-    top: 0,
-    right: 0,
+  statusBadge: {
+    marginLeft: "auto",
   },
   statusPill: {
     backgroundColor: "#fff",

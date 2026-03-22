@@ -46,6 +46,8 @@ export function useCreateCollegeList() {
       );
 
       const data = await response.json();
+
+      console.log(data);
       return data.data || [];
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to generate list");

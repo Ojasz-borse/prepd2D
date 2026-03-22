@@ -73,8 +73,8 @@ const QuickAccess = ({
                     item.tab === "colleges"
                       ? "#004aad20"
                       : item.tab === "branches"
-                        ? "#b6cf4f20"
-                        : "#ff7a2220",
+                      ? "#b6cf4f20"
+                      : "#ff7a2220",
                 },
               ]}
             >
@@ -85,8 +85,8 @@ const QuickAccess = ({
                   item.tab === "colleges"
                     ? "#004aad"
                     : item.tab === "branches"
-                      ? "#b6cf4f"
-                      : "#ff7a22"
+                    ? "#b6cf4f"
+                    : "#ff7a22"
                 }
               />
             </View>
@@ -99,9 +99,9 @@ const QuickAccess = ({
 };
 
 export default function FindColleges() {
-  const [activeTab, setActiveTab] = useState<"all" | "colleges" | "branches" | "compare">(
-    "all"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "all" | "colleges" | "branches" | "compare"
+  >("all");
 
   const { user } = useAuth();
   const {
@@ -112,26 +112,13 @@ export default function FindColleges() {
     branchesError,
   } = useAdvancedColleges();
 
-  const { isAllowed } = useSubscriptionLock({
+  const { isAllowed, showLock, closeLock } = useSubscriptionLock({
     gate: "after", // 👈 IMPORTANT
+    delay: 3000,
+    condition: !branchesLoading && activeTab !== "all",
   });
-  const [showLock, setShowLock] = useState(false);
 
-  useEffect(() => {
-    const isLockedTab = activeTab !== "all";
-    const isLoading = branchesLoading;
-
-    if (!isLoading && !isAllowed && isLockedTab) {
-      const timer = setTimeout(() => {
-        setShowLock(true);
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    } else {
-      setShowLock(false);
-    }
-  }, [activeTab, branchesLoading, isAllowed]);
-
+  // The hook internalizes the locking effect based on the condition now.
 
   // Indicator animation
   const [tabMeasurements, setTabMeasurements] = useState<{
@@ -252,7 +239,6 @@ export default function FindColleges() {
             Compare
           </Text>
         </TouchableOpacity>
-
       </View>
 
       {/* Swipeable content */}
@@ -301,23 +287,21 @@ export default function FindColleges() {
               loading={branchesLoading}
               error={branchesError}
               isActive={true}
-
             />
           </View>
         )}
 
         {activeTab === "compare" && (
           <View style={{ paddingHorizontal: 12, flex: 1 }}>
-            <CompareColleges colleges={colleges} />
+            <CompareColleges colleges={colleges} isAllowed={isAllowed} />
           </View>
         )}
-
 
         {showLock && (
           <SubscriptionLockSheet
             visible={showLock}
             planType="after"
-            // onClose={() => setShowLock(false)}
+            // onClose={closeLock}
           />
         )}
       </View>
@@ -466,17 +450,17 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     bottom: -10,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 24,
     paddingBottom: 40,
-    alignItems: 'center',
+    alignItems: "center",
   },
   handle: {
     width: 40,
     height: 4,
-    backgroundColor: '#e2e8f0',
+    backgroundColor: "#e2e8f0",
     borderRadius: 2,
     marginBottom: 20,
   },
@@ -487,10 +471,10 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#004aad',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#004aad',
+    backgroundColor: "#004aad",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#004aad",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -498,16 +482,16 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontFamily: 'SourceSans3Bold',
-    color: '#004aad',
+    fontFamily: "SourceSans3Bold",
+    color: "#004aad",
     marginBottom: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
   description: {
     fontSize: 16,
-    fontFamily: 'SourceSans3Medium',
-    color: '#64748b',
-    textAlign: 'center',
+    fontFamily: "SourceSans3Medium",
+    color: "#64748b",
+    textAlign: "center",
     lineHeight: 24,
     marginBottom: 30,
     paddingHorizontal: 10,
