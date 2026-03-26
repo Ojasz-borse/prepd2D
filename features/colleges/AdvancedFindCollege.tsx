@@ -430,10 +430,13 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
             }))}
             labelField="label"
             valueField="value"
+            search
+            searchPlaceholder="Search branches..."
             placeholder="Branches"
             placeholderStyle={styles.dropdownText}
             selectedTextStyle={styles.dropdownText}
             itemTextStyle={styles.dropdownText}
+            inputSearchStyle={styles.dropdownText}
             value={selectedBranches}
             onChange={(items) => setSelectedBranches(items as string[])}
             renderItem={(item) => {
@@ -461,10 +464,13 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
             }))}
             labelField="label"
             valueField="value"
+            search
+            searchPlaceholder="Search districts..."
             placeholder="Districts"
             placeholderStyle={styles.dropdownText}
             selectedTextStyle={styles.dropdownText}
             itemTextStyle={styles.dropdownText}
+            inputSearchStyle={styles.dropdownText}
             value={selectedDistricts}
             onChange={(items) => setSelectedDistricts(items as string[])}
             renderItem={(item) => renderDropdownItem(item, selectedDistricts)}
@@ -541,6 +547,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
     <>
       <FlatList
         ref={listRef}
+        keyboardShouldPersistTaps="handled"
         onScroll={handleScroll}
         scrollEventThrottle={16}
         data={enrichedData}

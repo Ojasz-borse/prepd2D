@@ -26,6 +26,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Dropdown } from "react-native-element-dropdown";
 
 import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 import SubscriptionLockSheet from "@/components/ShowLockScreen";
@@ -39,6 +40,11 @@ type RootStackParamList = {
 };
 type DetailsRouteProp = RouteProp<RootStackParamList, "CollegeDetails">;
 
+const LANGUAGES = [
+  { label: "English", value: "eng" },
+  { label: "Marathi", value: "mr" },
+  { label: "Hindi", value: "hi" },
+];
 interface FeeCategory {
   development_fees: number;
   other_fees: number;
@@ -65,6 +71,12 @@ interface CollegeDetails {
   tuition_fees_json: Record<string, any> | null;
   tuition_fees_url_exact: string | null;
   tuition_fees_url_overall: string | null;
+  university_name?: string | null;
+  summaries?: {
+    hi?: string;
+    mr?: string;
+    eng?: string;
+  } | null;
 }
 
 interface StandardCutoffData {
@@ -89,6 +101,9 @@ export default function CollegeDetails() {
   const [collegeDetails, setCollegeDetails] = useState<CollegeDetails | null>();
   const [collegeBranches, setCollegeBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [showSummary, setShowSummary] = useState(false);
+  const [summaryLanguage, setSummaryLanguage] = useState<"eng" | "mr" | "hi">("eng");
 
   const { getToken } = useAuth();
 
@@ -227,6 +242,15 @@ export default function CollegeDetails() {
                   </View>
                 </View>
 
+                {/* University Name */}
+                {collegeDetails?.university_name && (
+                  <View style={[styles.address, { paddingVertical: 4 }]}>
+                    <Text style={[styles.addressText, { color: "#004aad", flex: 1, marginLeft: 2 }]}>
+                      {collegeDetails?.university_name}
+                    </Text>
+                  </View>
+                )}
+
                 {/* Address */}
                 {collegeDetails?.address && (
                   <View style={styles.address}>
@@ -259,7 +283,7 @@ export default function CollegeDetails() {
                 <View style={{ gap: 8, marginTop: 0 }}>
 
 
-                  <View style={[styles.actionButtonsRow, { marginTop: 8 }]}>
+                  <View style={[styles.actionButtonsRow, { marginTop: 4 }]}>
                     {collegeDetails?.official_website_url && (
                       <TouchableOpacity
                         onPress={() =>
@@ -299,6 +323,41 @@ export default function CollegeDetails() {
                     )}
                   </View>
                 </View>
+
+                {/* Summary Section */}
+                {collegeDetails?.summaries && (
+                  <>
+
+                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12, marginTop: 12 }}>
+                      <TouchableOpacity onPress={() => setShowSummary(!showSummary)} activeOpacity={0.8} style={{ flex: 1, paddingVertical: 4 }}>
+                        <Text style={styles.sectionTitle}>AI Summary</Text>
+                      </TouchableOpacity>
+
+                      {showSummary && (
+                        <Dropdown
+                          style={styles.dropdown}
+                          data={LANGUAGES}
+                          labelField="label"
+                          valueField="value"
+                          value={summaryLanguage}
+                          onChange={(item) => setSummaryLanguage(item.value as any)}
+                          placeholder="Language"
+                          placeholderStyle={styles.dropdownText}
+                          selectedTextStyle={styles.dropdownText}
+                          itemTextStyle={styles.dropdownText}
+                        />
+                      )}
+                    </View>
+
+                    {showSummary && (
+                      <View style={{ marginTop: 12, backgroundColor: "#f8fafc", padding: 12, borderRadius: 12, borderWidth: 1, borderColor: "#e2e8f0" }}>
+                        <Text style={{ fontSize: 14, color: "#334155", fontFamily: "SourceSans3Medium", lineHeight: 22 }}>
+                          {collegeDetails.summaries[summaryLanguage] || "Summary not available for selected language."}
+                        </Text>
+                      </View>
+                    )}
+                  </>
+                )}
               </>
             )}
 
@@ -460,7 +519,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 2,
-    marginBottom: -8,
+    marginBottom: -10,
     paddingVertical: 8,
   },
 
@@ -477,6 +536,7 @@ const styles = StyleSheet.create({
     paddingRight: 12,
     borderRadius: 99,
     flexShrink: 1,
+    marginTop: -14,
   },
   naacGradeText: {
     fontFamily: "SourceSans3Medium",
@@ -548,5 +608,19 @@ const styles = StyleSheet.create({
   rowWithIcon: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  dropdown: {
+    height: 35,
+    width: 130,
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#d6e0f5",
+  },
+  dropdownText: {
+    fontSize: 14,
+    fontFamily: "SourceSans3Medium",
+    color: "#333",
   },
 });

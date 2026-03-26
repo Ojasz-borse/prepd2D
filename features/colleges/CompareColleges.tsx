@@ -30,6 +30,7 @@ interface CompareCollegeData {
   is_government: boolean;
   status: string;
   district: string;
+  university_name?: string | null;
   official_website_url: string;
   naac_grade: string | null;
   naac_score: string | null;
@@ -117,7 +118,7 @@ export default function CompareColleges({
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       {isEditing ? (
         <View style={styles.card}>
           <View style={styles.inputWrapper}>
@@ -263,6 +264,11 @@ export default function CompareColleges({
               val1={compareResult[0].district}
               val2={compareResult[1].district}
               isDistrict
+            />
+            <TableRow
+              label="University"
+              val1={compareResult[0].university_name}
+              val2={compareResult[1].university_name}
             />
             <TableRow
               label="Address"

@@ -166,10 +166,13 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
             }))}
             labelField="label"
             valueField="value"
+            search
+            searchPlaceholder="Search districts..."
             placeholder="Districts"
             placeholderStyle={styles.dropdownText}
             selectedTextStyle={styles.dropdownText}
             itemTextStyle={styles.dropdownText}
+            inputSearchStyle={styles.dropdownText}
             value={selectedDistricts}
             onChange={(items) => setSelectedDistricts(items as string[])}
             renderItem={(item) =>
@@ -234,6 +237,7 @@ const NormalFindCollege: React.FC<NormalFindCollegeProps> = ({
     <>
       <FlatList
         ref={listRef}
+        keyboardShouldPersistTaps="handled"
         onScroll={handleScroll}
         scrollEventThrottle={16}
         data={filteredData}
