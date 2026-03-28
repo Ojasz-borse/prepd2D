@@ -29,6 +29,7 @@ import CreateCollegeForm from "./components/CreateCollegeForm";
 import ResultsList from "./components/ResultsList";
 import { styles } from "./styles";
 import { colors } from "@/constants/theme";
+import GeneratingModal from "@/components/GeneratingModal";
 
 export default function OptionForm() {
   const [activeTab, setActiveTab] = useState<"all" | "generate">("all");
@@ -163,6 +164,10 @@ export default function OptionForm() {
     }
   };
 
+  useEffect(() => {
+    console.log("results", results);
+  }, [results]);
+
   return (
     <LinearGradient
       colors={["#f8fafc", "#e6f1ff", "#e8dcff"]}
@@ -269,20 +274,24 @@ export default function OptionForm() {
                   <ResultsList
                     results={results}
                     onEdit={() => setShowResults(false)}
+                    onAddSuggestion={(item) => {
+                      setResults((prev) =>
+                        prev.map((res) =>
+                          res.choice_code === item.choice_code &&
+                            res.branch === item.branch
+                            ? { ...res, isSuggestion: false }
+                            : res
+                        )
+                      );
+                      Alert.alert("Success", "Added to your list");
+                    }}
                   />
                 </>
               )}
-
-              {loading && !showResults && (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color={colors.primary} />
-                  <Text style={styles.loadingText}>
-                    Generating your options...
-                  </Text>
-                </View>
-              )}
             </ScrollView>
           )}
+
+          <GeneratingModal visible={loading} />
 
           {showLock && (
             <SubscriptionLockSheet visible={showLock} planType="after" />

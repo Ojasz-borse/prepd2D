@@ -27,6 +27,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Dropdown } from "react-native-element-dropdown";
+import Markdown from "react-native-markdown-display";
 
 import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 import SubscriptionLockSheet from "@/components/ShowLockScreen";
@@ -351,9 +352,9 @@ export default function CollegeDetails() {
 
                     {showSummary && (
                       <View style={{ marginTop: 12, backgroundColor: "#f8fafc", padding: 12, borderRadius: 12, borderWidth: 1, borderColor: "#e2e8f0" }}>
-                        <Text style={{ fontSize: 14, color: "#334155", fontFamily: "SourceSans3Medium", lineHeight: 22 }}>
+                        <Markdown style={markdownStyles}>
                           {collegeDetails.summaries[summaryLanguage] || "Summary not available for selected language."}
-                        </Text>
+                        </Markdown>
                       </View>
                     )}
                   </>
@@ -624,3 +625,41 @@ const styles = StyleSheet.create({
     color: "#333",
   },
 });
+
+const markdownStyles = {
+  body: {
+    fontSize: 14,
+    color: "#334155",
+    fontFamily: "SourceSans3Medium",
+    lineHeight: 22,
+  },
+  text: {
+    fontFamily: "SourceSans3Medium",
+  },
+  paragraph: {
+    marginBottom: 8,
+  },
+  bullet_list: {
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  list_item: {
+    marginBottom: 4,
+  },
+  strong: {
+    fontFamily: "SourceSans3Bold",
+    color: "#004aad",
+  },
+  heading1: {
+    fontSize: 20,
+    fontFamily: "SourceSans3Bold",
+    color: "#004aad",
+    marginBottom: 10,
+  },
+  heading2: {
+    fontSize: 18,
+    fontFamily: "SourceSans3Bold",
+    color: "#004aad",
+    marginBottom: 8,
+  },
+};

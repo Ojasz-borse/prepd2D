@@ -11,6 +11,8 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import { ActivityIndicator, BackHandler, Platform, StyleSheet, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../constants/theme";
+import DisclaimerModal from "@/components/DisclaimerModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type TabName = "Home" | "Mock Tests" | "Colleges" | "Admission process" | "Option Form" | "Preparation";
 
@@ -20,6 +22,31 @@ export default function Home() {
   // const [isVerifying, setIsVerifying] = useState(true);
   const [activeTab, setActiveTab] = useState<TabName>("Home");
   const activeTabRef = useRef(activeTab);
+  const [isDisclaimerVisible, setIsDisclaimerVisible] = useState(false);
+
+  useEffect(() => {
+    const checkDisclaimer = async () => {
+      try {
+        const hasShown = await AsyncStorage.getItem("disclaimer_shown");
+        if (!hasShown) {
+          setIsDisclaimerVisible(true);
+        }
+      } catch (error) {
+        console.error("Error reading disclaimer status:", error);
+      }
+    };
+    checkDisclaimer();
+  }, []);
+
+  const handleCloseDisclaimer = async () => {
+    try {
+      await AsyncStorage.setItem("disclaimer_shown", "true");
+      setIsDisclaimerVisible(false);
+    } catch (error) {
+      console.error("Error saving disclaimer status:", error);
+      setIsDisclaimerVisible(false);
+    }
+  };
 
   useEffect(() => {
     activeTabRef.current = activeTab;
@@ -95,9 +122,10 @@ export default function Home() {
       {/* Navbar sits at the bottom */}
       <CustomNavbar activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {/* SafeAreaView bottom padding is handled automatically by the safe area view wrapper generally, 
-          but if we want the navbar to extend into the safe area bottom we might need to adjust.
-          Standard SafeAreaView padding is usually good. */}
+      <DisclaimerModal 
+        visible={isDisclaimerVisible} 
+        onClose={handleCloseDisclaimer} 
+      />
     </SafeAreaView>
   );
 }
