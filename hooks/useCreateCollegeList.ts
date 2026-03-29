@@ -1,5 +1,6 @@
 // hooks/useCreateCollegeList.ts
 
+import { GENERATE_OPTION_FORM } from "@/constants/config";
 import { useState } from "react";
 
 interface GenerateListParams {
@@ -9,6 +10,9 @@ interface GenerateListParams {
   locations: string[];
   branches: string[];
   token: string | null;
+  gender: string;
+  home_university_id: number | null;
+  tfws_pref: boolean;
 }
 
 export function useCreateCollegeList() {
@@ -22,13 +26,27 @@ export function useCreateCollegeList() {
     locations,
     branches,
     token,
+    gender,
+    home_university_id,
+    tfws_pref,
   }: GenerateListParams) => {
     try {
       setLoading(true);
       setError(null);
 
+      console.log("payload", {
+        rank,
+        percentile,
+        category,
+        locations,
+        branches,
+        gender,
+        home_university_id,
+        tfws_pref: tfws_pref ? true : false,
+      })
+
       const response = await fetch(
-        "https://prep-academy-api.vercel.app/api/my-option-form/generate-option-form",
+        GENERATE_OPTION_FORM,
         {
           method: "POST",
           headers: {
@@ -41,14 +59,17 @@ export function useCreateCollegeList() {
             category,
             locations,
             branches,
+            gender,
+            home_university_id,
+            tfws_pref: tfws_pref ? true : false,
           }),
         }
       );
 
       const data = await response.json();
 
-      console.log(data);
-      return data.data || [];
+      console.log("response", data);
+      return data.options || [];
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to generate list");
       return null;

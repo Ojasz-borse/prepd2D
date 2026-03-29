@@ -42,6 +42,9 @@ export default function OptionForm() {
   const [categories, setCategories] = useState<string[]>([]);
   const [locations, setLocations] = useState<string[]>([]);
   const [branches, setBranches] = useState<string[]>([]);
+  const [gender, setGender] = useState<"male" | "female">("male");
+  const [homeUniversityId, setHomeUniversityId] = useState<number | null>(null);
+  const [tfwsPref, setTfwsPref] = useState(false);
   const [results, setResults] = useState<any[]>([]);
   const [showResults, setShowResults] = useState(false);
 
@@ -133,9 +136,10 @@ export default function OptionForm() {
       !percentile ||
       categories.length === 0 ||
       locations.length === 0 ||
-      branches.length === 0
+      branches.length === 0 ||
+      !homeUniversityId
     ) {
-      Alert.alert("Missing Fields", "Please fill all fields");
+      Alert.alert("Missing Fields", "Please fill all fields, including Home University");
       return;
     }
 
@@ -156,6 +160,9 @@ export default function OptionForm() {
       locations,
       branches,
       token,
+      gender,
+      home_university_id: homeUniversityId,
+      tfws_pref: tfwsPref,
     });
 
     if (data) {
@@ -268,6 +275,12 @@ export default function OptionForm() {
                   handleSubmit={handleSubmit}
                   loading={loading}
                   isAllowed={isAllowed}
+                  gender={gender}
+                  setGender={setGender}
+                  homeUniversityId={homeUniversityId}
+                  setHomeUniversityId={setHomeUniversityId}
+                  tfwsPref={tfwsPref}
+                  setTfwsPref={setTfwsPref}
                 />
               ) : (
                 <>
@@ -278,8 +291,8 @@ export default function OptionForm() {
                       setResults((prev) =>
                         prev.map((res) =>
                           res.choice_code === item.choice_code &&
-                            res.branch === item.branch
-                            ? { ...res, isSuggestion: false }
+                            res.branch_name === item.branch_name
+                            ? { ...res, is_suggestion: false }
                             : res
                         )
                       );

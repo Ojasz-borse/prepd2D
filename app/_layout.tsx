@@ -5,11 +5,13 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
 import { StatusBar, View } from "react-native";
+import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 
 // keep splash visible until fonts are loaded
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  usePreventScreenCapture();
   const [fontsLoaded] = useFonts({
     SourceSans3Black: require("../assets/fonts/SourceSans3-Black.ttf"),
     SourceSans3BlackItalic: require("../assets/fonts/SourceSans3-BlackItalic.ttf"),

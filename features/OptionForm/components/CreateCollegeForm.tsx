@@ -1,10 +1,10 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Switch } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Feather } from "@expo/vector-icons";
 import { Dropdown, MultiSelect } from "react-native-element-dropdown";
 import FloatingLabelInput from "@/components/FloatingLabelInput";
-import { CATEGORIES, LOCATIONS, BRANCHES } from "@/constants/collegeFilters";
+import { CATEGORY_OPTIONS, LOCATIONS, BRANCHES, HOME_UNIVERSITIES } from "@/constants/collegeFilters";
 import { formatLocationName, formatBranchName } from "@/utils/formatHelpers";
 import DropdownItem from "./DropdownItem";
 import SelectedLocations from "./SelectedLocations";
@@ -28,6 +28,12 @@ interface CreateCollegeFormProps {
   handleSubmit: () => void;
   loading: boolean;
   isAllowed: boolean;
+  gender: "male" | "female";
+  setGender: (gender: "male" | "female") => void;
+  homeUniversityId: number | null;
+  setHomeUniversityId: (id: number | null) => void;
+  tfwsPref: boolean;
+  setTfwsPref: (pref: boolean) => void;
 }
 
 const CreateCollegeForm = ({
@@ -47,6 +53,12 @@ const CreateCollegeForm = ({
   handleSubmit,
   loading,
   isAllowed,
+  gender,
+  setGender,
+  homeUniversityId,
+  setHomeUniversityId,
+  tfwsPref,
+  setTfwsPref,
 }: CreateCollegeFormProps) => (
   <View style={styles.card}>
     <Text style={styles.formTitle}>Enter Details</Text>
@@ -79,7 +91,7 @@ const CreateCollegeForm = ({
     <View style={styles.inputWrapper}>
       <Dropdown
         style={styles.dropdown}
-        data={CATEGORIES.map((cat) => ({ label: cat, value: cat }))}
+        data={CATEGORY_OPTIONS}
         labelField="label"
         valueField="value"
         value={categories[0] || ""}
@@ -161,6 +173,84 @@ const CreateCollegeForm = ({
         moveBranch={moveBranch}
       />
     )}
+
+    {/* Home University Dropdown */}
+    <View style={styles.inputWrapper}>
+      <Dropdown
+        style={styles.dropdown}
+        data={HOME_UNIVERSITIES.map((u) => ({ label: u.name, value: u.id }))}
+        labelField="label"
+        valueField="value"
+        value={homeUniversityId}
+        onChange={(item) => setHomeUniversityId(item.value)}
+        placeholder="Select Home University"
+        placeholderStyle={styles.dropdownText}
+        selectedTextStyle={styles.dropdownText}
+        itemTextStyle={styles.dropdownText}
+        containerStyle={styles.dropdownContainerStyle}
+      />
+    </View>
+
+    {/* Gender Selection */}
+    <View style={styles.genderContainer}>
+      <TouchableOpacity
+        style={[
+          styles.genderButton,
+          gender === "male" && styles.genderButtonActive,
+        ]}
+        onPress={() => setGender("male")}
+        activeOpacity={0.7}
+      >
+        <Ionicons
+          name="male"
+          size={18}
+          color={gender === "male" ? "#004aad" : "#737373"}
+        />
+        <Text
+          style={[
+            styles.genderText,
+            gender === "male" && styles.genderTextActive,
+          ]}
+        >
+          Male
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[
+          styles.genderButton,
+          gender === "female" && styles.genderButtonActive,
+        ]}
+        onPress={() => setGender("female")}
+        activeOpacity={0.7}
+      >
+        <Ionicons
+          name="female"
+          size={18}
+          color={gender === "female" ? "#004aad" : "#737373"}
+        />
+        <Text
+          style={[
+            styles.genderText,
+            gender === "female" && styles.genderTextActive,
+          ]}
+        >
+          Female
+        </Text>
+      </TouchableOpacity>
+    </View>
+
+    {/* TFWS Preference Switch */}
+    <View style={styles.switchWrapper}>
+      <Text style={styles.switchLabel}>TFWS Preference</Text>
+      <Switch
+        onValueChange={() => setTfwsPref(!tfwsPref)}
+        value={tfwsPref}
+        trackColor={{ false: "#d1d5db", true: "#004aad60" }}
+        thumbColor={tfwsPref ? "#004aad" : "#f4f4f5"}
+      />
+    </View>
+
 
     <TouchableOpacity
       style={[styles.submitButton, (loading || !isAllowed) && { opacity: 0.7 }]}

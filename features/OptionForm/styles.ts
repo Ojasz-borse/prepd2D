@@ -360,7 +360,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 6,
     borderRadius: 999,
-    marginTop: 20,
+    marginTop: 0,
     alignSelf: 'flex-end',
   },
   submitButtonText: {
@@ -588,5 +588,47 @@ export const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 14,
     fontFamily: "SourceSans3SemiBold",
+  },
+  genderContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 16,
+  },
+  genderButton: {
+    flex: 1,
+    height: 48,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#d6e0f5",
+    backgroundColor: "#fff",
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  genderButtonActive: {
+    backgroundColor: colors.primary + '10',
+    borderColor: colors.primary,
+  },
+  genderText: {
+    fontSize: 15,
+    fontFamily: "SourceSans3Medium",
+    color: "#737373",
+  },
+  genderTextActive: {
+    color: colors.primary,
+    fontFamily: "SourceSans3SemiBold",
+  },
+  switchWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+    paddingHorizontal: 4,
+  },
+  switchLabel: {
+    fontSize: 15,
+    fontFamily: "SourceSans3Medium",
+    color: "#333",
   },
 });

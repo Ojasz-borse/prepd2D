@@ -33,7 +33,7 @@ const ResultsList = ({ results, onEdit, onAddSuggestion }: ResultsListProps) => 
       {(() => {
         let currentNumber = 0;
         return results.map((item: any, index: number) => {
-          const isSuggestion = item.isSuggestion === true;
+          const isSuggestion = item.is_suggestion === true;
           if (!isSuggestion) currentNumber++;
 
           return (
@@ -49,14 +49,14 @@ const ResultsList = ({ results, onEdit, onAddSuggestion }: ResultsListProps) => 
                       <Text style={styles.greenTagText}>{item.choice_code}</Text>
                     </View>
                   )}
-                  {item.is_government !== undefined && (
-                    <View style={styles.greenTag}>
-                      <Text style={styles.greenTagText}>
-                        {item.is_government ? "Govt" : "Pvt"}
+                  {item.probability && (
+                    <View style={[styles.greenTag, { backgroundColor: item.probability === 'Dream' ? '#eef2ff' : '#f0fdf4', borderColor: item.probability === 'Dream' ? '#c7d2fe' : '#bbf7d0' }]}>
+                      <Text style={[styles.greenTagText, { color: item.probability === 'Dream' ? '#4338ca' : '#15803d' }]}>
+                        {item.probability}
                       </Text>
                     </View>
                   )}
-                  {item.is_realistic && (
+                  {item.probability === 'Realistic' && (
                     <Ionicons name="checkmark-circle" size={18} color="#16a34a" style={{ marginLeft: 'auto' }} />
                   )}
                 </View>
@@ -64,22 +64,27 @@ const ResultsList = ({ results, onEdit, onAddSuggestion }: ResultsListProps) => 
                 {/* Branch Name */}
                 <View style={styles.titleRow}>
                   <Text style={styles.resultBranchName}>
-                    {formatBranchName(item.branch)}
+                    {formatBranchName(item.branch_name || "")}
                   </Text>
                 </View>
 
                 {/* College Name */}
                 <View style={styles.collegeRow}>
-                  <Text style={styles.collegePillText}>{item.college}</Text>
+                  <Text style={styles.collegePillText}>{item.college_name}</Text>
                 </View>
 
-                <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-                  {item.cutoff_percentile !== undefined && item.cutoff_percentile !== null && (
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                  {item.considered_percentile !== undefined && item.considered_percentile !== null && (
                     <View style={styles.cutoffChip}>
                       <Text style={styles.cutoffChipText}>
-                        Last year Cuttoff: {Number(item.cutoff_percentile).toFixed(2)}
+                        Last year Cutoff: {Number(item.considered_percentile).toFixed(2)}
                       </Text>
                     </View>
+                  )}
+                  {item.fees && (
+                    <Text style={{ fontSize: 13, color: '#64748b', fontFamily: 'SourceSans3SemiBold' }}>
+                      Fees: ₹{item.fees.toLocaleString()}
+                    </Text>
                   )}
                 </View>
               </View>
