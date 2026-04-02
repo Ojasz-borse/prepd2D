@@ -490,6 +490,7 @@ export const styles = StyleSheet.create({
     marginBottom: 16,
     borderWidth: 1,
     borderColor: "#e2e8f0",
+    borderStyle: "solid",
   },
   topRow: {
     flexDirection: "row",
@@ -625,10 +626,35 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 16,
     paddingHorizontal: 4,
+    marginTop: -10,
   },
   switchLabel: {
     fontSize: 15,
     fontFamily: "SourceSans3Medium",
     color: "#333",
+  },
+  tfwsTag: {
+    backgroundColor: "#e6f7ff",
+    borderWidth: 1,
+    borderColor: "#004aad40",
+    borderRadius: 99,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+  },
+  tfwsTagText: {
+    fontSize: 11,
+    color: "#004aad",
+    fontFamily: "SourceSans3Medium",
+  },
+  probabilityDot: {
+    position: 'absolute',
+    top: 15,
+    right: 15,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#fff',
+    zIndex: 10,
   },
 });

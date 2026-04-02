@@ -485,7 +485,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
       </View>
 
       {/* Smart Match and Select All in same card */}
-      <View style={styles.smartMatchCard}>
+      {/* <View style={styles.smartMatchCard}>
         <View style={styles.smartMatchToggle}>
           <Text style={styles.smartMatchLabel}>Smart Match</Text>
           <Switch
@@ -497,7 +497,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
           />
         </View>
 
-        {/* Select All Button */}
+ 
         {selectionMode && (
           <TouchableOpacity
             style={styles.selectAllButton}
@@ -515,7 +515,7 @@ const AdvancedFindCollege: React.FC<AdvancedFindCollegeProps> = ({
             <Text style={styles.selectAllText}>Select All</Text>
           </TouchableOpacity>
         )}
-      </View>
+      </View> */}
 
       {/* Clear filter */}
       {(searchText ||
@@ -723,6 +723,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderBottomWidth: 0,
     borderColor: "#fff",
+    marginTop: 8,
 
   },
   listFooter: {

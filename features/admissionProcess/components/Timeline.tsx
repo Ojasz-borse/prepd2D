@@ -21,9 +21,12 @@ interface TimelineProps {
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
-function getStatusFromDate(dateStr: string, apiStatus?: string) {
+function getStatusFromDate(dateStr: string | null | undefined, apiStatus?: string) {
+  if (!dateStr) return apiStatus || "upcoming";
   try {
     const itemDate = new Date(dateStr);
+    if (isNaN(itemDate.getTime())) return apiStatus || "upcoming";
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const checkDate = new Date(itemDate);
@@ -35,6 +38,29 @@ function getStatusFromDate(dateStr: string, apiStatus?: string) {
   } catch (e) {
     return apiStatus || "upcoming";
   }
+}
+
+const MONTH_NAMES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+function formatDate(dateStr: string | null | undefined) {
+  if (!dateStr) return { day: 0, month: '???' };
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return { day: '??', month: '???' };
+
+  const day = d.getDate();
+  const month = MONTH_NAMES[d.getMonth()];
+  return { day, month };
+}
+
+function formatFullDate(dateStr: string | null | undefined) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+
+  const day = d.getDate().toString().padStart(2, '0');
+  const month = MONTH_NAMES[d.getMonth()];
+  const year = d.getFullYear();
+  return `${day} ${month} ${year}`;
 }
 
 function TimelineSkeleton() {
@@ -76,14 +102,9 @@ function TimelineSkeleton() {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function formatDate(dateStr: string) {
-  const d = new Date(dateStr);
-  const day = d.getDate();
-  const month = d.toLocaleString('default', { month: 'short' }).toUpperCase();
-  return { day, month };
-}
 
-function getBadgeLabel(status: string) {
+function getBadgeLabel(status: string | null | undefined) {
+  if (!status) return 'Upcoming';
   const mapping: { [key: string]: string } = {
     done: 'Done',
     active: 'Active Now',
@@ -91,7 +112,8 @@ function getBadgeLabel(status: string) {
     result: 'Result',
     upcoming: 'Upcoming'
   };
-  return mapping[status.toLowerCase()] || (status.charAt(0).toUpperCase() + status.slice(1));
+  const normalized = status.toLowerCase();
+  return mapping[normalized] || (normalized.charAt(0).toUpperCase() + normalized.slice(1));
 }
 
 function isTodayBoundary(events: any[], index: number) {
@@ -233,11 +255,11 @@ const Timeline = ({ data, isLoading }: TimelineProps) => {
 
                   <Text style={styles.modalTitle}>{selectedEvent.title}</Text>
 
-                  <View style={styles.modalDatesContainer}>
+                    <View style={styles.modalDatesContainer}>
                     <View style={styles.modalDateRow}>
                       <Ionicons name="calendar-outline" size={16} color="#004aad" style={{ marginRight: 8 }} />
                       <Text style={styles.modalDateText}>
-                        Starts: {new Date(selectedEvent.start_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        Starts: {formatFullDate(selectedEvent.start_date)}
                       </Text>
                     </View>
 
@@ -245,7 +267,7 @@ const Timeline = ({ data, isLoading }: TimelineProps) => {
                       <View style={[styles.modalDateRow, { marginTop: 8 }]}>
                         <Ionicons name="alert-circle-outline" size={16} color="#ff5e32" style={{ marginRight: 8 }} />
                         <Text style={[styles.modalDateText, { color: '#ff5e32' }]}>
-                          Deadline: {new Date(selectedEvent.end_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                          Deadline: {formatFullDate(selectedEvent.end_date)}
                         </Text>
                       </View>
                     )}

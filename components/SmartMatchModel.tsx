@@ -49,10 +49,22 @@ export default function SmartMatchModal({
     setSmartMatchEnabled(true);
   };
 
-  const handleNumberInput = (text: string, setter: any) => {
-    // Allow only digits and optionally a decimal for percentile
-    const numericValue = text.replace(/[^0-9.]/g, "");
-    setter(numericValue);
+  const handlePercentileInput = (text: string) => {
+    if (!/^\d*\.?\d*$/.test(text)) return;
+    const parts = text.split(".");
+    if (parts.length > 2) return;
+    if (parts[1] && parts[1].length > 7) return;
+
+    const num = Number(text);
+    if (!isNaN(num) && num > 100) {
+      setPercentile("100");
+    } else {
+      setPercentile(text);
+    }
+  };
+
+  const handleRankInput = (text: string) => {
+    setRank(text.replace(/[^0-9]/g, ""));
   };
 
   return (
@@ -74,7 +86,10 @@ export default function SmartMatchModal({
                 label="Percentile"
                 value={percentile}
                 keyboardType="number-pad"
-                onChangeText={(text) => handleNumberInput(text, setPercentile)}
+                onChangeText={handlePercentileInput}
+                maxLength={
+                  percentile.includes(".") ? percentile.indexOf(".") + 8 : 4
+                }
               />
             </View>
             <View style={{ width: "48%" }}>
@@ -82,7 +97,7 @@ export default function SmartMatchModal({
                 label="Rank"
                 value={rank}
                 keyboardType="number-pad"
-                onChangeText={(text) => handleNumberInput(text, setRank)}
+                onChangeText={handleRankInput}
               />
             </View>
           </View>

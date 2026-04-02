@@ -10,6 +10,16 @@ interface ResultsListProps {
   onAddSuggestion?: (item: any) => void;
 }
 
+const getProbabilityColor = (prob?: string) => {
+  switch (prob?.toLowerCase()) {
+    case "dream": return "#9333ea"; // Purple
+    case "safe": return "#22c55e"; // Green
+    case "realistic": return "#3b82f6"; // Blue
+    case "target": return "#f59e0b"; // Amber/Orange
+    default: return "#cbd5e1";
+  }
+};
+
 const ResultsList = ({ results, onEdit, onAddSuggestion }: ResultsListProps) => (
   <View style={styles.resultsWrapper}>
     <View style={styles.resultsHeader}>
@@ -36,8 +46,20 @@ const ResultsList = ({ results, onEdit, onAddSuggestion }: ResultsListProps) => 
           const isSuggestion = item.is_suggestion === true;
           if (!isSuggestion) currentNumber++;
 
+          const isTFWS = item.choice_code?.endsWith("T");
+
           return (
             <View key={index} style={[styles.cardContainer, isSuggestion && styles.suggestionCard]}>
+              {/* Top Right Probability Dot */}
+              {item.probability && (
+                <View
+                  style={[
+                    styles.probabilityDot,
+                    { backgroundColor: getProbabilityColor(item.probability) },
+                  ]}
+                />
+              )}
+
               <View style={isSuggestion ? styles.suggestionWrapper : null}>
                 {/* Choice code and Type Tags */}
                 <View style={styles.topRow}>
@@ -49,15 +71,10 @@ const ResultsList = ({ results, onEdit, onAddSuggestion }: ResultsListProps) => 
                       <Text style={styles.greenTagText}>{item.choice_code}</Text>
                     </View>
                   )}
-                  {item.probability && (
-                    <View style={[styles.greenTag, { backgroundColor: item.probability === 'Dream' ? '#eef2ff' : '#f0fdf4', borderColor: item.probability === 'Dream' ? '#c7d2fe' : '#bbf7d0' }]}>
-                      <Text style={[styles.greenTagText, { color: item.probability === 'Dream' ? '#4338ca' : '#15803d' }]}>
-                        {item.probability}
-                      </Text>
+                  {isTFWS && (
+                    <View style={styles.tfwsTag}>
+                      <Text style={styles.tfwsTagText}>TFWS</Text>
                     </View>
-                  )}
-                  {item.probability === 'Realistic' && (
-                    <Ionicons name="checkmark-circle" size={18} color="#16a34a" style={{ marginLeft: 'auto' }} />
                   )}
                 </View>
 
@@ -73,7 +90,7 @@ const ResultsList = ({ results, onEdit, onAddSuggestion }: ResultsListProps) => 
                   <Text style={styles.collegePillText}>{item.college_name}</Text>
                 </View>
 
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginTop: 10, }}>
                   {item.considered_percentile !== undefined && item.considered_percentile !== null && (
                     <View style={styles.cutoffChip}>
                       <Text style={styles.cutoffChipText}>
@@ -81,11 +98,7 @@ const ResultsList = ({ results, onEdit, onAddSuggestion }: ResultsListProps) => 
                       </Text>
                     </View>
                   )}
-                  {item.fees && (
-                    <Text style={{ fontSize: 13, color: '#64748b', fontFamily: 'SourceSans3SemiBold' }}>
-                      Fees: ₹{item.fees.toLocaleString()}
-                    </Text>
-                  )}
+
                 </View>
               </View>
 

@@ -108,6 +108,14 @@ export default function OptionForm() {
 
   const handlePercentileChange = (value: string) => {
     if (value === "" || /^\d*\.?\d*$/.test(value)) {
+      // ✅ Check if decimal places exceed 7
+      if (value.includes(".")) {
+        const parts = value.split(".");
+        if (parts[1] && parts[1].length > 7) {
+          return; // Stop if 8th digit after decimal
+        }
+      }
+
       const numValue = parseFloat(value);
       if (!isNaN(numValue) && numValue > 100) {
         setPercentile("100");
@@ -122,9 +130,10 @@ export default function OptionForm() {
       const numValue = parseFloat(percentile);
       if (!isNaN(numValue)) {
         const clampedValue = Math.min(Math.max(numValue, 0), 100);
+        // Use precision up to 7 decimal places, removing unnecessary trailing zeros
         const formattedValue = Number.isInteger(clampedValue)
           ? clampedValue.toString()
-          : clampedValue.toFixed(2);
+          : parseFloat(clampedValue.toFixed(7)).toString();
         setPercentile(formattedValue);
       }
     }
@@ -256,6 +265,7 @@ export default function OptionForm() {
               contentContainerStyle={styles.scrollContent}
               showsVerticalScrollIndicator={false}
               bounces={false}
+              keyboardShouldPersistTaps="handled"
             >
               {!showResults ? (
                 <CreateCollegeForm

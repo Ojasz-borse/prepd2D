@@ -18,10 +18,14 @@ import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import {
   Linking,
+  Animated,
+  LayoutAnimation,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
+  UIManager,
   View,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -105,6 +109,29 @@ export default function CollegeDetails() {
 
   const [showSummary, setShowSummary] = useState(false);
   const [summaryLanguage, setSummaryLanguage] = useState<"eng" | "mr" | "hi">("eng");
+  const rotateAnim = React.useRef(new Animated.Value(0)).current;
+
+  // Enable LayoutAnimation for Android
+  if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+
+  const toggleSummary = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    const becomingVisible = !showSummary;
+    setShowSummary(becomingVisible);
+
+    Animated.timing(rotateAnim, {
+      toValue: becomingVisible ? 1 : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const chevronRotate = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "90deg"], // Forward to Down (90deg)
+  });
 
   const { getToken } = useAuth();
 
@@ -327,10 +354,20 @@ export default function CollegeDetails() {
 
                 {/* Summary Section */}
                 {collegeDetails?.summaries && (
-                  <>
-
-                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12, marginTop: 12 }}>
-                      <TouchableOpacity onPress={() => setShowSummary(!showSummary)} activeOpacity={0.8} style={{ flex: 1, paddingVertical: 4 }}>
+                  <View style={[styles.summaryMainContainer, showSummary && styles.summaryMainContainerExpanded]}>
+                    <View style={styles.summaryHeaderRow}>
+                      <TouchableOpacity
+                        onPress={toggleSummary}
+                        activeOpacity={0.7}
+                        style={styles.summaryTitleClickable}
+                      >
+                        <Animated.View style={{ transform: [{ rotate: chevronRotate }] }}>
+                          <Ionicons
+                            name="chevron-forward"
+                            size={18}
+                            color="#004aad"
+                          />
+                        </Animated.View>
                         <Text style={styles.sectionTitle}>AI Summary</Text>
                       </TouchableOpacity>
 
@@ -351,13 +388,13 @@ export default function CollegeDetails() {
                     </View>
 
                     {showSummary && (
-                      <View style={{ marginTop: 12, backgroundColor: "#f8fafc", padding: 12, borderRadius: 12, borderWidth: 1, borderColor: "#e2e8f0" }}>
+                      <View style={styles.summaryBody}>
                         <Markdown style={markdownStyles}>
                           {collegeDetails.summaries[summaryLanguage] || "Summary not available for selected language."}
                         </Markdown>
                       </View>
                     )}
-                  </>
+                  </View>
                 )}
               </>
             )}
@@ -611,8 +648,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   dropdown: {
-    height: 35,
-    width: 130,
+    height: 30,
+    width: 120,
     borderRadius: 20,
     paddingHorizontal: 16,
     backgroundColor: "#fff",
@@ -620,9 +657,39 @@ const styles = StyleSheet.create({
     borderColor: "#d6e0f5",
   },
   dropdownText: {
-    fontSize: 14,
     fontFamily: "SourceSans3Medium",
     color: "#333",
+  },
+  summaryMainContainer: {
+    backgroundColor: "#f9fbff", // Very faint blue background
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#e2e8f0", // Lighter border to match faint bg
+    marginTop: 12,
+    overflow: "hidden",
+
+  },
+  summaryMainContainerExpanded: {
+    backgroundColor: "#f9fbff",
+  },
+  summaryHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 6, // Increased slightly for better look
+  },
+  summaryTitleClickable: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  summaryBody: {
+    padding: 14,
+    paddingTop: 4,
+    backgroundColor: "transparent",
   },
 });
 
@@ -649,17 +716,24 @@ const markdownStyles = {
   strong: {
     fontFamily: "SourceSans3Bold",
     color: "#004aad",
+    fontWeight: "normal" as "normal", // Explicitly normal to let the font family handle the bold weight
+  },
+  em: {
+    fontStyle: "italic" as "italic",
+    fontFamily: "SourceSans3MediumItalic",
   },
   heading1: {
     fontSize: 20,
     fontFamily: "SourceSans3Bold",
     color: "#004aad",
     marginBottom: 10,
+    fontWeight: "normal" as "normal",
   },
   heading2: {
     fontSize: 18,
     fontFamily: "SourceSans3Bold",
     color: "#004aad",
     marginBottom: 8,
+    fontWeight: "normal" as "normal",
   },
 };

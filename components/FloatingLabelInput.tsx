@@ -13,16 +13,20 @@ interface FloatingLabelInputProps {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
+  onBlur?: () => void;
   secureTextEntry?: boolean;
   keyboardType?: "default" | "email-address" | "number-pad";
+  maxLength?: number;
 }
 
 const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
   label,
   value,
   onChangeText,
+  onBlur,
   secureTextEntry,
   keyboardType,
+  maxLength,
 }) => {
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false); // 👈 for toggle
@@ -74,9 +78,13 @@ const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
           value={value}
           onChangeText={onChangeText}
           onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onBlur={() => {
+            setIsFocused(false);
+            onBlur?.();
+          }}
           secureTextEntry={secureTextEntry && !showPassword} // 👈 toggle visibility
           keyboardType={keyboardType}
+          maxLength={maxLength}
           placeholder=""
           returnKeyType="done"
           blurOnSubmit

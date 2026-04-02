@@ -68,7 +68,7 @@ const CreateCollegeForm = ({
         <FloatingLabelInput
           label="Rank"
           value={rank}
-          onChangeText={setRank}
+          onChangeText={(val) => setRank(val.replace(/[^0-9]/g, ""))}
           keyboardType="number-pad"
         />
       </View>
@@ -77,7 +77,11 @@ const CreateCollegeForm = ({
           label="Percentile"
           value={percentile}
           onChangeText={handlePercentileChange}
+          onBlur={handlePercentileBlur}
           keyboardType="number-pad"
+          maxLength={
+            percentile.includes(".") ? percentile.indexOf(".") + 8 : 4
+          }
         />
       </View>
     </View>
@@ -117,6 +121,9 @@ const CreateCollegeForm = ({
         placeholderStyle={styles.dropdownText}
         selectedTextStyle={styles.dropdownText}
         itemTextStyle={styles.dropdownText}
+        search
+        searchPlaceholder="Search location..."
+        inputSearchStyle={styles.dropdownText}
         value={locations}
         onChange={(items) => setLocations(items as string[])}
         renderItem={(item) => {
@@ -150,6 +157,9 @@ const CreateCollegeForm = ({
         placeholderStyle={styles.dropdownText}
         selectedTextStyle={styles.dropdownText}
         itemTextStyle={styles.dropdownText}
+        search
+        searchPlaceholder="Search branch..."
+        inputSearchStyle={styles.dropdownText}
         value={branches}
         onChange={(items) => setBranches(items as string[])}
         renderItem={(item) => {
@@ -183,6 +193,9 @@ const CreateCollegeForm = ({
         valueField="value"
         value={homeUniversityId}
         onChange={(item) => setHomeUniversityId(item.value)}
+        search
+        searchPlaceholder="Search university..."
+        inputSearchStyle={styles.dropdownText}
         placeholder="Select Home University"
         placeholderStyle={styles.dropdownText}
         selectedTextStyle={styles.dropdownText}

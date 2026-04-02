@@ -223,24 +223,39 @@ export default function EstimatorScreen() {
     }
 
     // Keep only digits and one dot
-    let sanitized = text.replace(/[^0-9.]/g, "");
-    const parts = sanitized.split(".");
+    if (!/^\d*\.?\d*$/.test(text)) return;
 
-    // Prevent multiple dots
-    if (parts.length > 2) {
-      sanitized = parts[0] + "." + parts[1];
-    }
+    const parts = text.split(".");
+    if (parts.length > 2) return;
 
     // Limit to 7 decimal digits
     if (parts[1] && parts[1].length > 7) {
-      sanitized = parts[0] + "." + parts[1].slice(0, 7);
+      return; // Stop if 8th digit after decimal
     }
 
     // Clamp max value to 100
-    const num = Number(sanitized);
-    if (!isNaN(num) && num > 100) sanitized = "100";
+    const num = Number(text);
+    if (!isNaN(num) && num > 100) {
+      setState("100");
+    } else {
+      setState(text);
+    }
+  };
 
-    setState(sanitized);
+  const handlePercentileBlur = (
+    val: string,
+    setter: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    if (val) {
+      const numValue = parseFloat(val);
+      if (!isNaN(numValue)) {
+        const clampedValue = Math.min(Math.max(numValue, 0), 100);
+        const formattedValue = Number.isInteger(clampedValue)
+          ? clampedValue.toString()
+          : parseFloat(clampedValue.toFixed(7)).toString();
+        setter(formattedValue);
+      }
+    }
   };
 
   const difficultyOptions = [
@@ -504,7 +519,18 @@ export default function EstimatorScreen() {
                       onChangeText={(text) =>
                         handlePercentileInput(text, setOverallPercentile)
                       }
+                      onBlur={() =>
+                        handlePercentileBlur(
+                          overallPercentile,
+                          setOverallPercentile
+                        )
+                      }
                       keyboardType="number-pad"
+                      maxLength={
+                        overallPercentile.includes(".")
+                          ? overallPercentile.indexOf(".") + 8
+                          : 4
+                      }
                     />
 
                     <View style={{ flexDirection: "row", gap: 10, marginTop: 8 }}>
@@ -515,7 +541,18 @@ export default function EstimatorScreen() {
                           onChangeText={(text) =>
                             handlePercentileInput(text, setPhysicsPercentile)
                           }
+                          onBlur={() =>
+                            handlePercentileBlur(
+                              physicsPercentile,
+                              setPhysicsPercentile
+                            )
+                          }
                           keyboardType="number-pad"
+                          maxLength={
+                            physicsPercentile.includes(".")
+                              ? physicsPercentile.indexOf(".") + 8
+                              : 4
+                          }
                         />
                       </View>
                       <View style={{ flex: 1 }}>
@@ -525,7 +562,18 @@ export default function EstimatorScreen() {
                           onChangeText={(text) =>
                             handlePercentileInput(text, setChemistryPercentile)
                           }
+                          onBlur={() =>
+                            handlePercentileBlur(
+                              chemistryPercentile,
+                              setChemistryPercentile
+                            )
+                          }
                           keyboardType="number-pad"
+                          maxLength={
+                            chemistryPercentile.includes(".")
+                              ? chemistryPercentile.indexOf(".") + 8
+                              : 4
+                          }
                         />
                       </View>
 
@@ -537,7 +585,15 @@ export default function EstimatorScreen() {
                         onChangeText={(text) =>
                           handlePercentileInput(text, setMathsPercentile)
                         }
+                        onBlur={() =>
+                          handlePercentileBlur(mathsPercentile, setMathsPercentile)
+                        }
                         keyboardType="number-pad"
+                        maxLength={
+                          mathsPercentile.includes(".")
+                            ? mathsPercentile.indexOf(".") + 8
+                            : 4
+                        }
                       />
                     </View>
 

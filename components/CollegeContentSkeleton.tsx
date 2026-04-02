@@ -63,6 +63,11 @@ export default function CollegeContentSkeleton() {
         <SkeletonBox style={styles.viewButtonLike} />
         <SkeletonBox style={styles.viewButtonLike} />
       </View>
+
+      {/* AI Summary Section Skeleton */}
+      <View style={styles.summarySkeleton}>
+        <SkeletonBox style={{ width: "100%", height: 38, borderRadius: 12 }} />
+      </View>
     </View>
   );
 }
@@ -77,7 +82,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     gap: 8,
     flexWrap: "wrap",
-    position: 'relative',
+    position: "relative",
     height: 22,
   },
   nameSection: {
@@ -111,6 +116,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
     marginTop: 8,
+  },
+  summarySkeleton: {
+    marginTop: 4,
   },
   viewButtonLike: {
     backgroundColor: "#e0e0e0",
