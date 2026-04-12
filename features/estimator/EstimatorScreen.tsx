@@ -32,6 +32,7 @@ import Reanimated, {
 import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 import SubscriptionLockSheet from "@/components/ShowLockScreen";
+import { useTrialUsage } from "@/hooks/useTrialUsage";
 
 
 const EstimatorLanding = ({ onTabChange }: { onTabChange: (tab: "marks" | "rank") => void }) => {
@@ -153,15 +154,10 @@ export default function EstimatorScreen() {
 
 
   const [showLock, setShowLock] = useState(false);
+  const marksTrial = useTrialUsage("trial_marks_to_percentile", 3);
+  const rankTrial = useTrialUsage("trial_percentile_to_rank", 3);
 
-  useEffect(() => {
-    if (!loading && user && !isAllowed) {
-      const timer = setTimeout(() => {
-        setShowLock(true);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [loading, user]);
+  // Removed automatic lock popup on page load
 
   useEffect(() => {
     if (Number(marks) < 0) {
@@ -277,14 +273,31 @@ export default function EstimatorScreen() {
 
   const handleCalculatePercentile = async () => {
     if (!isMarksValid) return;
-    if (!isAllowed) return;
+    
+    // Check if user has access (either subscribed OR has trials remaining)
+    if (!isAllowed && !marksTrial.hasRemainingTrials) {
+      setShowLock(true);
+      return;
+    }
+
     await predictPercentile(Number(marks), selectedDifficulty);
     setShowResultModal(true);
+    
+    // Increment usage ONLY if not subscribed
+    if (!isAllowed) {
+      await marksTrial.incrementUsage();
+    }
   };
 
   const handleCalculateRank = async () => {
     if (!isRankValid) return;
-    if (!isAllowed) return;
+
+    // Check if user has access (either subscribed OR has trials remaining)
+    if (!isAllowed && !rankTrial.hasRemainingTrials) {
+      setShowLock(true);
+      return;
+    }
+
     // Keep the existing predictRank call (only overall) to avoid breaking the hook.
     // If your hook supports extra fields later, you can extend this call.
     await predictRank(
@@ -294,6 +307,11 @@ export default function EstimatorScreen() {
       Number(mathsPercentile)
     );
     setShowResultModal(true);
+
+    // Increment usage ONLY if not subscribed
+    if (!isAllowed) {
+      await rankTrial.incrementUsage();
+    }
   };
 
   // Info modal content dynamically based on active tab

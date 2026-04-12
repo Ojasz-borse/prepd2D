@@ -8,17 +8,26 @@ interface QuickAccessProps {
 }
 
 const QuickAccess = ({ onTabChange }: QuickAccessProps) => {
-  const items = [
+
+  interface QuickAccessItem {
+    title: string;
+    icon: string;
+    color: string;
+    tab?: "timeline" | "learn";
+    action?: () => void;
+  }
+
+  const items: QuickAccessItem[] = [
     { 
       title: "Timeline", 
       icon: "time-outline", 
-      tab: "timeline" as const,
+      tab: "timeline",
       color: "#004aad"
     },
     { 
       title: "Learn", 
       icon: "book-outline", 
-      tab: "learn" as const,
+      tab: "learn",
       color: "#b6cf4f"
     },
   ];
@@ -32,7 +41,7 @@ const QuickAccess = ({ onTabChange }: QuickAccessProps) => {
             key={i}
             activeOpacity={0.7}
             style={styles.quickItem}
-            onPress={() => onTabChange(item.tab)}
+            onPress={() => item.action ? item.action() : onTabChange(item.tab!)}
           >
             <View
               style={[

@@ -8,6 +8,7 @@ interface CustomAlertModalProps {
     message: string;
     type?: "success" | "error" | "info";
     onClose: () => void;
+    showButton?: boolean;
 }
 
 const CustomAlertModal: React.FC<CustomAlertModalProps> = ({
@@ -16,6 +17,7 @@ const CustomAlertModal: React.FC<CustomAlertModalProps> = ({
     message,
     type = "info",
     onClose,
+    showButton = false,
 }) => {
     const getIcon = () => {
         switch (type) {
@@ -46,19 +48,33 @@ const CustomAlertModal: React.FC<CustomAlertModalProps> = ({
             visible={visible}
             onRequestClose={onClose}
         >
-            <View style={styles.overlay}>
-                <View style={styles.modalContainer}>
+            <TouchableOpacity 
+                style={styles.overlay} 
+                activeOpacity={1} 
+                onPress={onClose}
+            >
+                <TouchableOpacity 
+                    style={styles.modalContainer} 
+                    activeOpacity={1}
+                >
+                    <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                        <Ionicons name="close" size={24} color="#94a3b8" />
+                    </TouchableOpacity>
+
                     <View style={styles.iconContainer}>{getIcon()}</View>
                     <Text style={[styles.title, { color: getTitleColor() }]}>{title}</Text>
                     <Text style={styles.message}>{message}</Text>
-                    <TouchableOpacity
-                        style={[styles.button, { backgroundColor: getTitleColor() }]}
-                        onPress={onClose}
-                    >
-                        <Text style={styles.buttonText}>OK</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
+                    
+                    {showButton && (
+                        <TouchableOpacity
+                            style={[styles.button, { backgroundColor: getTitleColor() }]}
+                            onPress={onClose}
+                        >
+                            <Text style={styles.buttonText}>OK</Text>
+                        </TouchableOpacity>
+                    )}
+                </TouchableOpacity>
+            </TouchableOpacity>
         </Modal>
     );
 };
@@ -69,27 +85,37 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(0, 0, 0, 0.5)",
         justifyContent: "center",
         alignItems: "center",
-        padding: 20,
+        padding: 24,
     },
     modalContainer: {
         width: "100%",
         maxWidth: 340,
         backgroundColor: "#fff",
         borderRadius: 24,
-        padding: 24,
+        paddingHorizontal: 24,
+        paddingTop: 32,
+        paddingBottom: 32,
         alignItems: "center",
         elevation: 10,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.25,
         shadowRadius: 10,
+        position: 'relative',
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 16,
+        right: 16,
+        padding: 4,
+        zIndex: 10,
     },
     iconContainer: {
         marginBottom: 16,
     },
     title: {
-        fontSize: 22,
-        fontFamily: "SourceSans3Bold",
+        fontSize: 19,
+        fontFamily: "SourceSans3SemiBold",
         marginBottom: 8,
         textAlign: "center",
     },
@@ -98,7 +124,7 @@ const styles = StyleSheet.create({
         fontFamily: "SourceSans3Medium",
         color: "#475569",
         textAlign: "center",
-        marginBottom: 24,
+        marginBottom: 8,
         lineHeight: 22,
     },
     button: {
@@ -107,6 +133,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         justifyContent: "center",
         alignItems: "center",
+        marginTop: 16,
     },
     buttonText: {
         color: "#fff",

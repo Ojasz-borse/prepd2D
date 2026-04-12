@@ -2,6 +2,7 @@
 
 import { GENERATE_OPTION_FORM } from "@/constants/config";
 import { useState } from "react";
+import { Alert } from "react-native";
 
 interface GenerateListParams {
   rank: number;
@@ -13,6 +14,7 @@ interface GenerateListParams {
   gender: string;
   home_university_id: number | null;
   tfws_pref: boolean;
+  user_id: string | undefined;
 }
 
 export function useCreateCollegeList() {
@@ -29,6 +31,7 @@ export function useCreateCollegeList() {
     gender,
     home_university_id,
     tfws_pref,
+    user_id,
   }: GenerateListParams) => {
     try {
       setLoading(true);
@@ -43,6 +46,7 @@ export function useCreateCollegeList() {
         gender,
         home_university_id,
         tfws_pref: tfws_pref ? true : false,
+        user_id,
       })
 
       const response = await fetch(
@@ -62,6 +66,7 @@ export function useCreateCollegeList() {
             gender,
             home_university_id,
             tfws_pref: tfws_pref ? true : false,
+            user_id,
           }),
         }
       );
@@ -69,9 +74,18 @@ export function useCreateCollegeList() {
       const data = await response.json();
 
       console.log("response", data);
+
+      if (data.success === false) {
+        setLoading(false);
+        setError(data.message || "Failed to generate list");
+        return null;
+      }
+
       return data.options || [];
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate list");
+      setLoading(false);
+      const errorMessage = err instanceof Error ? err.message : "Failed to generate list";
+      setError(errorMessage);
       return null;
     } finally {
       setLoading(false);

@@ -41,13 +41,21 @@ const QuickAccess = ({
   onTabChange: (tab: "colleges" | "branches" | "compare") => void;
 }) => {
   const router = useRouter();
-  const items = [
-    { title: "Colleges", icon: "school-outline", tab: "colleges" as const },
-    { title: "Branches", icon: "filter-outline", tab: "branches" as const },
-    {
-      title: "Compare",
-      icon: "git-compare-outline",
-      tab: "compare" as const,
+
+  interface QuickAccessItem {
+    title: string;
+    icon: string;
+    tab?: "colleges" | "branches" | "compare";
+    action?: () => void;
+  }
+
+  const items: QuickAccessItem[] = [
+    { title: "Colleges", icon: "school-outline", tab: "colleges" },
+    { title: "Branches", icon: "filter-outline", tab: "branches" },
+    { 
+      title: "Compare", 
+      icon: "git-compare-outline", 
+      tab: "compare" 
     },
   ];
 
@@ -63,7 +71,7 @@ const QuickAccess = ({
               styles.quickItem,
               item.tab === "compare" && { width: "100%" },
             ]}
-            onPress={() => onTabChange(item.tab)}
+            onPress={() => item.action ? item.action() : onTabChange(item.tab!)}
           >
             <View
               style={[

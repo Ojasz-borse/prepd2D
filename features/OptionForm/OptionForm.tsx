@@ -13,6 +13,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
+import { useLocalSearchParams } from "expo-router";
 import { useCreateCollegeList } from "@/hooks/useCreateCollegeList";
 import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 import SubscriptionLockSheet from "@/components/ShowLockScreen";
@@ -28,14 +29,27 @@ import QuickAccess from "./components/QuickAccess";
 import CreateCollegeForm from "./components/CreateCollegeForm";
 import ResultsList from "./components/ResultsList";
 import { styles } from "./styles";
-import { colors } from "@/constants/theme";
 import GeneratingModal from "@/components/GeneratingModal";
+import CustomAlertModal from "@/components/CustomAlertModal";
+import { useSavedOptionForms } from "@/hooks/useSavedOptionForms";
 
 export default function OptionForm() {
   const [activeTab, setActiveTab] = useState<"all" | "generate">("all");
 
-  const { getToken } = useAuth();
-  const { generateList, loading } = useCreateCollegeList();
+  const { getToken, user } = useAuth();
+  const { generateList, loading, error } = useCreateCollegeList();
+
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+    type: "success" | "error" | "info";
+  }>({
+    visible: false,
+    title: "",
+    message: "",
+    type: "error",
+  });
 
   const [rank, setRank] = useState("");
   const [percentile, setPercentile] = useState("");
@@ -47,6 +61,21 @@ export default function OptionForm() {
   const [tfwsPref, setTfwsPref] = useState(false);
   const [results, setResults] = useState<any[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [inputType, setInputType] = useState<"rank" | "percentile">("percentile");
+
+  const { savedForms, saveForm, deleteSavedForm } = useSavedOptionForms();
+  const { showSaved, savedId } = useLocalSearchParams<{ showSaved?: string; savedId?: string }>();
+
+  useEffect(() => {
+    if (savedId && savedForms.length > 0) {
+      const selected = savedForms.find((f) => f.id === savedId);
+      if (selected) {
+        setResults(selected.results);
+        setShowResults(true);
+        setActiveTab("generate");
+      }
+    }
+  }, [savedId, savedForms]);
 
   const { isAllowed, showLock, closeLock } = useSubscriptionLock({
     gate: "after",
@@ -140,30 +169,50 @@ export default function OptionForm() {
   };
 
   const handleSubmit = async () => {
+    const isRankSelected = inputType === "rank";
+    const valueToCheck = isRankSelected ? rank : percentile;
+
+    if (!valueToCheck) {
+      setAlertConfig({
+        visible: true,
+        title: "Missing Field",
+        message: `Please enter your ${isRankSelected ? "Rank" : "Percentile"}`,
+        type: "error",
+      });
+      return;
+    }
+
     if (
-      !rank ||
-      !percentile ||
       categories.length === 0 ||
       locations.length === 0 ||
       branches.length === 0 ||
       !homeUniversityId
     ) {
-      Alert.alert("Missing Fields", "Please fill all fields, including Home University");
+      setAlertConfig({
+        visible: true,
+        title: "Missing Fields",
+        message: "Please select Category, Locations, Branches, and Home University",
+        type: "error",
+      });
       return;
     }
 
-    const percentileNum = parseFloat(percentile);
-    if (isNaN(percentileNum) || percentileNum < 0 || percentileNum > 100) {
-      Alert.alert(
-        "Invalid Input",
-        "Please enter a valid percentile between 0 and 100"
-      );
+    const percentileNum = isRankSelected ? 0 : parseFloat(percentile);
+    if (!isRankSelected && (isNaN(percentileNum) || percentileNum < 0 || percentileNum > 100)) {
+      setAlertConfig({
+        visible: true,
+        title: "Invalid Input",
+        message: "Please enter a valid percentile between 0 and 100",
+        type: "error",
+      });
       return;
     }
+
+    const rankNum = isRankSelected ? Number(rank) : 0;
 
     const token = await getToken();
     const data = await generateList({
-      rank: Number(rank),
+      rank: rankNum,
       percentile: percentileNum,
       category: categories[0],
       locations,
@@ -172,6 +221,7 @@ export default function OptionForm() {
       gender,
       home_university_id: homeUniversityId,
       tfws_pref: tfwsPref,
+      user_id: user?.user_id,
     });
 
     if (data) {
@@ -180,9 +230,35 @@ export default function OptionForm() {
     }
   };
 
+  const handleSave = async () => {
+    if (results.length === 0) return;
+    const success = await saveForm(results);
+    if (success) {
+      setAlertConfig({
+        visible: true,
+        title: "Saved",
+        message: "Your option form has been saved successfully",
+        type: "success",
+      });
+    }
+  };
+
   useEffect(() => {
-    console.log("results", results);
+    if (results.length > 0) {
+      console.log("results", results);
+    }
   }, [results]);
+
+  useEffect(() => {
+    if (error) {
+      setAlertConfig({
+        visible: true,
+        title: "Limit Exceeded",
+        message: error,
+        type: "error",
+      });
+    }
+  }, [error]);
 
   return (
     <LinearGradient
@@ -256,7 +332,9 @@ export default function OptionForm() {
                 </View>
               </LinearGradient>
 
-              <QuickAccess onTabChange={setActiveTab} />
+              <QuickAccess 
+                onTabChange={setActiveTab} 
+              />
             </View>
           )}
 
@@ -273,6 +351,8 @@ export default function OptionForm() {
                   setRank={setRank}
                   percentile={percentile}
                   setPercentile={setPercentile}
+                  inputType={inputType}
+                  setInputType={setInputType}
                   categories={categories}
                   setCategories={setCategories}
                   locations={locations}
@@ -297,6 +377,7 @@ export default function OptionForm() {
                   <ResultsList
                     results={results}
                     onEdit={() => setShowResults(false)}
+                    onSave={handleSave}
                     onAddSuggestion={(item) => {
                       setResults((prev) =>
                         prev.map((res) =>
@@ -306,7 +387,12 @@ export default function OptionForm() {
                             : res
                         )
                       );
-                      Alert.alert("Success", "Added to your list");
+                      setAlertConfig({
+                        visible: true,
+                        title: "Success",
+                        message: "Added to your list",
+                        type: "success",
+                      });
                     }}
                   />
                 </>
@@ -319,6 +405,14 @@ export default function OptionForm() {
           {showLock && (
             <SubscriptionLockSheet visible={showLock} planType="after" />
           )}
+
+          <CustomAlertModal
+            visible={alertConfig.visible}
+            title={alertConfig.title}
+            message={alertConfig.message}
+            type={alertConfig.type}
+            onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
+          />
         </View>
       </SafeAreaView>
     </LinearGradient>

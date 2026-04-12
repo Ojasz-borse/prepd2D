@@ -56,7 +56,7 @@ const PopularSearches = () => {
 
   return (
     <View style={styles.card1}>
-      <Text style={styles.heading1}>Must try feature</Text>
+      <Text style={styles.heading1}>Estimators</Text>
 
       <View style={styles.gridContainer}>
         {items.map((item, index) => (

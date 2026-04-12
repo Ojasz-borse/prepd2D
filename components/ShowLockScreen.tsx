@@ -122,12 +122,12 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
             couponCode: couponInput,
           }),
         },
-        2, 
-        1000 
+        2,
+        1000
       );
 
       if (!res.ok) {
-          throw new Error("Validation failed");
+        throw new Error("Validation failed");
       }
 
       const data = await res.json();
@@ -345,8 +345,7 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
 
         <TouchableOpacity
           style={[
-            styles.subscribeButton,
-            planType === "after" && styles.disabledButton
+            styles.subscribeButton
           ]}
           activeOpacity={0.85}
           onPress={() => startPayment()}

@@ -16,6 +16,8 @@ interface CreateCollegeFormProps {
   setRank: (rank: string) => void;
   percentile: string;
   setPercentile: (percentile: string) => void;
+  inputType: "rank" | "percentile";
+  setInputType: (type: "rank" | "percentile") => void;
   categories: string[];
   setCategories: (categories: string[]) => void;
   locations: string[];
@@ -41,6 +43,8 @@ const CreateCollegeForm = ({
   setRank,
   percentile,
   setPercentile,
+  inputType,
+  setInputType,
   categories,
   setCategories,
   locations,
@@ -63,34 +67,65 @@ const CreateCollegeForm = ({
   <View style={styles.card}>
     <Text style={styles.formTitle}>Enter Details</Text>
 
-    <View style={{ flexDirection: "row", gap: 12, marginBottom: -14 }}>
-      <View style={{ width: "48%" }}>
+    {/* Input Type Selection (Radio Buttons) */}
+    <View style={styles.radioContainer}>
+      <TouchableOpacity
+        style={styles.radioButton}
+        onPress={() => {
+          setInputType("percentile");
+          setRank("");
+        }}
+        activeOpacity={0.7}
+      >
+        <View style={styles.radioCircle}>
+          {inputType === "percentile" && <View style={styles.radioDot} />}
+        </View>
+        <Text style={styles.radioLabel}>Percentile</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.radioButton}
+        onPress={() => {
+          setInputType("rank");
+          setPercentile("");
+        }}
+        activeOpacity={0.7}
+      >
+        <View style={styles.radioCircle}>
+          {inputType === "rank" && <View style={styles.radioDot} />}
+        </View>
+        <Text style={styles.radioLabel}>Rank</Text>
+      </TouchableOpacity>
+    </View>
+
+    <View>
+      {inputType === "rank" ? (
         <FloatingLabelInput
-          label="Rank"
+          label="Enter Your Rank"
           value={rank}
           onChangeText={(val) => setRank(val.replace(/[^0-9]/g, ""))}
           keyboardType="number-pad"
         />
-      </View>
-      <View style={{ width: "48%" }}>
-        <FloatingLabelInput
-          label="Percentile"
-          value={percentile}
-          onChangeText={handlePercentileChange}
-          onBlur={handlePercentileBlur}
-          keyboardType="number-pad"
-          maxLength={
-            percentile.includes(".") ? percentile.indexOf(".") + 8 : 4
-          }
-        />
-      </View>
+      ) : (
+        <>
+          <FloatingLabelInput
+            label="Enter Your Percentile"
+            value={percentile}
+            onChangeText={handlePercentileChange}
+            onBlur={handlePercentileBlur}
+            keyboardType="number-pad"
+            maxLength={
+              percentile.includes(".") ? percentile.indexOf(".") + 8 : 4
+            }
+          />
+          {percentile && parseFloat(percentile) > 100 && (
+            <Text style={[styles.warningText, { marginTop: -25, marginBottom: 15 }]}>
+              Percentile cannot exceed 100
+            </Text>
+          )}
+        </>
+      )}
     </View>
-
-    {percentile && parseFloat(percentile) > 100 && (
-      <Text style={[styles.warningText, { marginTop: -20, marginBottom: 10 }]}>
-        Percentile cannot exceed 100
-      </Text>
-    )}
 
     <View style={styles.inputWrapper}>
       <Dropdown
