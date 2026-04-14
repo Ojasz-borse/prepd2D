@@ -241,6 +241,14 @@ export default function OptionForm() {
         type: "success",
       });
     }
+    else {
+      setAlertConfig({
+        visible: true,
+        title: "Already Saved",
+        message: "This option form is already saved",
+        type: "info",
+      });
+    }
   };
 
   useEffect(() => {

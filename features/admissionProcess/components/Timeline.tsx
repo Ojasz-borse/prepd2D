@@ -197,9 +197,23 @@ const Timeline = ({ data, isLoading }: TimelineProps) => {
     );
   }
 
+  // const events = React.useMemo(() => {
+  //   if (!data) return [];
+  //   return [...data].sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
+  // }, [data]);
+
   const events = React.useMemo(() => {
     if (!data) return [];
-    return [...data].sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
+    return [...data]
+      .filter(item => item.start_date)
+      .sort((a, b) => {
+        const timeA = new Date(a.start_date).getTime();
+        const timeB = new Date(b.start_date).getTime();
+
+        if (isNaN(timeA)) return 1;
+        if (isNaN(timeB)) return -1;
+        return timeA - timeB;
+      });
   }, [data]);
 
   const handleCloseModal = () => setSelectedEvent(null);

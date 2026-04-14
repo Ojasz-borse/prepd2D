@@ -30,9 +30,28 @@ export const useSavedOptionForms = () => {
 
   const saveForm = async (results: any[], name?: string) => {
     try {
+      const isDuplicate = savedForms.some((form) => {
+        return JSON.stringify(form.results) === JSON.stringify(results);
+      });
+
+      if (isDuplicate) {
+        console.log("Duplicate form detected. Not saving.");
+        return false;
+      }
+      
+      const now = new Date();
+      const formattedIST = now.toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      
       const newForm: SavedForm = {
         id: Date.now().toString(),
-        name: name || `Saved List ${new Date().toLocaleDateString()}`,
+        name: name || `Saved List ${formattedIST}`,
         date: new Date().toLocaleString(),
         results,
       };
