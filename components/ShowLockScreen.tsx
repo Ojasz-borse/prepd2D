@@ -349,7 +349,7 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
           ]}
           activeOpacity={0.85}
           onPress={() => startPayment()}
-          disabled={planType === "after"}
+          // disabled={planType === "after"}
         >
           <Text style={styles.subscribeButtonText}>{content.priceText}</Text>
         </TouchableOpacity>
