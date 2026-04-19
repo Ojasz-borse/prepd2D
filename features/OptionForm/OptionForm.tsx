@@ -70,7 +70,9 @@ export default function OptionForm() {
     if (savedId && savedForms.length > 0) {
       const selected = savedForms.find((f) => f.id === savedId);
       if (selected) {
-        setResults(selected.results);
+        // Filter out suggestions for saved lists
+        const activeOnlyResults = (selected.results || []).filter((item: any) => !item.is_suggestion);
+        setResults(activeOnlyResults);
         setShowResults(true);
         setActiveTab("generate");
       }
@@ -386,6 +388,7 @@ export default function OptionForm() {
                     results={results}
                     onEdit={() => setShowResults(false)}
                     onSave={handleSave}
+                    isReadOnly={!!savedId}
                     onAddSuggestion={(item) => {
                       setResults((prev) =>
                         prev.map((res) =>

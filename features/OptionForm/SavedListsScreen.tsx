@@ -68,7 +68,7 @@ const SavedListsScreen = () => {
                         {/* <Text style={styles.formDate}>{item.date}</Text>
                         <View style={styles.dot} /> */}
                         <Text style={styles.formCount}>
-                          {item.results?.length || 0} Colleges
+                          {(item.results?.filter((r: any) => !r.is_suggestion).length || 0)} Colleges
                         </Text>
                       </View>
                     </View>

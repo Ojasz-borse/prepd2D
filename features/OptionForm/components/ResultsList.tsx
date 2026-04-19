@@ -10,6 +10,7 @@ interface ResultsListProps {
   onEdit: () => void;
   onAddSuggestion?: (item: any) => void;
   onSave?: () => void;
+  isReadOnly?: boolean;
 }
 
 const getProbabilityColor = (prob?: string) => {
@@ -22,7 +23,7 @@ const getProbabilityColor = (prob?: string) => {
   }
 };
 
-const ResultsList = ({ results, onEdit, onAddSuggestion, onSave }: ResultsListProps) => {
+const ResultsList = ({ results, onEdit, onAddSuggestion, onSave, isReadOnly }: ResultsListProps) => {
   const router = useRouter();
 
   const handleCardPress = (item: any, index: number) => {
@@ -46,27 +47,29 @@ const ResultsList = ({ results, onEdit, onAddSuggestion, onSave }: ResultsListPr
         <View style={styles.titleWithCount}>
           <Text style={styles.resultsTitle}>Generated Options</Text>
           <View style={styles.resultsCountBadge}>
-            <Text style={styles.resultsCount}>{results.length}</Text>
+            <Text style={styles.resultsCount}>{results.filter(item => !item.is_suggestion).length}</Text>
           </View>
         </View>
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          <TouchableOpacity
-            style={[styles.editChip, { backgroundColor: '#004aad15', borderColor: '#004aad' }]}
-            onPress={onSave}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="bookmark-outline" size={13} color="#004aad" />
-            <Text style={styles.editChipText}>Save</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.editChip}
-            onPress={onEdit}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="pencil-outline" size={13} color="#004aad" />
-            <Text style={styles.editChipText}>Edit</Text>
-          </TouchableOpacity>
-        </View>
+        {!isReadOnly && (
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <TouchableOpacity
+              style={[styles.editChip, { backgroundColor: '#004aad15', borderColor: '#004aad' }]}
+              onPress={onSave}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="bookmark-outline" size={13} color="#004aad" />
+              <Text style={styles.editChipText}>Save</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.editChip}
+              onPress={onEdit}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="pencil-outline" size={13} color="#004aad" />
+              <Text style={styles.editChipText}>Edit</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       {/* Probability Legend */}
@@ -88,10 +91,12 @@ const ResultsList = ({ results, onEdit, onAddSuggestion, onSave }: ResultsListPr
             <View style={[styles.legendDot, { backgroundColor: "#22c55e" }]} />
             <Text style={styles.legendText}>Safe</Text>
           </View>
-          <View style={styles.legendItem}>
-            <View style={[styles.legendDot, { borderStyle: 'dashed', borderWidth: 1, borderColor: '#64748b', backgroundColor: '#f8fafc' }]} />
-            <Text style={styles.legendText}>AI Suggested</Text>
-          </View>
+          {!isReadOnly && (
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { borderStyle: 'dashed', borderWidth: 1, borderColor: '#64748b', backgroundColor: '#f8fafc' }]} />
+              <Text style={styles.legendText}>AI Suggested</Text>
+            </View>
+          )}
         </View>
       </View>
 
