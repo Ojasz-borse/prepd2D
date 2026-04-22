@@ -46,6 +46,33 @@ const getDarkerColor = (hex: string, amount = 150) => {
 };
 
 
+const DreamCollegeSection = () => {
+  const router = useRouter();
+
+  return (
+    <View style={styles.card1}>
+      <Text style={styles.heading1}>Dream College</Text>
+
+      <View style={styles.gridContainer}>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.gridItem}
+          onPress={() => router.push("/dream-college")}
+        >
+          <View style={[
+            styles.iconBox,
+            { backgroundColor: "#ff7a2220" },
+          ]}>
+            <Ionicons name="heart-outline" size={24} color="#ff7a22" />
+          </View>
+          <Text style={styles.gridTitle}>Dream College</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+
 const PopularSearches = () => {
   const router = useRouter();
 
@@ -169,6 +196,7 @@ export default function HomeScreen() {
           )}
         </View>
 
+        <View style={{ marginHorizontal: 16 }}><DreamCollegeSection /></View>
         <View style={{ marginHorizontal: 16 }}><PopularSearches /></View>
 
       </ScrollView>
