@@ -114,7 +114,7 @@ export default function DreamCollegeScreen() {
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea}>
-        <TopHeader title="Dream College" showBackArrow={true} />
+        <TopHeader title="Dream Score Predictor" showBackArrow={true} />
 
         <ScrollView
           contentContainerStyle={styles.scrollContent}
@@ -209,11 +209,11 @@ export default function DreamCollegeScreen() {
                   color: "#475569",
                   lineHeight: 24,
                 }}>
-                  According to previous cutoffs, percentile you need to score{" "}
+                  According to previous year cutoffs, you need to score{" "} 
                   <Text style={{ color: "#004aad", fontFamily: "SourceSans3SemiBold" }}>
                     {score}
                   </Text>
-                  {" "}to get{" "}
+                  {" "}Marks out of 200 to get{" "}
                   <Text style={{ color: "#004aad", fontFamily: "SourceSans3SemiBold" }}>
                     {formatBranchName(selectedBranch)}
                   </Text>

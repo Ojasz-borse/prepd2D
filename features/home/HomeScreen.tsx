@@ -51,7 +51,7 @@ const DreamCollegeSection = () => {
 
   return (
     <View style={styles.card1}>
-      <Text style={styles.heading1}>Dream College</Text>
+      <Text style={styles.heading1}>Dream Score Predictor</Text>
 
       <View style={styles.gridContainer}>
         <TouchableOpacity
@@ -65,7 +65,7 @@ const DreamCollegeSection = () => {
           ]}>
             <Ionicons name="heart-outline" size={24} color="#ff7a22" />
           </View>
-          <Text style={styles.gridTitle}>Dream College</Text>
+          <Text style={styles.gridTitle}>Dream Score Predictor</Text>
         </TouchableOpacity>
       </View>
     </View>
