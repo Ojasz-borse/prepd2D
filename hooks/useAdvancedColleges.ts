@@ -115,8 +115,6 @@ export function useAdvancedColleges() {
 
   // ---------------- Extract Unique Colleges ----------------
   const colleges: College[] = useMemo(() => {
-    setCollegesLoading(true);
-
     const map = new Map<string, College>();
 
     for (const b of branches) {
@@ -132,7 +130,6 @@ export function useAdvancedColleges() {
       }
     }
 
-    setCollegesLoading(false);
     return Array.from(map.values());
   }, [branches]);
 

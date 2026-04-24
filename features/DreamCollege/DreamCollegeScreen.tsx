@@ -6,12 +6,16 @@ import {
   ScrollView,
   SafeAreaView,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { Dropdown, MultiSelect } from "react-native-element-dropdown";
 import { useAuth } from "@/context/AuthContext";
 import { useAdvancedColleges } from "@/hooks/useAdvancedColleges";
+import { useRouter } from "expo-router";
 import TopHeader from "@/components/TopHeader";
 import { CATEGORY_OPTIONS, BRANCHES } from "@/constants/collegeFilters";
 import { formatBranchName } from "@/utils/formatHelpers";
@@ -23,6 +27,8 @@ import { fetchWithRetry } from "@/services/api";
 export default function DreamCollegeScreen() {
   const { getToken, user } = useAuth();
   const { colleges, branches, collegesLoading } = useAdvancedColleges();
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const [selectedCollege, setSelectedCollege] = useState<string>("");
   const [selectedBranch, setSelectedBranch] = useState<string>("");
@@ -51,12 +57,14 @@ export default function DreamCollegeScreen() {
     setScore(null);
   }, [selectedCollege]);
 
-  const collegeData = colleges
-    .map((c) => ({
-      label: c.name,
-      value: c.college_code,
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label));
+  const collegeData = useMemo(() => {
+    return colleges
+      .map((c) => ({
+        label: c.name,
+        value: c.college_code,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [colleges]);
 
   const handleCalculate = async () => {
     if (!selectedCollege || !selectedBranch || !selectedCategory) {
@@ -113,15 +121,19 @@ export default function DreamCollegeScreen() {
       end={{ x: 1, y: 1 }}
       style={styles.container}
     >
-      <SafeAreaView style={styles.safeArea}>
+      <View style={[styles.safeArea, { paddingTop: insets.top }]}>
         <TopHeader title="Dream Score Predictor" showBackArrow={true} />
 
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          bounces={false}
-          keyboardShouldPersistTaps="handled"
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
         >
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+            keyboardShouldPersistTaps="handled"
+          >
           <View style={styles.card}>
             <Text style={styles.formTitle}>Enter Details</Text>
 
@@ -137,6 +149,7 @@ export default function DreamCollegeScreen() {
                 valueField="value"
                 placeholder="Select college"
                 value={selectedCollege}
+                onFocus={() => setSelectedCollege("")}
                 onChange={(item) => setSelectedCollege(item.value)}
                 placeholderStyle={styles.dropdownText}
                 selectedTextStyle={styles.dropdownText}
@@ -162,6 +175,7 @@ export default function DreamCollegeScreen() {
                 searchPlaceholder="Search branch..."
                 inputSearchStyle={styles.dropdownText}
                 value={selectedBranch}
+                onFocus={() => setSelectedBranch("")}
                 onChange={(item) => setSelectedBranch(item.value)}
                 containerStyle={styles.dropdownContainerStyle}
                 disable={!selectedCollege}
@@ -218,7 +232,9 @@ export default function DreamCollegeScreen() {
                     {formatBranchName(selectedBranch)}
                   </Text>
                   {" "}branch in{" "}
-                  <Text style={{ color: "#004aad", fontFamily: "SourceSans3SemiBold" }}>
+                  <Text 
+                    onPress={() => router.push({ pathname: "/college-details", params: { college_code: selectedCollege } })}
+                    style={{ color: "#004aad", fontFamily: "SourceSans3SemiBold", textDecorationLine: "underline" }}>
                     {colleges.find(c => c.college_code === selectedCollege)?.name || selectedCollege}
                   </Text>
                   {" "}college.
@@ -227,7 +243,8 @@ export default function DreamCollegeScreen() {
             </View>
           )}
         </ScrollView>
-      </SafeAreaView>
+      </KeyboardAvoidingView>
+    </View>
     </LinearGradient>
   );
 }

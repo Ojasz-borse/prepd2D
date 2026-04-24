@@ -21,6 +21,7 @@ export default function Home() {
   const { checkAuth } = useAuth();
   // const [isVerifying, setIsVerifying] = useState(true);
   const [activeTab, setActiveTab] = useState<TabName>("Home");
+  const [initialSubTab, setInitialSubTab] = useState<string | null>(null);
   const activeTabRef = useRef(activeTab);
   const [isDisclaimerVisible, setIsDisclaimerVisible] = useState(false);
 
@@ -97,19 +98,25 @@ export default function Home() {
   const renderContent = () => {
     switch (activeTab) {
       case "Home":
-        return <HomeScreen />;
+        return <HomeScreen onTabChange={(tab, subTab) => {
+          setActiveTab(tab);
+          if (subTab) setInitialSubTab(subTab);
+        }} />;
       case "Preparation":
         return <Preparation />;
       case "Mock Tests":
         return <MockTestScreen />;
       case "Colleges":
-        return <FindColleges />;
+        return <FindColleges initialTab={initialSubTab as any} />;
       case "Admission process":
         return <AdmissionProcess />;
       case "Option Form":
         return <OptionForm />;
       default:
-        return <HomeScreen />;
+        return <HomeScreen onTabChange={(tab, subTab) => {
+          setActiveTab(tab);
+          if (subTab) setInitialSubTab(subTab);
+        }} />;
     }
   };
 
@@ -120,7 +127,10 @@ export default function Home() {
       </View>
 
       {/* Navbar sits at the bottom */}
-      <CustomNavbar activeTab={activeTab} onTabChange={setActiveTab} />
+      <CustomNavbar activeTab={activeTab} onTabChange={(tab) => {
+        setActiveTab(tab);
+        setInitialSubTab(null);
+      }} />
 
       <DisclaimerModal 
         visible={isDisclaimerVisible} 

@@ -23,7 +23,7 @@ import { apiFetch, setLogoutHandler } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 
 type User = {
   user_id: string;
@@ -307,10 +307,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const getToken = async (): Promise<string | null> => {
+  const getToken = useCallback(async (): Promise<string | null> => {
     const token = await SecureStore.getItemAsync(AUTH_TOKEN);
     return token ?? null;
-  };
+  }, []);
 
   return (
     <AuthContext.Provider

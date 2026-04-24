@@ -61,12 +61,14 @@ export default function CompareColleges({
     CompareCollegeData[] | null
   >(null);
 
-  const data = colleges
-    .map((c) => ({
-      label: c.name,
-      value: c.college_code,
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label));
+  const data = React.useMemo(() => {
+    return colleges
+      .map((c) => ({
+        label: c.name,
+        value: c.college_code,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [colleges]);
 
   const { getToken } = useAuth();
 
@@ -132,6 +134,7 @@ export default function CompareColleges({
               valueField="value"
               placeholder="Select College 1"
               value={college1}
+              onFocus={() => setCollege1("")}
               onChange={(item) => setCollege1(item.value)}
               placeholderStyle={styles.dropdownText}
               selectedTextStyle={styles.dropdownText}
@@ -155,6 +158,7 @@ export default function CompareColleges({
               valueField="value"
               placeholder="Select College 2"
               value={college2}
+              onFocus={() => setCollege2("")}
               onChange={(item) => setCollege2(item.value)}
               placeholderStyle={styles.dropdownText}
               selectedTextStyle={styles.dropdownText}

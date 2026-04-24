@@ -46,31 +46,6 @@ const getDarkerColor = (hex: string, amount = 150) => {
 };
 
 
-const DreamCollegeSection = () => {
-  const router = useRouter();
-
-  return (
-    <View style={styles.card1}>
-      <Text style={styles.heading1}>Dream Score Predictor</Text>
-
-      <View style={styles.gridContainer}>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          style={styles.gridItem}
-          onPress={() => router.push("/dream-college")}
-        >
-          <View style={[
-            styles.iconBox,
-            { backgroundColor: "#ff7a2220" },
-          ]}>
-            <Ionicons name="heart-outline" size={24} color="#ff7a22" />
-          </View>
-          <Text style={styles.gridTitle}>Dream Score Predictor</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-};
 
 
 const PopularSearches = () => {
@@ -117,7 +92,47 @@ const PopularSearches = () => {
 };
 
 
-export default function HomeScreen() {
+const QuickAccessSection = ({ onTabChange }: { onTabChange: (tab: any, subTab?: string) => void }) => {
+  const router = useRouter();
+
+  const items = [
+    { title: "Dream Score Predictor", icon: "heart-outline", color: "#ff7a22", bg: "#ff7a2220", route: "/dream-college", fullWidth: true },
+    { title: "Colleges", icon: "school-outline", color: "#004aad", bg: "#004aad20", tab: "Colleges", subTab: "colleges" },
+    { title: "Branches", icon: "filter-outline", color: "#b6cf4f", bg: "#b6cf4f20", tab: "Colleges", subTab: "branches" },
+    { title: "Compare", icon: "git-compare-outline", color: "#ff7a22", bg: "#ff7a2220", tab: "Colleges", subTab: "compare" },
+    { title: "Option Form", icon: "document-text-outline", color: "#8b5cf6", bg: "#8b5cf620", tab: "Option Form" },
+  ];
+
+  return (
+    <View style={styles.card1}>
+      <Text style={styles.heading1}>Quick Access</Text>
+      <View style={styles.quickGrid}>
+        {items.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            activeOpacity={0.7}
+            style={[styles.quickItem, item.fullWidth && { width: "100%" }]}
+            onPress={() => {
+              if (item.route) {
+                router.push(item.route as any);
+              } else {
+                onTabChange(item.tab, item.subTab);
+              }
+            }}
+          >
+            <View style={[styles.iconBox, { backgroundColor: item.bg }]}>
+              <Ionicons name={item.icon as any} size={24} color={item.color} />
+            </View>
+            <Text style={styles.gridTitle}>{item.title}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
+};
+
+
+export default function HomeScreen({ onTabChange }: { onTabChange: (tab: any, subTab?: string) => void }) {
   const { news, loading } = useNews();
   const { user } = useAuth();
   const initials = (user?.first_name?.[0] || "") + (user?.last_name?.[0] || "");
@@ -196,7 +211,7 @@ export default function HomeScreen() {
           )}
         </View>
 
-        <View style={{ marginHorizontal: 16 }}><DreamCollegeSection /></View>
+        <View style={{ marginHorizontal: 16 }}><QuickAccessSection onTabChange={onTabChange} /></View>
         <View style={{ marginHorizontal: 16 }}><PopularSearches /></View>
 
       </ScrollView>
@@ -534,5 +549,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "SourceSans3SemiBold",
     color: "#2E2E32",
+    flex: 1,
+    flexWrap: 'wrap'
+  },
+  quickGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+  },
+  quickItem: {
+    width: "48%", // 2 in a row
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
   },
 });

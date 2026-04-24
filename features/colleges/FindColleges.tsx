@@ -106,10 +106,10 @@ const QuickAccess = ({
   );
 };
 
-export default function FindColleges() {
+export default function FindColleges({ initialTab }: { initialTab?: "all" | "colleges" | "branches" | "compare" }) {
   const [activeTab, setActiveTab] = useState<
     "all" | "colleges" | "branches" | "compare"
-  >("all");
+  >(initialTab || "all");
 
   const { user } = useAuth();
   const {
