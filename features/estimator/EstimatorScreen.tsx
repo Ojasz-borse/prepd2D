@@ -256,12 +256,37 @@ export default function EstimatorScreen() {
     }
   };
 
+  // const difficultyOptions = [
+  //   { label: "Very Easy", value: "veryEasy" },
+  //   { label: "Easy", value: "easy" },
+  //   { label: "Moderate", value: "moderate" },
+  //   { label: "Hard", value: "hard" },
+  //   { label: "Very Hard", value: "veryHard" },
+  // ];
   const difficultyOptions = [
-    { label: "Very Easy", value: "veryEasy" },
-    { label: "Easy", value: "easy" },
-    { label: "Moderate", value: "moderate" },
-    { label: "Hard", value: "hard" },
-    { label: "Very Hard", value: "veryHard" },
+    { label: "11th April Morning", value: "easy" },
+    { label: "11th April Evening", value: "moderate" },
+
+    { label: "13th April Morning", value: "moderate" },
+    { label: "13th April Evening", value: "hard" },
+
+    { label: "15th April Morning", value: "hard" },
+    { label: "15th April Evening", value: "hard" },
+
+    { label: "16th April Morning", value: "moderate" },
+    { label: "16th April Evening", value: "hard" },
+
+    { label: "17th April Morning", value: "hard" },
+    { label: "17th April Evening", value: "moderate" },
+
+    { label: "18th April Morning", value: "moderate" },
+    { label: "18th April Evening", value: "moderate" },
+
+    { label: "19th April Morning", value: "moderate" },
+    { label: "19th April Evening", value: "moderate" },
+
+    { label: "20th April Morning", value: "moderate" },
+    { label: "20th April Evening", value: "easy" },
   ];
 
   const isMarksValid =
@@ -481,7 +506,7 @@ export default function EstimatorScreen() {
                       valueField="value"
                       value={selectedDifficulty}
                       onChange={(item) => setSelectedDifficulty(item.value)}
-                      placeholder="Select Difficulty"
+                      placeholder="Select Your Shift"
                       placeholderStyle={styles.dropdownText}
                       selectedTextStyle={styles.dropdownText}
                       itemTextStyle={styles.dropdownText}
