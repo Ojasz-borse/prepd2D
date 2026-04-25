@@ -34,7 +34,8 @@ export default function DreamCollegeScreen() {
   const [selectedBranch, setSelectedBranch] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [score, setScore] = useState<number | null>(null);
+  const [score1, setScore1] = useState<number | null>(null);
+  const [score2, setScore2] = useState<number | null>(null);
 
   // Derive available branches for the selected college
   const availableBranches = useMemo(() => {
@@ -54,7 +55,8 @@ export default function DreamCollegeScreen() {
   // Reset selected branch when college changes
   useEffect(() => {
     setSelectedBranch("");
-    setScore(null);
+    setScore1(null);
+    setScore2(null);
   }, [selectedCollege]);
 
   const collegeData = useMemo(() => {
@@ -99,7 +101,8 @@ export default function DreamCollegeScreen() {
 
       const data = await response.json();
       if (data.success) {
-        setScore(data.score);
+        setScore1(data.score_min);
+        setScore2(data.score_max);
       } else {
         alert(data.message || "Failed to calculate score");
       }
@@ -213,7 +216,7 @@ export default function DreamCollegeScreen() {
 
           </View>
 
-          {score !== null && (
+          {score1 !== null && (
             <View style={[styles.card, { marginTop: 4, paddingVertical: 20 }]}>
               <View style={{ alignItems: "flex-start" }}>
 
@@ -223,9 +226,9 @@ export default function DreamCollegeScreen() {
                   color: "#475569",
                   lineHeight: 24,
                 }}>
-                  According to previous year cutoffs, you need to score{" "} 
+                  According to previous year cutoffs, you need to score around{" "} 
                   <Text style={{ color: "#004aad", fontFamily: "SourceSans3SemiBold" }}>
-                    {score}
+                    {score1}-{score2}
                   </Text>
                   {" "}Marks out of 200 to get{" "}
                   <Text style={{ color: "#004aad", fontFamily: "SourceSans3SemiBold" }}>
