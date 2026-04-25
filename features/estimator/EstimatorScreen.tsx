@@ -136,7 +136,8 @@ export default function EstimatorScreen() {
     };
   });
   const [marks, setMarks] = useState("");
-  const [selectedDifficulty, setSelectedDifficulty] = useState<any>(null);
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [selectedSession, setSelectedSession] = useState<string | null>(null);
   const [errMsgMarks, setErrMsgMarks] = useState("");
 
   // Rank tab states (separate so inputs don't overwrite each other)
@@ -264,35 +265,45 @@ export default function EstimatorScreen() {
   //   { label: "Very Hard", value: "veryHard" },
   // ];
   const difficultyOptions = [
-    { label: "11th April Morning", value: "easy" },
-    { label: "11th April Evening", value: "moderate" },
+    { label: "11th April Morning", difficulty: "easy" },
+    { label: "11th April Evening", difficulty: "moderate" },
+    { label: "13th April Morning", difficulty: "moderate" },
+    { label: "13th April Evening", difficulty: "hard" },
+    { label: "15th April Morning", difficulty: "hard" },
+    { label: "15th April Evening", difficulty: "hard" },
+    { label: "16th April Morning", difficulty: "moderate" },
+    { label: "16th April Evening", difficulty: "hard" },
+    { label: "17th April Morning", difficulty: "hard" },
+    { label: "17th April Evening", difficulty: "moderate" },
+    { label: "18th April Morning", difficulty: "moderate" },
+    { label: "18th April Evening", difficulty: "moderate" },
+    { label: "19th April Morning", difficulty: "moderate" },
+    { label: "19th April Evening", difficulty: "moderate" },
+    { label: "20th April Morning", difficulty: "moderate" },
+    { label: "20th April Evening", difficulty: "easy" },
+  ];
 
-    { label: "13th April Morning", value: "moderate" },
-    { label: "13th April Evening", value: "hard" },
+  const dayOptions = [
+    { label: "11th April", value: "11th April" },
+    { label: "13th April", value: "13th April" },
+    { label: "15th April", value: "15th April" },
+    { label: "16th April", value: "16th April" },
+    { label: "17th April", value: "17th April" },
+    { label: "18th April", value: "18th April" },
+    { label: "19th April", value: "19th April" },
+    { label: "20th April", value: "20th April" },
+  ];
 
-    { label: "15th April Morning", value: "hard" },
-    { label: "15th April Evening", value: "hard" },
-
-    { label: "16th April Morning", value: "moderate" },
-    { label: "16th April Evening", value: "hard" },
-
-    { label: "17th April Morning", value: "hard" },
-    { label: "17th April Evening", value: "moderate" },
-
-    { label: "18th April Morning", value: "moderate" },
-    { label: "18th April Evening", value: "moderate" },
-
-    { label: "19th April Morning", value: "moderate" },
-    { label: "19th April Evening", value: "moderate" },
-
-    { label: "20th April Morning", value: "moderate" },
-    { label: "20th April Evening", value: "easy" },
+  const sessionOptions = [
+    { label: "Morning", value: "Morning" },
+    { label: "Evening", value: "Evening" },
   ];
 
   const isMarksValid =
     Number(marks) >= 0 &&
     Number(marks) <= 200 &&
-    selectedDifficulty &&
+    selectedDay &&
+    selectedSession &&
     !errMsgMarks;
 
   // For rank: require overallPercentile and no validation error
@@ -307,7 +318,9 @@ export default function EstimatorScreen() {
       return;
     }
 
-    await predictPercentile(Number(marks), selectedDifficulty);
+    const combinedLabel = `${selectedDay} ${selectedSession}`;
+    const difficulty = difficultyOptions.find(opt => opt.label === combinedLabel)?.difficulty || "moderate";
+    await predictPercentile(Number(marks), difficulty);
     setShowResultModal(true);
 
     if (user?.user_id) {
@@ -499,18 +512,32 @@ export default function EstimatorScreen() {
                       keyboardType="number-pad"
                     />
 
-                    <Dropdown
-                      style={styles.dropdown}
-                      data={difficultyOptions}
-                      labelField="label"
-                      valueField="value"
-                      value={selectedDifficulty}
-                      onChange={(item) => setSelectedDifficulty(item.value)}
-                      placeholder="Select Your Shift"
-                      placeholderStyle={styles.dropdownText}
-                      selectedTextStyle={styles.dropdownText}
-                      itemTextStyle={styles.dropdownText}
-                    />
+                    <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
+                      <Dropdown
+                        style={[styles.dropdown, { flex: 1, marginTop: 0 }]}
+                        data={dayOptions}
+                        labelField="label"
+                        valueField="value"
+                        value={selectedDay}
+                        onChange={(item) => setSelectedDay(item.value)}
+                        placeholder="Day"
+                        placeholderStyle={styles.dropdownText}
+                        selectedTextStyle={styles.dropdownText}
+                        itemTextStyle={styles.dropdownText}
+                      />
+                      <Dropdown
+                        style={[styles.dropdown, { flex: 1, marginTop: 0 }]}
+                        data={sessionOptions}
+                        labelField="label"
+                        valueField="value"
+                        value={selectedSession}
+                        onChange={(item) => setSelectedSession(item.value)}
+                        placeholder="Session"
+                        placeholderStyle={styles.dropdownText}
+                        selectedTextStyle={styles.dropdownText}
+                        itemTextStyle={styles.dropdownText}
+                      />
+                    </View>
 
                     <View style={styles.buttonWrapper}>
                       <TouchableOpacity
