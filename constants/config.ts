@@ -60,5 +60,8 @@ export const GET_ADMISSION_TIMELINE = `${extra.SERVER_URL}/api/admissions/timeli
 
 export const GENERATE_OPTION_FORM = `${extra.SERVER_URL}/api/my-option-form/generate-option-form`;
 export const MY_DREAM_SCORE = `${extra.SERVER_URL}/api/myDreamScore`;
+export const GET_PRICES = `${extra.SERVER_URL}/api/payment/prices`;
+export const LOG_USER_ACTION = `${extra.SERVER_URL}/api/log-user-actions`;
+
 
 

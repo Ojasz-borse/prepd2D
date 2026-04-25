@@ -23,6 +23,8 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { useAuth } from "@/context/AuthContext";
+import { logUserAction } from "@/services/api";
+import { UserFeature } from "@/constants/userActions";
 import Reanimated, {
   FadeIn,
   FadeOut,
@@ -282,6 +284,11 @@ export default function EstimatorScreen() {
 
     await predictPercentile(Number(marks), selectedDifficulty);
     setShowResultModal(true);
+
+    if (user?.user_id) {
+      logUserAction(user.user_id, UserFeature.MARKS_TO_PERCENTILE_BUTTON);
+    }
+
     
     // Increment usage ONLY if not subscribed
     if (!isAllowed) {
@@ -307,6 +314,11 @@ export default function EstimatorScreen() {
       Number(mathsPercentile)
     );
     setShowResultModal(true);
+
+    if (user?.user_id) {
+      logUserAction(user.user_id, UserFeature.PERCENTILE_TO_RANK_BUTTON);
+    }
+
 
     // Increment usage ONLY if not subscribed
     if (!isAllowed) {
@@ -496,16 +508,9 @@ export default function EstimatorScreen() {
                 </View>
               </View>
 
-              {!isAllowed && showLock && (
-                <SubscriptionLockSheet
-                  visible={showLock}
-                  planType="after"
-                  onClose={() => setShowLock(false)}
-                />
-
-              )}
             </>
           )}
+
 
           {activeTab === "rank" && (
             <>
@@ -637,17 +642,10 @@ export default function EstimatorScreen() {
               </View>
 
 
-              {showLock && (
-                <SubscriptionLockSheet
-                  visible={showLock}
-                  planType="after"
-                  onClose={() => setShowLock(false)}
-                />
-
-              )}
             </>
           )}
         </View>
+
 
         {/* Result Modal (same modal for both tabs) */}
         <Modal visible={showResultModal} transparent animationType="fade">
@@ -702,7 +700,17 @@ export default function EstimatorScreen() {
             </View>
           </TouchableOpacity>
         </Modal>
+
+
+        {showLock && (
+          <SubscriptionLockSheet
+            visible={showLock}
+            planType="after"
+            onClose={() => setShowLock(false)}
+          />
+        )}
       </LinearGradient>
+
     </SafeAreaView>
   );
 }

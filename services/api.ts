@@ -1,4 +1,10 @@
 
+import { LOG_USER_ACTION } from "../constants/config";
+import { UserFeature } from "../constants/userActions";
+import * as SecureStore from "expo-secure-store";
+import { AUTH_TOKEN } from "@/constants/cacheStorageConfig";
+
+
 type LogoutHandler = () => void;
 let logoutHandler: LogoutHandler | null = null;
 
@@ -60,3 +66,30 @@ export const fetchWithRetry = async (
         throw err;
     }
 };
+
+/**
+ * Logs a user action to the server.
+ */
+export const logUserAction = async (userId: string | number | undefined, feature: UserFeature) => {
+    if (!userId) return;
+    
+    try {
+        const token = await SecureStore.getItemAsync(AUTH_TOKEN);
+        
+        await fetch(LOG_USER_ACTION, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                feature_visited: feature,
+            }),
+        });
+    } catch (error) {
+
+        console.error("Failed to log user action:", error);
+    }
+};
+

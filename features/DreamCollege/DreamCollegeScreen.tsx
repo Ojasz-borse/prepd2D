@@ -17,12 +17,15 @@ import { useAuth } from "@/context/AuthContext";
 import { useAdvancedColleges } from "@/hooks/useAdvancedColleges";
 import { useRouter } from "expo-router";
 import TopHeader from "@/components/TopHeader";
+
+
 import { CATEGORY_OPTIONS, BRANCHES } from "@/constants/collegeFilters";
 import { formatBranchName } from "@/utils/formatHelpers";
 import { styles } from "../OptionForm/styles";
 import DropdownItem from "../OptionForm/components/DropdownItem";
 import { MY_DREAM_SCORE } from "@/constants/config";
-import { fetchWithRetry } from "@/services/api";
+import { fetchWithRetry, logUserAction } from "@/services/api";
+import { UserFeature } from "@/constants/userActions";
 
 export default function DreamCollegeScreen() {
   const { getToken, user } = useAuth();
@@ -68,11 +71,15 @@ export default function DreamCollegeScreen() {
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [colleges]);
 
+
+
   const handleCalculate = async () => {
+
     if (!selectedCollege || !selectedBranch || !selectedCategory) {
       alert("Please fill in all details");
       return;
     }
+
 
     try {
       setLoading(true);
@@ -103,6 +110,10 @@ export default function DreamCollegeScreen() {
       if (data.success) {
         setScore1(data.score_min);
         setScore2(data.score_max);
+
+        if (user?.user_id) {
+          logUserAction(user.user_id, UserFeature.DREAM_SCORE_BUTTON);
+        }
       } else {
         alert(data.message || "Failed to calculate score");
       }
@@ -248,6 +259,7 @@ export default function DreamCollegeScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
+
     </LinearGradient>
   );
 }

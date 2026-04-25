@@ -9,7 +9,8 @@ import CollegeFeesSkeleton from "@/components/CollegeFeesSkeleton";
 import TopHeader from "@/components/TopHeader";
 import { GET_COLLEGES } from "@/constants/config";
 import { useAuth } from "@/context/AuthContext";
-import { apiFetch } from "@/services/api";
+import { apiFetch, logUserAction } from "@/services/api";
+import { UserFeature } from "@/constants/userActions";
 import CollegeFees from "@/features/colleges/CollegeFees";
 import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -133,22 +134,18 @@ export default function CollegeDetails() {
     outputRange: ["0deg", "90deg"], // Forward to Down (90deg)
   });
 
-  const { getToken } = useAuth();
+  const { getToken, user } = useAuth();
 
-  const { isAllowed } = useSubscriptionLock({
+  const { showLock, isAllowed, closeLock } = useSubscriptionLock({
     gate: "after",
+    delay: 2000,
   });
-  const [showLock, setShowLock] = useState(false);
+
+
 
   const index = collegeIndex ? parseInt(collegeIndex) : 0;
 
-  useEffect(() => {
-    if (!isAllowed && college_code !== "03012") {
-      setShowLock(true);
-    } else {
-      setShowLock(false);
-    }
-  }, [isAllowed, index]);
+
 
   useEffect(() => {
     const fetchCollegeDetails = async () => {
@@ -169,6 +166,9 @@ export default function CollegeDetails() {
 
         if (data.success) {
           setCollegeDetails(data.college);
+          if (user?.user_id) {
+            logUserAction(user.user_id, UserFeature.COLLEGE_DETAILS_PAGE);
+          }
         } else {
           setCollegeDetails(null);
         }
@@ -228,12 +228,14 @@ export default function CollegeDetails() {
 
   return (
     <LinearGradient
-      colors={["#f8fafc", "#e6f1ff", "#ffffff"]}
-      locations={[0, 0.5, 1]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={{ flex: 1 }}
-    >
+
+        colors={["#f8fafc", "#e6f1ff", "#ffffff"]}
+        locations={[0, 0.5, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ flex: 1 }}
+      >
+
       <SafeAreaView style={{ flex: 1 }}>
         <TopHeader title="View College" showBackArrow={true} />
 
@@ -429,23 +431,22 @@ export default function CollegeDetails() {
             <View style={styles.separator} />
           </View>
         </ScrollView>
-
-        {showLock && (
-          <SubscriptionLockSheet
-            visible={showLock}
-            planType="after"
-          // onClose={() => {
-          //   setShowLock(false);
-          //   if (index > 0) {
-          //     router.back();
-          //   }
-          // }}
-          />
-        )}
       </SafeAreaView>
+      {showLock && (
+        <SubscriptionLockSheet
+          visible={showLock}
+          planType="after"
+          onClose={() => {
+            closeLock();
+            router.back();
+          }}
+        />
+      )}
     </LinearGradient>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   container: {

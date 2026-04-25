@@ -5,14 +5,20 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  Dimensions,
 } from "react-native";
+
+
 import { MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 import Reanimated, {
   FadeIn,
   SlideInDown,
 } from "react-native-reanimated";
 import RazorpayCheckout from "react-native-razorpay";
-import { CREATE_ORDER, RAZORPAY_KEY, VERIFY_ORDER } from "@/constants/config";
+import { CREATE_ORDER, RAZORPAY_KEY, VERIFY_ORDER, GET_PRICES } from "@/constants/config";
+
 import { useAuth } from "@/context/AuthContext";
 import { apiFetch } from "@/services/api";
 import {
@@ -82,8 +88,42 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
   });
   const [isValidating, setIsValidating] = React.useState(false);
 
-  const defaultPrice = planType === "before" ? DEFAULT_PRICE_BEFORE : DEFAULT_PRICE_AFTER;
+  const [defaultPrice, setDefaultPrice] = React.useState(
+    planType === "before" ? DEFAULT_PRICE_BEFORE : DEFAULT_PRICE_AFTER
+  );
   const [displayedPrice, setDisplayedPrice] = React.useState(defaultPrice);
+
+  React.useEffect(() => {
+    const basePrice = planType === "before" ? DEFAULT_PRICE_BEFORE : DEFAULT_PRICE_AFTER;
+    setDefaultPrice(basePrice);
+    setDisplayedPrice(basePrice);
+  }, [planType]);
+
+  React.useEffect(() => {
+
+    if (visible) {
+      const fetchPrices = async () => {
+        try {
+          const token = await getToken();
+          const res = await fetchWithRetry(GET_PRICES, {
+            headers: {
+              Authorization: token ? `Bearer ${token}` : "",
+            },
+          });
+          const data = await res.json();
+          if (data.success) {
+            if (planType === "after" && data.defaultPriceAfter) {
+              setDefaultPrice(data.defaultPriceAfter);
+              setDisplayedPrice(data.defaultPriceAfter);
+            }
+          }
+        } catch (err) {
+          console.error("Error fetching prices:", err);
+        }
+      };
+      fetchPrices();
+    }
+  }, [visible, planType]);
 
   const overallCss = (cssType === "type2") ? styles.content_type2 : styles.content_type1;
 
@@ -197,13 +237,19 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
         throw new Error(`Server returned ${res.status}: ${errorText.substring(0, 100)}`);
       }
 
-      const order = await res.json();
+      const data = await res.json();
+      const order = data.order || data;
+
+      if (!order.id || !order.amount) {
+        console.error("Invalid order data received:", data);
+        throw new Error("Invalid order data from server");
+      }
 
       // 2️⃣ Razorpay options
       const options = {
         description: "PrepCET Subscription",
         currency: "INR",
-        key: RAZORPAY_KEY, // TEST KEY ONLY
+        key: RAZORPAY_KEY,
         amount: order.amount,
         order_id: order.id,
         name: "PrepCET",
@@ -248,8 +294,9 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
             onClose?.();
           });
         })
-        .catch((error: { description?: string }) => {
-          showAlert("Payment Failed", "Payment Failed.", "error");
+        .catch((error: any) => {
+          console.error("Razorpay Error:", error);
+          showAlert("Payment Failed", error.description || "Payment was cancelled or failed.", "error");
         });
 
     } catch (err) {
@@ -265,104 +312,102 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
       entering={FadeIn.duration(400)}
       style={styles.lockScreenContainer}
     >
-      <Reanimated.View
-        entering={SlideInDown.duration(600)}
-        style={overallCss}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1, width: "100%", justifyContent: "flex-end" }}
       >
-        <View style={styles.handle} />
 
-        <View style={styles.iconContainer}>
-          <View style={styles.iconCircle}>
-            <MaterialCommunityIcons name="crown" size={48} color="#fff" />
+        <Reanimated.View
+          entering={SlideInDown.duration(600)}
+          style={overallCss}
+        >
+          <View style={styles.handle} />
+
+          <View style={styles.iconContainer}>
+            <View style={styles.iconCircle}>
+              <MaterialCommunityIcons name="crown" size={48} color="#fff" />
+            </View>
           </View>
-        </View>
 
-        <Text style={styles.title}>{content.title}</Text>
+          <Text style={styles.title}>{content.title}</Text>
 
-        <Text style={styles.description}>{content.description}</Text>
+          <Text style={styles.description}>{content.description}</Text>
 
-        <Text style={styles.price}>₹{displayedPrice}</Text>
+          <Text style={styles.price}>₹{displayedPrice}</Text>
 
-        <View style={styles.couponContainer}>
+          <View style={styles.couponContainer}>
 
-          {(
-            <Text style={[
-              styles.validationText,
-              validationMsg.type === "valid" ? styles.validText : styles.invalidText
-            ]}>
-              {validationMsg.text}
-            </Text>
+            {(
+              <Text style={[
+                styles.validationText,
+                validationMsg.type === "valid" ? styles.validText : styles.invalidText
+              ]}>
+                {validationMsg.text}
+              </Text>
+            )}
+
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.couponInput}
+                placeholder="Coupon Code (Optional)"
+                value={couponInput}
+                onChangeText={handleCouponChange}
+                autoCapitalize="characters"
+                editable={!isValidating}
+              />
+              <TouchableOpacity
+                style={[
+                  styles.applyButton,
+                  (!couponInput || isValidating) && styles.disabledApplyButton
+                ]}
+                onPress={validateCouponOnBackend}
+                disabled={!couponInput || isValidating}
+              >
+                <Text style={styles.applyButtonText}>{isValidating ? "Applying.." : "Apply"}</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+
+          {planType === "before" && (
+            <View style={styles.tabIndicatorContainer}>
+              <View style={styles.tabIndicator}>
+                <Feather name="book-open" size={20} color="#004aad" />
+                <Text style={styles.tabLabel}>Preparation</Text>
+              </View>
+              <View style={styles.tabIndicator}>
+                <Feather name="file-text" size={20} color="#004aad" />
+                <Text style={styles.tabLabel}>Mock Tests</Text>
+              </View>
+            </View>
           )}
 
-          <View style={styles.inputWrapper}>
-            <TextInput
-              style={styles.couponInput}
-              placeholder="Coupon Code (Optional)"
-              value={couponInput}
-              onChangeText={handleCouponChange}
-              autoCapitalize="characters"
-              editable={!isValidating}
-            />
-            <TouchableOpacity
-              style={[
-                styles.applyButton,
-                (!couponInput || isValidating) && styles.disabledApplyButton
-              ]}
-              onPress={validateCouponOnBackend}
-              disabled={!couponInput || isValidating}
-            >
-              <Text style={styles.applyButtonText}>{isValidating ? "Applying.." : "Apply"}</Text>
-            </TouchableOpacity>
-          </View>
-
-        </View>
-
-        {planType === "before" && (
-          <View style={styles.tabIndicatorContainer}>
-            <View style={styles.tabIndicator}>
-              <Feather name="book-open" size={20} color="#004aad" />
-              <Text style={styles.tabLabel}>Preparation</Text>
+          {planType === "after" && (
+            <View style={styles.tabIndicatorContainer}>
+              <View style={styles.tabIndicator}>
+                <Feather name="search" size={20} color="#004aad" />
+                <Text style={styles.tabLabel}>Colleges</Text>
+              </View>
+              <View style={styles.tabIndicator}>
+                <Feather name="bar-chart-2" size={20} color="#004aad" />
+                <Text style={styles.tabLabel}>Estimator</Text>
+              </View>
             </View>
-            <View style={styles.tabIndicator}>
-              <Feather name="file-text" size={20} color="#004aad" />
-              <Text style={styles.tabLabel}>Mock Tests</Text>
-            </View>
-          </View>
-        )}
+          )}
 
-        {planType === "after" && (
-          <View style={styles.tabIndicatorContainer}>
-            <View style={styles.tabIndicator}>
-              <Feather name="search" size={20} color="#004aad" />
-              <Text style={styles.tabLabel}>Colleges</Text>
-            </View>
-            <View style={styles.tabIndicator}>
-              <Feather name="bar-chart-2" size={20} color="#004aad" />
-              <Text style={styles.tabLabel}>Estimator</Text>
-            </View>
-          </View>
-        )}
-
-        <TouchableOpacity
-          style={[
-            styles.subscribeButton
-          ]}
-          activeOpacity={0.85}
-          onPress={() => startPayment()}
-          // disabled={planType === "after"}
-        >
-          <Text style={styles.subscribeButtonText}>{content.priceText}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={onClose}
-        >
-          <Text style={styles.closeButtonText}>Not Now</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.subscribeButton
+            ]}
+            activeOpacity={0.85}
+            onPress={() => startPayment()}
+          >
+            <Text style={styles.subscribeButtonText}>{content.priceText}</Text>
+          </TouchableOpacity>
 
 
-      </Reanimated.View>
+        </Reanimated.View>
+      </KeyboardAvoidingView>
 
       <CustomAlertModal
         visible={alertConfig.visible}
@@ -372,52 +417,49 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
         onClose={hideAlert}
       />
     </Reanimated.View>
-
   );
 };
+
 
 export default SubscriptionLockSheet;
 
 const styles = StyleSheet.create({
   lockScreenContainer: {
-    flex: 1,
-    backgroundColor: "#00000050",
-    width: "100%",
-    height: "100%",
+    backgroundColor: "rgba(0,0,0,0.5)",
     position: "absolute",
     top: 0,
+    bottom: 0,
     left: 0,
     right: 0,
     justifyContent: "center",
     alignItems: "center",
     zIndex: 1000,
+
   },
   content_type1: {
     width: "100%",
-    position: "absolute",
-    left: 0,
-    bottom: 0,
     backgroundColor: "#fff",
+
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 24,
     paddingBottom: 20,
     alignItems: "center",
-    marginBottom: -10
+    marginBottom: -10,
+
 
   },
   content_type2: {
     width: "100%",
-    position: "absolute",
-    left: 0,
-    bottom: 0,
     backgroundColor: "#fff",
+
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 24,
     paddingBottom: 20,
     alignItems: "center",
-    marginBottom: 150
+    marginBottom: 150,
+    zIndex: 10011,
 
   },
   handle: {
@@ -483,14 +525,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontFamily: "SourceSans3SemiBold",
-  },
-  closeButton: {
-    paddingVertical: 12,
-  },
-  closeButtonText: {
-    color: "#94a3b8",
-    fontSize: 16,
-    fontFamily: "SourceSans3Medium",
   },
   tabIndicatorContainer: {
     flexDirection: "row",

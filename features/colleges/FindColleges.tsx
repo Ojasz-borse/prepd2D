@@ -16,6 +16,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "expo-router";
+import { logUserAction } from "@/services/api";
+import { UserFeature } from "@/constants/userActions";
 import Animated, {
   FadeIn,
   SlideInDown,
@@ -142,6 +144,19 @@ export default function FindColleges({ initialTab }: { initialTab?: "all" | "col
       indicatorWidth.value = withTiming(m.width, { duration: 180 });
     }
   }, [activeTab, tabMeasurements]);
+
+  useEffect(() => {
+    if (user?.user_id) {
+      if (activeTab === "colleges") {
+        logUserAction(user.user_id, UserFeature.COLLEGES_PAGE);
+      } else if (activeTab === "branches") {
+        logUserAction(user.user_id, UserFeature.BRANCH_PAGE);
+      } else if (activeTab === "compare") {
+        logUserAction(user.user_id, UserFeature.COMPARE_COLLEGE_BUTTON);
+      }
+    }
+  }, [activeTab, user?.user_id]);
+
 
   const onTabLayout = (tab: string, e: LayoutChangeEvent) => {
     const { x, width } = e.nativeEvent.layout;
@@ -305,15 +320,17 @@ export default function FindColleges({ initialTab }: { initialTab?: "all" | "col
           </View>
         )}
 
-        {showLock && (
-          <SubscriptionLockSheet
-            visible={showLock}
-            planType="after"
-            // onClose={closeLock}
-          />
-        )}
       </View>
+
+      {showLock && (
+        <SubscriptionLockSheet
+          visible={showLock}
+          planType="after"
+          onClose={closeLock}
+        />
+      )}
     </LinearGradient>
+
   );
 }
 

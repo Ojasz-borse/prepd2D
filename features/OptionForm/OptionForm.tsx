@@ -13,6 +13,8 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
+import { logUserAction } from "@/services/api";
+import { UserFeature } from "@/constants/userActions";
 import { useLocalSearchParams } from "expo-router";
 import { useCreateCollegeList } from "@/hooks/useCreateCollegeList";
 import { useSubscriptionLock } from "@/hooks/useSubcribtion";
@@ -229,7 +231,12 @@ export default function OptionForm() {
     if (data) {
       setResults(data);
       setShowResults(true);
+
+      if (user?.user_id) {
+        logUserAction(user.user_id, UserFeature.OPTION_FORM_GENERATION_BUTTON);
+      }
     }
+
   };
 
   const handleSave = async () => {
@@ -413,9 +420,7 @@ export default function OptionForm() {
 
           <GeneratingModal visible={loading} />
 
-          {showLock && (
-            <SubscriptionLockSheet visible={showLock} planType="after" />
-          )}
+
 
           <CustomAlertModal
             visible={alertConfig.visible}
@@ -425,7 +430,17 @@ export default function OptionForm() {
             onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
           />
         </View>
+
+        {showLock && (
+          <SubscriptionLockSheet 
+            visible={showLock} 
+            planType="after" 
+            onClose={closeLock}
+          />
+        )}
+
       </SafeAreaView>
+
     </LinearGradient>
   );
 }
