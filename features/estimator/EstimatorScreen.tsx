@@ -265,6 +265,19 @@ export default function EstimatorScreen() {
   //   { label: "Very Hard", value: "veryHard" },
   // ];
   const difficultyOptions = [
+    { label: "12th May Morning", difficulty: "moderate2" },
+    { label: "12th May Evening", difficulty: "moderate2" },
+    { label: "13th May Morning", difficulty: "hard2" },
+    { label: "13th May Evening", difficulty: "moderate2" },
+    { label: "14th May Morning", difficulty: "moderate2" },
+    { label: "14th May Evening", difficulty: "moderate2" },
+    { label: "15th May Morning", difficulty: "moderate2" },
+    { label: "15th May Evening", difficulty: "hard2" },
+    { label: "18th May Morning", difficulty: "moderate2" },
+    { label: "18th May Evening", difficulty: "moderate2" },
+    { label: "19th May Morning", difficulty: "moderate2" },
+    { label: "19th May Evening", difficulty: "moderate2" },
+    { label: "20th May Morning", difficulty: "hard2" },
     { label: "11th April Morning", difficulty: "easy" },
     { label: "11th April Evening", difficulty: "moderate" },
     { label: "13th April Morning", difficulty: "moderate" },
@@ -284,6 +297,13 @@ export default function EstimatorScreen() {
   ];
 
   const dayOptions = [
+    { label: "12th May", value: "12th May" },
+    { label: "13th May", value: "13th May" },
+    { label: "14th May", value: "14th May" },
+    { label: "15th May", value: "15th May" },
+    { label: "18th May", value: "18th May" },
+    { label: "19th May", value: "19th May" },
+    { label: "20th May", value: "20th May" },
     { label: "11th April", value: "11th April" },
     { label: "13th April", value: "13th April" },
     { label: "15th April", value: "15th April" },
@@ -319,7 +339,14 @@ export default function EstimatorScreen() {
     }
 
     const combinedLabel = `${selectedDay} ${selectedSession}`;
-    const difficulty = difficultyOptions.find(opt => opt.label === combinedLabel)?.difficulty || "moderate";
+    const matchedOption = difficultyOptions.find(opt => opt.label === combinedLabel);
+
+    if (!matchedOption) {
+      setErrMsgMarks("This day/session combination is not available.");
+      return;
+    }
+    
+    const difficulty = matchedOption.difficulty;
     await predictPercentile(Number(marks), difficulty);
     setShowResultModal(true);
 
