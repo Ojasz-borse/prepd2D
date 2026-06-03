@@ -9,6 +9,7 @@ import {
   LayoutChangeEvent,
   PanResponder,
   Alert,
+  Linking
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
@@ -362,6 +363,18 @@ export default function OptionForm() {
               bounces={false}
               keyboardShouldPersistTaps="handled"
             >
+              {!showResults && (
+                <TouchableOpacity
+                  onPress={() => Linking.openURL("https://www.prepcet.in/terms-and-conditions.html")}
+                  style={styles.infoStrip}
+                >
+                  <Text style={styles.infoStripText}>
+                    Please{" "}
+                    <Text style={styles.infoStripLink}>view this</Text>
+                    {" "}before generating your option form
+                  </Text>
+                </TouchableOpacity>
+              )}
               {!showResults ? (
                 <CreateCollegeForm
                   rank={rank}

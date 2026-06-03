@@ -716,4 +716,20 @@ export const styles = StyleSheet.create({
     fontFamily: "SourceSans3Medium",
     color: "#333",
   },
+  infoStrip: {
+    marginBottom: 12,
+    alignSelf: "flex-start",
+    marginLeft: 5,
+  },
+  infoStripText: {
+    fontSize: 13,
+    fontFamily: "SourceSans3Medium",
+    color: "#64748b",
+    textAlign: "left",
+  },
+  infoStripLink: {
+    color: "#004aad",
+    fontFamily: "SourceSans3SemiBold",
+    textDecorationLine: "underline",
+  },
 });

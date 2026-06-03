@@ -5,7 +5,7 @@ export default {
     expo: {
         name: "PrepCET",
         slug: "prepcet",
-        version: "2.0.8",
+        version: "2.0.9",
         orientation: "portrait",
         icon: "./assets/images/icon.png",
         scheme: "prepcet",
@@ -19,7 +19,7 @@ export default {
             supportsTablet: true
         },
         android: {
-            versionCode: 18,
+            versionCode: 19,
             adaptiveIcon: {
                 foregroundImage: "./assets/images/icon.png",
                 backgroundColor: "#ffffff"

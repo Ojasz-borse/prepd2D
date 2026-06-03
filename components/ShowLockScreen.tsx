@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Dimensions,
+  Linking 
 } from "react-native";
 
 
@@ -28,7 +29,7 @@ import {
 import CustomAlertModal from "@/components/CustomAlertModal";
 import { VERIFY_COUPON } from "@/constants/config"; // Ensure this is exported in your config
 import { fetchWithRetry } from "@/services/api";
-
+import Checkbox from 'expo-checkbox';
 
 type RazorpaySuccess = {
   razorpay_payment_id: string;
@@ -87,7 +88,7 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
     type: "none",
   });
   const [isValidating, setIsValidating] = React.useState(false);
-
+  const [termsAccepted, setTermsAccepted] = React.useState(false);
   const [defaultPrice, setDefaultPrice] = React.useState(
     planType === "before" ? DEFAULT_PRICE_BEFORE : DEFAULT_PRICE_AFTER
   );
@@ -102,6 +103,7 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
   React.useEffect(() => {
 
     if (visible) {
+      setTermsAccepted(false);
       const fetchPrices = async () => {
         try {
           const token = await getToken();
@@ -395,12 +397,33 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
             </View>
           )}
 
+          <View style={styles.termsRow}>
+            <Checkbox
+              value={termsAccepted}
+              onValueChange={setTermsAccepted}
+              // Optional: Match your app's primary color when checked
+              color={termsAccepted ? '#004aad' : undefined} 
+              style={styles.checkbox}
+            />
+            <Text style={styles.termsText}>
+              Click here to Accept{" "}
+              <Text
+                style={styles.termsLink}
+                onPress={() => Linking.openURL("https://www.prepcet.in/terms-and-conditions.html")}
+              >
+                Terms and Conditions
+              </Text>
+            </Text>
+          </View>
+
           <TouchableOpacity
             style={[
-              styles.subscribeButton
+              styles.subscribeButton, 
+              !termsAccepted && { backgroundColor: '#94a3b8' }
             ]}
             activeOpacity={0.85}
             onPress={() => startPayment()}
+            disabled={!termsAccepted}  
           >
             <Text style={styles.subscribeButtonText}>{content.priceText}</Text>
           </TouchableOpacity>
@@ -520,6 +543,12 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     backgroundColor: "#94a3b8",
+    width: "100%",
+    height: 56,
+    borderRadius: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
   },
   subscribeButtonText: {
     color: "#fff",
@@ -594,5 +623,39 @@ const styles = StyleSheet.create({
   },
   invalidText: {
     color: "#ef4444",
+  },
+  termsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 16,
+    gap: 10,
+    justifyContent: "center",
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: "#004aad",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  checkboxTick: {
+    color: "#004aad",
+    fontSize: 14,
+    lineHeight: 16,
+    fontWeight: "bold",
+  },
+  termsText: {
+    fontSize: 13,
+    fontFamily: "SourceSans3Medium",
+    color: "#64748b",
+    flexShrink: 1,
+  },
+  termsLink: {
+    color: "#004aad",
+    fontFamily: "SourceSans3SemiBold",
+    textDecorationLine: "underline",
   },
 });
