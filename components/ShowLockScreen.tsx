@@ -51,13 +51,13 @@ interface SubscriptionLockSheetProps {
 const CONTENT_MAP = {
   before: {
     title: "CET Preparation Plan",
-    description: "Get access to PYQ's section & Mock Tests section of the PrepCET application",
+    description: "Get access to PYQ's section & Mock Tests section of the PrepDSE application",
     priceText: "Unlock CET Preparation Plan",
   },
   after: {
-    title: "After MHT-CET Plan",
+    title: "PrepDSE Plan",
     description: "Unlock accurate data of all colleges in Maharashtra, and advanced filters.",
-    priceText: "Unlock After MHT-CET Plan",
+    priceText: "Unlock PrepDSE Plan",
   },
 };
 
@@ -249,12 +249,12 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
 
       // 2️⃣ Razorpay options
       const options = {
-        description: "PrepCET Subscription",
+        description: "PrepDSE Subscription",
         currency: "INR",
         key: RAZORPAY_KEY,
         amount: order.amount,
         order_id: order.id,
-        name: "PrepCET",
+        name: "PrepDSE",
         prefill: {
           email: user?.email,
           name: user?.first_name + " " + user?.last_name,
@@ -409,7 +409,7 @@ const SubscriptionLockSheet: React.FC<SubscriptionLockSheetProps> = ({
               Click here to Accept{" "}
               <Text
                 style={styles.termsLink}
-                onPress={() => Linking.openURL("https://www.prepcet.in/terms-and-conditions.html")}
+                onPress={() => Linking.openURL("https://www.prepdse.in/terms-and-conditions.html")}
               >
                 Terms and Conditions
               </Text>

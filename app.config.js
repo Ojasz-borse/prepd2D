@@ -3,12 +3,12 @@ import 'dotenv/config';
 
 export default {
     expo: {
-        name: "PrepCET",
-        slug: "prepcet",
+        name: "PrepDSE",
+        slug: "prepdse",
         version: "2.0.9",
         orientation: "portrait",
         icon: "./assets/images/icon.png",
-        scheme: "prepcet",
+        scheme: "prepdse",
         userInterfaceStyle: "automatic",
         splash: {
             image: "./assets/images/icon.png",
@@ -26,7 +26,7 @@ export default {
             },
             edgeToEdgeEnabled: true,
             softwareKeyboardLayoutMode: "resize",
-            package: "com.anonymous.PrepCET",
+            package: "com.anonymous.PrepDSE",
 
             // CHANGE 1: Use 'blockedPermissions' instead of 'excludedPermissions'
             permissions: [],

@@ -12,15 +12,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Help() {
   const openPrivacyPage = () => {
-    Linking.openURL("https://www.prepcet.in/privacy-and-policy.html");
+    Linking.openURL("https://www.prepdse.in/privacy-and-policy.html");
   };
 
   const openDeletePolicyPage = () => {
-    Linking.openURL("https://www.prepcet.in/account-deletion-policy.html");
+    Linking.openURL("https://www.prepdse.in/account-deletion-policy.html");
   };
 
   const sendSupportMail = () => {
-    Linking.openURL("mailto:team@prepcet.in");
+    Linking.openURL("mailto:team@prepdse.in");
   };
 
   return (
@@ -70,7 +70,7 @@ export default function Help() {
               marginBottom: 15,
             }}
           >
-            team@prepcet.in — you can email us for any queries or support.
+            team@prepdse.in — you can email us for any queries or support.
           </Text>
 
           <TouchableOpacity
@@ -124,7 +124,7 @@ export default function Help() {
               marginBottom: 15,
             }}
           >
-            Your privacy is our priority. Learn how PrepCET collects, uses, and
+            Your privacy is our priority. Learn how PrepDSE collects, uses, and
             protects your personal information.
           </Text>
 

@@ -252,7 +252,7 @@ const RegisterUserScreen: React.FC = () => {
                 </>
               )}
 
-              {/* STEP 3: Group */}
+              {/* STEP 3: Group
               {step === 3 && (
                 <>
                   <Text style={styles.headingText}>Select Your Group</Text>
@@ -272,7 +272,7 @@ const RegisterUserScreen: React.FC = () => {
                       >
                         PCM
                       </Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     {/* <TouchableOpacity
                       style={[
                         styles.groupOption,
@@ -289,7 +289,7 @@ const RegisterUserScreen: React.FC = () => {
                         PCB
                       </Text>
                     </TouchableOpacity> */}
-                  </View>
+                  {/* </View>
                   <View style={styles.buttonWrapper}>
                     <TouchableOpacity
                       style={[
@@ -310,10 +310,10 @@ const RegisterUserScreen: React.FC = () => {
                     </TouchableOpacity>
                   </View>
                 </>
-              )}
+              )} */}
 
               {/* STEP 4: Password */}
-              {step === 4 && (
+              {step === 3 && (
                 <>
                   <Text style={styles.headingText}>Set Password</Text>
                   <FloatingLabelInput

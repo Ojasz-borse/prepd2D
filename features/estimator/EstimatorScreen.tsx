@@ -1,150 +1,34 @@
 import FloatingLabelInput from "@/components/FloatingLabelInput";
 import TopHeader from "@/components/TopHeader";
 import { useEstimator } from "@/hooks/useEstimator";
-import { Ionicons, Feather } from "@expo/vector-icons";
-import { useRouter, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState, useRef } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  LayoutChangeEvent,
-  PanResponder,
 } from "react-native";
-import { Dropdown } from "react-native-element-dropdown";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated";
 import { useAuth } from "@/context/AuthContext";
 import { logUserAction } from "@/services/api";
 import { UserFeature } from "@/constants/userActions";
-import Reanimated, {
-  FadeIn,
-  FadeOut,
-  SlideInDown,
-  SlideOutDown
-} from 'react-native-reanimated';
 import { usePreventScreenCapture } from "@/hooks/usePreventScreenCapture";
 import { useSubscriptionLock } from "@/hooks/useSubcribtion";
 import SubscriptionLockSheet from "@/components/ShowLockScreen";
 import { useTrialUsage } from "@/hooks/useTrialUsage";
 
-
-const EstimatorLanding = ({ onTabChange }: { onTabChange: (tab: "marks" | "rank") => void }) => {
-  const items = [
-    { title: "Percentile from Marks", icon: "stats-chart-outline", tab: "marks" as const },
-    { title: "Rank from Percentile", icon: "trophy-outline", tab: "rank" as const },
-  ];
-
-  return (
-    <View style={styles.card}>
-      <Text style={styles.heading}>Quick Access</Text>
-
-      <View style={styles.gridContainer}>
-        {items.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            activeOpacity={0.7}
-            style={styles.gridItem}
-            onPress={() => onTabChange(item.tab)}
-          >
-            <View style={[
-              styles.iconBox,
-              {
-                backgroundColor:
-                  item.title === "Percentile from Marks" ? "#ff5e3220" :
-                    "#004aad20",
-              },
-            ]}>
-              <Ionicons name={item.icon as any} size={24} color={
-                item.title === "Percentile from Marks" ? "#ff5e32" :
-                  "#004aad"
-              } />
-            </View>
-            <Text style={styles.gridTitle}>{item.title}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </View>
-  );
-};
-
 export default function EstimatorScreen() {
-  const { percentile, rank, loading, error, predictPercentile, predictRank } =
-    useEstimator();
+  const { rank, loading, error, predictRank } = useEstimator();
   const { user } = useAuth();
-
-  const { tab } = useLocalSearchParams();
-  const [activeTab, setActiveTab] = useState<"all" | "marks" | "rank">("all");
-
-  useEffect(() => {
-    if (tab === "marks" || tab === "rank") {
-      setActiveTab(tab as "marks" | "rank");
-    }
-  }, [tab]);
-
   usePreventScreenCapture();
 
-  // Tab Measurement Logic
-  const [tabMeasurements, setTabMeasurements] = useState<{ [key: string]: { x: number; width: number } }>({});
-  const indicatorX = useSharedValue(0);
-  const indicatorWidth = useSharedValue(0);
-
-  useEffect(() => {
-    const measurement = tabMeasurements[activeTab];
-    if (measurement) {
-      indicatorX.value = withSpring(measurement.x, { mass: 0.5, stiffness: 120, damping: 15 });
-      indicatorWidth.value = withSpring(measurement.width, { mass: 0.5, stiffness: 120, damping: 15 });
-    }
-  }, [activeTab, tabMeasurements]);
-
-  const onTabLayout = (tab: string, event: LayoutChangeEvent) => {
-    const { x, width } = event.nativeEvent.layout;
-    setTabMeasurements((prev) => {
-      if (prev[tab]?.x === x && prev[tab]?.width === width) return prev;
-      return { ...prev, [tab]: { x, width } };
-    });
-  };
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gestureState) =>
-        Math.abs(gestureState.dx) > 20,
-      onPanResponderRelease: (_, gestureState) => {
-        if (gestureState.dx > 50) {
-          if (activeTab === "rank") setActiveTab("marks");
-          else if (activeTab === "marks") setActiveTab("all");
-        } else if (gestureState.dx < -50) {
-          if (activeTab === "all") setActiveTab("marks");
-          else if (activeTab === "marks") setActiveTab("rank");
-        }
-      },
-    })
-  ).current;
-
-  const indicatorStyle = useAnimatedStyle(() => {
-    return {
-      width: indicatorWidth.value,
-      transform: [{ translateX: indicatorX.value }],
-    };
-  });
-  const [marks, setMarks] = useState("");
-  const [selectedDay, setSelectedDay] = useState<string | null>(null);
-  const [selectedSession, setSelectedSession] = useState<string | null>(null);
-  const [errMsgMarks, setErrMsgMarks] = useState("");
-
-  // Rank tab states (separate so inputs don't overwrite each other)
-  const [overallPercentile, setOverallPercentile] = useState("");
-  const [physicsPercentile, setPhysicsPercentile] = useState("");
-  const [chemistryPercentile, setChemistryPercentile] = useState("");
-  const [mathsPercentile, setMathsPercentile] = useState("");
+  // Percentage state (separate so inputs don't overwrite each other)
+  const [overallPercentage, setOverallPercentage] = useState("");
   const [errMsgRank, setErrMsgRank] = useState("");
 
   // Shared UI state
@@ -155,24 +39,10 @@ export default function EstimatorScreen() {
     gate: "after",
   });
 
-
   const [showLock, setShowLock] = useState(false);
-  const marksTrial = useTrialUsage("trial_marks_to_percentile", 3);
   const rankTrial = useTrialUsage("trial_percentile_to_rank", 3);
 
-  // Removed automatic lock popup on page load
-
-  useEffect(() => {
-    if (Number(marks) < 0) {
-      setErrMsgMarks("Marks should not be less than 0!");
-    } else if (Number(marks) > 200) {
-      setErrMsgMarks("Marks should not be greater than 200!");
-    } else {
-      setErrMsgMarks("");
-    }
-  }, [marks]);
-
-  // Validate rank inputs (overall required; subjects optional but must be 0-100 if provided)
+  // Validate percentage range
   useEffect(() => {
     const checkNumberRange = (val: string) => {
       if (val === "") return true;
@@ -187,32 +57,15 @@ export default function EstimatorScreen() {
       return decimalCheck.test(val);
     };
 
-    if (!checkNumberRange(overallPercentile)) {
-      setErrMsgRank("Percentile must be between 0 - 100");
-      return;
-    }
-    if (!checkNumberRange(physicsPercentile)) {
-      setErrMsgRank("Percentile must be between 0 - 100");
-      return;
-    }
-    if (!checkNumberRange(chemistryPercentile)) {
-      setErrMsgRank("Percentile must be between 0 - 100");
-      return;
-    }
-    if (!checkNumberRange(mathsPercentile)) {
-      setErrMsgRank("Percentile must be between 0 - 100");
+    if (!checkNumberRange(overallPercentage)) {
+      setErrMsgRank("Percentage must be between 0 - 100");
       return;
     }
 
     setErrMsgRank("");
-  }, [
-    overallPercentile,
-    physicsPercentile,
-    chemistryPercentile,
-    mathsPercentile,
-  ]);
+  }, [overallPercentage]);
 
-  const handlePercentileInput = (
+  const handlePercentageInput = (
     text: string,
     setState: React.Dispatch<React.SetStateAction<string>>
   ) => {
@@ -241,7 +94,7 @@ export default function EstimatorScreen() {
     }
   };
 
-  const handlePercentileBlur = (
+  const handlePercentageBlur = (
     val: string,
     setter: React.Dispatch<React.SetStateAction<string>>
   ) => {
@@ -257,109 +110,8 @@ export default function EstimatorScreen() {
     }
   };
 
-  // const difficultyOptions = [
-  //   { label: "Very Easy", value: "veryEasy" },
-  //   { label: "Easy", value: "easy" },
-  //   { label: "Moderate", value: "moderate" },
-  //   { label: "Hard", value: "hard" },
-  //   { label: "Very Hard", value: "veryHard" },
-  // ];
-  const difficultyOptions = [
-    { label: "12th May Morning", difficulty: "moderate2" },
-    { label: "12th May Evening", difficulty: "moderate2" },
-    { label: "13th May Morning", difficulty: "hard2" },
-    { label: "13th May Evening", difficulty: "moderate2" },
-    { label: "14th May Morning", difficulty: "moderate2" },
-    { label: "14th May Evening", difficulty: "moderate2" },
-    { label: "15th May Morning", difficulty: "moderate2" },
-    { label: "15th May Evening", difficulty: "hard2" },
-    { label: "18th May Morning", difficulty: "moderate2" },
-    { label: "18th May Evening", difficulty: "moderate2" },
-    { label: "19th May Morning", difficulty: "moderate2" },
-    { label: "19th May Evening", difficulty: "moderate2" },
-    { label: "20th May Morning", difficulty: "hard2" },
-    { label: "11th April Morning", difficulty: "easy" },
-    { label: "11th April Evening", difficulty: "moderate" },
-    { label: "13th April Morning", difficulty: "moderate" },
-    { label: "13th April Evening", difficulty: "hard" },
-    { label: "15th April Morning", difficulty: "hard" },
-    { label: "15th April Evening", difficulty: "hard" },
-    { label: "16th April Morning", difficulty: "moderate" },
-    { label: "16th April Evening", difficulty: "hard" },
-    { label: "17th April Morning", difficulty: "hard" },
-    { label: "17th April Evening", difficulty: "moderate" },
-    { label: "18th April Morning", difficulty: "moderate" },
-    { label: "18th April Evening", difficulty: "moderate" },
-    { label: "19th April Morning", difficulty: "moderate" },
-    { label: "19th April Evening", difficulty: "moderate" },
-    { label: "20th April Morning", difficulty: "moderate" },
-    { label: "20th April Evening", difficulty: "easy" },
-  ];
-
-  const dayOptions = [
-    { label: "12th May", value: "12th May" },
-    { label: "13th May", value: "13th May" },
-    { label: "14th May", value: "14th May" },
-    { label: "15th May", value: "15th May" },
-    { label: "18th May", value: "18th May" },
-    { label: "19th May", value: "19th May" },
-    { label: "20th May", value: "20th May" },
-    { label: "11th April", value: "11th April" },
-    { label: "13th April", value: "13th April" },
-    { label: "15th April", value: "15th April" },
-    { label: "16th April", value: "16th April" },
-    { label: "17th April", value: "17th April" },
-    { label: "18th April", value: "18th April" },
-    { label: "19th April", value: "19th April" },
-    { label: "20th April", value: "20th April" },
-  ];
-
-  const sessionOptions = [
-    { label: "Morning", value: "Morning" },
-    { label: "Evening", value: "Evening" },
-  ];
-
-  const isMarksValid =
-    Number(marks) >= 0 &&
-    Number(marks) <= 200 &&
-    selectedDay &&
-    selectedSession &&
-    !errMsgMarks;
-
-  // For rank: require overallPercentile and no validation error
-  const isRankValid = overallPercentile !== "" && !errMsgRank;
-
-  const handleCalculatePercentile = async () => {
-    if (!isMarksValid) return;
-    
-    // Check if user has access (either subscribed OR has trials remaining)
-    if (!isAllowed && !marksTrial.hasRemainingTrials) {
-      setShowLock(true);
-      return;
-    }
-
-    const combinedLabel = `${selectedDay} ${selectedSession}`;
-    const matchedOption = difficultyOptions.find(opt => opt.label === combinedLabel);
-
-    if (!matchedOption) {
-      setErrMsgMarks("This day/session combination is not available.");
-      return;
-    }
-    
-    const difficulty = matchedOption.difficulty;
-    await predictPercentile(Number(marks), difficulty);
-    setShowResultModal(true);
-
-    if (user?.user_id) {
-      logUserAction(user.user_id, UserFeature.MARKS_TO_PERCENTILE_BUTTON);
-    }
-
-    
-    // Increment usage ONLY if not subscribed
-    if (!isAllowed) {
-      await marksTrial.incrementUsage();
-    }
-  };
+  // For rank: require overallPercentage and no validation error
+  const isRankValid = overallPercentage !== "" && !errMsgRank;
 
   const handleCalculateRank = async () => {
     if (!isRankValid) return;
@@ -370,13 +122,11 @@ export default function EstimatorScreen() {
       return;
     }
 
-    // Keep the existing predictRank call (only overall) to avoid breaking the hook.
-    // If your hook supports extra fields later, you can extend this call.
     await predictRank(
-      Number(overallPercentile),
-      Number(physicsPercentile),
-      Number(chemistryPercentile),
-      Number(mathsPercentile)
+      Number(overallPercentage),
+      0,
+      0,
+      0
     );
     setShowResultModal(true);
 
@@ -384,50 +134,9 @@ export default function EstimatorScreen() {
       logUserAction(user.user_id, UserFeature.PERCENTILE_TO_RANK_BUTTON);
     }
 
-
     // Increment usage ONLY if not subscribed
     if (!isAllowed) {
       await rankTrial.incrementUsage();
-    }
-  };
-
-  // Info modal content dynamically based on active tab
-  const renderInfoContent = () => {
-    if (activeTab === "marks") {
-      return (
-        <>
-          <Text style={styles.modalTitle}>Marks to Percentile — Info</Text>
-          <Text style={styles.modalPoint}>• Marks must be between 1 - 200</Text>
-          <Text style={styles.modalPoint}>
-            • Difficulty/Shift must be selected
-          </Text>
-          <Text style={styles.modalPoint}>
-            • Predictions are estimates, not exact results
-          </Text>
-          <Text style={styles.modalPoint}>
-            • Higher marks & easier shifts can improve percentile
-          </Text>
-        </>
-      );
-    } else {
-      return (
-        <>
-          <Text style={styles.modalTitle}>Percentile to Rank — Info</Text>
-          <Text style={styles.modalPoint}>
-            • Enter your overall percentile (required).
-          </Text>
-          <Text style={styles.modalPoint}>
-            • You may also provide Physics, Chemistry, and Mathematics
-            percentiles (optional) — providing them can improve accuracy.
-          </Text>
-          <Text style={styles.modalPoint}>
-            • Percentiles must be between 0 and 100.
-          </Text>
-          <Text style={styles.modalPoint}>
-            • Predictions are estimates — actual rank may differ.
-          </Text>
-        </>
-      );
     }
   };
 
@@ -442,291 +151,69 @@ export default function EstimatorScreen() {
       >
         <TopHeader title="Estimator" showBackArrow={true} />
 
-        {/* Tabs */}
-        <View style={styles.tabContainer}>
-          <Animated.View style={[styles.movingIndicatorContainer, indicatorStyle]}>
-            <View style={styles.movingIndicator} />
-          </Animated.View>
+        <View style={styles.contentWrapper}>
+          <View style={styles.centerContainer}>
+            <View style={styles.cardContainer}>
+              <View style={styles.cardHeader}>
+                <Text style={styles.cardTitle}>Enter Overall Percentage</Text>
+                <TouchableOpacity onPress={() => setShowInfo(true)}>
+                  <Ionicons
+                    name="information-circle-outline"
+                    size={22}
+                    color="#004aad"
+                  />
+                </TouchableOpacity>
+              </View>
 
-          <TouchableOpacity
-            style={styles.tab}
-            onPress={() => setActiveTab("all")}
-            onLayout={(e) => onTabLayout("all", e)}
-          >
-            <Text style={[styles.tabText, activeTab === "all" && styles.activeTabText]}>
-              All
-            </Text>
-          </TouchableOpacity>
+              <View style={styles.cardBody}>
+                {!!error && <Text style={styles.errorText}>{error}</Text>}
+                {!!errMsgRank && (
+                  <Text style={styles.errorText}>{errMsgRank}</Text>
+                )}
 
-          <TouchableOpacity
-            style={styles.tab}
-            onPress={() => setActiveTab("marks")}
-            onLayout={(e) => onTabLayout("marks", e)}
-          >
-            <Text style={[styles.tabText, activeTab === "marks" && styles.activeTabText]}>
-              Marks to Percentile
-            </Text>
-          </TouchableOpacity>
+                <FloatingLabelInput
+                  label="Overall Percentage"
+                  value={overallPercentage}
+                  onChangeText={(text) =>
+                    handlePercentageInput(text, setOverallPercentage)
+                  }
+                  onBlur={() =>
+                    handlePercentageBlur(
+                      overallPercentage,
+                      setOverallPercentage
+                    )
+                  }
+                  keyboardType="number-pad"
+                  maxLength={
+                    overallPercentage.includes(".")
+                      ? overallPercentage.indexOf(".") + 8
+                      : 4
+                  }
+                />
 
-          <TouchableOpacity
-            style={styles.tab}
-            onPress={() => setActiveTab("rank")}
-            onLayout={(e) => onTabLayout("rank", e)}
-          >
-            <Text style={[styles.tabText, activeTab === "rank" && styles.activeTabText]}>
-              Percentile to Rank
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.contentWrapper} {...panResponder.panHandlers}>
-          {activeTab === "all" && (
-            <View style={{ paddingHorizontal: 16 }}>
-              {/* Banner */}
-              <LinearGradient
-                colors={["#004aad", "#0073e6"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.banner}
-              >
-                <View style={styles.bannerContent}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.bannerTitle}>Estimate Your Score!</Text>
-                    <Text style={styles.bannerSubtitle}>
-                      Predict your percentile and rank based on your performance.
+                <View style={styles.buttonWrapper}>
+                  <TouchableOpacity
+                    style={[
+                      styles.confirmButton,
+                      isRankValid && styles.confirmButtonActive,
+                    ]}
+                    onPress={handleCalculateRank}
+                    disabled={!isRankValid || loading}
+                  >
+                    <Text style={[
+                      styles.confirmButtonText,
+                      isRankValid && styles.confirmButtonTextActive,
+                    ]}>
+                      {loading ? "Calculating..." : "Calculate"}
                     </Text>
-                  </View>
-                  <View style={styles.bannerIcon}>
-                    <Feather name="bar-chart-2" size={36} color="#fff" />
-                  </View>
+                  </TouchableOpacity>
                 </View>
-              </LinearGradient>
-
-              <EstimatorLanding onTabChange={setActiveTab} />
+              </View>
             </View>
-          )}
-          {activeTab === "marks" && (
-            <>
-              <View style={styles.centerContainer}>
-                <View style={styles.cardContainer}>
-                  <View
-
-                    style={styles.cardHeader}
-                  >
-                    <Text style={styles.cardTitle}>Enter your Marks</Text>
-                    <TouchableOpacity onPress={() => setShowInfo(true)}>
-                      <Ionicons
-                        name="information-circle-outline"
-                        size={22}
-                        color="#004aad"
-                      />
-                    </TouchableOpacity>
-                  </View>
-
-                  <View style={styles.cardBody}>
-                    {!!error && <Text style={styles.errorText}>{error}</Text>}
-                    {!!errMsgMarks && (
-                      <Text style={styles.errorText}>{errMsgMarks}</Text>
-                    )}
-
-                    <FloatingLabelInput
-                      label="Enter Marks"
-                      value={marks}
-                      onChangeText={(text) => {
-                        const sanitized = text.replace(/\./g, "");
-                        setMarks(sanitized);
-                      }}
-                      keyboardType="number-pad"
-                    />
-
-                    <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
-                      <Dropdown
-                        style={[styles.dropdown, { flex: 1, marginTop: 0 }]}
-                        data={dayOptions}
-                        labelField="label"
-                        valueField="value"
-                        value={selectedDay}
-                        onChange={(item) => setSelectedDay(item.value)}
-                        placeholder="Day"
-                        placeholderStyle={styles.dropdownText}
-                        selectedTextStyle={styles.dropdownText}
-                        itemTextStyle={styles.dropdownText}
-                      />
-                      <Dropdown
-                        style={[styles.dropdown, { flex: 1, marginTop: 0 }]}
-                        data={sessionOptions}
-                        labelField="label"
-                        valueField="value"
-                        value={selectedSession}
-                        onChange={(item) => setSelectedSession(item.value)}
-                        placeholder="Session"
-                        placeholderStyle={styles.dropdownText}
-                        selectedTextStyle={styles.dropdownText}
-                        itemTextStyle={styles.dropdownText}
-                      />
-                    </View>
-
-                    <View style={styles.buttonWrapper}>
-                      <TouchableOpacity
-                        style={[
-                          styles.confirmButton,
-                          isMarksValid && styles.confirmButtonActive,
-                        ]}
-                        onPress={handleCalculatePercentile}
-                        disabled={!isMarksValid || loading}
-                      >
-                        <Text style={[
-                          styles.confirmButtonText,
-                          isMarksValid && styles.confirmButtonTextActive,
-                        ]}>
-                          {loading ? "Calculating..." : "Calculate"}
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-              </View>
-
-            </>
-          )}
-
-
-          {activeTab === "rank" && (
-            <>
-              <View style={styles.centerContainer}>
-                <View style={styles.cardContainer}>
-                  <View
-
-                    style={styles.cardHeader}
-                  >
-                    <Text style={styles.cardTitle}>Enter Overall Percentile</Text>
-                    <TouchableOpacity onPress={() => setShowInfo(true)}>
-                      <Ionicons
-                        name="information-circle-outline"
-                        size={22}
-                        color="#004aad"
-                      />
-                    </TouchableOpacity>
-                  </View>
-
-                  <View style={styles.cardBody}>
-                    {!!error && <Text style={styles.errorText}>{error}</Text>}
-                    {!!errMsgRank && (
-                      <Text style={styles.errorText}>{errMsgRank}</Text>
-                    )}
-
-                    <FloatingLabelInput
-                      label="Overall Percentile"
-                      value={overallPercentile}
-                      onChangeText={(text) =>
-                        handlePercentileInput(text, setOverallPercentile)
-                      }
-                      onBlur={() =>
-                        handlePercentileBlur(
-                          overallPercentile,
-                          setOverallPercentile
-                        )
-                      }
-                      keyboardType="number-pad"
-                      maxLength={
-                        overallPercentile.includes(".")
-                          ? overallPercentile.indexOf(".") + 8
-                          : 4
-                      }
-                    />
-
-                    <View style={{ flexDirection: "row", gap: 10, marginTop: 8 }}>
-                      <View style={{ flex: 1 }}>
-                        <FloatingLabelInput
-                          label="Physics"
-                          value={physicsPercentile}
-                          onChangeText={(text) =>
-                            handlePercentileInput(text, setPhysicsPercentile)
-                          }
-                          onBlur={() =>
-                            handlePercentileBlur(
-                              physicsPercentile,
-                              setPhysicsPercentile
-                            )
-                          }
-                          keyboardType="number-pad"
-                          maxLength={
-                            physicsPercentile.includes(".")
-                              ? physicsPercentile.indexOf(".") + 8
-                              : 4
-                          }
-                        />
-                      </View>
-                      <View style={{ flex: 1 }}>
-                        <FloatingLabelInput
-                          label="Chemistry"
-                          value={chemistryPercentile}
-                          onChangeText={(text) =>
-                            handlePercentileInput(text, setChemistryPercentile)
-                          }
-                          onBlur={() =>
-                            handlePercentileBlur(
-                              chemistryPercentile,
-                              setChemistryPercentile
-                            )
-                          }
-                          keyboardType="number-pad"
-                          maxLength={
-                            chemistryPercentile.includes(".")
-                              ? chemistryPercentile.indexOf(".") + 8
-                              : 4
-                          }
-                        />
-                      </View>
-
-                    </View>
-                    <View>
-                      <FloatingLabelInput
-                        label="Mathematics"
-                        value={mathsPercentile}
-                        onChangeText={(text) =>
-                          handlePercentileInput(text, setMathsPercentile)
-                        }
-                        onBlur={() =>
-                          handlePercentileBlur(mathsPercentile, setMathsPercentile)
-                        }
-                        keyboardType="number-pad"
-                        maxLength={
-                          mathsPercentile.includes(".")
-                            ? mathsPercentile.indexOf(".") + 8
-                            : 4
-                        }
-                      />
-                    </View>
-
-                    <View style={styles.buttonWrapper}>
-                      <TouchableOpacity
-                        style={[
-                          styles.confirmButton,
-                          isRankValid && styles.confirmButtonActive,
-                        ]}
-                        onPress={handleCalculateRank}
-                        disabled={!isRankValid || loading}
-                      >
-                        <Text style={[
-                          styles.confirmButtonText,
-                          isRankValid && styles.confirmButtonTextActive,
-                        ]}>
-                          {loading ? "Calculating..." : "Calculate"}
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-              </View>
-
-
-            </>
-          )}
+          </View>
         </View>
 
-
-        {/* Result Modal (same modal for both tabs) */}
+        {/* Result Modal */}
         <Modal visible={showResultModal} transparent animationType="fade">
           <TouchableOpacity
             activeOpacity={1}
@@ -741,15 +228,7 @@ export default function EstimatorScreen() {
                 <Ionicons name="close" size={22} color="#333" />
               </TouchableOpacity>
 
-              {!!(percentile && activeTab === "marks") && (
-                <>
-                  <Text style={{ fontSize: 100, opacity: 0.8 }}>🏅</Text>
-                  <Text style={styles.resultText}>{percentile.toFixed(2)}</Text>
-                  <Text style={styles.resultTextSub}>Estimated Percentile</Text>
-                </>
-              )}
-
-              {!!(rank && activeTab === "rank") && (
+              {!!rank && (
                 <>
                   <Text style={{ fontSize: 100, opacity: 0.8 }}>🏅</Text>
                   <Text style={styles.resultText}>{rank}</Text>
@@ -775,11 +254,19 @@ export default function EstimatorScreen() {
                 <Ionicons name="close" size={22} color="#717171ff" />
               </TouchableOpacity>
 
-              {renderInfoContent()}
+              <Text style={styles.modalTitle}>Percentage to Rank — Info</Text>
+              <Text style={styles.modalPoint}>
+                • Enter your overall percentage (required).
+              </Text>
+              <Text style={styles.modalPoint}>
+                • Percentage must be between 0 and 100.
+              </Text>
+              <Text style={styles.modalPoint}>
+                • Predictions are estimates — actual rank may differ.
+              </Text>
             </View>
           </TouchableOpacity>
         </Modal>
-
 
         {showLock && (
           <SubscriptionLockSheet
@@ -789,7 +276,6 @@ export default function EstimatorScreen() {
           />
         )}
       </LinearGradient>
-
     </SafeAreaView>
   );
 }

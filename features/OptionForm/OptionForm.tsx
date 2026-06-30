@@ -181,7 +181,7 @@ export default function OptionForm() {
       setAlertConfig({
         visible: true,
         title: "Missing Field",
-        message: `Please enter your ${isRankSelected ? "Rank" : "Percentile"}`,
+        message: `Please enter your ${isRankSelected ? "Rank" : "Percentage"}`,
         type: "error",
       });
       return;
@@ -207,7 +207,7 @@ export default function OptionForm() {
       setAlertConfig({
         visible: true,
         title: "Invalid Input",
-        message: "Please enter a valid percentile between 0 and 100",
+        message: "Please enter a valid percentage between 0 and 100",
         type: "error",
       });
       return;
@@ -365,7 +365,7 @@ export default function OptionForm() {
             >
               {!showResults && (
                 <TouchableOpacity
-                  onPress={() => Linking.openURL("https://www.prepcet.in/terms-and-conditions.html")}
+                  onPress={() => Linking.openURL("https://www.prepdse.in/terms-and-conditions.html")}
                   style={styles.infoStrip}
                 >
                   <Text style={styles.infoStripText}>

@@ -52,8 +52,7 @@ const PopularSearches = () => {
   const router = useRouter();
 
   const items = [
-    { title: "Percentile from Marks", icon: "stats-chart-outline", tab: "marks" as const },
-    { title: "Rank from Percentile", icon: "trophy-outline", tab: "rank" as const },
+    { title: "Rank from Percentage", icon: "trophy-outline", tab: "rank" as const },
   ];
 
   return (
@@ -71,17 +70,10 @@ const PopularSearches = () => {
             <View style={[
               styles.iconBox,
               {
-                backgroundColor:
-                  item.title === "Percentile from Marks" ? "#ff5e3220" :
-                    item.title === "Rank from Percentile" ? "#004aad20" :
-                      "#fff",
+                backgroundColor: "#004aad20",
               },
             ]}>
-              <Ionicons name={item.icon as any} size={24} color={
-                item.title === "Percentile from Marks" ? "#ff5e32" :
-                  item.title === "Rank from Percentile" ? "#004aad" :
-                    "#b6cf4f"
-              } />
+              <Ionicons name={item.icon as any} size={24} color="#004aad" />
             </View>
             <Text style={styles.gridTitle}>{item.title}</Text>
           </TouchableOpacity>
@@ -96,7 +88,7 @@ const QuickAccessSection = ({ onTabChange }: { onTabChange: (tab: any, subTab?: 
   const router = useRouter();
 
   const items = [
-    { title: "Dream Score Predictor", icon: "heart-outline", color: "#ff7a22", bg: "#ff7a2220", route: "/dream-college", fullWidth: true },
+    // { title: "Dream Score Predictor", icon: "heart-outline", color: "#ff7a22", bg: "#ff7a2220", route: "/dream-college", fullWidth: true },
     { title: "Colleges", icon: "school-outline", color: "#004aad", bg: "#004aad20", tab: "Colleges", subTab: "colleges" },
     { title: "Branches", icon: "filter-outline", color: "#b6cf4f", bg: "#b6cf4f20", tab: "Colleges", subTab: "branches" },
     { title: "Compare", icon: "git-compare-outline", color: "#ff7a22", bg: "#ff7a2220", tab: "Colleges", subTab: "compare" },
@@ -111,13 +103,11 @@ const QuickAccessSection = ({ onTabChange }: { onTabChange: (tab: any, subTab?: 
           <TouchableOpacity
             key={index}
             activeOpacity={0.7}
-            style={[styles.quickItem, item.fullWidth && { width: "100%" }]}
+            style={[styles.quickItem ]}
             onPress={() => {
-              if (item.route) {
-                router.push(item.route as any);
-              } else {
+             
                 onTabChange(item.tab, item.subTab);
-              }
+              
             }}
           >
             <View style={[styles.iconBox, { backgroundColor: item.bg }]}>
@@ -169,10 +159,10 @@ export default function HomeScreen({ onTabChange }: { onTabChange: (tab: any, su
               <View style={styles.bannerInfo}>
                 <Text style={styles.bannerLabel}>Your Admission Journey</Text>
                 <Text style={styles.bannerTitle}>
-                  PrepCET
+                  PrepDSE
                 </Text>
                 <Text style={styles.bannerSubtitle}>
-                  Search, Compare & Get Into the Right College After MHT CET
+                  Search, Compare & Get Into the Right College After Diploma
                 </Text>
               </View>
               <View style={styles.bannerIconBox}>

@@ -86,7 +86,7 @@ const CreateCollegeForm = ({
           <View style={styles.radioCircle}>
             {inputType === "percentile" && <View style={styles.radioDot} />}
           </View>
-          <Text style={styles.radioLabel}>Percentile</Text>
+          <Text style={styles.radioLabel}>Percentage</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -115,7 +115,7 @@ const CreateCollegeForm = ({
         ) : (
           <>
             <FloatingLabelInput
-              label="Enter Your Percentile"
+              label="Enter Your Percentage"
               value={percentile}
               onChangeText={handlePercentileChange}
               onBlur={handlePercentileBlur}
@@ -126,7 +126,7 @@ const CreateCollegeForm = ({
             />
             {percentile && parseFloat(percentile) > 100 && (
               <Text style={[styles.warningText, { marginTop: -25, marginBottom: 15 }]}>
-                Percentile cannot exceed 100
+                Percentage cannot exceed 100
               </Text>
             )}
           </>

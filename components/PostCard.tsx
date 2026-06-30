@@ -96,7 +96,7 @@ export default function PostCard({
           </GradientBox>
 
           <View style={styles.headerTextContainer}>
-            <Text style={styles.postedBy}>PrepCET Admin</Text>
+            <Text style={styles.postedBy}>PrepDSE Admin</Text>
             <Text style={styles.postTime}>{timeAgo(created_at)}</Text>
           </View>
         </View>
