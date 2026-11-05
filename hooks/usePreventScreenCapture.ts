@@ -7,6 +7,6 @@ import { useEffect } from "react";
  */
 export const usePreventScreenCapture = () => {
     useEffect(() => {
-        ScreenCapture.preventScreenCaptureAsync();
+       // ScreenCapture.preventScreenCaptureAsync();
     }, []);
 };
