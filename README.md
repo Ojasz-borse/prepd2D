@@ -124,13 +124,7 @@ Ensure you have the following installed:
    npm install
    ```
 
-3. **Configure Environment Variables:**
-   Create a `.env` file in the root directory:
-   ```env
-   EXPO_PUBLIC_SERVER_URL=https://prep-academy-api.vercel.app
-   SERVER_URL=https://prep-academy-api.vercel.app
-   RAZORPAY_KEY=your_razorpay_key_here
-   ```
+
 
 4. **Start the development server:**
    ```bash
